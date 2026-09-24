@@ -15,7 +15,7 @@ Abgerufen am 24.09.2026.
 
 Nutzungsbedingungen ebics.de, „Schutzrechte“: „Der Nutzer darf die Inhalte nur im Rahmen der angebotenen Funktionalitäten der Web-Seiten für seinen persönlichen Gebrauch nutzen … Die Rechte liegen beim SIZ und den Verbänden der DK.“
 
-Die Download-Adressen auf ebics.de sind zeitlich begrenzte Links. Deshalb steht hier die Seite, auf der die Datei angeboten wird.
+Lokale Kopien für Tests liegen in `.local-specs/dk/` (nicht im Repo, siehe `docs/lokale-spezifikationen.md`). Die Download-Adressen auf ebics.de sind zeitlich begrenzte Links. Deshalb steht hier die Seite, auf der die Datei angeboten wird.
 
 | Dokument | Version / Stand | Seite | SHA-256 |
 |---|---|---|---|
@@ -48,4 +48,4 @@ Die Übersichtsseiten des EPC lassen sich nicht automatisch abrufen (Bot-Schutz)
 
 | Dokument | Grund |
 |---|---|
-| SWIFT IBAN Registry (swift.com) | swift.com antwortet auf automatische Abrufe mit „403 – SWIFT site off-line“. Muss manuell im Browser geladen werden (`docs/sepa-entscheidungen.md`, O4). |
+| SWIFT IBAN Registry (swift.com) | swift.com antwortet auf automatische Abrufe mit „403 – SWIFT site off-line“. Leon lädt sie im Browser nach `.local-specs/swift/` (plan.md O4, `docs/lokale-spezifikationen.md`). |

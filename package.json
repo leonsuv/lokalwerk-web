@@ -33,6 +33,7 @@
     "vitest": "5.0.1"
   },
   "dependencies": {
-    "pdf-lib": "1.17.1"
+    "pdf-lib": "1.17.1",
+    "xlsx": "file:vendor/xlsx-0.20.3.tgz"
   }
 }

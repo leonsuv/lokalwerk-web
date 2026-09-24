@@ -40,9 +40,27 @@ Grundsatz für alle S-Punkte: **Die offizielle Quelle entscheidet, nicht der Pro
 | S5 | Länderliste, IBAN-Längen | Freigegeben: Länderliste aus der EPC-Liste der SEPA-Länder, IBAN-Längen aus der SWIFT IBAN Registry. Beide Quellen in die Quellentabelle von AGENTS.md aufnehmen. Liste in `sepa/iban-countries.ts` mit Kommentar zu Quelle und Stand. |
 | S6 | Höchstbetrag | 999.999.999,99 € beibehalten, sofern das SCT-Rulebook das bestätigt. Fundstelle in `docs/sepa-entscheidungen.md`. |
 | S7 | CreDtTm | Laut XSD und Spezifikation. Bevorzugt Ortszeit ohne Millisekunden. Das XSD-Testergebnis entscheidet; Zeitzone nur, wenn die Spezifikation sie verlangt oder empfiehlt. |
-| S8 | BtchBookg | Kontrollkästchen in der rechten Spalte: „Als eine Sammelbuchung auf dem Kontoauszug“, standardmäßig an. |
-| S9 | Ausführungsdatum | Vorschlag angenommen: Standard nächster Werktag in Ortszeit, Datum in der Vergangenheit ist ein Fehler, keine Prüfung von Bankfeiertagen. |
+| S8 | BtchBookg | **Korrigiert (24.09.2026, O6):** Kein Kontrollkästchen. `BtchBookg` ist fest `true`. Grund: Laut Anlage 3 26.11, S. 99, wirkt `false` nur, wenn mit der Bank Einzelbuchung vereinbart ist (docs/sepa-entscheidungen.md). |
+| S9 | Ausführungsdatum | Vorschlag angenommen: Standard nächster Werktag in Ortszeit, Datum in der Vergangenheit ist ein Fehler, keine Prüfung von Bankfeiertagen. **Ergänzt (O7):** Liegt das Datum mehr als 15 Tage in der Zukunft, erscheint eine Warnung (kein Fehler): „Banken müssen Aufträge mit einem Datum mehr als 15 Tage in der Zukunft nicht annehmen.“ |
 | S10 | DACH | Vorschlag angenommen. Seite und Meta-Beschreibung sagen klar „für deutsche Banken“. Österreich und Schweiz später. |
+
+### Entscheidungen nach Schritt 6 Teil 1 (24.09.2026)
+
+Details und Fundstellen: `docs/sepa-entscheidungen.md`.
+
+| Nr. | Frage | Entscheidung |
+|---|---|---|
+| F1 | Fassung Anlage 3 | Wir bauen gegen **Version 26.11** (gültig ab 15.11.2026). Die neue Regel „kein Textfeld nur aus Leerzeichen“ wird umgesetzt und getestet. |
+| O1/O8 | Umschreibung | Die EPC-Tabelle EPC217-08 wird **nicht** in den Code übernommen, auch nicht auszugsweise; sie dient nur zum Nachlesen. Eigene Umschreibung: Unicode-Normalisierung (NFD) und Akzente entfernen, dazu eine selbst geschriebene Liste: Æ→AE, æ→ae, Œ→OE, œ→oe, Ø→O, ø→o, Ł→L, ł→l, Đ→D, đ→d, Þ→TH, þ→th, ẞ→SS. |
+| O2 | Typografische Zeichen | – und — → `-`; „ “ ” ‘ ’ → `'`; … → `...`; geschütztes Leerzeichen und andere Leerzeichen → normales Leerzeichen. |
+| O3 | Übrige Zeichen | `"` → `'`; `<` und `>` → `.`; alle übrigen Zeichen ohne Entsprechung → `.`. Jede Ersetzung erscheint als Warnung in der Zeile. |
+| O4 | IBAN Registry | Leon lädt die SWIFT IBAN Registry selbst herunter und legt sie in `.local-specs/`. Bis dahin gelten die IBAN-Längen aus dem Prototyp, die Stelle ist im Code als offen markiert. |
+| O5 | Randfälle Länder | Gibraltar (GI) wird wie die Nicht-EWR-Länder ausgeschlossen. Saint-Pierre-et-Miquelon wird nicht erwähnt. |
+| O6 | Sammelbuchung | Siehe S8 (korrigiert): fest `true`, kein Kontrollkästchen. |
+| O7 | Datum > 15 Tage | Warnung, siehe S9. |
+| O9 | Nur eine Überweisung | Hinweis, kein Fehler: „Manche Banken lehnen Dateien mit nur einer Überweisung ab. Für eine einzelne Überweisung nutzt du besser direkt dein Onlinebanking.“ |
+| O10 | Lokale Spezifikationen | Ordner `.local-specs/` (in `.gitignore`, nicht `out/`). Der XSD-Test wird ohne die Dateien übersprungen, mit deutlich sichtbarem Hinweis in der Testausgabe. Bezugsquellen stehen in `docs/lokale-spezifikationen.md`. |
+| T1 | Tests der Textregeln | Weil das XSD allein nicht reicht, bekommt jede umgesetzte Textregel aus Anlage 3 einen eigenen Test. |
 
 ### Nachträge vor Schritt 0
 
@@ -215,7 +233,7 @@ Nach jedem Schritt: kurzer Bericht nach AGENTS.md, Tests grün, Commit.
 5. **Fotos verkleinern:** `core/images`, Worker, Seite.
 6. **SEPA-Grundlagen:** Spezifikation laden (S1), `docs/sepa-entscheidungen.md` anlegen und S2, S3, S5, S6, S7 dort klären. **Danach anhalten und Ergebnis vorlegen.** Erst nach Freigabe: IBAN, BIC, Beträge, Zeichensatz, CSV, Excel-Adapter.
 7. **pain.001 und Zeilenprüfung** inkl. XSD-Test.
-8. **SEPA-Werkzeugseite** inkl. Sammelbuchungs-Option und Hinweis „für deutsche Banken“.
+8. **SEPA-Werkzeugseite** inkl. Hinweis „für deutsche Banken“ sowie Warnung (Datum > 15 Tage, O7) und Hinweis (nur eine Überweisung, O9). Sammelbuchung fest `true` (S8).
 9. **Ablage auf der Startseite:** lädt das Werkzeug-Modul nach, setzt dessen `main.html` ein, ändert Titel und URL per `history.pushState`, übergibt die Datei im Arbeitsspeicher. Zurück-Taste lädt die Startseite neu, alle anderen Links sind normale Seitenwechsel.
 10. **Endprüfung:** Netzwerk-Tab (keine fremden Domains), Offline-Test nach Variante (a), beide Farbmodi, 360 px Breite, Tastaturbedienung. Erklärtexte und Meta-Beschreibungen gesammelt zur Freigabe vorlegen. `docs/deployment.md` mit Cloudflare-Checkliste.
 
@@ -228,7 +246,7 @@ Optik und Texte bleiben gleich, mit diesen Ausnahmen:
 - Footer „Lokalwerk“ statt „Lokalwerk, Prototyp“, ohne AGB-Link. „Prototyp:“ vor dem SEPA-Hinweis entfällt.
 - `window.claude`-Speichercode entfällt, gespeichert wird über den normalen Browser-Download.
 - Kontaktadresse überall `kontakt@lokalwerk.eu`.
-- Neu: Kontrollkästchen „Als eine Sammelbuchung auf dem Kontoauszug“ (S8), Hinweis „für deutsche Banken“ (S10).
+- Neu: Hinweis „für deutsche Banken“ (S10). Kein Kontrollkästchen für die Sammelbuchung (S8 korrigiert).
 
 Behobene Fehler:
 

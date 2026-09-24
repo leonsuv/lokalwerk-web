@@ -4,7 +4,23 @@ Stand: 24.09.2026. Grundlage: plan.md S1–S10. Die offizielle Quelle entscheide
 
 Abkürzungen: **A3** = DFÜ-Abkommen Anlage 3 „Spezifikation der Datenformate“ der Deutschen Kreditwirtschaft (DK). **TVS** = DK-Schema `pain.001.001.09_GBIC_5.xsd`. **RB** = EPC SCT Rulebook 2025 v1.1 (EPC125-05). **IG** = EPC SCT Customer-to-PSP Implementation Guidelines 2025 v1.0 (EPC132-08).
 
-## Kurzfassung
+## Entscheidungen des Betreibers (24.09.2026)
+
+Die offenen Fragen aus Abschnitt 11 sind entschieden. Maßgeblich ist diese Liste; sie steht auch in plan.md („Entscheidungen nach Schritt 6 Teil 1“).
+
+- **Fassung:** Gebaut wird gegen Anlage 3 **Version 26.11**. Die Regel „kein Textfeld nur aus Leerzeichen“ wird umgesetzt und getestet.
+- **O1/O8 Umschreibung:** Die EPC-Tabelle EPC217-08 wird **nicht** übernommen, auch nicht auszugsweise. Die Umschreibung in `src/core/sepa/charset.ts` ist **eigenständig erstellt**: Unicode-Normalisierung (NFD) mit Entfernen der Akzente und eine kurze, selbst geschriebene Liste (Æ→AE, æ→ae, Œ→OE, œ→oe, Ø→O, ø→o, Ł→L, ł→l, Đ→D, đ→d, Þ→TH, þ→th, ẞ→SS). Die EPC-Tabelle wurde nur zum Nachlesen verwendet; es wurden keine Werte oder Strukturen daraus kopiert.
+- **O2:** – und — → `-`; „ “ ” ‘ ’ → `'`; … → `...`; geschütztes und andere Leerzeichen → normales Leerzeichen.
+- **O3:** `"` → `'`; `<` und `>` → `.`; alle übrigen Zeichen ohne Entsprechung → `.`. Jede Ersetzung erscheint als Warnung in der Zeile.
+- **O4:** Leon lädt die SWIFT IBAN Registry selbst nach `.local-specs/`. Bis dahin gelten die Längen aus dem Prototyp; die Stelle ist im Code als offen markiert.
+- **O5:** Gibraltar (GI) wird wie die Nicht-EWR-Länder ausgeschlossen. Saint-Pierre-et-Miquelon wird nicht erwähnt.
+- **O6:** Kein Kontrollkästchen. `BtchBookg` ist fest `true` (plan.md S8 korrigiert).
+- **O7:** Warnung, kein Fehler: „Banken müssen Aufträge mit einem Datum mehr als 15 Tage in der Zukunft nicht annehmen.“
+- **O9:** Hinweis, kein Fehler: „Manche Banken lehnen Dateien mit nur einer Überweisung ab. Für eine einzelne Überweisung nutzt du besser direkt dein Onlinebanking.“
+- **O10:** Lokaler Ordner `.local-specs/` (in `.gitignore`). Der XSD-Test wird ohne die Dateien mit deutlich sichtbarem Hinweis übersprungen. Bezugsquellen: `docs/lokale-spezifikationen.md`.
+- **Zusätzlich:** Jede umgesetzte Textregel aus Anlage 3 bekommt einen eigenen Test, weil das XSD allein nicht reicht.
+
+## Kurzfassung (Stand der Recherche, vor den Entscheidungen)
 
 | Nr. | Frage | Ergebnis | Status |
 |---|---|---|---|
@@ -92,6 +108,8 @@ Was die Tabelle regelt (EPC217-08, Kap. 6.1, S. 7–8):
 Nach plan.md gilt die EPC-Tabelle. Ich melde die Abweichung trotzdem, weil `AE` besser lesbar wäre.
 
 **Was die EPC-Tabelle nicht abdeckt:** Sie reicht von U+0020 bis U+04FF, dazu kommt das Euro-Zeichen (1.089 Einträge). Typografische Zeichen aus dem Bereich U+2000–206F fehlen, also `–` `—` `„` `“` `”` `‚` `‘` `’` `…` und das geschützte Leerzeichen U+00A0. Word und Excel erzeugen solche Zeichen oft automatisch. Nach der EPC-Regel würden sie zu einem Punkt, aus „Miete – März“ würde „Miete . März“. Siehe O2.
+
+> **Entschieden (O1/O8, O2, O3):** Die Umschreibung ist eigenständig erstellt (NFD + eigene Liste, siehe „Entscheidungen des Betreibers“). Die EPC-Tabelle wurde nur zum Nachlesen genutzt.
 
 **Doppelte Anführungszeichen `"`, `<` und `>`** stehen in der Tabelle als „N/A“ (XML-Sonderzeichen). Für `<` und `>` nennt sie U+002E als Ergebnis, für `"` nichts. Siehe O3.
 

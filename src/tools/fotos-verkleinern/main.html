@@ -1,0 +1,92 @@
+<div class="wrap img">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-img" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/">Alle Werkzeuge</a>
+      <h1>Fotos verkleinern</h1>
+      <p>
+        Klein genug für E-Mail und Website. GPS-Position, Kameradaten und andere Metadaten werden
+        entfernt.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <label class="drop" id="img-drop">
+        <input type="file" class="visually-hidden" id="img-input" accept="image/*" multiple />
+        <span class="ic"
+          ><svg width="22" height="22" aria-hidden="true"><use href="#i-img" /></svg
+        ></span>
+        <div>
+          <strong>Fotos hinzufügen</strong
+          ><span>JPEG, PNG oder WebP. Die Verarbeitung startet sofort.</span>
+        </div>
+      </label>
+      <div class="img-grid" id="img-list" aria-live="polite"></div>
+      <div class="empty-state" id="img-empty">
+        <strong>Noch keine Fotos</strong>Die Einstellungen rechts gelten für alle neuen Fotos.
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Einstellungen</h2>
+      <div class="field">
+        <label class="lbl" for="img-width">Maximale Breite</label>
+        <select id="img-width">
+          <option value="800">800 px, für E-Mail</option>
+          <option value="1280">1280 px</option>
+          <option value="1920" selected>1920 px, für Websites</option>
+          <option value="2560">2560 px</option>
+          <option value="0">Originalgröße</option>
+        </select>
+      </div>
+      <div class="field">
+        <span class="lbl" id="img-format-label">Format</span>
+        <div class="seg" role="group" aria-labelledby="img-format-label">
+          <button type="button" data-format="image/jpeg" aria-pressed="true">JPEG</button>
+          <button type="button" data-format="image/webp" aria-pressed="false">WebP</button>
+        </div>
+        <p class="hint" id="img-webp-hint" hidden>
+          Dein Browser kann keine WebP-Dateien erzeugen. Die Fotos werden als JPEG gespeichert.
+        </p>
+      </div>
+      <div class="field">
+        <label class="lbl" for="img-quality"
+          >Qualität: <span id="img-quality-val">80</span>&nbsp;%</label
+        >
+        <input type="range" id="img-quality" min="50" max="95" step="5" value="80" />
+      </div>
+      <div class="stat-row mt-m">
+        <span>Eingespart</span><b class="saving" id="img-saved">0 B</b>
+      </div>
+      <button class="btn ghost wide mt-s" id="img-clear" disabled>Liste leeren</button>
+      <div class="pro-note">
+        Alle Fotos als ZIP speichern: mit <a href="/pro/">Lokalwerk Pro</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf, wird in Schritt 10 zur Freigabe vorgelegt (plan.md Abschnitt 3). -->
+  <section class="explain" aria-labelledby="img-explain">
+    <h2 id="img-explain">So funktioniert es</h2>
+    <p>
+      Wähle Fotos aus oder zieh sie in die Fläche oben. Jedes Foto wird sofort mit den Einstellungen
+      rechts verkleinert und lässt sich einzeln speichern. Die maximale Breite begrenzt die Breite
+      in Pixeln, Hochformate werden entsprechend höher. JPEG öffnet jedes Programm, WebP ist bei
+      gleicher Qualität meist kleiner.
+    </p>
+    <h2>Metadaten werden entfernt</h2>
+    <p>
+      Handyfotos enthalten oft den Aufnahmeort, das Aufnahmedatum und das Kameramodell. Beim
+      Verkleinern wird das Foto neu erzeugt, diese Angaben werden nicht übernommen. Zusätzlich prüft
+      Lokalwerk jede fertige Datei darauf und bietet sie nur an, wenn nichts davon enthalten ist.
+    </p>
+    <h2>Deine Fotos bleiben auf deinem Gerät</h2>
+    <p>
+      Die Fotos werden direkt in deinem Browser verarbeitet und nicht hochgeladen. Nach dem Laden
+      der Seite funktioniert das Werkzeug auch ohne Internetverbindung. Deine Originale bleiben
+      unverändert.
+    </p>
+  </section>
+</div>

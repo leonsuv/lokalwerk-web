@@ -1,5 +1,10 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { fileURLToPath } from 'node:url';
+import { collectLicenses } from '../../build/licenses.ts';
 import {
+  LICENSE_PAGE,
+  licenseUrls,
   ALLOWED_JS_URLS,
   ALLOWED_LIBRARY_URLS,
   ALLOWED_SVG_XML_URLS,
@@ -91,12 +96,59 @@ describe('SVG-Dateien', () => {
 describe('Tote Adressen in Bibliotheken (plan.md N3)', () => {
   const pdfLib = '"pdf-lib (https://github.com/Hopding/pdf-lib)"';
 
+  const pdfLibEntries = ALLOWED_LIBRARY_URLS.filter((e) => e.library.startsWith('pdf-lib'));
+  const sheetJsEntries = ALLOWED_LIBRARY_URLS.filter((e) => e.library.startsWith('SheetJS'));
+
   it('enthält genau die freigegebene pdf-lib-Adresse mit Fundstelle und Test', () => {
-    expect(ALLOWED_LIBRARY_URLS.map((e) => e.url)).toEqual(['https://github.com/Hopding/pdf-lib']);
-    for (const entry of ALLOWED_LIBRARY_URLS) {
+    expect(pdfLibEntries.map((e) => e.url)).toEqual(['https://github.com/Hopding/pdf-lib']);
+    for (const entry of pdfLibEntries) {
       expect(entry.source).toMatch(/node_modules\/pdf-lib\/.+Zeile \d+/);
       expect(entry.test).toMatch(/^tests\//);
     }
+  });
+
+  it('enthält für SheetJS 19 Namensräume, 29 Beziehungstypen und 3 einzeln freigegebene Adressen', () => {
+    const count = (category: string) =>
+      sheetJsEntries.filter((e) => e.category === category).length;
+    expect(sheetJsEntries).toHaveLength(51);
+    expect(count('xml-namespace')).toBe(19);
+    expect(count('ecma376-relationship')).toBe(29);
+    expect(
+      sheetJsEntries
+        .filter((e) => e.category === 'dead-address')
+        .map((e) => e.url)
+        .sort(),
+    ).toEqual([
+      'http://schemas.openxmlformats.org/package/2006/sheetjs/core-properties',
+      'http://sheetjs.com',
+      'http://sheetjs.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
+    ]);
+  });
+
+  it('jede SheetJS-Adresse steht wirklich an der angegebenen Fundstelle', () => {
+    const lines = readFileSync(
+      new URL('../../node_modules/xlsx/xlsx.mjs', import.meta.url),
+      'utf8',
+    ).split('\n');
+    for (const entry of sheetJsEntries) {
+      const line = Number(/Zeile (\d+)/.exec(entry.source)?.[1]);
+      expect(lines[line - 1], entry.url).toContain(entry.url);
+      expect(entry.reason.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('einzeln freigegebene Adressen haben einen Test (plan.md N3)', () => {
+    for (const entry of sheetJsEntries.filter((e) => e.category === 'dead-address')) {
+      expect(entry.test).toMatch(/^tests\//);
+    }
+  });
+
+  it('SheetJS-Adressen gelten nur im SEPA-Worker', () => {
+    const url = '"http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
+    expect(checkText(url, 'js', 'assets/sheet.worker-w6J4Ywau.js')).toEqual([]);
+    expect(checkText(url, 'js', 'assets/merge.worker-TScBrF7F.js')).toHaveLength(1);
+    expect(checkText(url, 'js', 'assets/sepa-sammelueberweisung/index.html-x.js')).toHaveLength(1);
+    expect(checkText(url, 'html', 'assets/sheet.worker-w6J4Ywau.js')).toHaveLength(1);
   });
 
   it('gilt nur im PDF-Worker', () => {
@@ -113,5 +165,56 @@ describe('Tote Adressen in Bibliotheken (plan.md N3)', () => {
       checkText('"https://github.com/Hopding/pdf-lib/tree/master"', 'js', worker),
     ).toHaveLength(1);
     expect(checkText('"https://example.com/"', 'js', worker)).toHaveLength(1);
+  });
+});
+
+describe('Lizenzseite (plan.md N3, Variante A)', () => {
+  const urls = licenseUrls(collectLicenses(fileURLToPath(new URL('../..', import.meta.url))));
+  const check = (html: string, file = LICENSE_PAGE) =>
+    checkText(html, 'html', file, { licenseUrls: urls });
+
+  it('kennt die Adressen aus den gesammelten Lizenztexten', () => {
+    for (const url of [
+      'http://www.apache.org/licenses/',
+      'http://www.apache.org/licenses/LICENSE-2.0',
+      'http://scripts.sil.org/OFL',
+      'https://github.com/simpals/onest',
+      'http://sheetjs.com',
+    ]) {
+      expect(urls.has(url), url).toBe(true);
+    }
+  });
+
+  it('erlaubt eine Adresse aus den Lizenzdaten im Textinhalt der Lizenzseite', () => {
+    expect(
+      check('<pre class="license-text">see http://www.apache.org/licenses/LICENSE-2.0 here</pre>'),
+    ).toEqual([]);
+  });
+
+  it('lehnt dieselbe Adresse in einem href-Attribut ab, auch auf der Lizenzseite', () => {
+    expect(check('<a href="http://www.apache.org/licenses/LICENSE-2.0">Lizenz</a>')).toHaveLength(
+      1,
+    );
+  });
+
+  it('lehnt sie in anderen Attributen ab', () => {
+    expect(check('<img src="http://scripts.sil.org/OFL">')).toHaveLength(1);
+    expect(check('<p title="http://sheetjs.com">x</p>')).toHaveLength(1);
+  });
+
+  it('lehnt eine Adresse ab, die nicht in den Lizenzdaten steht, auch im Textinhalt', () => {
+    expect(check('<p>https://example.com/tracker</p>')).toHaveLength(1);
+    expect(check('<p>http://www.apache.org/licenses/other</p>')).toHaveLength(1);
+  });
+
+  it('gilt nur für die Lizenzseite', () => {
+    expect(check('<p>http://www.apache.org/licenses/</p>', 'impressum/index.html')).toHaveLength(1);
+    expect(check('<p>http://www.apache.org/licenses/</p>', 'index.html')).toHaveLength(1);
+  });
+
+  it('gilt nur, wenn die Lizenzdaten übergeben werden', () => {
+    expect(checkText('<p>http://www.apache.org/licenses/</p>', 'html', LICENSE_PAGE)).toHaveLength(
+      1,
+    );
   });
 });

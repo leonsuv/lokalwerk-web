@@ -607,6 +607,22 @@ textarea {
   align-items: center;
 }
 
+/* Spaltenzuordnung (SEPA), ersetzt #sepa-map aus dem Prototyp */
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.8rem;
+}
+.map-grid .lbl {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+td .hint {
+  display: block;
+  margin-top: 0.25rem;
+}
+
 /* Tabellen: scrollen innerhalb ihres Containers (AGENTS.md Abschnitt 8) */
 .table-wrap {
   overflow-x: auto;

@@ -84,6 +84,14 @@ export const PAGES: readonly PageDef[] = [
     nav: null,
   },
   {
+    file: 'lizenzen/index.html',
+    url: '/lizenzen/',
+    title: 'Lizenzen – Lokalwerk',
+    description: 'Urheber und Lizenztexte der Bibliotheken und Schriften, die Lokalwerk verwendet.',
+    index: false,
+    nav: null,
+  },
+  {
     file: '404.html',
     url: '/404.html',
     title: 'Seite nicht gefunden – Lokalwerk',

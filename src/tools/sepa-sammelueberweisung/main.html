@@ -1,0 +1,125 @@
+<div class="wrap sepa">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-bank" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/">Alle Werkzeuge</a>
+      <h1>SEPA-Sammelüberweisung</h1>
+      <p>
+        Aus einer Liste mit Empfängern, IBANs und Beträgen wird eine Datei, die du im Onlinebanking
+        hochladen kannst. Für deutsche Banken.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div>
+      <div class="card">
+        <label class="drop" id="sepa-drop">
+          <input
+            type="file"
+            class="visually-hidden"
+            id="sepa-input"
+            accept=".csv,.txt,.xlsx,.xls,.ods,text/csv"
+          />
+          <span class="ic"
+            ><svg width="22" height="22" aria-hidden="true"><use href="#i-bank" /></svg
+          ></span>
+          <div>
+            <strong>Excel- oder CSV-Liste hinzufügen</strong>
+            <span>Erste Zeile mit Spaltennamen, danach eine Zeile pro Überweisung.</span>
+          </div>
+        </label>
+        <div class="empty-state" id="sepa-empty">
+          <strong>Noch keine Liste</strong>Oder probier es mit Beispieldaten aus.<br />
+          <button class="btn ghost sm mt-m" id="sepa-sample" type="button">
+            Beispieldaten laden
+          </button>
+        </div>
+        <div id="sepa-map-panel" hidden>
+          <h2 class="mt-l">Spalten zuordnen</h2>
+          <div class="map-grid" id="sepa-map"></div>
+          <div class="summary" id="sepa-summary" aria-live="polite"></div>
+          <div class="table-wrap">
+            <table id="sepa-table">
+              <caption class="visually-hidden">
+                Geprüfte Überweisungen
+              </caption>
+            </table>
+          </div>
+          <p class="hint" id="sepa-table-note" hidden></p>
+        </div>
+      </div>
+      <div class="card" id="sepa-out-panel" hidden>
+        <h2 id="sepa-out-title" tabindex="-1">Deine Überweisungsdatei</h2>
+        <div class="note">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
+          <span>
+            Prüfe die Aufträge nach dem Hochladen im Onlinebanking. Die Bank zeigt dir vor der
+            Freigabe alle Empfänger und Beträge an.
+          </span>
+        </div>
+        <textarea
+          id="sepa-xml"
+          readonly
+          spellcheck="false"
+          aria-label="Erzeugte XML-Datei"
+        ></textarea>
+        <div class="actions mt-m">
+          <button class="btn" id="sepa-save" type="button">
+            <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>XML-Datei
+            speichern
+          </button>
+          <button class="btn ghost" id="sepa-copy" type="button">XML kopieren</button>
+        </div>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Dein Konto</h2>
+      <div class="field">
+        <label class="lbl" for="s-name">Kontoinhaber</label>
+        <input type="text" id="s-name" maxlength="140" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label class="lbl" for="s-iban">IBAN</label>
+        <input type="text" id="s-iban" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="field">
+        <label class="lbl" for="s-bic">BIC <span class="opt">(optional)</span></label>
+        <input type="text" id="s-bic" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="field">
+        <label class="lbl" for="s-date">Ausführung am</label>
+        <input type="date" id="s-date" aria-describedby="s-date-status" />
+        <p class="hint" id="s-date-status" aria-live="polite"></p>
+      </div>
+      <p class="hint" id="s-acc-status" aria-live="polite"></p>
+      <button class="btn wide mt-m" id="sepa-build" type="button" disabled>
+        Überweisungsdatei erstellen
+      </button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf, wird in Schritt 10 zur Freigabe vorgelegt (plan.md Abschnitt 3). -->
+  <section class="explain" aria-labelledby="sepa-explain">
+    <h2 id="sepa-explain">So funktioniert es</h2>
+    <p>
+      Du brauchst eine Excel-, ODS- oder CSV-Liste mit einer Kopfzeile und je einer Zeile pro
+      Überweisung: Empfänger, IBAN und Betrag, optional Verwendungszweck und BIC. Die Spalten werden
+      anhand der Überschriften zugeordnet, du kannst die Zuordnung ändern. Jede Zeile wird geprüft;
+      fehlerhafte Zeilen werden mit Grund markiert und nicht in die Datei übernommen.
+    </p>
+    <h2>Die Datei</h2>
+    <p>
+      Lokalwerk erstellt eine SEPA-Überweisungsdatei im Format pain.001.001.09 nach den Vorgaben der
+      Deutschen Kreditwirtschaft. Sie ist für deutsche Banken gedacht und wird im Onlinebanking als
+      Sammelüberweisung hochgeladen. Zeichen, die in SEPA-Dateien nicht erlaubt sind, werden
+      umgeschrieben, zum Beispiel é zu e. Jede Änderung siehst du in der Tabelle.
+    </p>
+    <h2>Deine Daten bleiben auf deinem Gerät</h2>
+    <p>
+      Liste und Kontodaten werden direkt in deinem Browser verarbeitet und nicht hochgeladen. Prüfe
+      die Aufträge vor der Freigabe im Onlinebanking.
+    </p>
+  </section>
+</div>

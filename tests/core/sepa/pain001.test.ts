@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildPain001 } from '../../../src/core/sepa/pain001.ts';
-import { input, tx } from './pain001-input.ts';
+import { ALLOWED_LIBRARY_URLS } from '../../../scripts/check-dist.mjs';
+import { input, scenarios, tx } from './pain001-input.ts';
 
 const xml = buildPain001(input());
 const elements = (text: string, tag: string) =>
@@ -172,5 +173,13 @@ describe('buildPain001: verweigert fehlerhafte Eingaben (nie eine falsche Datei)
     ['Datum falsch', input({ executionDate: '25.09.2026' })],
   ])('%s', (_label, data) => {
     expect(() => buildPain001(data)).toThrow(/^pain\.001: /);
+  });
+});
+
+describe('buildPain001: enthält keine Adressen aus Bibliotheken (plan.md N3)', () => {
+  it.each(Object.entries(scenarios))('%s', (_name, data) => {
+    const output = buildPain001(data);
+    for (const { url } of ALLOWED_LIBRARY_URLS) expect(output).not.toContain(url);
+    expect(output).not.toMatch(/https?:\/\//);
   });
 });

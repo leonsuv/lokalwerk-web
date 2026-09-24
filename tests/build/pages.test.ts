@@ -27,6 +27,7 @@ describe('Seitenregister', () => {
         '/pro/',
         '/impressum/',
         '/datenschutz/',
+        '/lizenzen/',
         '/404.html',
       ].sort(),
     );

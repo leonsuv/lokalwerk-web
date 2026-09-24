@@ -38,3 +38,53 @@
   color: var(--muted);
   font-size: 0.9rem;
 }
+
+/* Lizenzseite: Angaben je Paket und vollständige Lizenztexte */
+.legal .license {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.legal .license h2 {
+  margin-top: 0;
+}
+.legal .license h3 {
+  font-size: 0.95rem;
+  margin: 1.2rem 0 0.4rem;
+}
+.license-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  font-size: 0.92rem;
+}
+.license-facts dt {
+  color: var(--muted);
+}
+.license-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.license-notes {
+  font-size: 0.88rem;
+  padding-left: 1.2rem;
+}
+.license-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font:
+    0.78rem/1.5 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 0.9rem;
+  /* Keine feste Höhe: innere Scrollbereiche sind nicht in jedem Browser per Tastatur erreichbar. */
+}
+.legal .license-source {
+  color: var(--muted);
+  font-size: 0.88rem;
+}

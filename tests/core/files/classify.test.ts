@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { isImage, isPdf } from '../../../src/core/files/classify.ts';
+import {
+  isCsv,
+  isImage,
+  isPdf,
+  isSpreadsheet,
+  isWorkbook,
+} from '../../../src/core/files/classify.ts';
 
 describe('isPdf', () => {
   it.each([
@@ -21,5 +27,22 @@ describe('isImage', () => {
     [{ name: 'a.jpg', type: '' }, false],
   ])('%o → %s', (file, expected) => {
     expect(isImage(file)).toBe(expected);
+  });
+});
+
+describe('Tabellen', () => {
+  it.each([
+    [{ name: 'liste.csv', type: '' }, true, false],
+    [{ name: 'LISTE.CSV', type: 'text/csv' }, true, false],
+    [{ name: 'export.txt', type: 'text/plain' }, true, false],
+    [{ name: 'daten', type: 'text/csv' }, true, false],
+    [{ name: 'liste.xlsx', type: '' }, false, true],
+    [{ name: 'alt.xls', type: '' }, false, true],
+    [{ name: 'calc.ods', type: '' }, false, true],
+    [{ name: 'bild.jpg', type: 'image/jpeg' }, false, false],
+  ])('%o: CSV %s, Arbeitsmappe %s', (file, csv, workbook) => {
+    expect(isCsv(file)).toBe(csv);
+    expect(isWorkbook(file)).toBe(workbook);
+    expect(isSpreadsheet(file)).toBe(csv || workbook);
   });
 });

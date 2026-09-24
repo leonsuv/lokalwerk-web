@@ -1,0 +1,10 @@
+# Sicherheits-Header für Cloudflare Pages (plan.md Abschnitt 5).
+# connect-src 'none': Der Browser blockiert jede Netzwerkanfrage aus der Seite
+# (fetch, XHR, WebSocket, Beacon). Quellen nur so weit öffnen, wie ein Werkzeug es braucht.
+# Dieselben Header nutzt `vite preview` (vite.config.ts), damit sie lokal testbar sind.
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin

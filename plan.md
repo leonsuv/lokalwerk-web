@@ -52,6 +52,36 @@ Grundsatz für alle S-Punkte: **Die offizielle Quelle entscheidet, nicht der Pro
 | N2 | Git-Identität | Nur für dieses Repo setzen (`git config user.name` / `user.email`), nicht global. Erledigt: `Leon Suvorkov <kontakt@lokalwerk.eu>`. |
 | N3 | Positivliste in `check-dist.mjs` | Erlaubt sind nur reine Namensraum- und Schema-Adressen (z. B. schemas.openxmlformats.org, `http://www.w3.org/2001/XMLSchema-instance`), jede als exakte Adresse mit Begründung und Fundstelle, keine Platzhalter-Muster. Gilt nur für JavaScript, in HTML und CSS keine Ausnahmen. Jede neue Ausnahme nur nach Rückfrage. |
 | N4 | Laden der Bibliotheken | Werkzeugseiten laden ihre Bibliotheken und Worker direkt nach dem ersten Anzeigen, nicht erst bei Bedarf, damit sie offline funktionieren (A5). Die Startseite lädt keine davon. |
+| N5 | Abhängigkeiten | Freigegeben am 24.09.2026, exakt gepinnt, `package-lock.json` wird committet. Siehe „Freigegebene Abhängigkeiten“ unten. |
+
+### Freigegebene Abhängigkeiten
+
+Nur zur Entwicklung (werden nicht ausgeliefert), Schritt 1:
+
+| Paket | Version | Lizenz |
+|---|---|---|
+| vite | 8.3.1 | MIT |
+| typescript | 6.0.3 | Apache-2.0 |
+| vitest | 5.0.1 | MIT |
+| eslint | 10.11.0 | MIT |
+| @eslint/js | 10.0.1 | MIT |
+| typescript-eslint | 8.70.1 | MIT |
+| globals | 17.12.0 | MIT |
+| eslint-config-prettier | 10.1.8 | MIT |
+| prettier | 3.9.9 | MIT |
+| @types/node | 24.13.6 | MIT |
+
+**Notiz TypeScript:** Wir bleiben bei TypeScript 6.0.3, weil typescript-eslint 8.70.1 nur TypeScript `>=4.8.4 <6.1.0` unterstützt. Wechsel auf TypeScript 7, sobald typescript-eslint es unterstützt.
+
+Für spätere Schritte vorab freigegeben:
+
+| Paket | Version | Lizenz | Schritt | Bedingung |
+|---|---|---|---|---|
+| @fontsource/onest | 5.3.1 | OFL-1.1 | 2 | Nur die 5 WOFF2-Dateien werden ausgeliefert, dazu OFL.txt |
+| pdf-lib | 1.17.1 | MIT | 4 | Nicht mehr gepflegt: bekannte offene Probleme, die uns betreffen können, in `docs/` festhalten und im Code darauf verweisen. Bundle-Größe pro Werkzeugseite nach dem Einbau melden. |
+| SheetJS CE (xlsx) | 0.20.3 | Apache-2.0 | 6 | Ablage unter `vendor/` (A4). Bundle-Größe pro Werkzeugseite nach dem Einbau melden. |
+
+Für alle drei gilt: Version im jeweiligen Schritt erneut prüfen. Hat sich etwas geändert, vorher fragen.
 
 ### Datenschutz und Hosting
 

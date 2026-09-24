@@ -1,0 +1,11 @@
+dist/
+node_modules/
+package-lock.json
+prototype/
+vendor/
+public/fonts/
+tests/fixtures/
+# Vom Betreiber gepflegte Dokumente nicht umformatieren
+AGENTS.md
+CLAUDE.md
+plan.md

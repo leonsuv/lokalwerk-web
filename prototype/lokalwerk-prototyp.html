@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lokalwerk – Dateien bearbeiten, ohne Upload</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#F5F6FA; --surface:#FFFFFF; --surface2:#EEF0F6; --ink:#0E1530; --muted:#5A6380; --line:#E1E4EE;
+  --primary:#3A55E0; --primary-ink:#FFFFFF; --primary-soft:#E7EBFF;
+  --pdf:#E5484D; --pdf-soft:#FDE8E9; --img:#0E9F8C; --img-soft:#DDF5F1; --sepa:#3A55E0; --sepa-soft:#E7EBFF;
+  --ok:#17935A; --ok-soft:#DCF3E6; --err:#C63F24; --err-soft:#FCE6E0;
+  --shadow:0 1px 2px rgba(14,21,48,.05), 0 8px 24px -12px rgba(14,21,48,.18);
+  --font:"Onest", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B0F1E; --surface:#141A2E; --surface2:#1B2239; --ink:#EDF0FA; --muted:#98A1BE; --line:#252D47;
+    --primary:#7B91FF; --primary-ink:#0B0F1E; --primary-soft:#1F2850;
+    --pdf:#FF6B6F; --pdf-soft:#3A1A20; --img:#3DD4BE; --img-soft:#10302D; --sepa:#7B91FF; --sepa-soft:#1F2850;
+    --ok:#4CD28E; --ok-soft:#133224; --err:#FF8A6E; --err-soft:#3A1D16;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1E; --surface:#141A2E; --surface2:#1B2239; --ink:#EDF0FA; --muted:#98A1BE; --line:#252D47;
+  --primary:#7B91FF; --primary-ink:#0B0F1E; --primary-soft:#1F2850;
+  --pdf:#FF6B6F; --pdf-soft:#3A1A20; --img:#3DD4BE; --img-soft:#10302D; --sepa:#7B91FF; --sepa-soft:#1F2850;
+  --ok:#4CD28E; --ok-soft:#133224; --err:#FF8A6E; --err-soft:#3A1D16;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.7);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:1rem;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+svg{display:block}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:6px}
+.wrap{max-width:70rem;margin:0 auto;padding:0 1.25rem}
+
+/* Header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:1.5rem;height:4rem}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:800;font-size:1.15rem;letter-spacing:-.02em}
+.brand .logo{width:2rem;height:2rem;border-radius:9px;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+nav.main{display:flex;gap:.25rem}
+nav.main a{text-decoration:none;color:var(--muted);font-weight:500;padding:.4rem .75rem;border-radius:8px}
+nav.main a:hover{color:var(--ink);background:var(--surface2)}
+nav.main a[aria-current="page"]{color:var(--ink);background:var(--surface2)}
+.local-pill{margin-left:auto;min-width:0;display:flex;align-items:center;gap:.5rem;padding:.4rem .8rem .4rem .55rem;border-radius:999px;background:var(--ok-soft);color:var(--ok);font-weight:600;font-size:.88rem;white-space:nowrap}
+.local-pill svg{flex:none}
+.local-pill b{font-variant-numeric:tabular-nums}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:3rem;align-items:center;padding:4.5rem 0 3.5rem}
+.hero h1{font-size:clamp(2.5rem,5.6vw,4.3rem);line-height:1;letter-spacing:-.045em;font-weight:800;margin:0 0 1.25rem}
+.hero .lead{font-size:1.2rem;color:var(--muted);max-width:30rem;margin:0 0 2rem}
+.facts{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;margin:0;padding:0;list-style:none}
+.facts li{display:flex;align-items:center;gap:.45rem;font-weight:500;font-size:.95rem}
+.facts svg{color:var(--ok)}
+
+.big-drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.9rem;min-height:21rem;padding:2rem;border-radius:24px;background:var(--surface);border:2px dashed var(--line);box-shadow:var(--shadow);cursor:pointer;transition:border-color .15s,transform .15s,background .15s}
+.big-drop:hover{border-color:var(--primary)}
+.big-drop.over{border-color:var(--primary);background:var(--primary-soft);transform:scale(1.01)}
+.big-drop .icon-stack{display:flex;gap:.6rem;margin-bottom:.3rem}
+.big-drop .icon-stack span{width:3.2rem;height:3.2rem;border-radius:14px;display:grid;place-items:center}
+.big-drop .icon-stack span:nth-child(1){background:var(--pdf-soft);color:var(--pdf);transform:rotate(-8deg) translateY(4px)}
+.big-drop .icon-stack span:nth-child(2){background:var(--img-soft);color:var(--img);transform:translateY(-4px)}
+.big-drop .icon-stack span:nth-child(3){background:var(--sepa-soft);color:var(--sepa);transform:rotate(8deg) translateY(4px)}
+.big-drop strong{font-size:1.35rem;letter-spacing:-.02em}
+.big-drop .sub{color:var(--muted);max-width:22rem}
+.big-drop .choose{margin-top:.4rem}
+.visually-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
+
+/* Section */
+.section{padding-top:1rem;padding-bottom:4rem}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:1rem;margin-bottom:1.4rem}
+.section-head h2{font-size:1.8rem;letter-spacing:-.03em;margin:0}
+.section-head p{margin:0;color:var(--muted)}
+
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+.tool-card{position:relative;display:flex;flex-direction:column;gap:.9rem;padding:1.5rem;background:var(--surface);border:1px solid var(--line);border-radius:20px;text-decoration:none;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.tool-card:hover{transform:translateY(-3px);border-color:var(--c)}
+.tool-card .ic{width:3rem;height:3rem;border-radius:14px;display:grid;place-items:center;background:var(--cs);color:var(--c)}
+.tool-card h3{margin:0;font-size:1.2rem;letter-spacing:-.02em}
+.tool-card p{margin:0;color:var(--muted);flex:1}
+.tool-card .foot{display:flex;align-items:center;justify-content:space-between;font-size:.88rem;font-weight:600}
+.tool-card .foot .open{color:var(--c)}
+.tag{display:inline-block;padding:.15rem .55rem;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:.8rem;font-weight:600}
+.pdf{--c:var(--pdf);--cs:var(--pdf-soft)} .img{--c:var(--img);--cs:var(--img-soft)} .sepa{--c:var(--sepa);--cs:var(--sepa-soft)}
+
+.pro-band{display:grid;grid-template-columns:1.1fr 1fr;gap:2rem;align-items:center;padding:2.5rem;border-radius:28px;background:var(--ink);color:var(--bg)}
+.pro-band h2{font-size:2rem;letter-spacing:-.03em;margin:0 0 .6rem;line-height:1.1}
+.pro-band p{margin:0;opacity:.75;max-width:28rem}
+.pro-band ul{list-style:none;margin:0;padding:0;display:grid;gap:.7rem}
+.pro-band li{display:flex;gap:.6rem;align-items:flex-start}
+.pro-band li svg{flex:none;margin-top:.2rem;opacity:.9}
+.pro-band .btn-inv{margin-top:1.4rem;background:var(--bg);color:var(--ink);border-color:var(--bg)}
+
+footer{border-top:1px solid var(--line);padding:1.6rem 0 2.6rem;color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;gap:1.4rem;flex-wrap:wrap}
+footer a{text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+/* Buttons & forms */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;font:inherit;font-weight:600;font-size:.95rem;border-radius:12px;border:1px solid var(--primary);background:var(--primary);color:var(--primary-ink);padding:.7rem 1.15rem;cursor:pointer;text-decoration:none;transition:filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{background:var(--surface2);filter:none}
+.btn.sm{padding:.4rem .7rem;font-size:.85rem;border-radius:9px}
+.btn.icon{padding:.45rem;border-radius:9px;background:transparent;border-color:transparent;color:var(--muted)}
+.btn.icon:hover{background:var(--surface2);color:var(--ink);filter:none}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.btn.wide{width:100%}
+label.lbl{display:block;font-weight:600;font-size:.88rem;margin-bottom:.35rem}
+input[type=text],input[type=date],select{font:inherit;width:100%;padding:.62rem .75rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input[type=text]:focus,input[type=date]:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+input[type=range]{width:100%;accent-color:var(--img)}
+.field+.field{margin-top:1rem}
+.hint{color:var(--muted);font-size:.85rem;margin:.4rem 0 0}
+
+/* Tool pages */
+.page{display:none}
+.page.active{display:block}
+.tool-top{padding:2.5rem 0 1.8rem;display:flex;gap:1.1rem;align-items:flex-start}
+.tool-top .ic{flex:none;width:3.4rem;height:3.4rem;border-radius:16px;display:grid;place-items:center;background:var(--cs);color:var(--c)}
+.tool-top a.back{display:inline-block;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;margin-bottom:.25rem}
+.tool-top a.back:hover{color:var(--ink)}
+.tool-top h1{margin:0;font-size:clamp(1.8rem,3.6vw,2.4rem);letter-spacing:-.035em;line-height:1.1}
+.tool-top p{margin:.35rem 0 0;color:var(--muted);max-width:42rem}
+.workspace{display:grid;grid-template-columns:1fr 20rem;gap:1.25rem;align-items:start;padding-bottom:4rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:1.4rem;box-shadow:var(--shadow)}
+.card h2{font-size:1.1rem;letter-spacing:-.01em;margin:0 0 1rem}
+.card+.card{margin-top:1.25rem}
+.side{position:sticky;top:calc(5rem + env(safe-area-inset-top,0px))}
+
+.drop{display:flex;align-items:center;gap:1rem;padding:1.2rem 1.3rem;border:2px dashed var(--line);border-radius:16px;cursor:pointer;background:var(--bg);transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--c);background:var(--cs)}
+.drop .ic{flex:none;width:2.8rem;height:2.8rem;border-radius:12px;display:grid;place-items:center;background:var(--cs);color:var(--c)}
+.drop strong{display:block}
+.drop span{color:var(--muted);font-size:.9rem}
+
+.empty-state{text-align:center;color:var(--muted);padding:2rem 1rem 1rem}
+.empty-state strong{display:block;color:var(--ink);font-size:1.05rem;margin-bottom:.2rem}
+
+.file-list{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.5rem}
+.file-list li{display:flex;align-items:center;gap:.8rem;padding:.65rem .75rem;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.file-list .num{flex:none;width:1.8rem;height:1.8rem;border-radius:8px;display:grid;place-items:center;background:var(--cs);color:var(--c);font-weight:700;font-size:.85rem}
+.file-list .meta{flex:1;min-width:0}
+.file-list .meta b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-list .meta span{color:var(--muted);font-size:.85rem}
+
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:.9rem;margin-top:1rem}
+.img-tile{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column}
+.img-tile .thumb{aspect-ratio:4/3;background:var(--surface2) center/cover no-repeat}
+.img-tile .body{padding:.7rem .8rem .8rem;display:flex;flex-direction:column;gap:.35rem}
+.img-tile .nm{font-weight:600;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.img-tile .sz{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.saving{color:var(--ok);font-weight:700}
+.err-tile{padding:1rem;color:var(--err);font-size:.9rem}
+
+.stat-big{font-size:2rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat-row{display:flex;justify-content:space-between;padding:.5rem 0;border-top:1px solid var(--line);font-size:.92rem}
+.stat-row:first-of-type{border-top:0}
+.stat-row span{color:var(--muted)}
+.stat-row b{font-variant-numeric:tabular-nums}
+.pro-note{margin-top:1rem;padding:.8rem .9rem;border-radius:12px;background:var(--surface2);font-size:.88rem;color:var(--muted)}
+.pro-note a{color:var(--primary);font-weight:600;text-decoration:none}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;padding:.25rem;border-radius:12px;background:var(--surface2)}
+.seg button{font:inherit;font-weight:600;font-size:.9rem;border:0;border-radius:9px;padding:.5rem;background:transparent;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+
+/* SEPA */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;padding:.18rem .55rem;border-radius:8px;line-height:1.35}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.err{background:var(--err-soft);color:var(--err)}
+#sepa-map{display:grid;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr));gap:.8rem}
+#sepa-map label{display:block;font-weight:600;font-size:.88rem;margin-bottom:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td.name{min-width:9rem}
+.summary{display:flex;gap:.6rem;flex-wrap:wrap;margin:1.1rem 0 .4rem}
+.summary .chip{padding:.55rem .85rem;border-radius:12px;background:var(--surface2);font-size:.9rem}
+.summary .chip b{font-size:1.05rem;font-variant-numeric:tabular-nums}
+.table-wrap{overflow-x:auto;margin:.8rem 0 1.1rem;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:.6rem .75rem;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+th{font-weight:600;color:var(--muted);font-size:.82rem;background:var(--bg);white-space:nowrap}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+td.iban{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+tr.bad td{background:color-mix(in srgb,var(--err-soft) 45%,transparent)}
+textarea{width:100%;min-height:16rem;font:.78rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:.9rem}
+.note{display:flex;gap:.6rem;align-items:flex-start;padding:.8rem .9rem;border-radius:12px;background:var(--surface2);font-size:.88rem;color:var(--muted);margin-bottom:1rem}
+.note svg{flex:none;margin-top:.1rem;color:var(--primary)}
+.actions{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+
+.legal{max-width:46rem;padding-top:2.5rem;padding-bottom:4rem}
+.legal .back{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500}
+.legal h1{font-size:clamp(1.9rem,4vw,2.6rem);letter-spacing:-.035em;margin:.3rem 0 1.2rem;line-height:1.1}
+.legal h2{font-size:1.1rem;letter-spacing:-.01em;margin:2rem 0 .5rem}
+.legal p{margin:0 0 .8rem;color:var(--ink)}
+.legal mark{background:color-mix(in srgb,#F5C33B 45%,transparent);color:inherit;padding:0 .2rem;border-radius:4px}
+.legal .draft{padding:.8rem 1rem;border-radius:12px;background:var(--surface2);color:var(--muted);font-size:.9rem}
+.legal .stand{margin-top:2rem;color:var(--muted);font-size:.9rem}
+.toast{position:fixed;left:50%;bottom:calc(1.4rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,.6rem);background:var(--ink);color:var(--bg);padding:.75rem 1.1rem;border-radius:12px;max-width:min(30rem,90vw);font-size:.92rem;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:var(--shadow);z-index:20}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;gap:2rem;padding-top:2.5rem}
+  .big-drop{min-height:15rem}
+  .tool-grid{grid-template-columns:1fr}
+  .pro-band{grid-template-columns:1fr;padding:1.8rem}
+  .workspace{grid-template-columns:1fr}
+  .side{position:static}
+}
+@media (max-width:640px){
+  nav.main{display:none}
+  .local-pill .long{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .tool-top .ic{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.8" fill="currentColor"/><path d="m4 18 5-5 3.5 3.5L15 14l5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 9.5 12 4l9 5.5M5 10v7M9.5 10v7M14.5 10v7M19 10v7M3 20h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5.5c0 4.4 3 8 7 9.5 4-1.5 7-5.1 7-9.5V6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m9 12 2.2 2.2L15.5 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 14 6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 10 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5M12 7.5v.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#/"><span class="logo"><svg width="18" height="18"><use href="#i-shield"/></svg></span>Lokalwerk</a>
+    <nav class="main" aria-label="Hauptnavigation">
+      <a href="#/" data-nav="home">Werkzeuge</a>
+      <a href="#/pro" data-nav="pro">Pro</a>
+    </nav>
+    <div class="local-pill" aria-live="polite" title="Alle Dateien werden nur in deinem Browser verarbeitet">
+      <svg width="18" height="18"><use href="#i-shield"/></svg>
+      <span><span class="long"><b class="stat-bytes">0 B</b> lokal verarbeitet, </span>0 B hochgeladen</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- Startseite -->
+<section class="page" id="page-home">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1>Dateien bearbeiten, ohne sie hochzuladen.</h1>
+        <p class="lead">PDFs, Fotos und Überweisungslisten werden direkt in deinem Browser verarbeitet. Nichts landet auf fremden Servern.</p>
+        <ul class="facts">
+          <li><svg width="18" height="18"><use href="#i-check"/></svg>Kein Upload</li>
+          <li><svg width="18" height="18"><use href="#i-check"/></svg>Funktioniert offline</li>
+          <li><svg width="18" height="18"><use href="#i-check"/></svg>Kein Konto nötig</li>
+        </ul>
+      </div>
+      <label class="big-drop" id="home-drop">
+        <input type="file" class="visually-hidden" id="home-input" multiple accept=".pdf,image/*,.csv,.xlsx,.xls,.ods">
+        <div class="icon-stack" aria-hidden="true">
+          <span><svg width="24" height="24"><use href="#i-pdf"/></svg></span>
+          <span><svg width="24" height="24"><use href="#i-img"/></svg></span>
+          <span><svg width="24" height="24"><use href="#i-bank"/></svg></span>
+        </div>
+        <strong>Datei hier ablegen</strong>
+        <span class="sub">PDF, Foto oder Excel-Liste. Das passende Werkzeug öffnet sich automatisch.</span>
+        <span class="btn choose">Datei auswählen</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="wrap section">
+    <div class="section-head">
+      <h2>Werkzeuge</h2>
+      <p>Kostenlos und ohne Anmeldung</p>
+    </div>
+    <div class="tool-grid">
+      <a class="tool-card pdf" href="#/pdf">
+        <span class="ic"><svg width="24" height="24"><use href="#i-pdf"/></svg></span>
+        <h3>PDFs zusammenfügen</h3>
+        <p>Mehrere PDFs zu einer Datei verbinden. Reihenfolge frei wählbar.</p>
+        <div class="foot"><span class="tag">Beliebt</span><span class="open">Öffnen</span></div>
+      </a>
+      <a class="tool-card img" href="#/bilder">
+        <span class="ic"><svg width="24" height="24"><use href="#i-img"/></svg></span>
+        <h3>Fotos verkleinern</h3>
+        <p>Für E-Mail und Website verkleinern. GPS-Position und Kameradaten werden entfernt.</p>
+        <div class="foot"><span class="tag">Datenschutz</span><span class="open">Öffnen</span></div>
+      </a>
+      <a class="tool-card sepa" href="#/sepa">
+        <span class="ic"><svg width="24" height="24"><use href="#i-bank"/></svg></span>
+        <h3>SEPA-Sammelüberweisung</h3>
+        <p>Aus einer Excel- oder CSV-Liste eine Überweisungsdatei fürs Onlinebanking erstellen.</p>
+        <div class="foot"><span class="tag">Für Vereine</span><span class="open">Öffnen</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="wrap section" style="padding-top:0">
+    <div class="pro-band">
+      <div>
+        <h2>Jede Woche im Einsatz? Dann lohnt sich Pro.</h2>
+        <p>Die Werkzeuge bleiben kostenlos. Pro spart Zeit bei wiederkehrender Arbeit und läuft genauso vollständig lokal.</p>
+        <a class="btn btn-inv" href="#/pro">Mehr zu Pro</a>
+      </div>
+      <ul>
+        <li><svg width="18" height="18"><use href="#i-check"/></svg>SEPA-Lastschriften für Mitgliedsbeiträge</li>
+        <li><svg width="18" height="18"><use href="#i-check"/></svg>Alle Fotos auf einmal als ZIP speichern</li>
+        <li><svg width="18" height="18"><use href="#i-check"/></svg>Konten und Spalten als Vorlage merken</li>
+        <li><svg width="18" height="18"><use href="#i-check"/></svg>Texterkennung für gescannte PDFs</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Pro -->
+<section class="page" id="page-pro">
+  <div class="wrap">
+    <div class="tool-top sepa">
+      <span class="ic"><svg width="26" height="26"><use href="#i-shield"/></svg></span>
+      <div>
+        <a class="back" href="#/">Alle Werkzeuge</a>
+        <h1>Lokalwerk Pro</h1>
+        <p>Für alle, die Überweisungen, Fotos und PDFs regelmäßig bearbeiten.</p>
+      </div>
+    </div>
+    <div class="workspace">
+      <div class="card">
+        <h2>Was Pro dazu bringt</h2>
+        <ul class="file-list">
+          <li><span class="num">1</span><div class="meta"><b>SEPA-Lastschriften</b><span>Mitgliedsbeiträge mit Mandatsreferenz und Gläubiger-ID einziehen.</span></div></li>
+          <li><span class="num">2</span><div class="meta"><b>ZIP-Export</b><span>Alle verkleinerten Fotos mit einem Klick speichern.</span></div></li>
+          <li><span class="num">3</span><div class="meta"><b>Vorlagen</b><span>Dein Konto und die Spaltenzuordnung werden gemerkt.</span></div></li>
+          <li><span class="num">4</span><div class="meta"><b>Texterkennung</b><span>Gescannte PDFs durchsuchbar machen, direkt im Browser.</span></div></li>
+        </ul>
+      </div>
+      <div class="card side">
+        <h2>Preis</h2>
+        <div class="stat-big">in Planung</div>
+        <p class="hint">Ein kleiner Monatsbetrag, jederzeit kündbar.</p>
+        <button class="btn wide" style="margin-top:1rem" disabled>Bald verfügbar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PDF -->
+<section class="page pdf" id="page-pdf">
+  <div class="wrap">
+    <div class="tool-top">
+      <span class="ic"><svg width="26" height="26"><use href="#i-pdf"/></svg></span>
+      <div>
+        <a class="back" href="#/">Alle Werkzeuge</a>
+        <h1>PDFs zusammenfügen</h1>
+        <p>Wähle zwei oder mehr PDFs aus und bring sie in die richtige Reihenfolge.</p>
+      </div>
+    </div>
+    <div class="workspace">
+      <div class="card">
+        <label class="drop" id="pdf-drop">
+          <input type="file" class="visually-hidden" id="pdf-input" accept="application/pdf,.pdf" multiple>
+          <span class="ic"><svg width="22" height="22"><use href="#i-pdf"/></svg></span>
+          <div><strong>PDFs hinzufügen</strong><span>Auswählen oder hierher ziehen</span></div>
+        </label>
+        <ul class="file-list" id="pdf-list"></ul>
+        <div class="empty-state" id="pdf-empty"><strong>Noch keine PDFs</strong>Füge mindestens zwei Dateien hinzu.</div>
+      </div>
+      <div class="card side">
+        <h2>Ergebnis</h2>
+        <div class="stat-row"><span>Dateien</span><b id="pdf-count">0</b></div>
+        <div class="stat-row"><span>Seiten gesamt</span><b id="pdf-pages">0</b></div>
+        <div class="stat-row"><span>Größe</span><b id="pdf-size">0 B</b></div>
+        <button class="btn wide" id="pdf-merge" style="margin-top:1rem" disabled><svg width="18" height="18"><use href="#i-save"/></svg>Zusammenfügen und speichern</button>
+        <button class="btn ghost wide" id="pdf-clear" style="margin-top:.5rem" disabled>Liste leeren</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bilder -->
+<section class="page img" id="page-bilder">
+  <div class="wrap">
+    <div class="tool-top">
+      <span class="ic"><svg width="26" height="26"><use href="#i-img"/></svg></span>
+      <div>
+        <a class="back" href="#/">Alle Werkzeuge</a>
+        <h1>Fotos verkleinern</h1>
+        <p>Klein genug für E-Mail und Website. GPS-Position, Kameradaten und andere Metadaten werden entfernt.</p>
+      </div>
+    </div>
+    <div class="workspace">
+      <div class="card">
+        <label class="drop" id="img-drop">
+          <input type="file" class="visually-hidden" id="img-input" accept="image/*" multiple>
+          <span class="ic"><svg width="22" height="22"><use href="#i-img"/></svg></span>
+          <div><strong>Fotos hinzufügen</strong><span>JPEG, PNG oder WebP. Die Verarbeitung startet sofort.</span></div>
+        </label>
+        <div class="img-grid" id="img-list"></div>
+        <div class="empty-state" id="img-empty"><strong>Noch keine Fotos</strong>Die Einstellungen rechts gelten für alle neuen Fotos.</div>
+      </div>
+      <div class="card side">
+        <h2>Einstellungen</h2>
+        <div class="field">
+          <label class="lbl" for="img-width">Maximale Breite</label>
+          <select id="img-width">
+            <option value="800">800 px, für E-Mail</option>
+            <option value="1280">1280 px</option>
+            <option value="1920" selected>1920 px, für Websites</option>
+            <option value="2560">2560 px</option>
+            <option value="0">Originalgröße</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="lbl">Format</span>
+          <div class="seg" role="group" aria-label="Format">
+            <button type="button" data-fmt="image/jpeg" aria-pressed="true">JPEG</button>
+            <button type="button" data-fmt="image/webp" aria-pressed="false">WebP</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="lbl" for="img-quality">Qualität: <span id="img-quality-val">80</span>&nbsp;%</label>
+          <input type="range" id="img-quality" min="50" max="95" step="5" value="80">
+        </div>
+        <div class="stat-row" style="margin-top:1rem"><span>Eingespart</span><b class="saving" id="img-saved">0 B</b></div>
+        <button class="btn ghost wide" id="img-clear" style="margin-top:.6rem" disabled>Liste leeren</button>
+        <div class="pro-note">Alle Fotos als ZIP speichern: mit <a href="#/pro">Lokalwerk Pro</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEPA -->
+<section class="page sepa" id="page-sepa">
+  <div class="wrap">
+    <div class="tool-top">
+      <span class="ic"><svg width="26" height="26"><use href="#i-bank"/></svg></span>
+      <div>
+        <a class="back" href="#/">Alle Werkzeuge</a>
+        <h1>SEPA-Sammelüberweisung</h1>
+        <p>Aus einer Liste mit Empfängern, IBANs und Beträgen wird eine Datei, die du im Onlinebanking hochladen kannst.</p>
+      </div>
+    </div>
+    <div class="workspace">
+      <div>
+        <div class="card">
+          <label class="drop" id="sepa-drop">
+            <input type="file" class="visually-hidden" id="sepa-input" accept=".csv,.xlsx,.xls,.ods,text/csv">
+            <span class="ic"><svg width="22" height="22"><use href="#i-bank"/></svg></span>
+            <div><strong>Excel- oder CSV-Liste hinzufügen</strong><span>Erste Zeile mit Spaltennamen, danach eine Zeile pro Überweisung.</span></div>
+          </label>
+          <div class="empty-state" id="sepa-empty"><strong>Noch keine Liste</strong>Oder probier es mit Beispieldaten aus.<br><button class="btn ghost sm" id="sepa-sample" style="margin-top:.8rem">Beispieldaten laden</button></div>
+          <div id="sepa-map-panel" hidden>
+            <h2 style="margin-top:1.4rem">Spalten zuordnen</h2>
+            <div id="sepa-map"></div>
+            <div class="summary" id="sepa-summary"></div>
+            <div class="table-wrap"><table id="sepa-table"></table></div>
+          </div>
+        </div>
+        <div class="card" id="sepa-out-panel" hidden>
+          <h2>Deine Überweisungsdatei</h2>
+          <div class="note"><svg width="18" height="18"><use href="#i-info"/></svg><span>Prototyp: Prüfe die Aufträge nach dem Hochladen im Onlinebanking. Die Bank zeigt dir vor der Freigabe alle Empfänger und Beträge an.</span></div>
+          <textarea id="sepa-xml" readonly spellcheck="false" aria-label="Erzeugte XML-Datei"></textarea>
+          <div class="actions" style="margin-top:.9rem">
+            <button class="btn" id="sepa-save"><svg width="18" height="18"><use href="#i-save"/></svg>XML-Datei speichern</button>
+            <button class="btn ghost" id="sepa-copy">XML kopieren</button>
+          </div>
+        </div>
+      </div>
+      <div class="card side">
+        <h2>Dein Konto</h2>
+        <div class="field"><label class="lbl" for="s-name">Kontoinhaber</label><input type="text" id="s-name" maxlength="70" autocomplete="off"></div>
+        <div class="field"><label class="lbl" for="s-iban">IBAN</label><input type="text" id="s-iban" autocomplete="off" spellcheck="false"></div>
+        <div class="field"><label class="lbl" for="s-bic">BIC (optional)</label><input type="text" id="s-bic" autocomplete="off" spellcheck="false"></div>
+        <div class="field"><label class="lbl" for="s-date">Ausführung am</label><input type="date" id="s-date"></div>
+        <p class="hint" id="s-acc-status"></p>
+        <button class="btn wide" id="sepa-build" style="margin-top:1rem" disabled>Überweisungsdatei erstellen</button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Impressum -->
+<section class="page" id="page-impressum">
+  <div class="wrap legal">
+    <a class="back" href="#/">Alle Werkzeuge</a>
+    <h1>Impressum</h1>
+    <div class="draft">Entwurf: Felder in <mark>Markierung</mark> vor der Veröffentlichung ausfüllen.</div>
+    <h2>Angaben gemäß § 5 DDG</h2>
+    <p><mark>Vorname Nachname</mark><br>Lokalwerk<br><mark>Straße Hausnummer</mark><br><mark>PLZ Ort</mark></p>
+    <h2>Kontakt</h2>
+    <p>E-Mail: <mark>kontakt@lokalwerk.de</mark><br>Telefon: <mark>Telefonnummer</mark></p>
+    <h2>Umsatzsteuer</h2>
+    <p>Als Kleinunternehmer im Sinne von § 19 UStG wird keine Umsatzsteuer berechnet.<br>Wirtschafts-Identifikationsnummer: <mark>falls vorhanden</mark></p>
+    <h2>Verbraucherstreitbeilegung</h2>
+    <p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+  </div>
+</section>
+
+<!-- Datenschutz -->
+<section class="page" id="page-datenschutz">
+  <div class="wrap legal">
+    <a class="back" href="#/">Alle Werkzeuge</a>
+    <h1>Datenschutzerklärung</h1>
+    <div class="draft">Entwurf: Felder in <mark>Markierung</mark> ausfüllen und Abschnitte streichen, die nicht zutreffen.</div>
+
+    <h2>Das Wichtigste in Kürze</h2>
+    <p>Die Dateien, die du mit Lokalwerk bearbeitest, werden ausschließlich in deinem Browser auf deinem eigenen Gerät verarbeitet. Sie werden weder an uns noch an Dritte übertragen und von uns nicht gespeichert. Wir setzen keine Cookies, kein Tracking und keine Analysewerkzeuge ein.</p>
+
+    <h2>1. Verantwortlicher</h2>
+    <p>Verantwortlich für die Datenverarbeitung auf dieser Website ist <mark>Vorname Nachname, Anschrift wie im Impressum</mark>, E-Mail: <mark>kontakt@lokalwerk.de</mark>.</p>
+
+    <h2>2. Aufruf der Website und Hosting</h2>
+    <p>Diese Website wird bei <mark>Anbieter, z.&nbsp;B. Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA</mark> gehostet. Beim Aufruf der Website verarbeitet der Hoster technisch notwendige Daten, insbesondere deine IP-Adresse, Datum und Uhrzeit des Abrufs, die abgerufene Seite sowie Browser und Betriebssystem. Das ist nötig, um die Website auszuliefern und vor Angriffen zu schützen.</p>
+    <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse liegt in einer sicheren und funktionsfähigen Bereitstellung der Website. Mit dem Hoster besteht ein Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO. <mark>Bei einem Anbieter mit Sitz in den USA:</mark> Die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission zum EU-US Data Privacy Framework, unter dem der Anbieter zertifiziert ist.</p>
+
+    <h2>3. Schriftarten und Programmbibliotheken</h2>
+    <p>Alle Schriftarten und Programmbibliotheken werden direkt von unserem Server geladen. Es wird dabei keine Verbindung zu Servern Dritter wie Google aufgebaut.</p>
+
+    <h2>4. Verarbeitung deiner Dateien</h2>
+    <p>PDFs, Fotos und Tabellen, die du in ein Werkzeug lädst, werden mit JavaScript lokal in deinem Browser verarbeitet. Die Inhalte verlassen dein Gerät nicht. Sobald du die Seite schließt oder neu lädst, sind sie aus dem Arbeitsspeicher des Browsers entfernt.</p>
+
+    <h2>5. Lokale Speicherung im Browser</h2>
+    <p><mark>Nur falls genutzt:</mark> Einstellungen und Vorlagen, die du ausdrücklich speicherst, legen wir im lokalen Speicher deines Browsers ab. Diese Daten bleiben auf deinem Gerät und werden nicht an uns übertragen. Die Speicherung ist für die von dir gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Du kannst die Daten jederzeit über die Einstellungen deines Browsers löschen.</p>
+
+    <h2>6. Kontakt per E-Mail</h2>
+    <p>Wenn du uns eine E-Mail schreibst, verarbeiten wir deine E-Mail-Adresse und den Inhalt deiner Nachricht, um dein Anliegen zu bearbeiten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, sofern es um einen Vertrag geht, sonst Art. 6 Abs. 1 lit. f DSGVO. Wir löschen die Daten, sobald dein Anliegen erledigt ist und keine gesetzlichen Aufbewahrungspflichten bestehen.</p>
+
+    <h2>7. Kauf von Lokalwerk Pro</h2>
+    <p><mark>Nur falls angeboten:</mark> Der Verkauf von Lokalwerk Pro erfolgt über <mark>Paddle.com Market Ltd</mark> als Wiederverkäufer (Merchant of Record). Der Zahlungsanbieter verarbeitet deine Zahlungs- und Rechnungsdaten in eigener Verantwortung, es gilt dessen Datenschutzerklärung. Wir erhalten von ihm deinen Namen, deine E-Mail-Adresse, das Land und den Status deines Abos, um dir die Pro-Funktionen freizuschalten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO. Rechnungsrelevante Daten bewahren wir nach den gesetzlichen Fristen (§ 147 AO, § 257 HGB) auf.</p>
+
+    <h2>8. Deine Rechte</h2>
+    <p>Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch gegen Verarbeitungen auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO (Art. 21). Wende dich dazu einfach per E-Mail an uns.</p>
+    <p>Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO), zum Beispiel bei der für uns zuständigen <mark>Landesbeauftragten für Datenschutz und Informationsfreiheit Nordrhein-Westfalen</mark>.</p>
+
+    <h2>9. Automatisierte Entscheidungen</h2>
+    <p>Eine automatisierte Entscheidungsfindung oder ein Profiling findet nicht statt.</p>
+
+    <p class="stand">Stand: <mark>Monat Jahr</mark></p>
+  </div>
+</section>
+
+<!-- AGB -->
+<section class="page" id="page-agb">
+  <div class="wrap legal">
+    <a class="back" href="#/">Alle Werkzeuge</a>
+    <h1>Allgemeine Geschäftsbedingungen</h1>
+    <div class="draft">Entwurf für den Start von Lokalwerk Pro. Solange nur kostenlose Werkzeuge angeboten werden, reichen Impressum und Datenschutzerklärung.</div>
+
+    <h2>§ 1 Geltungsbereich</h2>
+    <p>Diese Bedingungen gelten für die Nutzung der Website Lokalwerk und der Pro-Funktionen, angeboten von <mark>Vorname Nachname, Anschrift</mark> („Anbieter“). Verbraucher ist jede natürliche Person, die ein Rechtsgeschäft zu Zwecken abschließt, die überwiegend weder ihrer gewerblichen noch ihrer selbständigen beruflichen Tätigkeit zugerechnet werden können (§ 13 BGB).</p>
+
+    <h2>§ 2 Leistungen</h2>
+    <p>(1) Die kostenlosen Werkzeuge können ohne Registrierung genutzt werden. Ein Anspruch auf ihre Verfügbarkeit oder einen bestimmten Funktionsumfang besteht nicht.</p>
+    <p>(2) Mit Lokalwerk Pro erhält der Nutzer für die Dauer des Abos Zugang zu den auf der Website beschriebenen zusätzlichen Funktionen.</p>
+    <p>(3) Alle Werkzeuge verarbeiten Dateien lokal im Browser des Nutzers. Der Anbieter erhält keinen Zugriff auf die Inhalte.</p>
+
+    <h2>§ 3 Kauf, Zahlung und Widerruf</h2>
+    <p>Der Kauf von Lokalwerk Pro erfolgt über <mark>Paddle.com Market Ltd</mark> als Wiederverkäufer (Merchant of Record). Vertragspartner für Kauf und Zahlung ist dieser Anbieter. Für Bestellung, Zahlung, Rechnungsstellung und das gesetzliche Widerrufsrecht gelten dessen Bedingungen, auf die im Bestellvorgang hingewiesen wird.</p>
+
+    <h2>§ 4 Laufzeit und Kündigung</h2>
+    <p>(1) Das Abo läuft zunächst für den gewählten Abrechnungszeitraum und verlängert sich jeweils um denselben Zeitraum, wenn es nicht gekündigt wird.</p>
+    <p>(2) Das Abo kann jederzeit zum Ende des laufenden Abrechnungszeitraums gekündigt werden, insbesondere über die Schaltfläche „Verträge hier kündigen“ auf der Website.</p>
+
+    <h2>§ 5 Pflichten des Nutzers</h2>
+    <p>(1) Der Nutzer prüft die Ergebnisse der Werkzeuge vor ihrer Verwendung. Das gilt besonders für SEPA-Dateien: Empfänger, IBANs und Beträge sind vor der Freigabe im Onlinebanking zu kontrollieren.</p>
+    <p>(2) Der Nutzer bewahrt die Originaldateien selbst auf. Die Werkzeuge verändern die Originale nicht, speichern aber auch keine Kopien.</p>
+
+    <h2>§ 6 Haftung</h2>
+    <p>(1) Für die kostenlosen Werkzeuge haftet der Anbieter nur für Vorsatz und grobe Fahrlässigkeit.</p>
+    <p>(2) Im Rahmen von Lokalwerk Pro haftet der Anbieter unbeschränkt bei Vorsatz und grober Fahrlässigkeit, bei Verletzung von Leben, Körper oder Gesundheit sowie nach dem Produkthaftungsgesetz. Bei einfacher Fahrlässigkeit haftet er nur bei Verletzung einer wesentlichen Vertragspflicht, deren Erfüllung die ordnungsgemäße Durchführung des Vertrags überhaupt erst ermöglicht und auf deren Einhaltung der Nutzer regelmäßig vertrauen darf. In diesem Fall ist die Haftung auf den vorhersehbaren, vertragstypischen Schaden begrenzt.</p>
+
+    <h2>§ 7 Schlussbestimmungen</h2>
+    <p>(1) Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts. Bei Verbrauchern gilt diese Rechtswahl nur, soweit ihnen dadurch nicht der Schutz zwingender Vorschriften des Staates ihres gewöhnlichen Aufenthalts entzogen wird.</p>
+    <p>(2) Sind einzelne Bestimmungen unwirksam, bleibt die Wirksamkeit der übrigen unberührt.</p>
+
+    <p class="stand">Stand: <mark>Monat Jahr</mark></p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Lokalwerk, Prototyp</span>
+    <a href="#/impressum">Impressum</a>
+    <a href="#/datenschutz">Datenschutz</a>
+    <a href="#/agb">AGB</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = (s, r=document) => r.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmtBytes = n => n < 1024 ? n + ' B' : n < 1048576 ? Math.round(n/1024) + ' KB' : (n/1048576).toFixed(1).replace('.', ',') + ' MB';
+  const fmtEur = cents => (cents/100).toLocaleString('de-DE', {style:'currency', currency:'EUR'});
+  const openers = {};
+
+  let toastTimer;
+  function toast(msg){
+    const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3800);
+  }
+
+  const stats = {bytes:0};
+  function count(bytes){ stats.bytes += bytes; $('.stat-bytes').textContent = fmtBytes(stats.bytes); }
+
+  let downloads = null;
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('downloads').then(ns => { downloads = ns; }).catch(() => {});
+  }
+  async function saveFile(filename, blob){
+    if (window.claude) {
+      if (!downloads) { toast('Speichern ist in dieser Ansicht nicht verfügbar.'); return false; }
+      try { await downloads.save({filename, data: blob}); return true; }
+      catch (e) {
+        const code = e && e.code;
+        if (code === 'declined') return false;
+        if (code === 'rejected_extension' || code === 'extension_not_enabled') toast('Dieses Dateiformat kann in der Vorschau nicht gespeichert werden. Nutze „XML kopieren“.');
+        else if (code === 'rate_limited') toast('Es ist schon ein Speichern-Dialog offen.');
+        else toast('Die Datei konnte nicht gespeichert werden.');
+        return false;
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    return true;
+  }
+
+  const pages = ['home','pro','pdf','bilder','sepa','impressum','datenschutz','agb'];
+  function route(){
+    const key = location.hash.replace(/^#\/?/, '') || 'home';
+    const page = pages.includes(key) ? key : 'home';
+    pages.forEach(p => $('#page-' + p).classList.toggle('active', p === page));
+    document.querySelectorAll('[data-nav]').forEach(a => {
+      const cur = page === 'pro' ? a.dataset.nav === 'pro' : (a.dataset.nav === 'home' && ['home','pdf','bilder','sepa'].includes(page));
+      if (cur) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+    });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
+
+  function wireDrop(zoneSel, inputSel, onFiles){
+    const zone = $(zoneSel), input = $(inputSel);
+    input.addEventListener('change', () => { if (input.files.length) onFiles([...input.files]); input.value = ''; });
+    ['dragenter','dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('over'); }));
+    ['dragleave','drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove('over'); }));
+    zone.addEventListener('drop', e => { const f = [...(e.dataTransfer?.files || [])]; if (f.length) onFiles(f); });
+  }
+
+  /* ---------- Startseite: passendes Werkzeug öffnen ---------- */
+  wireDrop('#home-drop', '#home-input', files => {
+    const isPdf = f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+    const isImg = f => f.type.startsWith('image/');
+    const isSheet = f => /\.(csv|xlsx|xls|ods)$/i.test(f.name);
+    if (files.every(isPdf)) { location.hash = '#/pdf'; openers.pdf(files); }
+    else if (files.every(isImg)) { location.hash = '#/bilder'; openers.img(files); }
+    else if (files.length === 1 && isSheet(files[0])) { location.hash = '#/sepa'; openers.sepa(files); }
+    else toast('Bitte nur eine Dateiart auf einmal: PDFs, Fotos oder eine Excel-/CSV-Liste.');
+  });
+
+  /* ======================= PDF ======================= */
+  let pdfs = [];
+  function renderPdfs(){
+    $('#pdf-list').innerHTML = pdfs.map((p, i) => `
+      <li>
+        <span class="num">${i + 1}</span>
+        <div class="meta"><b>${esc(p.file.name)}</b><span>${p.pages != null ? p.pages + (p.pages === 1 ? ' Seite' : ' Seiten') + ', ' : ''}${fmtBytes(p.file.size)}${p.error ? ', ' + esc(p.error) : ''}</span></div>
+        <button class="btn icon" data-act="up" data-i="${i}" ${i===0?'disabled':''} aria-label="Nach oben"><svg width="18" height="18"><use href="#i-up"/></svg></button>
+        <button class="btn icon" data-act="down" data-i="${i}" ${i===pdfs.length-1?'disabled':''} aria-label="Nach unten"><svg width="18" height="18"><use href="#i-down"/></svg></button>
+        <button class="btn icon" data-act="del" data-i="${i}" aria-label="Entfernen"><svg width="18" height="18"><use href="#i-x"/></svg></button>
+      </li>`).join('');
+    $('#pdf-empty').hidden = pdfs.length > 0;
+    $('#pdf-count').textContent = pdfs.length;
+    $('#pdf-pages').textContent = pdfs.reduce((a, p) => a + (p.pages || 0), 0);
+    $('#pdf-size').textContent = fmtBytes(pdfs.reduce((a, p) => a + p.file.size, 0));
+    $('#pdf-merge').disabled = pdfs.filter(p => !p.error).length < 2;
+    $('#pdf-clear').disabled = pdfs.length === 0;
+  }
+  $('#pdf-list').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const i = +b.dataset.i;
+    if (b.dataset.act === 'up' && i > 0) [pdfs[i-1], pdfs[i]] = [pdfs[i], pdfs[i-1]];
+    if (b.dataset.act === 'down' && i < pdfs.length-1) [pdfs[i+1], pdfs[i]] = [pdfs[i], pdfs[i+1]];
+    if (b.dataset.act === 'del') pdfs.splice(i, 1);
+    renderPdfs();
+  });
+  openers.pdf = async files => {
+    const ok = files.filter(f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name));
+    if (ok.length < files.length) toast('Nur PDF-Dateien werden übernommen.');
+    for (const f of ok) {
+      const entry = {file:f, pages:null, doc:null, error:null};
+      pdfs.push(entry); renderPdfs();
+      if (!window.PDFLib) { entry.error = 'PDF-Bibliothek nicht geladen'; continue; }
+      try { entry.doc = await PDFLib.PDFDocument.load(await f.arrayBuffer()); entry.pages = entry.doc.getPageCount(); }
+      catch { entry.error = 'passwortgeschützt oder beschädigt'; }
+      renderPdfs();
+    }
+  };
+  wireDrop('#pdf-drop', '#pdf-input', openers.pdf);
+  $('#pdf-clear').addEventListener('click', () => { pdfs = []; renderPdfs(); });
+  $('#pdf-merge').addEventListener('click', async () => {
+    const btn = $('#pdf-merge'); btn.disabled = true;
+    try {
+      const out = await PDFLib.PDFDocument.create();
+      for (const p of pdfs.filter(p => p.doc)) {
+        const copied = await out.copyPages(p.doc, p.doc.getPageIndices());
+        copied.forEach(pg => out.addPage(pg));
+        count(p.file.size);
+      }
+      const bytes = await out.save();
+      if (await saveFile('zusammengefuegt.pdf', new Blob([bytes], {type:'application/pdf'})))
+        toast(`Fertig: ${out.getPageCount()} Seiten in einer PDF.`);
+    } catch { toast('Die PDFs konnten nicht zusammengefügt werden.'); }
+    finally { btn.disabled = pdfs.filter(p => !p.error).length < 2; }
+  });
+  renderPdfs();
+
+  /* ======================= Bilder ======================= */
+  let images = [], imgFormat = 'image/jpeg';
+  $('#img-quality').addEventListener('input', e => { $('#img-quality-val').textContent = e.target.value; });
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    imgFormat = b.dataset.fmt;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+  function renderImages(){
+    $('#img-list').innerHTML = images.map((r, i) => {
+      if (r.error) return `<div class="img-tile"><div class="err-tile"><b>${esc(r.name)}</b><br>${esc(r.error)}</div></div>`;
+      const pct = Math.round((1 - r.out.size / r.inSize) * 100);
+      return `<div class="img-tile">
+        <div class="thumb" style="background-image:url('${r.url}')" role="img" aria-label="${esc(r.name)}"></div>
+        <div class="body">
+          <span class="nm">${esc(r.outName)}</span>
+          <span class="sz">${fmtBytes(r.out.size)} ${pct > 0 ? `<span class="saving">−${pct}&nbsp;%</span>` : '<span>nicht kleiner</span>'}</span>
+          <button class="btn ghost sm" data-i="${i}"><svg width="16" height="16"><use href="#i-save"/></svg>Speichern</button>
+        </div></div>`;
+    }).join('');
+    $('#img-empty').hidden = images.length > 0;
+    $('#img-clear').disabled = images.length === 0;
+    $('#img-saved').textContent = fmtBytes(images.filter(r => !r.error).reduce((a, r) => a + Math.max(0, r.inSize - r.out.size), 0));
+  }
+  $('#img-list').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const r = images[+b.dataset.i]; saveFile(r.outName, r.out);
+  });
+  $('#img-clear').addEventListener('click', () => { images.forEach(r => r.url && URL.revokeObjectURL(r.url)); images = []; renderImages(); });
+  async function shrink(file){
+    const maxW = +$('#img-width').value, type = imgFormat, q = +$('#img-quality').value / 100;
+    const bmp = await createImageBitmap(file);
+    let w = bmp.width, h = bmp.height;
+    if (maxW && w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+    if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bmp, 0, 0, w, h);
+    if (bmp.close) bmp.close();
+    const blob = await new Promise(res => c.toBlob(res, type, q));
+    if (!blob) throw new Error('Format nicht unterstützt');
+    const ext = type === 'image/webp' ? 'webp' : 'jpg';
+    return {name:file.name, inSize:file.size, out:blob, url:URL.createObjectURL(blob), outName:file.name.replace(/\.[^.]+$/, '') + '-klein.' + ext};
+  }
+  openers.img = async files => {
+    for (const f of files) {
+      if (!f.type.startsWith('image/')) { images.push({name:f.name, error:'Kein Bild'}); continue; }
+      try { images.push(await shrink(f)); count(f.size); }
+      catch { images.push({name:f.name, error:'Konnte nicht gelesen werden'}); }
+      renderImages();
+    }
+    renderImages();
+  };
+  wireDrop('#img-drop', '#img-input', openers.img);
+  renderImages();
+
+  /* ======================= SEPA ======================= */
+  const IBAN_LEN = {AD:24,AT:20,BE:16,BG:22,CH:21,CY:28,CZ:24,DE:22,DK:18,EE:20,ES:24,FI:18,FR:27,GB:22,GI:23,GR:27,HR:21,HU:28,IE:22,IS:26,IT:27,LI:21,LT:20,LU:20,LV:21,MC:27,MT:31,NL:18,NO:15,PL:28,PT:25,RO:24,SE:24,SI:19,SK:24,SM:27,VA:22};
+  const normIban = s => String(s || '').replace(/\s+/g, '').toUpperCase();
+  function ibanError(raw){
+    const s = normIban(raw);
+    if (!s) return 'IBAN fehlt';
+    if (!/^[A-Z]{2}\d{2}[A-Z0-9]+$/.test(s)) return 'IBAN enthält ungültige Zeichen';
+    const len = IBAN_LEN[s.slice(0,2)];
+    if (!len) return 'Land ' + s.slice(0,2) + ' ist nicht im SEPA-Raum';
+    if (s.length !== len) return `IBAN muss ${len} Zeichen haben, hat ${s.length}`;
+    const r = s.slice(4) + s.slice(0,4);
+    let m = 0;
+    for (const ch of r) { const v = parseInt(ch, 36); m = (v > 9 ? (m * 100 + v) : (m * 10 + v)) % 97; }
+    return m === 1 ? null : 'Prüfziffer stimmt nicht (Tippfehler?)';
+  }
+  const normBic = s => String(s || '').replace(/\s+/g, '').toUpperCase();
+  const bicOk = s => /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(s);
+
+  // Zeichensatz der Deutschen Kreditwirtschaft
+  function sepaText(s, max){
+    let t = String(s ?? '').replace(/[\r\n\t]+/g, ' ');
+    t = t.replace(/[^\u0000-\u007FÄÖÜäöüß]/g, ch => {
+      const base = ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return /^[\u0000-\u007F]+$/.test(base) ? base : ' ';
+    });
+    t = t.replace(/[^A-Za-z0-9\/\-?:().,'+ ÄÖÜäöüß&*$%]/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    return t.slice(0, max);
+  }
+  function parseCents(v){
+    if (typeof v === 'number' && isFinite(v)) return Math.round(v * 100);
+    let s = String(v ?? '').replace(/[€\s]|EUR/gi, '');
+    if (!s) return NaN;
+    const hasC = s.includes(','), hasD = s.includes('.');
+    if (hasC && hasD) {
+      s = s.lastIndexOf(',') > s.lastIndexOf('.') ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+    } else if (hasC) {
+      s = s.replace(/\.(?=\d{3}\b)/g, '').replace(',', '.');
+    } else if (hasD && /^\d{1,3}(\.\d{3})+$/.test(s)) {
+      s = s.replace(/\./g, '');
+    }
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return NaN;
+    return Math.round(parseFloat(s) * 100);
+  }
+
+  const FIELDS = [
+    {key:'name', label:'Empfänger', re:/empf|name|begünst|beguenst|inhaber|zahlungsempf/i, req:true},
+    {key:'iban', label:'IBAN', re:/iban|konto/i, req:true},
+    {key:'amount', label:'Betrag', re:/betrag|summe|amount|eur/i, req:true},
+    {key:'purpose', label:'Verwendungszweck', re:/zweck|verwendung|betreff|referenz|text|beschreibung/i, req:false},
+    {key:'bic', label:'BIC', re:/bic|swift/i, req:false}
+  ];
+  let sheet = {headers:[], rows:[]}, mapping = {}, checked = [];
+
+  function nextWorkday(){
+    const d = new Date(); d.setDate(d.getDate() + 1);
+    while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+    return d.toISOString().slice(0,10);
+  }
+  $('#s-date').value = nextWorkday();
+
+  function accountErrors(){
+    const errs = [];
+    if (!sepaText($('#s-name').value, 70)) errs.push('Kontoinhaber fehlt');
+    const ie = ibanError($('#s-iban').value); if (ie) errs.push('Deine ' + ie);
+    const bic = normBic($('#s-bic').value); if (bic && !bicOk(bic)) errs.push('BIC hat ein ungültiges Format');
+    if (!$('#s-date').value) errs.push('Ausführungsdatum fehlt');
+    return errs;
+  }
+  function refreshAccount(){
+    const errs = accountErrors();
+    const st = $('#s-acc-status');
+    const touched = $('#s-name').value || $('#s-iban').value;
+    st.innerHTML = !touched ? 'Diese Angaben stehen als Auftraggeber in der Datei.' :
+      errs.length ? `<span class="badge err">${esc(errs.join(', '))}</span>` : '<span class="badge ok">Konto geprüft</span>';
+    updateBuildButton();
+  }
+  ['#s-name','#s-iban','#s-bic','#s-date'].forEach(s => $(s).addEventListener('input', refreshAccount));
+
+  function decodeText(buf){
+    try { return new TextDecoder('utf-8', {fatal:true}).decode(buf); }
+    catch { return new TextDecoder('windows-1252').decode(buf); }
+  }
+  async function readSheet(file){
+    if (!window.XLSX) throw new Error('Die Tabellen-Bibliothek wurde nicht geladen. Prüfe deine Verbindung und lade die Seite neu.');
+    const buf = await file.arrayBuffer();
+    let wb;
+    if (/\.csv$/i.test(file.name) || file.type === 'text/csv') {
+      const text = decodeText(buf).replace(/^\uFEFF/, '');
+      const first = text.split(/\r?\n/)[0] || '';
+      const counts = {';':(first.match(/;/g)||[]).length, ',':(first.match(/,/g)||[]).length, '\t':(first.match(/\t/g)||[]).length};
+      const FS = Object.keys(counts).sort((a,b) => counts[b] - counts[a])[0];
+      wb = XLSX.read(text, {type:'string', FS, raw:true});
+    } else {
+      wb = XLSX.read(buf, {type:'array'});
+    }
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const arr = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:''})
+      .filter(r => r.some(c => String(c).trim() !== ''));
+    if (arr.length < 2) throw new Error('Die Liste braucht eine Kopfzeile und mindestens eine Überweisung.');
+    return {headers: arr[0].map((h, i) => String(h).trim() || `Spalte ${i+1}`), rows: arr.slice(1)};
+  }
+
+  function loadSheet(data){
+    sheet = data; mapping = {};
+    const used = new Set();
+    FIELDS.forEach(f => {
+      const idx = sheet.headers.findIndex((h, i) => !used.has(i) && f.re.test(h));
+      mapping[f.key] = idx; if (idx >= 0) used.add(idx);
+    });
+    $('#sepa-map').innerHTML = FIELDS.map(f => `
+      <div><label for="map-${f.key}">${f.label}${f.req ? '' : ' <span style="color:var(--muted);font-weight:500">(optional)</span>'}</label>
+        <select id="map-${f.key}" data-key="${f.key}">
+          <option value="-1">${f.req ? 'Bitte wählen' : 'Nicht verwenden'}</option>
+          ${sheet.headers.map((h, i) => `<option value="${i}" ${mapping[f.key] === i ? 'selected' : ''}>${esc(h)}</option>`).join('')}
+        </select></div>`).join('');
+    $('#sepa-map-panel').hidden = false;
+    $('#sepa-empty').hidden = true;
+    $('#sepa-out-panel').hidden = true;
+    validateRows();
+  }
+  $('#sepa-map').addEventListener('change', e => {
+    const k = e.target.dataset.key; if (!k) return;
+    mapping[k] = +e.target.value; validateRows();
+  });
+
+  function validateRows(){
+    const missing = FIELDS.filter(f => f.req && mapping[f.key] < 0);
+    const get = (r, k) => mapping[k] >= 0 ? r[mapping[k]] : '';
+    checked = sheet.rows.map(r => {
+      const rawName = get(r, 'name'), rawIban = get(r, 'iban'), rawAmt = get(r, 'amount'), rawP = get(r, 'purpose'), rawBic = get(r, 'bic');
+      const errs = [], warns = [];
+      if (missing.length) errs.push('Spalten zuordnen');
+      const name = sepaText(rawName, 70);
+      if (!name) errs.push('Empfänger fehlt'); else if (String(rawName).trim().length > 70) warns.push('Name gekürzt');
+      const ie = ibanError(rawIban); if (ie) errs.push(ie);
+      const cents = parseCents(rawAmt);
+      if (isNaN(cents)) errs.push('Betrag nicht lesbar');
+      else if (cents <= 0) errs.push('Betrag muss größer als 0 sein');
+      else if (cents > 99999999999) errs.push('Betrag zu hoch');
+      const purpose = sepaText(rawP, 140); if (String(rawP).trim().length > 140) warns.push('Zweck gekürzt');
+      const bic = normBic(rawBic); if (bic && !bicOk(bic)) errs.push('BIC ungültig');
+      return {name, iban:normIban(rawIban), cents, purpose, bic, errs, warns};
+    });
+    const valid = checked.filter(c => !c.errs.length);
+    const sum = valid.reduce((a, c) => a + c.cents, 0);
+    $('#sepa-summary').innerHTML = `
+      <span class="chip"><b>${valid.length}</b> Überweisungen</span>
+      <span class="chip">Summe <b>${fmtEur(sum)}</b></span>
+      ${checked.length - valid.length ? `<span class="chip"><span class="badge err">${checked.length - valid.length} ${checked.length - valid.length === 1 ? 'Zeile wird' : 'Zeilen werden'} wegen Fehlern übersprungen</span></span>` : ''}`;
+    $('#sepa-table').innerHTML = `
+      <thead><tr><th>Zeile</th><th>Empfänger</th><th>IBAN</th><th style="text-align:right">Betrag</th><th>Verwendungszweck</th><th>Prüfung</th></tr></thead>
+      <tbody>${checked.map((c, i) => `
+        <tr class="${c.errs.length ? 'bad' : ''}"><td>${i + 2}</td><td class="name">${esc(c.name)}</td><td class="iban">${esc(c.iban.replace(/(.{4})/g, '$1 ').trim())}</td>
+        <td class="num">${isNaN(c.cents) ? '' : fmtEur(c.cents)}</td><td>${esc(c.purpose)}</td>
+        <td>${c.errs.length ? `<span class="badge err">${esc(c.errs.join(', '))}</span>` : `<span class="badge ok">OK</span>${c.warns.length ? ' <span class="hint">' + esc(c.warns.join(', ')) + '</span>' : ''}`}</td></tr>`).join('')}
+      </tbody>`;
+    updateBuildButton();
+  }
+  function updateBuildButton(){
+    $('#sepa-build').disabled = !(checked.some(c => !c.errs.length) && accountErrors().length === 0);
+  }
+
+  openers.sepa = async files => {
+    const f = files[0];
+    try { loadSheet(await readSheet(f)); count(f.size); }
+    catch (err) { toast(err.message || 'Die Datei konnte nicht gelesen werden.'); }
+  };
+  wireDrop('#sepa-drop', '#sepa-input', openers.sepa);
+  $('#sepa-sample').addEventListener('click', () => {
+    $('#s-name').value = 'Förderverein Beispiel e.V.';
+    $('#s-iban').value = 'DE69 2345 6789 1234 5678 00';
+    $('#s-bic').value = '';
+    refreshAccount();
+    loadSheet({
+      headers:['Empfänger','IBAN','Betrag','Verwendungszweck'],
+      rows:[
+        ['Sportverein Musterstadt e.V.','DE89 3704 0044 0532 0130 00','120,00','Hallenmiete September'],
+        ['Anna Beispiel','DE50345678900123456789','45,50','Auslagen Sommerfest'],
+        ['Kiosk am Markt GmbH','DE89 1234 5678 1049 6387 12','1.234,56','Rechnung 2026-117'],
+        ['Tom Test','DE69234567891234567801','30','Fahrtkosten'],
+        ['Gärtnerei Grün','AT611904300234573201','89,90','Rechnung 88']
+      ]
+    });
+    toast('Beispieldaten geladen. Zeile 5 enthält absichtlich einen IBAN-Tippfehler.');
+  });
+
+  const xmlEsc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+  const amt = c => (c/100).toFixed(2);
+  function buildXml(){
+    const tx = checked.filter(c => !c.errs.length);
+    const now = new Date(), p = n => String(n).padStart(2, '0');
+    const stamp = `${now.getFullYear()}${p(now.getMonth()+1)}${p(now.getDate())}${p(now.getHours())}${p(now.getMinutes())}${p(now.getSeconds())}`;
+    const cre = `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+    const msgId = ('LW' + stamp + Math.random().toString(36).slice(2, 8).toUpperCase()).slice(0, 35);
+    const sum = amt(tx.reduce((a, c) => a + c.cents, 0));
+    const dName = sepaText($('#s-name').value, 70), dIban = normIban($('#s-iban').value), dBic = normBic($('#s-bic').value);
+    const agt = bic => bic ? `<FinInstnId><BICFI>${bic}</BICFI></FinInstnId>` : `<FinInstnId><Othr><Id>NOTPROVIDED</Id></Othr></FinInstnId>`;
+    const lines = tx.map((c, i) => `      <CdtTrfTxInf>
+        <PmtId><EndToEndId>${xmlEsc((msgId.slice(0, 28) + '-' + (i+1)).slice(0, 35))}</EndToEndId></PmtId>
+        <Amt><InstdAmt Ccy="EUR">${amt(c.cents)}</InstdAmt></Amt>${c.bic ? `
+        <CdtrAgt>${agt(c.bic)}</CdtrAgt>` : ''}
+        <Cdtr><Nm>${xmlEsc(c.name)}</Nm></Cdtr>
+        <CdtrAcct><Id><IBAN>${c.iban}</IBAN></Id></CdtrAcct>${c.purpose ? `
+        <RmtInf><Ustrd>${xmlEsc(c.purpose)}</Ustrd></RmtInf>` : ''}
+      </CdtTrfTxInf>`).join('\n');
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CstmrCdtTrfInitn>
+    <GrpHdr>
+      <MsgId>${msgId}</MsgId>
+      <CreDtTm>${cre}</CreDtTm>
+      <NbOfTxs>${tx.length}</NbOfTxs>
+      <CtrlSum>${sum}</CtrlSum>
+      <InitgPty><Nm>${xmlEsc(dName)}</Nm></InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>${msgId}</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <BtchBookg>true</BtchBookg>
+      <NbOfTxs>${tx.length}</NbOfTxs>
+      <CtrlSum>${sum}</CtrlSum>
+      <PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl></PmtTpInf>
+      <ReqdExctnDt><Dt>${$('#s-date').value}</Dt></ReqdExctnDt>
+      <Dbtr><Nm>${xmlEsc(dName)}</Nm></Dbtr>
+      <DbtrAcct><Id><IBAN>${dIban}</IBAN></Id></DbtrAcct>
+      <DbtrAgt>${agt(dBic)}</DbtrAgt>
+      <ChrgBr>SLEV</ChrgBr>
+${lines}
+    </PmtInf>
+  </CstmrCdtTrfInitn>
+</Document>
+`;
+  }
+  $('#sepa-build').addEventListener('click', () => {
+    $('#sepa-xml').value = buildXml();
+    $('#sepa-out-panel').hidden = false;
+    $('#sepa-out-panel').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
+  });
+  $('#sepa-save').addEventListener('click', () => {
+    saveFile(`sepa-ueberweisung-${$('#s-date').value}.xml`, new Blob([$('#sepa-xml').value], {type:'application/xml'}));
+  });
+  $('#sepa-copy').addEventListener('click', async () => {
+    const ta = $('#sepa-xml');
+    try { await navigator.clipboard.writeText(ta.value); toast('XML kopiert.'); }
+    catch { ta.focus(); ta.select(); toast('Text markiert. Mit Strg+C bzw. Cmd+C kopieren.'); }
+  });
+  refreshAccount();
+})();
+</script>
+</body>
+</html>

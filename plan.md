@@ -49,7 +49,7 @@ Grundsatz für alle S-Punkte: **Die offizielle Quelle entscheidet, nicht der Pro
 | Nr. | Frage | Entscheidung |
 |---|---|---|
 | N1 | Node verlinken | `node@24` ist bei Homebrew keg-only. Freigegeben: `brew link --force --overwrite node@24` (ersetzt die alten, kaputten Links auf node 25.9.0_2). `~/.zshrc` wird nicht verändert. |
-| N2 | Git-Identität | Nur für dieses Repo setzen (`git config user.name` / `user.email`), nicht global. Werte: [OFFEN, von Leon anzugeben]. |
+| N2 | Git-Identität | Nur für dieses Repo setzen (`git config user.name` / `user.email`), nicht global. Erledigt: `Leon Suvorkov <kontakt@lokalwerk.eu>`. |
 | N3 | Positivliste in `check-dist.mjs` | Erlaubt sind nur reine Namensraum- und Schema-Adressen (z. B. schemas.openxmlformats.org, `http://www.w3.org/2001/XMLSchema-instance`), jede als exakte Adresse mit Begründung und Fundstelle, keine Platzhalter-Muster. Gilt nur für JavaScript, in HTML und CSS keine Ausnahmen. Jede neue Ausnahme nur nach Rückfrage. |
 | N4 | Laden der Bibliotheken | Werkzeugseiten laden ihre Bibliotheken und Worker direkt nach dem ersten Anzeigen, nicht erst bei Bedarf, damit sie offline funktionieren (A5). Die Startseite lädt keine davon. |
 

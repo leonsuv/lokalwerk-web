@@ -53,7 +53,7 @@ Details und Fundstellen: `docs/sepa-entscheidungen.md`.
 | F1 | Fassung Anlage 3 | Wir bauen gegen **Version 26.11** (gültig ab 15.11.2026). Die neue Regel „kein Textfeld nur aus Leerzeichen“ wird umgesetzt und getestet. |
 | O1/O8 | Umschreibung | Die EPC-Tabelle EPC217-08 wird **nicht** in den Code übernommen, auch nicht auszugsweise; sie dient nur zum Nachlesen. Eigene Umschreibung: Unicode-Normalisierung (NFD) und Akzente entfernen, dazu eine selbst geschriebene Liste: Æ→AE, æ→ae, Œ→OE, œ→oe, Ø→O, ø→o, Ł→L, ł→l, Đ→D, đ→d, Þ→TH, þ→th, ẞ→SS. |
 | O2 | Typografische Zeichen | – und — → `-`; „ “ ” ‘ ’ → `'`; … → `...`; geschütztes Leerzeichen und andere Leerzeichen → normales Leerzeichen. |
-| O3 | Übrige Zeichen | `"` → `'`; `<` und `>` → `.`; alle übrigen Zeichen ohne Entsprechung → `.`. Jede Ersetzung erscheint als Warnung in der Zeile. |
+| O3 | Übrige Zeichen | `"` → `'`; `<` und `>` → `.`; alle übrigen Zeichen ohne Entsprechung → `.`. Jede Ersetzung erscheint als Warnung in der Zeile. **Nachtrag:** Unsichtbare Formatzeichen (Unicode-Kategorie Cf) werden entfernt statt zu einem Punkt, mit Warnung. |
 | O4 | IBAN Registry | Leon lädt die SWIFT IBAN Registry selbst herunter und legt sie in `.local-specs/`. Bis dahin gelten die IBAN-Längen aus dem Prototyp, die Stelle ist im Code als offen markiert. |
 | O5 | Randfälle Länder | Gibraltar (GI) wird wie die Nicht-EWR-Länder ausgeschlossen. Saint-Pierre-et-Miquelon wird nicht erwähnt. |
 | O6 | Sammelbuchung | Siehe S8 (korrigiert): fest `true`, kein Kontrollkästchen. |

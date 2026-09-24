@@ -6,7 +6,8 @@
  *
  * Umschreibung: eigenständig erstellt (plan.md O1/O8, O2, O3; docs/sepa-entscheidungen.md).
  * Die EPC-Tabelle EPC217-08 wurde nur zum Nachlesen genutzt, keine Werte daraus übernommen.
- * Reihenfolge: erlaubt → eigene Liste → Leerzeichen → NFD ohne Akzente → Punkt.
+ * Reihenfolge: erlaubt → eigene Liste → unsichtbare Formatzeichen entfernen → Leerzeichen →
+ * NFD ohne Akzente → Punkt.
  *
  * Zeichen stehen hier als Code-Punkte (Zahlen), damit unsichtbare oder ähnlich aussehende
  * Zeichen im Quelltext nicht verwechselt werden.
@@ -73,6 +74,7 @@ const FALLBACK = '.';
 
 export interface Replacement {
   from: string;
+  /** Leerer Text heißt: Zeichen wurde entfernt. */
   to: string;
 }
 
@@ -93,6 +95,11 @@ function replaceChar(char: string): string {
   if (isAllowedChar(char)) return char;
   const own = OWN_MAPPINGS.get(cp(char));
   if (own !== undefined) return own;
+  // Unsichtbare Formatzeichen (Unicode-Kategorie Cf, z. B. weiches Trennzeichen, Zero-Width-
+  // Joiner, Richtungsmarkierungen, BOM) werden entfernt statt zu einem Punkt (Entscheidung
+  // vom 24.09.2026, docs/sepa-entscheidungen.md). Vor der Leerzeichen-Regel, weil JavaScript
+  // U+FEFF zu \s zählt.
+  if (/\p{Cf}/u.test(char)) return '';
   // O2: geschützte und andere Leerzeichen, Tabulatoren, Zeilenumbrüche
   if (/\s/u.test(char)) return ' ';
   const withoutAccents = char.normalize('NFD').replace(/\p{M}/gu, '');

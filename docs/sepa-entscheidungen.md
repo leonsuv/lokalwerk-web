@@ -12,6 +12,7 @@ Die offenen Fragen aus Abschnitt 11 sind entschieden. Maßgeblich ist diese List
 - **O1/O8 Umschreibung:** Die EPC-Tabelle EPC217-08 wird **nicht** übernommen, auch nicht auszugsweise. Die Umschreibung in `src/core/sepa/charset.ts` ist **eigenständig erstellt**: Unicode-Normalisierung (NFD) mit Entfernen der Akzente und eine kurze, selbst geschriebene Liste (Æ→AE, æ→ae, Œ→OE, œ→oe, Ø→O, ø→o, Ł→L, ł→l, Đ→D, đ→d, Þ→TH, þ→th, ẞ→SS). Die EPC-Tabelle wurde nur zum Nachlesen verwendet; es wurden keine Werte oder Strukturen daraus kopiert.
 - **O2:** – und — → `-`; „ “ ” ‘ ’ → `'`; … → `...`; geschütztes und andere Leerzeichen → normales Leerzeichen.
 - **O3:** `"` → `'`; `<` und `>` → `.`; alle übrigen Zeichen ohne Entsprechung → `.`. Jede Ersetzung erscheint als Warnung in der Zeile.
+- **Nachtrag zu O3 (24.09.2026):** Unsichtbare Formatzeichen der Unicode-Kategorie Cf (z. B. weiches Trennzeichen, Zero-Width-Joiner, Zero-Width-Space, Richtungsmarkierungen, BOM) werden **entfernt** statt zu einem Punkt, weiterhin mit Warnung in der Zeile.
 - **O4:** Leon lädt die SWIFT IBAN Registry selbst nach `.local-specs/`. Bis dahin gelten die Längen aus dem Prototyp; die Stelle ist im Code als offen markiert.
 - **O5:** Gibraltar (GI) wird wie die Nicht-EWR-Länder ausgeschlossen. Saint-Pierre-et-Miquelon wird nicht erwähnt.
 - **O6:** Kein Kontrollkästchen. `BtchBookg` ist fest `true` (plan.md S8 korrigiert).

@@ -16,6 +16,10 @@ export default defineConfig([
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      // Erlaubt `const { ok: _ok, ...rest } = result`, um ein Feld bewusst wegzulassen.
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
+    },
   },
   {
     // Ausgelieferter Code: Browser und Worker.

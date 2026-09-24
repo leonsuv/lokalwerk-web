@@ -184,6 +184,35 @@ describe('plan.md O3: übrige Zeichen', () => {
   });
 });
 
+describe('Unsichtbare Formatzeichen (Kategorie Cf) werden entfernt, mit Warnung', () => {
+  it.each([
+    [0xad, 'weiches Trennzeichen'],
+    [0x200b, 'Zero-Width-Space'],
+    [0x200c, 'Zero-Width-Non-Joiner'],
+    [0x200d, 'Zero-Width-Joiner'],
+    [0x200e, 'Links-nach-rechts-Markierung'],
+    [0x200f, 'Rechts-nach-links-Markierung'],
+    [0x202a, 'Richtungseinbettung'],
+    [0x2066, 'Richtungsisolierung'],
+    [0x2060, 'Word Joiner'],
+    [0xfeff, 'BOM / Zero-Width-No-Break-Space'],
+  ])('U+%s (%s)', (code) => {
+    expect(clean(`Rech${c(code)}nung`)).toMatchObject({
+      text: 'Rechnung',
+      replacements: [{ from: c(code), to: '' }],
+    });
+  });
+
+  it('entfernt Formatzeichen auch in Emoji-Folgen, das Emoji selbst wird ein Punkt', () => {
+    // Familie: Mann + ZWJ + Frau
+    expect(clean(`a${c(0x1f468)}${c(0x200d)}${c(0x1f469)}b`).text).toBe('a..b');
+  });
+
+  it('ein Text nur aus Formatzeichen ist leer', () => {
+    expect(clean(`${c(0x200b)}${c(0xad)}`)).toMatchObject({ text: '', blank: true });
+  });
+});
+
 describe('Ergebnis enthält nur erlaubte Zeichen', () => {
   it('für jedes Zeichen der Basic Multilingual Plane und ausgewählte weitere', () => {
     const codes: number[] = [];

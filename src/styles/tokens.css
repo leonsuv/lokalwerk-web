@@ -1,0 +1,120 @@
+/*
+ * Design-Tokens aus dem abgenommenen Prototyp (AGENTS.md Abschnitt 6).
+ * Die -ink-Tokens sind dunklere Texttöne nur für den Hellmodus (plan.md A6), damit
+ * farbiger Text WCAG AA erreicht. Im Dunkelmodus zeigen sie auf die normalen Farben.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --bg: #f5f6fa;
+  --surface: #ffffff;
+  --surface2: #eef0f6;
+  --ink: #0e1530;
+  --muted: #5a6380;
+  --line: #e1e4ee;
+  --primary: #3a55e0;
+  --primary-ink: #ffffff;
+  --primary-soft: #e7ebff;
+  --pdf: #e5484d;
+  --pdf-soft: #fde8e9;
+  --img: #0e9f8c;
+  --img-soft: #ddf5f1;
+  --sepa: #3a55e0;
+  --sepa-soft: #e7ebff;
+  --ok: #17935a;
+  --ok-soft: #dcf3e6;
+  --err: #c63f24;
+  --err-soft: #fce6e0;
+  --shadow: 0 1px 2px rgba(14, 21, 48, 0.05), 0 8px 24px -12px rgba(14, 21, 48, 0.18);
+
+  /* Texttöne (plan.md A6) */
+  --ok-ink: #137a4b;
+  --err-ink: #bc3c22;
+  --pdf-ink: #cf1d23;
+  --img-ink: #0b796a;
+  --sepa-ink: var(--sepa);
+
+  --font: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0b0f1e;
+    --surface: #141a2e;
+    --surface2: #1b2239;
+    --ink: #edf0fa;
+    --muted: #98a1be;
+    --line: #252d47;
+    --primary: #7b91ff;
+    --primary-ink: #0b0f1e;
+    --primary-soft: #1f2850;
+    --pdf: #ff6b6f;
+    --pdf-soft: #3a1a20;
+    --img: #3dd4be;
+    --img-soft: #10302d;
+    --sepa: #7b91ff;
+    --sepa-soft: #1f2850;
+    --ok: #4cd28e;
+    --ok-soft: #133224;
+    --err: #ff8a6e;
+    --err-soft: #3a1d16;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
+
+    --ok-ink: var(--ok);
+    --err-ink: var(--err);
+    --pdf-ink: var(--pdf);
+    --img-ink: var(--img);
+  }
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0b0f1e;
+  --surface: #141a2e;
+  --surface2: #1b2239;
+  --ink: #edf0fa;
+  --muted: #98a1be;
+  --line: #252d47;
+  --primary: #7b91ff;
+  --primary-ink: #0b0f1e;
+  --primary-soft: #1f2850;
+  --pdf: #ff6b6f;
+  --pdf-soft: #3a1a20;
+  --img: #3dd4be;
+  --img-soft: #10302d;
+  --sepa: #7b91ff;
+  --sepa-soft: #1f2850;
+  --ok: #4cd28e;
+  --ok-soft: #133224;
+  --err: #ff8a6e;
+  --err-soft: #3a1d16;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
+
+  --ok-ink: var(--ok);
+  --err-ink: var(--err);
+  --pdf-ink: var(--pdf);
+  --img-ink: var(--img);
+}
+
+/* Akzentfarbe je Werkzeug-Kategorie: --c (Icons, Rahmen), --cs (Fläche), --ci (Text) */
+.pdf {
+  --c: var(--pdf);
+  --cs: var(--pdf-soft);
+  --ci: var(--pdf-ink);
+}
+.img {
+  --c: var(--img);
+  --cs: var(--img-soft);
+  --ci: var(--img-ink);
+}
+.sepa {
+  --c: var(--sepa);
+  --cs: var(--sepa-soft);
+  --ci: var(--sepa-ink);
+}

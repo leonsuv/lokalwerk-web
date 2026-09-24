@@ -1,0 +1,6 @@
+/* Gemeinsame Stile aller Seiten. Reihenfolge ist wichtig: Tokens zuerst. */
+@import './tokens.css';
+@import './fonts.css';
+@import './base.css';
+@import './layout.css';
+@import './components.css';

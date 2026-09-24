@@ -3,9 +3,11 @@
  * plan.md Abschnitt 5 und N3). Bricht mit Exit-Code 1 ab, wenn etwas gefunden wird.
  *
  * - HTML und CSS: nur Adressen der eigenen Domain, keine Ausnahmen.
- *   Zusätzlich keine Inline-Skripte, <style>-Blöcke oder style-Attribute, weil die
- *   Content-Security-Policy sie blockieren würde.
- * - JavaScript: nur Adressen der eigenen Domain und exakte Einträge aus ALLOWED_JS_URLS.
+ *   HTML zusätzlich ohne Inline-Skripte, <style>-Blöcke, style- und on…-Attribute,
+ *   weil die Content-Security-Policy sie blockieren würde.
+ * - JavaScript: eigene Domain und exakte Einträge aus ALLOWED_JS_URLS.
+ * - SVG und XML: eigene Domain und exakte Einträge aus ALLOWED_SVG_XML_URLS.
+ *   SVG zusätzlich ohne <script>, on…-Attribute und externe href/xlink:href.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -15,15 +17,43 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 export const SITE_ORIGIN = 'https://lokalwerk.eu';
 
 /**
- * Positivliste für JavaScript. Nur reine Namensraum- und Schema-Adressen, die nie geladen
- * werden, jede als exakte Adresse mit Begründung und Fundstelle. Neue Einträge nur nach
- * Rückfrage beim Betreiber (plan.md N3).
- *
- * @type {ReadonlyArray<{ url: string, reason: string, source: string }>}
+ * @typedef {{ url: string, reason: string, source: string }} AllowedUrl
+ * @typedef {'html' | 'css' | 'js' | 'svg' | 'xml'} Kind
  */
+
+/*
+ * Positivlisten: nur reine Namensraum- und Schema-Adressen, die nie geladen werden, jede als
+ * exakte Adresse mit Begründung und Fundstelle. Neue Einträge nur nach Rückfrage beim
+ * Betreiber (plan.md N3).
+ */
+
+/** @type {ReadonlyArray<AllowedUrl>} */
 export const ALLOWED_JS_URLS = [];
 
+/** @type {ReadonlyArray<AllowedUrl>} */
+export const ALLOWED_SVG_XML_URLS = [
+  {
+    url: 'http://www.w3.org/2000/svg',
+    reason:
+      'Pflicht-Namensraum jeder eigenständigen SVG-Datei (public/favicon.svg). Wird nicht abgerufen.',
+    source: 'W3C, Scalable Vector Graphics (SVG) 2, Abschnitt 1.3 „SVG namespace and DTD“',
+  },
+  {
+    url: 'http://www.sitemaps.org/schemas/sitemap/0.9',
+    reason: 'Pflicht-Namensraum von sitemap.xml (build/html-partials.ts). Wird nicht abgerufen.',
+    source: 'sitemaps.org, Sitemaps XML format, Protokoll 0.9',
+  },
+];
+
+/** @type {Partial<Record<Kind, ReadonlyArray<AllowedUrl>>>} */
+const ALLOWED_BY_KIND = {
+  js: ALLOWED_JS_URLS,
+  svg: ALLOWED_SVG_XML_URLS,
+  xml: ALLOWED_SVG_XML_URLS,
+};
+
 const URL_PATTERN = /(?:(?:https?|wss?|ftp):)?\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)+[^\s"'`()<>\\]*/gi;
+const EVENT_ATTRIBUTE = /\son[a-z]+\s*=/i;
 
 /** @param {string} url */
 function isOwnDomain(url) {
@@ -33,17 +63,18 @@ function isOwnDomain(url) {
 
 /**
  * @param {string} text
- * @param {'html' | 'css' | 'js'} kind
+ * @param {Kind} kind
  * @returns {string[]} Beanstandungen, leer wenn alles in Ordnung ist
  */
 export function checkText(text, kind) {
   /** @type {string[]} */
   const problems = [];
+  const allowed = ALLOWED_BY_KIND[kind] ?? [];
 
   for (const match of text.matchAll(URL_PATTERN)) {
     const url = match[0];
     if (isOwnDomain(url)) continue;
-    if (kind === 'js' && ALLOWED_JS_URLS.some((entry) => entry.url === url)) continue;
+    if (allowed.some((entry) => entry.url === url)) continue;
     problems.push(`fremde Adresse: ${url}`);
   }
 
@@ -53,6 +84,15 @@ export function checkText(text, kind) {
     }
     if (/<style\b/i.test(text)) problems.push('<style>-Block (von der CSP blockiert)');
     if (/\sstyle\s*=/i.test(text)) problems.push('style-Attribut (von der CSP blockiert)');
+    if (EVENT_ATTRIBUTE.test(text)) problems.push('on…-Attribut (von der CSP blockiert)');
+  }
+
+  if (kind === 'svg') {
+    if (/<script\b/i.test(text)) problems.push('<script> in SVG');
+    if (EVENT_ATTRIBUTE.test(text)) problems.push('on…-Attribut in SVG');
+    for (const m of text.matchAll(/\s(?:xlink:)?href\s*=\s*["']([^"']*)["']/gi)) {
+      if (!m[1]?.startsWith('#')) problems.push(`externer Verweis in SVG: ${m[0].trim()}`);
+    }
   }
 
   return problems;
@@ -66,8 +106,15 @@ function listFiles(dir) {
   });
 }
 
-/** @type {Record<string, 'html' | 'css' | 'js'>} */
-const KINDS = { '.html': 'html', '.css': 'css', '.js': 'js', '.mjs': 'js' };
+/** @type {Record<string, Kind>} */
+const KINDS = {
+  '.html': 'html',
+  '.css': 'css',
+  '.js': 'js',
+  '.mjs': 'js',
+  '.svg': 'svg',
+  '.xml': 'xml',
+};
 
 /** @param {string} distDir @returns {string[]} */
 export function checkDist(distDir) {
@@ -88,5 +135,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     for (const p of problems) console.error(`  ${p}`);
     process.exit(1);
   }
-  console.log('check-dist: keine fremden Adressen, keine Inline-Skripte oder -Stile.');
+  console.log('check-dist: keine fremden Adressen, keine Inline-Skripte, -Stile oder -Handler.');
 }

@@ -16,6 +16,10 @@ export default defineConfig({
   publicDir: path('./public'),
   appType: 'mpa',
   plugins: [htmlPartials({ pagesDir, srcDir, pages: PAGES, siteUrl: SITE_URL })],
+  resolve: {
+    // Seiten verweisen mit /src/… auf Stile und Skripte, obwohl der Root `pages/` ist.
+    alias: [{ find: /^\/src\//, replacement: `${srcDir}/` }],
+  },
   build: {
     outDir: path('./dist'),
     emptyOutDir: true,

@@ -209,6 +209,10 @@ footer a:hover {
 .workspace > * {
   min-width: 0;
 }
+/* Beide Spalten oben bündig; .card + .card gilt nur für gestapelte Karten in einer Spalte. */
+.workspace > .card + .card {
+  margin-top: 0;
+}
 .side {
   position: sticky;
   top: calc(5rem + env(safe-area-inset-top, 0px));

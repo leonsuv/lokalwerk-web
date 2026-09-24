@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ALLOWED_JS_URLS, ALLOWED_SVG_XML_URLS, checkText } from '../../scripts/check-dist.mjs';
+import {
+  ALLOWED_JS_URLS,
+  ALLOWED_LIBRARY_URLS,
+  ALLOWED_SVG_XML_URLS,
+  checkText,
+} from '../../scripts/check-dist.mjs';
 
 describe('checkText', () => {
   it('erlaubt die eigene Domain', () => {
@@ -80,5 +85,33 @@ describe('SVG-Dateien', () => {
     expect(checkText(svg('<rect onload="x()" />'), 'svg')).toHaveLength(1);
     expect(checkText(svg('<image href="/bild.png" />'), 'svg')).toHaveLength(1);
     expect(checkText(svg('<use xlink:href="other.svg#a" />'), 'svg')).toHaveLength(1);
+  });
+});
+
+describe('Tote Adressen in Bibliotheken (plan.md N3)', () => {
+  const pdfLib = '"pdf-lib (https://github.com/Hopding/pdf-lib)"';
+
+  it('enthält genau die freigegebene pdf-lib-Adresse mit Fundstelle und Test', () => {
+    expect(ALLOWED_LIBRARY_URLS.map((e) => e.url)).toEqual(['https://github.com/Hopding/pdf-lib']);
+    for (const entry of ALLOWED_LIBRARY_URLS) {
+      expect(entry.source).toMatch(/node_modules\/pdf-lib\/.+Zeile \d+/);
+      expect(entry.test).toMatch(/^tests\//);
+    }
+  });
+
+  it('gilt nur im PDF-Worker', () => {
+    expect(checkText(pdfLib, 'js', 'assets/merge.worker-TScBrF7F.js')).toEqual([]);
+    expect(checkText(pdfLib, 'js', 'assets/pdf-zusammenfuegen/index.html-Bz.js')).toHaveLength(1);
+    expect(checkText(pdfLib, 'js', 'assets/merge.worker-x.js.map')).toHaveLength(1);
+    expect(checkText(pdfLib, 'js')).toHaveLength(1);
+    expect(checkText(pdfLib, 'html', 'assets/merge.worker-TScBrF7F.js')).toHaveLength(1);
+  });
+
+  it('gilt nur exakt, nicht für Unterseiten oder andere Adressen im Worker', () => {
+    const worker = 'assets/merge.worker-TScBrF7F.js';
+    expect(
+      checkText('"https://github.com/Hopding/pdf-lib/tree/master"', 'js', worker),
+    ).toHaveLength(1);
+    expect(checkText('"https://example.com/"', 'js', worker)).toHaveLength(1);
   });
 });

@@ -6,12 +6,14 @@
  *   HTML zusätzlich ohne Inline-Skripte, <style>-Blöcke, style- und on…-Attribute,
  *   weil die Content-Security-Policy sie blockieren würde.
  * - JavaScript: eigene Domain und exakte Einträge aus ALLOWED_JS_URLS.
+ * - JavaScript zusätzlich: „tote Adressen in Bibliotheken“ aus ALLOWED_LIBRARY_URLS, jeweils nur
+ *   in dem Bundle-Teil, der die Bibliothek enthält.
  * - SVG und XML: eigene Domain und exakte Einträge aus ALLOWED_SVG_XML_URLS.
  *   SVG zusätzlich ohne <script>, on…-Attribute und externe href/xlink:href.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
-import { extname, join, relative } from 'node:path';
+import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const SITE_ORIGIN = 'https://lokalwerk.eu';
@@ -45,6 +47,28 @@ export const ALLOWED_SVG_XML_URLS = [
   },
 ];
 
+/**
+ * „Tote Adressen in Bibliotheken“ (plan.md N3): Adressen im Code einer Bibliothek, die bei uns
+ * nie ausgeführt werden. Gilt nur für Dateien, deren Pfad `file` entspricht (der Bundle-Teil mit
+ * der Bibliothek), nie global. Jede Ausnahme braucht Fundstelle und einen Test, der belegt, dass
+ * die Adresse nicht in erzeugten Dateien landet. Neue Einträge nur nach Rückfrage.
+ *
+ * @type {ReadonlyArray<AllowedUrl & { library: string, file: RegExp, test: string }>}
+ */
+export const ALLOWED_LIBRARY_URLS = [
+  {
+    url: 'https://github.com/Hopding/pdf-lib',
+    library: 'pdf-lib 1.17.1',
+    file: /^assets\/merge\.worker-[\w-]+\.js$/,
+    reason:
+      'Standardtext für die PDF-Metadaten Producer/Creator. Wird nur geschrieben, wenn ' +
+      'updateMetadata aktiv ist; wir setzen überall updateMetadata: false (docs/pdf-lib.md, Nr. 8 und 9).',
+    source:
+      'node_modules/pdf-lib/es/api/PDFDocument.js, Zeile 1334, PDFDocument.prototype.updateInfoDict',
+    test: 'tests/core/pdf/merge.test.ts: „übernimmt keine Metadaten der Originale und schreibt keine eigenen“',
+  },
+];
+
 /** @type {Partial<Record<Kind, ReadonlyArray<AllowedUrl>>>} */
 const ALLOWED_BY_KIND = {
   js: ALLOWED_JS_URLS,
@@ -64,12 +88,16 @@ function isOwnDomain(url) {
 /**
  * @param {string} text
  * @param {Kind} kind
+ * @param {string} [file] Pfad relativ zu dist/, nötig für die Bibliotheks-Ausnahmen
  * @returns {string[]} Beanstandungen, leer wenn alles in Ordnung ist
  */
-export function checkText(text, kind) {
+export function checkText(text, kind, file = '') {
   /** @type {string[]} */
   const problems = [];
-  const allowed = ALLOWED_BY_KIND[kind] ?? [];
+  const allowed = [
+    ...(ALLOWED_BY_KIND[kind] ?? []),
+    ...(kind === 'js' ? ALLOWED_LIBRARY_URLS.filter((entry) => entry.file.test(file)) : []),
+  ];
 
   for (const match of text.matchAll(URL_PATTERN)) {
     const url = match[0];
@@ -121,9 +149,8 @@ export function checkDist(distDir) {
   return listFiles(distDir).flatMap((file) => {
     const kind = KINDS[extname(file)];
     if (!kind) return [];
-    return checkText(readFileSync(file, 'utf8'), kind).map(
-      (p) => `${relative(distDir, file)}: ${p}`,
-    );
+    const path = relative(distDir, file).split(sep).join('/');
+    return checkText(readFileSync(file, 'utf8'), kind, path).map((p) => `${path}: ${p}`);
   });
 }
 

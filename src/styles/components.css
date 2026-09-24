@@ -697,3 +697,25 @@ tr.bad td {
     grid-template-columns: 1fr;
   }
 }
+
+/* Fehlertext in einer Dateiliste */
+.file-list .meta .err {
+  color: var(--err-ink);
+}
+
+/* Erklärtext unter einem Werkzeug (AGENTS.md Abschnitt 3): gleiche Typografie wie Rechtstexte */
+.explain {
+  max-width: 46rem;
+  padding-bottom: 4rem;
+}
+.explain h2 {
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  margin: 1.6rem 0 0.5rem;
+}
+.explain h2:first-child {
+  margin-top: 0;
+}
+.explain p {
+  margin: 0 0 0.8rem;
+}

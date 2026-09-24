@@ -27,3 +27,19 @@ export function isWorkbook(file: FileLike): boolean {
 export function isSpreadsheet(file: FileLike): boolean {
   return isCsv(file) || isWorkbook(file);
 }
+
+export type DropTarget = 'pdf' | 'images' | 'sepa';
+export type DropResult = { ok: true; target: DropTarget } | { ok: false; code: 'empty' | 'mixed' };
+
+/**
+ * Ablage auf der Startseite (wie im Prototyp): nur PDFs → PDF-Werkzeug, nur Fotos → Fotos,
+ * genau eine Tabelle → SEPA. Alles andere (gemischt, mehrere Tabellen, unbekannt) → Meldung.
+ */
+export function classifyDrop(files: readonly FileLike[]): DropResult {
+  if (files.length === 0) return { ok: false, code: 'empty' };
+  if (files.every(isPdf)) return { ok: true, target: 'pdf' };
+  if (files.every(isImage)) return { ok: true, target: 'images' };
+  const [first] = files;
+  if (files.length === 1 && first && isSpreadsheet(first)) return { ok: true, target: 'sepa' };
+  return { ok: false, code: 'mixed' };
+}

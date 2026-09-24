@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  classifyDrop,
   isCsv,
   isImage,
   isPdf,
@@ -44,5 +45,31 @@ describe('Tabellen', () => {
     expect(isCsv(file)).toBe(csv);
     expect(isWorkbook(file)).toBe(workbook);
     expect(isSpreadsheet(file)).toBe(csv || workbook);
+  });
+});
+
+describe('classifyDrop (Ablage auf der Startseite)', () => {
+  const f = (name: string, type = '') => ({ name, type });
+
+  it.each([
+    [[f('a.pdf', 'application/pdf'), f('b.PDF')], 'pdf'],
+    [[f('a.jpg', 'image/jpeg'), f('b.png', 'image/png')], 'images'],
+    [[f('liste.xlsx')], 'sepa'],
+    [[f('liste.csv', 'text/csv')], 'sepa'],
+  ] as const)('%o → %s', (files, target) => {
+    expect(classifyDrop(files)).toEqual({ ok: true, target });
+  });
+
+  it.each([
+    [[f('a.pdf', 'application/pdf'), f('b.jpg', 'image/jpeg')]],
+    [[f('a.csv'), f('b.csv')]],
+    [[f('a.docx')]],
+    [[f('a.csv'), f('b.pdf', 'application/pdf')]],
+  ])('%o → gemischt oder nicht unterstützt', (files) => {
+    expect(classifyDrop(files)).toEqual({ ok: false, code: 'mixed' });
+  });
+
+  it('meldet eine leere Ablage', () => {
+    expect(classifyDrop([])).toEqual({ ok: false, code: 'empty' });
   });
 });

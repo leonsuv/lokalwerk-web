@@ -9,7 +9,125 @@
     <!-- @include partials/header.html -->
     <main>
       <div class="wrap">
-        <h1>Dateien bearbeiten, ohne sie hochzuladen.</h1>
+        <div class="hero">
+          <div>
+            <h1>Dateien bearbeiten, ohne sie hochzuladen.</h1>
+            <p class="lead">
+              PDFs, Fotos und Überweisungslisten werden direkt in deinem Browser verarbeitet. Nichts
+              landet auf fremden Servern.
+            </p>
+            <ul class="facts">
+              <li>
+                <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg>Kein
+                Upload
+              </li>
+              <li>
+                <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg
+                >Funktioniert offline
+              </li>
+              <li>
+                <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg>Kein
+                Konto nötig
+              </li>
+            </ul>
+          </div>
+          <!-- Die Übergabe an das passende Werkzeug folgt in Schritt 9 (plan.md). -->
+          <label class="big-drop" id="home-drop">
+            <input
+              type="file"
+              class="visually-hidden"
+              id="home-input"
+              multiple
+              accept=".pdf,image/*,.csv,.xlsx,.xls,.ods"
+            />
+            <div class="icon-stack" aria-hidden="true">
+              <span
+                ><svg width="24" height="24"><use href="#i-pdf" /></svg
+              ></span>
+              <span
+                ><svg width="24" height="24"><use href="#i-img" /></svg
+              ></span>
+              <span
+                ><svg width="24" height="24"><use href="#i-bank" /></svg
+              ></span>
+            </div>
+            <strong>Datei hier ablegen</strong>
+            <span class="sub"
+              >PDF, Foto oder Excel-Liste. Das passende Werkzeug öffnet sich automatisch.</span
+            >
+            <span class="btn choose">Datei auswählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="wrap section">
+        <div class="section-head">
+          <h2>Werkzeuge</h2>
+          <p>Kostenlos und ohne Anmeldung</p>
+        </div>
+        <div class="tool-grid">
+          <a class="tool-card pdf" href="/pdf-zusammenfuegen/">
+            <span class="ic"
+              ><svg width="24" height="24" aria-hidden="true"><use href="#i-pdf" /></svg
+            ></span>
+            <h3>PDFs zusammenfügen</h3>
+            <p>Mehrere PDFs zu einer Datei verbinden. Reihenfolge frei wählbar.</p>
+            <div class="foot"><span class="tag">Beliebt</span><span class="open">Öffnen</span></div>
+          </a>
+          <a class="tool-card img" href="/fotos-verkleinern/">
+            <span class="ic"
+              ><svg width="24" height="24" aria-hidden="true"><use href="#i-img" /></svg
+            ></span>
+            <h3>Fotos verkleinern</h3>
+            <p>Für E-Mail und Website verkleinern. GPS-Position und Kameradaten werden entfernt.</p>
+            <div class="foot">
+              <span class="tag">Datenschutz</span><span class="open">Öffnen</span>
+            </div>
+          </a>
+          <a class="tool-card sepa" href="/sepa-sammelueberweisung/">
+            <span class="ic"
+              ><svg width="24" height="24" aria-hidden="true"><use href="#i-bank" /></svg
+            ></span>
+            <h3>SEPA-Sammelüberweisung</h3>
+            <p>
+              Aus einer Excel- oder CSV-Liste eine Überweisungsdatei fürs Onlinebanking erstellen.
+            </p>
+            <div class="foot">
+              <span class="tag">Für Vereine</span><span class="open">Öffnen</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="wrap section flush">
+        <div class="pro-band">
+          <div>
+            <h2>Jede Woche im Einsatz? Dann lohnt sich Pro.</h2>
+            <p>
+              Die Werkzeuge bleiben kostenlos. Pro spart Zeit bei wiederkehrender Arbeit und läuft
+              genauso vollständig lokal.
+            </p>
+            <a class="btn inv" href="/pro/">Mehr zu Pro</a>
+          </div>
+          <ul>
+            <li>
+              <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg
+              >SEPA-Lastschriften für Mitgliedsbeiträge
+            </li>
+            <li>
+              <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg>Alle Fotos
+              auf einmal als ZIP speichern
+            </li>
+            <li>
+              <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg>Konten und
+              Spalten als Vorlage merken
+            </li>
+            <li>
+              <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg
+              >Texterkennung für gescannte PDFs
+            </li>
+          </ul>
+        </div>
       </div>
     </main>
     <!-- @include partials/footer.html -->

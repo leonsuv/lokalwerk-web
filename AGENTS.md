@@ -132,7 +132,8 @@ Das Design des Prototyps ist abgenommen. Keine neuen Farben, Schriften oder Komp
 | `--ok` | #17935A | #4CD28E | Erfolg, „0 B hochgeladen“ |
 | `--err` | #C63F24 | #FF8A6E | Fehler |
 
-- **Jede Werkzeug-Kategorie hat eine eigene Akzentfarbe** (`--c` und `--cs` für die helle Variante): PDF rot, Fotos türkis, Zahlungsverkehr blau. Neue Kategorien bekommen eine neue Farbe erst nach Rücksprache.
+- **Jede Werkzeug-Kategorie hat eine eigene Akzentfarbe** (`--c` und `--cs` für die helle Variante): PDF rot, Fotos türkis, Zahlungsverkehr blau, Tabellen ocker, Alltag violett (Ocker und Violett freigegeben am 25.09.2026, Werte und Kontraste in plan-phase2.md Abschnitt 4). Neue Kategorien bekommen eine neue Farbe erst nach Rücksprache.
+- **Ocker wird nie für Warnungen verwendet.** Es ist allein die Farbe der Kategorie Tabellen; Warnungen und Fehler nutzen `--err`.
 - **Layout einer Werkzeugseite:** Kopf mit Icon, Titel und einem Satz Erklärung. Darunter links der Arbeitsbereich (Ablagefläche, Liste oder Tabelle), rechts eine schmale Spalte mit Einstellungen, Zusammenfassung und Hauptaktion. Auf dem Handy untereinander.
 - **Radien:** große Karten 20 px, Eingaben und Buttons 10–12 px, Chips rund.
 - **Icons:** einfache Linien-Icons, 1,8–2 px Strichstärke, als inline SVG. Keine Icon-Schriftarten, keine externen Icon-Pakete.

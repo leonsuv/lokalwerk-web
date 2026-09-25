@@ -22,6 +22,12 @@
   --img-soft: #ddf5f1;
   --sepa: #3a55e0;
   --sepa-soft: #e7ebff;
+  /* Tabellen (Ocker) und Alltag (Violett): plan-phase2.md Abschnitt 4, freigegeben am 25.09.2026 (E15).
+     Ocker nie für Warnungen verwenden (AGENTS.md Abschnitt 6). */
+  --tab: #b8760a;
+  --tab-soft: #fbf0dc;
+  --util: #7d45d0;
+  --util-soft: #f0e8fc;
   --ok: #17935a;
   --ok-soft: #dcf3e6;
   --err: #c63f24;
@@ -34,6 +40,8 @@
   --pdf-ink: #cf1d23;
   --img-ink: #0b796a;
   --sepa-ink: var(--sepa);
+  --tab-ink: #8f5c08;
+  --util-ink: var(--util);
 
   /* Fokus-Ring der Eingabefelder (plan.md A9): --primary mit 75 % Deckkraft, entspricht
      #6B80E8 auf Weiß, Kontrast 3,57:1 zu Weiß und 3,43:1 zu --bg (WCAG 1.4.11: 3:1) */
@@ -59,6 +67,10 @@
     --img-soft: #10302d;
     --sepa: #7b91ff;
     --sepa-soft: #1f2850;
+    --tab: #f2b347;
+    --tab-soft: #35280f;
+    --util: #b995ff;
+    --util-soft: #2a1f45;
     --ok: #4cd28e;
     --ok-soft: #133224;
     --err: #ff8a6e;
@@ -69,6 +81,7 @@
     --err-ink: var(--err);
     --pdf-ink: var(--pdf);
     --img-ink: var(--img);
+    --tab-ink: var(--tab);
     --focus-ring: var(--primary-soft);
   }
 }
@@ -95,6 +108,10 @@
   --img-soft: #10302d;
   --sepa: #7b91ff;
   --sepa-soft: #1f2850;
+  --tab: #f2b347;
+  --tab-soft: #35280f;
+  --util: #b995ff;
+  --util-soft: #2a1f45;
   --ok: #4cd28e;
   --ok-soft: #133224;
   --err: #ff8a6e;
@@ -105,6 +122,7 @@
   --err-ink: var(--err);
   --pdf-ink: var(--pdf);
   --img-ink: var(--img);
+  --tab-ink: var(--tab);
   --focus-ring: var(--primary-soft);
 }
 
@@ -123,4 +141,14 @@
   --c: var(--sepa);
   --cs: var(--sepa-soft);
   --ci: var(--sepa-ink);
+}
+.tab {
+  --c: var(--tab);
+  --cs: var(--tab-soft);
+  --ci: var(--tab-ink);
+}
+.util {
+  --c: var(--util);
+  --cs: var(--util-soft);
+  --ci: var(--util-ink);
 }

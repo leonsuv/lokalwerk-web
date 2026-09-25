@@ -1,0 +1,103 @@
+<div class="wrap tab">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-duplicate" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Duplikate finden</h1>
+      <p>
+        Doppelte Einträge in Mitglieder-, Kunden- oder Adresslisten finden, zum Beispiel vor einem
+        Rundschreiben. Gelöscht wird nichts.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div>
+      <div class="card">
+        <label class="drop" id="dup-drop">
+          <input
+            type="file"
+            class="visually-hidden"
+            id="dup-input"
+            accept=".csv,.txt,.xlsx,.xls,.ods,text/csv"
+          />
+          <span class="ic"
+            ><svg width="22" height="22" aria-hidden="true"><use href="#i-table" /></svg
+          ></span>
+          <div>
+            <strong>Liste hinzufügen</strong
+            ><span>Excel (.xlsx, .xls), ODS oder CSV mit Spaltennamen in der ersten Zeile.</span>
+          </div>
+        </label>
+        <div class="empty-state" id="dup-empty">
+          <strong>Noch keine Liste</strong>Du wählst danach, welche Spalten verglichen werden.
+        </div>
+        <div class="mt-l" id="dup-panel" hidden>
+          <h2 id="dup-file" tabindex="-1"></h2>
+          <p class="hint" id="dup-info"></p>
+          <fieldset class="check-list mt-m">
+            <legend class="lbl">Vergleichen nach</legend>
+            <div id="dup-columns"></div>
+          </fieldset>
+          <p class="hint">
+            Zwei Zeilen gelten als doppelt, wenn sie in allen gewählten Spalten übereinstimmen.
+            Groß- und Kleinschreibung, Leerzeichen, ä/ae, ß/ss und Akzente zählen dabei nicht.
+          </p>
+        </div>
+      </div>
+      <div class="card" id="dup-result-card" hidden>
+        <h2 id="dup-result-title">Gefundene Doppel</h2>
+        <div class="summary" id="dup-summary" aria-live="polite"></div>
+        <div class="table-wrap" id="dup-table-wrap">
+          <table id="dup-table">
+            <caption class="visually-hidden">
+              Gruppen doppelter Zeilen
+            </caption>
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Ergebnis</h2>
+      <div class="stat-row"><span>Zeilen</span><b id="dup-rows">–</b></div>
+      <div class="stat-row"><span>Gruppen</span><b id="dup-groups">–</b></div>
+      <div class="stat-row"><span>Betroffene Zeilen</span><b id="dup-affected">–</b></div>
+      <p class="hint mt-m">
+        Die gespeicherte Datei enthält alle Zeilen und vorne eine neue Spalte „Doppelt“ mit der
+        Nummer der Gruppe. Du entscheidest selbst, was du davon löschst.
+      </p>
+      <button class="btn wide mt-m" id="dup-save" disabled>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
+        <span id="dup-save-label">Liste mit Markierung speichern</span>
+      </button>
+      <button class="btn ghost wide mt-s" id="dup-clear" disabled>Andere Liste wählen</button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="dup-explain">
+    <h2 id="dup-explain">So funktioniert es</h2>
+    <p>
+      Wähle eine Liste aus oder zieh sie in die Fläche oben und hake die Spalten an, nach denen
+      verglichen werden soll, zum Beispiel Name und E-Mail-Adresse. Das Ergebnis erscheint sofort:
+      jede Gruppe mit den Zeilennummern aus deiner Datei. Mit „Liste mit Markierung speichern“
+      bekommst du die ganze Liste zurück, mit einer zusätzlichen Spalte, die die Doppel markiert.
+    </p>
+    <h2>Nur sichere Treffer</h2>
+    <p>
+      Gefunden werden Einträge, die gleich sind, wenn man Groß- und Kleinschreibung, überzählige
+      Leerzeichen, ä/ae, ö/oe, ü/ue, ß/ss, Akzente und Leerzeichen in IBANs nicht beachtet. Ähnliche
+      Schreibweisen wie Meier und Maier gelten nicht als doppelt. Lokalwerk löscht nie etwas selbst;
+      welche Zeile bleibt, entscheidest du.
+    </p>
+    <h2>Deine Listen bleiben auf deinem Gerät</h2>
+    <p>
+      Die Datei wird direkt in deinem Browser geprüft und nicht hochgeladen. Nach dem Laden der
+      Seite funktioniert das Werkzeug auch ohne Internetverbindung. Deine Originaldatei bleibt
+      unverändert.
+    </p>
+  </section>
+</div>

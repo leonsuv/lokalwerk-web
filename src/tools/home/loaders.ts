@@ -54,4 +54,8 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../excel-csv-umwandeln/main.html?raw')).default,
     open: async () => (await import('../excel-csv-umwandeln/page.ts')).openFiles,
   },
+  'duplikate-finden': {
+    markup: async () => (await import('../duplikate-finden/main.html?raw')).default,
+    open: async () => (await import('../duplikate-finden/page.ts')).openFiles,
+  },
 };

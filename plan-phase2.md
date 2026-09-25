@@ -82,6 +82,19 @@ Alle vier Werkzeuge gebaut, je ein Commit; Kategorie „Alltag und Sicherheit“
 
 Abweichungen: Die Prüfsumme bietet SHA-256 und SHA-1, kein MD5 (plan: „wahlweise“). Keine Passphrasen (E11).
 
+### Stand Paket 3 (25.09.2026)
+
+Alle vier Werkzeuge gebaut, je ein Commit.
+
+| Werkzeug | Umsetzung | Prüfung |
+|---|---|---|
+| 6 Seitenzahlen | Helvetica (WinAnsi), Position auf der sichtbaren Seite mit CropBox und /Rotate (ISO 32000-2), Hinweis bei signierten PDFs | Geometrie für alle Drehungen, gedrehte Test-PDF mit PDFKit gerendert |
+| 7 Stempel/Wasserzeichen | diagonal, oben, unten; Deckkraft, Farbe, Seiten; Zeichen außerhalb von WinAnsi werden mit Namen gemeldet (E8a); Erklärtext: kein Schutz, lässt sich entfernen | wie 6 |
+| 21 CSV reparieren | doppelt kodierte Umlaute nur bei eindeutigem Muster, jede Änderung vorher sichtbar, „So lassen“ möglich; Zeilen mit abweichender Spaltenzahl werden gemeldet | Tests mit echten Fehlmustern und nicht eindeutigen Fällen |
+| 23 Duplikate finden | exakte Treffer nach Normalisierung, Markierungsspalte, nie löschen | Tests, CSV und .xlsx im Browser |
+
+**Fehler während Paket 3, behoben:** Die Stempel-Seite zog pdf-lib in den Hauptthread; der Build legte daraufhin gemeinsame Hilfsmodule in ihren Chunk, und fast alle Werkzeugseiten luden deren Code mit (Fehler in der Konsole). Betroffen waren zwei Commits; behoben in einem eigenen Commit. Neu: `build/chunk-guard.ts` bricht den Build ab, wenn eine Seite den Seitencode eines anderen Werkzeugs oder pdf-lib/SheetJS im Hauptthread lädt.
+
 ## 0. Wie dieser Plan zu lesen ist
 
 - **Suchbegriffe** sind Vermutungen. Ich habe kein Werkzeug für Suchvolumen benutzt und keine Zahlen erhoben.

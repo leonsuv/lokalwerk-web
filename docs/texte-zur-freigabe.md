@@ -12,12 +12,16 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU** `/werkzeuge/` | Alle Werkzeuge – PDF, Fotos, Tabellen und SEPA ohne Upload \| Lokalwerk | Alle Werkzeuge von Lokalwerk auf einen Blick: PDF, Fotos, Tabellen und Zahlungsverkehr. Kostenlos, direkt im Browser, ohne Upload deiner Dateien. | 145 | ja |
 | `/pdf-zusammenfuegen/` | PDF zusammenfügen – kostenlos und ohne Upload \| Lokalwerk | Mehrere PDF-Dateien kostenlos zu einer zusammenfügen, Reihenfolge frei wählbar. Läuft komplett in deinem Browser, ohne Upload und ohne Anmeldung. | 145 | ja |
 | **NEU** `/pdf-teilen/` | PDF teilen und Seiten extrahieren – kostenlos, ohne Upload \| Lokalwerk | Seiten aus einer PDF kostenlos herausholen oder die PDF in mehrere Dateien aufteilen. Direkt im Browser, ohne Upload und ohne Anmeldung. | 136 | ja |
+| **NEU** `/pdf-seitenzahlen/` | Seitenzahlen in PDF einfügen – kostenlos, ohne Upload \| Lokalwerk | Seitenzahlen wie „Seite 3 von 12“ kostenlos in eine PDF einfügen, Position und Startseite frei wählbar. Direkt im Browser, ohne Upload und ohne Anmeldung. | 154 | ja |
+| **NEU** `/pdf-stempel/` | PDF-Wasserzeichen und Stempel einfügen – kostenlos, ohne Upload \| Lokalwerk | Text wie „Entwurf“ oder „Kopie“ kostenlos als Stempel oder Wasserzeichen auf die Seiten einer PDF setzen. Direkt im Browser, ohne Upload. | 137 | ja |
 | **NEU** `/pdf-metadaten-entfernen/` | PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload \| Lokalwerk | Kostenlos sehen, welche versteckten Angaben in einer PDF stecken, und Autor, Programm, Datum und frühere Fassungen entfernen. Direkt im Browser, ohne Upload. | 157 | ja |
 | **NEU** `/bilder-zu-pdf/` | Bilder zu PDF: JPG und PNG in PDF umwandeln – kostenlos \| Lokalwerk | Fotos und Scans kostenlos zu einer PDF zusammenfassen, eine Seite je Bild, auf DIN A4. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 145 | ja |
 | `/fotos-verkleinern/` | Fotos verkleinern und Metadaten entfernen – kostenlos \| Lokalwerk | Fotos kostenlos für E-Mail und Website verkleinern und dabei GPS-Position und Kameradaten entfernen. Direkt im Browser, ohne Upload. | 132 | ja |
 | **NEU** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
 | **NEU** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
+| **NEU** `/csv-reparieren/` | CSV reparieren: Umlaute und Trennzeichen korrigieren – kostenlos \| Lokalwerk | CSV-Dateien mit kaputten Umlauten wie „MÃ¼ller“ oder falschem Trennzeichen kostenlos reparieren, jede Änderung vorher sichtbar. Im Browser, ohne Upload. | 152 | ja |
+| **NEU** `/duplikate-finden/` | Duplikate in Excel- und CSV-Listen finden – kostenlos, ohne Upload \| Lokalwerk | Doppelte Einträge in Mitglieder-, Kunden- und Adresslisten kostenlos finden und markieren, ohne etwas zu löschen. Direkt im Browser, ohne Upload. | 145 | ja |
 | **NEU** `/passwort-generator/` | Passwort-Generator: sichere Passwörter nach BSI – ohne Server \| Lokalwerk | Sichere Passwörter kostenlos erzeugen, mit Länge und Zeichenarten nach den Beispielen des BSI. Direkt im Browser, nichts wird gesendet oder gespeichert. | 152 | ja |
 | **NEU** `/pruefsumme/` | Prüfsumme berechnen: SHA-256 einer Datei prüfen – ohne Upload \| Lokalwerk | SHA-256 und SHA-1 einer Datei kostenlos berechnen und mit der angegebenen Prüfsumme vergleichen, auch bei sehr großen Dateien. Direkt im Browser, ohne Upload. | 158 | ja |
 | **NEU** `/texte-vergleichen/` | Texte vergleichen: Unterschiede zwischen zwei Fassungen finden \| Lokalwerk | Zwei Texte kostenlos vergleichen, etwa Vertragsentwürfe oder Satzungen: geänderte Zeilen und Wörter werden markiert. Direkt im Browser, ohne Upload. | 148 | ja |
@@ -67,6 +71,50 @@ Die PDF wird direkt in deinem Browser geteilt und nicht hochgeladen. Nach dem La
 Verschlüsselte PDFs lassen sich nicht teilen. Das gilt auch für Dateien, die sich ohne Passwort öffnen lassen, aber zum Beispiel das Kopieren verbieten. Übernommen werden nur die Seiten: Formularfelder, Lesezeichen und digitale Signaturen sind in den neuen Dateien nicht mehr enthalten.
 
 _(Erklärtext: 136 Wörter)_
+
+## Seitenzahlen einfügen – NEU (`src/tools/pdf-seitenzahlen/main.html`)
+
+Karte: „Seitenzahlen einfügen“ – „Seitenzahlen wie „Seite 3 von 12“ in Kopf- oder Fußzeile einer PDF setzen.“
+
+Unterzeile im Kopf: „Seitenzahlen wie „Seite 3 von 12“ in die Kopf- oder Fußzeile einer PDF setzen.“
+
+**So funktioniert es**
+
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Stell rechts Form, Position und Größe ein. „Ab Seite“ bestimmt die erste Seite mit Zahl, „Erste Zahl“ die Zahl darauf. Die neue PDF enthält alle Seiten mit Seitenzahlen; deine Originaldatei bleibt unverändert.
+
+**Gut zu wissen**
+
+Die Seitenzahl wird über den Inhalt gelegt. Steht an dieser Stelle schon Text, überdecken sich beide; wähle dann eine andere Position oder einen größeren Abstand. Gedrehte Seiten bekommen die Zahl so, wie du die Seite liest. Digital signierte PDFs verlieren durch das Einfügen ihre gültige Signatur. Verschlüsselte PDFs lassen sich nicht bearbeiten.
+
+**Deine Dateien bleiben auf deinem Gerät**
+
+Die PDF wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 117 Wörter)_
+
+## Stempel und Wasserzeichen – NEU (`src/tools/pdf-stempel/main.html`)
+
+Karte: „Stempel und Wasserzeichen“ – „Text wie „Entwurf“ oder „Kopie“ quer über die Seiten einer PDF setzen.“
+
+Unterzeile im Kopf: „Text wie „Entwurf“ oder „Kopie“ auf die Seiten einer PDF setzen, quer über die Seite oder oben und unten.“
+
+**So funktioniert es**
+
+Wähle eine PDF aus oder zieh sie in die Fläche oben, gib den Text ein und stell Position, Farbe und Deckkraft ein. „Stempel setzen und speichern“ erzeugt eine neue PDF; deine Originaldatei bleibt unverändert. Lässt du „Seiten“ leer, bekommt jede Seite den Stempel.
+
+**Ein Wasserzeichen ist kein Schutz**
+
+Der Stempel liegt als eigene Ebene über dem Inhalt. Wer die PDF weiterbearbeitet, kann ihn mit gängigen PDF-Programmen wieder entfernen. Er zeigt an, wofür eine Datei gedacht ist, verhindert aber keine Weitergabe und kein Kopieren. Wer Inhalte sicher unkenntlich machen will, braucht ein Werkzeug, das die Seiten in Bilder umwandelt.
+
+**Gut zu wissen**
+
+Die PDF-Schrift kennt die Zeichen westeuropäischer Sprachen, also auch Umlaute, ß und €. Zeichen wie Ł oder ő gehören nicht dazu; dann erscheint ein Hinweis, welche Zeichen betroffen sind. Digital signierte PDFs verlieren durch das Stempeln ihre gültige Signatur. Verschlüsselte PDFs lassen sich nicht bearbeiten.
+
+**Deine Dateien bleiben auf deinem Gerät**
+
+Die PDF wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 160 Wörter)_
 
 ## PDF-Metadaten entfernen – NEU (`src/tools/pdf-metadaten-entfernen/main.html`)
 
@@ -208,6 +256,46 @@ Die Dateien werden direkt in deinem Browser umgewandelt und nicht hochgeladen. N
 
 _(Erklärtext: 181 Wörter)_
 
+## CSV reparieren – NEU (`src/tools/csv-reparieren/main.html`)
+
+Karte: „CSV reparieren“ – „Kaputte Umlaute, Trennzeichen und Kodierung einer CSV-Datei korrigieren.“
+
+Unterzeile im Kopf: „CSV-Dateien mit kaputten Umlauten oder falschem Trennzeichen so speichern, dass Excel, Banken und Vereinsprogramme sie richtig lesen.“
+
+**So funktioniert es**
+
+Wähle eine CSV-Datei aus oder zieh sie in die Fläche oben. Lokalwerk erkennt Zeichenkodierung und Trennzeichen und zeigt eine Vorschau. Rechts legst du fest, wie die neue Datei aussehen soll. Die Werte selbst bleiben, wie sie sind; es ändert sich nur, wie sie gespeichert werden. Deine Originaldatei bleibt unverändert.
+
+**Kaputte Umlaute**
+
+Steht „MÃ¼ller“ statt „Müller“ in der Datei, wurde sie irgendwann mit der falschen Kodierung geöffnet und wieder gespeichert. Lokalwerk repariert solche Stellen nur, wenn sich eindeutig feststellen lässt, was dort vorher stand, und zeigt dir jede Änderung vor dem Speichern. Unklare Stellen bleiben unverändert und werden aufgelistet.
+
+**Deine Dateien bleiben auf deinem Gerät**
+
+Die Datei wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 118 Wörter)_
+
+## Duplikate finden – NEU (`src/tools/duplikate-finden/main.html`)
+
+Karte: „Duplikate finden“ – „Doppelte Einträge in Mitglieder- oder Adresslisten finden und markieren.“
+
+Unterzeile im Kopf: „Doppelte Einträge in Mitglieder-, Kunden- oder Adresslisten finden, zum Beispiel vor einem Rundschreiben. Gelöscht wird nichts.“
+
+**So funktioniert es**
+
+Wähle eine Liste aus oder zieh sie in die Fläche oben und hake die Spalten an, nach denen verglichen werden soll, zum Beispiel Name und E-Mail-Adresse. Das Ergebnis erscheint sofort: jede Gruppe mit den Zeilennummern aus deiner Datei. Mit „Liste mit Markierung speichern“ bekommst du die ganze Liste zurück, mit einer zusätzlichen Spalte, die die Doppel markiert.
+
+**Nur sichere Treffer**
+
+Gefunden werden Einträge, die gleich sind, wenn man Groß- und Kleinschreibung, überzählige Leerzeichen, ä/ae, ö/oe, ü/ue, ß/ss, Akzente und Leerzeichen in IBANs nicht beachtet. Ähnliche Schreibweisen wie Meier und Maier gelten nicht als doppelt. Lokalwerk löscht nie etwas selbst; welche Zeile bleibt, entscheidest du.
+
+**Deine Listen bleiben auf deinem Gerät**
+
+Die Datei wird direkt in deinem Browser geprüft und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung. Deine Originaldatei bleibt unverändert.
+
+_(Erklärtext: 127 Wörter)_
+
 ## Passwort-Generator – NEU (`src/tools/passwort-generator/main.html`)
 
 Karte: „Passwort-Generator“ – „Sichere Passwörter erzeugen, mit Länge und Zeichenarten nach den BSI-Beispielen.“
@@ -303,6 +391,7 @@ _(Erklärtext: 110 Wörter)_
 | **NEU** /werkzeuge/, Suche | Beschriftung „Werkzeug suchen“, Platzhalter „zum Beispiel PDF, Foto oder CSV“, Meldungen „3 Werkzeuge gefunden.“ und „Kein Werkzeug gefunden. Versuch ein anderes Wort, zum Beispiel „PDF“, „Foto“ oder „Excel“.“ | `pages/werkzeuge/index.html`, `src/tools/werkzeuge/page.ts` |
 | **NEU** /werkzeuge/, Kategorien | „PDF“, „Fotos und Bilder“, „Tabellen und Listen“, „Zahlungsverkehr und Verein“, „Alltag und Sicherheit“; Zähler „4 Werkzeuge“ | `build/pages.ts` |
 | **NEU** Paket 2, Meldungen | Passwort-Generator: „Passwort kopiert. Es bleibt in der Zwischenablage, bis du etwas anderes kopierst.“, „Entspricht dem BSI-Beispiel: …“, „Kürzer oder einfacher als die BSI-Beispiele“; Prüfsumme: „Stimmt überein (SHA-256).“, „Stimmt nicht überein (SHA-256). Die Datei ist verändert, unvollständig oder eine andere.“; Textvergleich: „Die Texte unterscheiden sich in zu vielen Zeilen. Vergleiche kürzere Abschnitte.“; Kontrast: „erfüllt“ / „nicht erfüllt“ | `src/tools/<werkzeug>/page.ts` |
+| **NEU** Paket 3, Meldungen | Seitenzahlen/Stempel: „Diese PDF ist digital signiert. Nach dem Einfügen der Seitenzahlen ist die Signatur ungültig. …“, „Diese Zeichen kann die PDF-Schrift nicht darstellen: „Ł“, „ź“. Ersetze sie, zum Beispiel Ł durch L.“; CSV reparieren: „2 Zellen werden beim Speichern so geändert. Mit „So lassen“ bleibt alles unverändert.“, „Diese Zeilen haben nicht 3 Spalten wie die meisten: … Prüfe sie im Tabellenprogramm.“; Duplikate: „2 Gruppen mit zusammen 4 Zeilen.“, „Keine Doppel gefunden.“ | `src/tools/<werkzeug>/` |
 | **NEU** Unter jedem Werkzeug | Überschrift „Passt dazu“ mit Karten | `build/tool-blocks.ts` |
 | **NEU** „Alle Werkzeuge“-Verweise | zeigen jetzt auf /werkzeuge/ statt auf die Startseite (Text unverändert) | alle Seiten |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |

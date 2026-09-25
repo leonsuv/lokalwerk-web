@@ -34,6 +34,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../fotos-verkleinern/main.html?raw')).default,
     open: async () => (await import('../fotos-verkleinern/page.ts')).addFiles,
   },
+  'bildformat-umwandeln': {
+    markup: async () => (await import('../bildformat-umwandeln/main.html?raw')).default,
+    open: async () => (await import('../bildformat-umwandeln/page.ts')).addFiles,
+  },
   'sepa-sammelueberweisung': {
     markup: async () => (await import('../sepa-sammelueberweisung/main.html?raw')).default,
     open: async () => (await import('../sepa-sammelueberweisung/page.ts')).openFiles,

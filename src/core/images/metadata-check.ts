@@ -1,5 +1,5 @@
 /**
- * Prüft ein fertiges JPEG oder WebP auf personenbezogene Metadaten, bevor es zum Speichern
+ * Prüft ein fertiges JPEG, WebP oder PNG auf personenbezogene Metadaten, bevor es zum Speichern
  * angeboten wird (plan.md Abschnitt 4). Das Verkleinern erzeugt das Bild neu und sollte keine
  * Metadaten übernehmen; diese Prüfung stellt das für jede Datei sicher, statt es anzunehmen.
  *
@@ -127,12 +127,42 @@ function scanWebp(bytes: Uint8Array, found: Set<MetadataFinding>): void {
   }
 }
 
+const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+
+/**
+ * PNG (W3C PNG Specification, 3rd Edition / ISO/IEC 15948): Chunks aus Länge (4 Byte, Big
+ * Endian), Typ, Daten und CRC. Text-Chunks (tEXt, zTXt, iTXt) können beliebigen Text enthalten,
+ * XMP steht in iTXt mit dem Schlüssel „XML:com.adobe.xmp“, eXIf enthält Exif, tIME die Zeit
+ * der letzten Änderung.
+ */
+function scanPng(bytes: Uint8Array, found: Set<MetadataFinding>): void {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let i = 8;
+  while (i + 8 <= bytes.length) {
+    const length = view.getUint32(i);
+    const type = ascii(bytes, i + 4, 4);
+    const start = i + 8;
+    const end = start + length;
+    if (end + 4 > bytes.length) throw new Malformed();
+    if (type === 'tEXt' || type === 'zTXt') found.add('comment');
+    if (type === 'iTXt') {
+      found.add(ascii(bytes, start, 17) === 'XML:com.adobe.xmp' ? 'xmp' : 'comment');
+    }
+    if (type === 'eXIf') scanTiff(bytes.subarray(start, end), found);
+    if (type === 'tIME') found.add('date');
+    if (type === 'IEND') return;
+    i = end + 4;
+  }
+  throw new Malformed();
+}
+
 /** Gibt die gefundenen Arten von Metadaten zurück, sortiert. Leer heißt: nichts gefunden. */
 export function findMetadata(bytes: Uint8Array): MetadataFinding[] {
   const found = new Set<MetadataFinding>();
   try {
     if (bytes[0] === 0xff && bytes[1] === 0xd8) scanJpeg(bytes, found);
     else if (ascii(bytes, 0, 4) === 'RIFF' && ascii(bytes, 8, 4) === 'WEBP') scanWebp(bytes, found);
+    else if (PNG_SIGNATURE.every((b, i) => bytes[i] === b)) scanPng(bytes, found);
     else found.add('unknown-format');
   } catch (error) {
     if (!(error instanceof Malformed)) throw error;

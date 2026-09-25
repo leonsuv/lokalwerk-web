@@ -128,3 +128,49 @@ describe('findMetadata für andere Formate', () => {
     expect(findMetadata(new Uint8Array())).toEqual(['unknown-format']);
   });
 });
+
+/** PNG aus Chunks; die Prüfsumme wird nicht ausgewertet, daher Nullen. */
+function png(...chunks: [string, number[]][]): Uint8Array {
+  const body = chunks.flatMap(([type, data]) => {
+    const n = data.length;
+    return [
+      n >>> 24,
+      (n >> 16) & 0xff,
+      (n >> 8) & 0xff,
+      n & 0xff,
+      ...ascii(type),
+      ...data,
+      0,
+      0,
+      0,
+      0,
+    ];
+  });
+  return new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, ...body]);
+}
+const IHDR: [string, number[]] = ['IHDR', [0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0, 0]];
+const IEND: [string, number[]] = ['IEND', []];
+
+describe('findMetadata für PNG', () => {
+  it('findet nichts in einer PNG, wie ein Canvas sie schreibt', () => {
+    expect(findMetadata(png(IHDR, ['sRGB', [0]], ['IDAT', [1, 2, 3]], IEND))).toEqual([]);
+  });
+
+  it('meldet Text, XMP, Exif und Änderungszeit', () => {
+    expect(findMetadata(png(IHDR, ['tEXt', ascii('Author\0Anna')], IEND))).toEqual(['comment']);
+    expect(findMetadata(png(IHDR, ['zTXt', ascii('Comment\0\0x')], IEND))).toEqual(['comment']);
+    expect(
+      findMetadata(png(IHDR, ['iTXt', ascii('XML:com.adobe.xmp\0\0\0\0\0<x/>')], IEND)),
+    ).toEqual(['xmp']);
+    expect(findMetadata(png(IHDR, ['eXIf', tiff([0x010f], [0x9003])], IEND))).toEqual([
+      'camera',
+      'date',
+    ]);
+    expect(findMetadata(png(IHDR, ['tIME', [7, 234, 9, 25, 12, 0, 0]], IEND))).toEqual(['date']);
+  });
+
+  it('meldet abgeschnittene Dateien als fehlerhaft', () => {
+    const whole = png(IHDR, ['IDAT', [1, 2, 3]], IEND);
+    expect(findMetadata(whole.subarray(0, whole.length - 6))).toEqual(['malformed']);
+  });
+});

@@ -25,6 +25,7 @@ describe('Seitenregister', () => {
         '/pdf-teilen/',
         '/bilder-zu-pdf/',
         '/pdf-metadaten-entfernen/',
+        '/bildformat-umwandeln/',
         '/pdf-zusammenfuegen/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',

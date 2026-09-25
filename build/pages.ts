@@ -332,7 +332,7 @@ export const PAGES: readonly PageDef[] = [
     url: '/pro/',
     title: 'Lokalwerk Pro',
     description:
-      'Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen, Fotos und PDFs. Läuft wie alle Werkzeuge vollständig lokal.',
+      'Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen und PDFs. Läuft wie alle Werkzeuge vollständig lokal.',
     index: false,
     nav: 'pro',
   },

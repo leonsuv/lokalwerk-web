@@ -18,7 +18,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
 | **NEU** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
-| `/pro/` | Lokalwerk Pro | Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen, Fotos und PDFs. Läuft wie alle Werkzeuge vollständig lokal. | 115 | noindex |
+| `/pro/` | Lokalwerk Pro | Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen und PDFs. Läuft wie alle Werkzeuge vollständig lokal. | 108 | noindex |
 | `/impressum/` | Impressum – Lokalwerk | Impressum von Lokalwerk. | 24 | noindex |
 | `/datenschutz/` | Datenschutzerklärung – Lokalwerk | Datenschutzerklärung von Lokalwerk. | 35 | noindex |
 | `/lizenzen/` | Lizenzen – Lokalwerk | Urheber und Lizenztexte der Bibliotheken und Schriften, die Lokalwerk verwendet. | 80 | noindex |
@@ -213,7 +213,7 @@ _(Erklärtext: 181 Wörter)_
 | **NEU** Startseite, Meldung | „Für 2 Tabellen auf einmal gibt es kein Werkzeug. Lege nur eine Datei ab.“ | `src/tools/home/page.ts` |
 | **NEU** Startseite, unter den Karten | Knopf „Alle Werkzeuge ansehen“ | `pages/index.html` |
 | **NEU** Startseite, Pro-Band | Punkt „Alle Fotos auf einmal als ZIP speichern“ gestrichen (E3) | `pages/index.html` |
-| **NEU** Pro-Seite | Punkt „ZIP-Export – Alle verkleinerten Fotos mit einem Klick speichern.“ gestrichen, Nummern angepasst (E3). Unterzeile jetzt „Für alle, die Überweisungen und PDFs regelmäßig bearbeiten.“ (Fotos gestrichen, Leon 25.09.2026, P1-3). Die Meta-Beschreibung nennt noch „Überweisungen, Fotos und PDFs“ | `pages/pro/index.html` |
+| **NEU** Pro-Seite | Punkt „ZIP-Export – Alle verkleinerten Fotos mit einem Klick speichern.“ gestrichen, Nummern angepasst (E3). Unterzeile jetzt „Für alle, die Überweisungen und PDFs regelmäßig bearbeiten.“ (Fotos gestrichen, Leon 25.09.2026, P1-3). Meta-Beschreibung ebenso ohne „Fotos“ (Leon 25.09.2026) | `pages/pro/index.html` |
 | **NEU** Fotos verkleinern | Knopf „Alle Fotos als ZIP speichern“ statt Hinweis „Alle Fotos als ZIP speichern: mit Lokalwerk Pro“; Meldungen „3 Fotos als ZIP gespeichert.“, „… 1 wird noch verkleinert und ist nicht enthalten.“, „Die ZIP-Datei wäre zu groß. Speichere die Fotos in kleineren Gruppen.“; im Erklärtext Ergänzung „… oder mit „Alle Fotos als ZIP speichern“ zusammen in einer Datei.“ | `src/tools/fotos-verkleinern/` |
 | **NEU** /werkzeuge/, Kopf | „Alle Werkzeuge“ – „Jedes Werkzeug läuft direkt in deinem Browser. Deine Dateien werden nicht hochgeladen.“ | `pages/werkzeuge/index.html` |
 | **NEU** /werkzeuge/, Suche | Beschriftung „Werkzeug suchen“, Platzhalter „zum Beispiel PDF, Foto oder CSV“, Meldungen „3 Werkzeuge gefunden.“ und „Kein Werkzeug gefunden. Versuch ein anderes Wort, zum Beispiel „PDF“, „Foto“ oder „Excel“.“ | `pages/werkzeuge/index.html`, `src/tools/werkzeuge/page.ts` |

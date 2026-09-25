@@ -82,7 +82,7 @@
     --pdf-ink: var(--pdf);
     --img-ink: var(--img);
     --tab-ink: var(--tab);
-    --focus-ring: var(--primary-soft);
+    --focus-ring: rgba(123, 145, 255, 0.75); /* plan.md A9: 3,96:1 zur Karte */
   }
 }
 
@@ -123,7 +123,7 @@
   --pdf-ink: var(--pdf);
   --img-ink: var(--img);
   --tab-ink: var(--tab);
-  --focus-ring: var(--primary-soft);
+  --focus-ring: rgba(123, 145, 255, 0.75); /* plan.md A9: 3,96:1 zur Karte */
 }
 
 /* Akzentfarbe je Werkzeug-Kategorie: --c (Icons, Rahmen), --cs (Fläche), --ci (Text) */

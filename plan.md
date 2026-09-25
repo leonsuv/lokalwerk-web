@@ -152,11 +152,11 @@ lokalwerk-web/
 
 | URL | Seite | `<title>` | Index |
 |---|---|---|---|
-| `/` | Startseite | Lokalwerk – Dateien bearbeiten, ohne Upload | ja |
-| `/pdf-zusammenfuegen/` | Werkzeug | PDFs zusammenfügen, ohne Upload – Lokalwerk | ja |
-| `/fotos-verkleinern/` | Werkzeug | Fotos verkleinern und Metadaten entfernen – Lokalwerk | ja |
-| `/sepa-sammelueberweisung/` | Werkzeug | SEPA-Sammelüberweisung aus Excel oder CSV – Lokalwerk | ja |
-| `/pro/` | Infoseite | Lokalwerk Pro | ja |
+| `/` | Startseite | Lokalwerk – PDF, Fotos und SEPA kostenlos im Browser bearbeiten | ja |
+| `/pdf-zusammenfuegen/` | Werkzeug | PDF zusammenfügen – kostenlos und ohne Upload \| Lokalwerk | ja |
+| `/fotos-verkleinern/` | Werkzeug | Fotos verkleinern und Metadaten entfernen – kostenlos \| Lokalwerk | ja |
+| `/sepa-sammelueberweisung/` | Werkzeug | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | ja |
+| `/pro/` | Infoseite | Lokalwerk Pro | noindex, nicht in der Sitemap, bis Pro verfügbar ist (25.09.2026) |
 | `/impressum/` | Rechtstext | Impressum – Lokalwerk | noindex |
 | `/datenschutz/` | Rechtstext | Datenschutzerklärung – Lokalwerk | noindex |
 | `/lizenzen/` | Lizenzhinweise (ergänzt 24.09.2026) | Lizenzen – Lokalwerk | noindex |
@@ -164,7 +164,7 @@ lokalwerk-web/
 
 Dazu `robots.txt`, `sitemap.xml` (nur indexierte Seiten) und `favicon.svg` (Schild-Logo aus dem Prototyp).
 
-Meta-Beschreibungen und Erklärtexte unter den Werkzeugen (sachlich, du-Form, 100–150 Wörter) schreibt Claude als Entwurf und legt sie Leon gesammelt zur Freigabe vor, bevor die jeweilige Seite als fertig gilt.
+Meta-Beschreibungen und Erklärtexte unter den Werkzeugen (sachlich, du-Form, 100–150 Wörter) schreibt Claude als Entwurf und legt sie Leon gesammelt zur Freigabe vor, bevor die jeweilige Seite als fertig gilt. **Freigegeben am 25.09.2026** mit Leons Änderungen (Titel, Meta-Beschreibungen, Abschnitte „Gut zu wissen“; Wortzahl darf dadurch über 150 liegen). Stand: `docs/texte-zur-freigabe.md`.
 
 ---
 

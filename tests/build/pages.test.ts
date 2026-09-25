@@ -49,7 +49,11 @@ describe('Seitenregister', () => {
     }
   });
 
-  it('nennt bei SEPA „für deutsche Banken“ (plan.md S10)', () => {
-    expect(byUrl('/sepa-sammelueberweisung/')?.description).toContain('für deutsche Banken');
+  it('nennt bei SEPA die deutschen Banken (plan.md S10)', () => {
+    expect(byUrl('/sepa-sammelueberweisung/')?.description).toContain('deutschen Banken');
+  });
+
+  it('setzt Pro bis zur Verfügbarkeit auf noindex (freigegeben 25.09.2026)', () => {
+    expect(byUrl('/pro/')?.index).toBe(false);
   });
 });

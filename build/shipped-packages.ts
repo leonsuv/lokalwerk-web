@@ -2,12 +2,19 @@
  * Prüft beim Build, dass jede tatsächlich ausgelieferte Bibliothek und Schrift auf der
  * Lizenzseite steht (build/licenses.ts). Die Plugin-Instanzen im Haupt-Build und in den
  * Worker-Builds teilen sich die Liste über dieses Modul.
+ *
+ * Außerdem entsteht eine Liste, welche Datei im Build welche Pakete enthält. check-dist
+ * wendet die Adresslisten einer Bibliothek nur auf diese Dateien an (plan-phase2.md E14).
+ * Sie liegt außerhalb von dist/, damit sie nicht ausgeliefert wird.
  */
 
-import { readdirSync } from 'node:fs';
+import { mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import type { Plugin } from 'vite';
 
 const shipped = new Set<string>();
+/** Datei im Build (relativ zu dist/) → enthaltene Pakete */
+const packagesByFile = new Map<string, Set<string>>();
 
 /** Nur für Tests: ausgelieferte Pakete setzen. */
 export function setShippedForTest(names: readonly string[]): void {
@@ -32,11 +39,34 @@ export function recordShippedPackages(): Plugin {
     generateBundle(_options, bundle) {
       for (const output of Object.values(bundle)) {
         if (output.type !== 'chunk') continue;
+        const packages = new Set<string>();
         for (const id of output.moduleIds) {
           const name = packageFromModuleId(id);
-          if (name) shipped.add(name);
+          if (name) packages.add(name);
         }
+        for (const name of packages) shipped.add(name);
+        if (packages.size > 0) packagesByFile.set(output.fileName, packages);
       }
+    },
+  };
+}
+
+/**
+ * Schreibt am Ende des Builds die Zuordnung Datei → Pakete als JSON, z. B.
+ * { "assets/sheet.worker-AbC.js": ["xlsx"] }. Wird von scripts/check-dist.mjs gelesen.
+ */
+export function writeShippedManifest(file: string): Plugin {
+  return {
+    name: 'lokalwerk-write-shipped-manifest',
+    apply: 'build',
+    closeBundle() {
+      const manifest = Object.fromEntries(
+        [...packagesByFile]
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([f, p]) => [f, [...p].sort()]),
+      );
+      mkdirSync(dirname(file), { recursive: true });
+      writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`);
     },
   };
 }

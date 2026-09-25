@@ -28,18 +28,51 @@ export function isSpreadsheet(file: FileLike): boolean {
   return isCsv(file) || isWorkbook(file);
 }
 
-export type DropTarget = 'pdf' | 'images' | 'sepa';
-export type DropResult = { ok: true; target: DropTarget } | { ok: false; code: 'empty' | 'mixed' };
+/** Dateiarten, die die Ablage der Startseite unterscheidet. */
+export type FileKind = 'pdf' | 'image' | 'spreadsheet';
+
+export function fileKind(file: FileLike): FileKind | null {
+  if (isPdf(file)) return 'pdf';
+  if (isImage(file)) return 'image';
+  if (isSpreadsheet(file)) return 'spreadsheet';
+  return null;
+}
+
+export type DropKind =
+  { ok: true; kind: FileKind; count: number } | { ok: false; code: 'empty' | 'mixed' };
+
+/** Alle abgelegten Dateien müssen dieselbe bekannte Art haben. */
+export function dropKind(files: readonly FileLike[]): DropKind {
+  const [first] = files;
+  if (!first) return { ok: false, code: 'empty' };
+  const kind = fileKind(first);
+  if (!kind || files.some((f) => fileKind(f) !== kind)) return { ok: false, code: 'mixed' };
+  return { ok: true, kind, count: files.length };
+}
+
+export interface Accepting {
+  accepts?: { kind: FileKind; multiple: boolean } | undefined;
+}
 
 /**
- * Ablage auf der Startseite (wie im Prototyp): nur PDFs → PDF-Werkzeug, nur Fotos → Fotos,
- * genau eine Tabelle → SEPA. Alles andere (gemischt, mehrere Tabellen, unbekannt) → Meldung.
+ * Werkzeuge, die diese Ablage übernehmen können (plan-phase2.md Abschnitt 3.4), in der
+ * Reihenfolge der Eingabe. Werkzeuge für eine einzelne Datei fallen bei mehreren weg.
  */
-export function classifyDrop(files: readonly FileLike[]): DropResult {
-  if (files.length === 0) return { ok: false, code: 'empty' };
-  if (files.every(isPdf)) return { ok: true, target: 'pdf' };
-  if (files.every(isImage)) return { ok: true, target: 'images' };
-  const [first] = files;
-  if (files.length === 1 && first && isSpreadsheet(first)) return { ok: true, target: 'sepa' };
-  return { ok: false, code: 'mixed' };
+export function toolsForDrop<T extends Accepting>(
+  tools: readonly T[],
+  kind: FileKind,
+  count: number,
+): T[] {
+  return tools.filter((t) => t.accepts?.kind === kind && (count === 1 || t.accepts.multiple));
+}
+
+const NOUNS: Record<FileKind, [string, string]> = {
+  pdf: ['PDF', 'PDFs'],
+  image: ['Foto', 'Fotos'],
+  spreadsheet: ['Tabelle', 'Tabellen'],
+};
+
+/** „1 PDF“, „3 Fotos“ */
+export function describeDrop(kind: FileKind, count: number): string {
+  return `${count} ${NOUNS[kind][count === 1 ? 0 : 1]}`;
 }

@@ -53,10 +53,18 @@
             </div>
             <strong>Datei hier ablegen</strong>
             <span class="sub"
-              >PDF, Foto oder Excel-Liste. Das passende Werkzeug öffnet sich automatisch.</span
+              >PDF, Foto oder Excel-Liste. Danach wählst du, was du damit machen möchtest.</span
             >
             <span class="btn choose">Datei auswählen</span>
           </label>
+          <div class="card choice" id="home-choice" hidden>
+            <h2 id="home-choice-title" tabindex="-1"></h2>
+            <p class="hint">Was möchtest du damit machen?</p>
+            <ul class="choice-list" id="home-choice-list" role="list"></ul>
+            <button type="button" class="btn ghost wide mt-m" id="home-choice-back">
+              Andere Dateien wählen
+            </button>
+          </div>
         </div>
       </div>
 
@@ -65,38 +73,8 @@
           <h2>Werkzeuge</h2>
           <p>Kostenlos und ohne Anmeldung</p>
         </div>
-        <div class="tool-grid">
-          <a class="tool-card pdf" href="/pdf-zusammenfuegen/">
-            <span class="ic"
-              ><svg width="24" height="24" aria-hidden="true"><use href="#i-pdf" /></svg
-            ></span>
-            <h3>PDFs zusammenfügen</h3>
-            <p>Mehrere PDFs zu einer Datei verbinden. Reihenfolge frei wählbar.</p>
-            <div class="foot"><span class="tag">Beliebt</span><span class="open">Öffnen</span></div>
-          </a>
-          <a class="tool-card img" href="/fotos-verkleinern/">
-            <span class="ic"
-              ><svg width="24" height="24" aria-hidden="true"><use href="#i-img" /></svg
-            ></span>
-            <h3>Fotos verkleinern</h3>
-            <p>Für E-Mail und Website verkleinern. GPS-Position und Kameradaten werden entfernt.</p>
-            <div class="foot">
-              <span class="tag">Datenschutz</span><span class="open">Öffnen</span>
-            </div>
-          </a>
-          <a class="tool-card sepa" href="/sepa-sammelueberweisung/">
-            <span class="ic"
-              ><svg width="24" height="24" aria-hidden="true"><use href="#i-bank" /></svg
-            ></span>
-            <h3>SEPA-Sammelüberweisung</h3>
-            <p>
-              Aus einer Excel- oder CSV-Liste eine Überweisungsdatei fürs Onlinebanking erstellen.
-            </p>
-            <div class="foot">
-              <span class="tag">Für Vereine</span><span class="open">Öffnen</span>
-            </div>
-          </a>
-        </div>
+        <!-- @block home-tools -->
+        <p class="mt-l"><a class="btn ghost" href="/werkzeuge/">Alle Werkzeuge ansehen</a></p>
       </div>
 
       <div class="wrap section flush">

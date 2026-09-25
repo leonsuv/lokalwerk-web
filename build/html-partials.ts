@@ -5,7 +5,8 @@
  *   <!-- @head -->                         Titel, Meta-Beschreibung, Canonical, noindex
  *   <!-- @include partials/header.html --> Datei relativ zu `src/`, darf selbst wieder
  *                                          Platzhalter enthalten
- *   <!-- @block licenses -->               beim Build erzeugter Inhalt (RenderOptions.blocks)
+ *   <!-- @block licenses -->               beim Build erzeugter Inhalt (RenderOptions.blocks),
+ *                                          bekommt die aktuelle Seite übergeben
  *
  * Außerdem erzeugt das Plugin beim Build `sitemap.xml` aus dem Seitenregister.
  */
@@ -13,6 +14,7 @@
 import { readFileSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 import type { Plugin } from 'vite';
+import { escapeHtml } from './html-escape.ts';
 import type { PageDef } from './pages.ts';
 
 const INCLUDE = /<!--\s*@include\s+([\w./-]+)\s*-->/g;
@@ -20,13 +22,7 @@ const HEAD = /<!--\s*@head\s*-->/;
 const BLOCK = /<!--\s*@block\s+([\w-]+)\s*-->/g;
 const MAX_DEPTH = 5;
 
-export function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+export { escapeHtml };
 
 export function renderHead(page: PageDef, siteUrl: string): string {
   const lines = [
@@ -43,7 +39,7 @@ export interface RenderOptions {
   /** Liest eine Datei relativ zu `src/`. */
   readInclude: (path: string) => string;
   /** Beim Build erzeugte Inhalte, z. B. die Lizenzliste */
-  blocks?: Record<string, () => string>;
+  blocks?: Record<string, (page: PageDef) => string>;
 }
 
 export function renderPage(html: string, page: PageDef, options: RenderOptions): string {
@@ -61,7 +57,7 @@ export function renderPage(html: string, page: PageDef, options: RenderOptions):
     .replace(BLOCK, (_match, name: string) => {
       const block = options.blocks?.[name];
       if (!block) throw new Error(`${page.file}: Unbekannter Block „${name}“.`);
-      return block();
+      return block(page);
     });
   if (page.nav) {
     out = out.replaceAll(`data-nav="${page.nav}"`, `data-nav="${page.nav}" aria-current="page"`);
@@ -90,7 +86,7 @@ export interface HtmlPartialsOptions {
   srcDir: string;
   pages: readonly PageDef[];
   siteUrl: string;
-  blocks?: Record<string, () => string>;
+  blocks?: Record<string, (page: PageDef) => string>;
 }
 
 export function htmlPartials(options: HtmlPartialsOptions): Plugin {

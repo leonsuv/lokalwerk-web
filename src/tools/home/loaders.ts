@@ -1,0 +1,29 @@
+/**
+ * Werkzeuge, in die die Startseite ohne Neuladen wechseln kann (src/tools/home/page.ts).
+ * Je Werkzeug: das Markup der Seite (dieselbe main.html wie auf der Werkzeugseite) und die
+ * Funktion, die die abgelegten Dateien übernimmt. Geladen wird erst beim Aufruf, damit die
+ * Startseite keine PDF- oder Tabellenbibliothek lädt (AGENTS.md Abschnitt 3).
+ *
+ * Für jedes Werkzeug mit `accepts` im Register muss hier ein Eintrag stehen
+ * (tests/tools/home-loaders.test.ts).
+ */
+
+export interface ToolLoader {
+  markup: () => Promise<string>;
+  open: () => Promise<(files: File[]) => unknown>;
+}
+
+export const LOADERS: Record<string, ToolLoader> = {
+  'pdf-zusammenfuegen': {
+    markup: async () => (await import('../pdf-zusammenfuegen/main.html?raw')).default,
+    open: async () => (await import('../pdf-zusammenfuegen/page.ts')).addFiles,
+  },
+  'fotos-verkleinern': {
+    markup: async () => (await import('../fotos-verkleinern/main.html?raw')).default,
+    open: async () => (await import('../fotos-verkleinern/page.ts')).addFiles,
+  },
+  'sepa-sammelueberweisung': {
+    markup: async () => (await import('../sepa-sammelueberweisung/main.html?raw')).default,
+    open: async () => (await import('../sepa-sammelueberweisung/page.ts')).openFiles,
+  },
+};

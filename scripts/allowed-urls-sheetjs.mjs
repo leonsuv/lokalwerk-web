@@ -1,12 +1,12 @@
 /**
  * Freigegebene Adressen in SheetJS CE 0.20.3 (plan.md N3, freigegeben am 24.09.2026).
- * Übersicht und Einordnung: docs/sheetjs-adressen.md. Gilt nur für den SEPA-Worker
- * (assets/sheet.worker-*.js), nicht global. Fundstelle: Zeile in node_modules/xlsx/xlsx.mjs;
+ * Übersicht und Einordnung: docs/sheetjs-adressen.md. Gilt nur für Dateien im Build, die
+ * SheetJS (Paket xlsx) enthalten, nicht global (plan-phase2.md E14). Fundstelle: Zeile in node_modules/xlsx/xlsx.mjs;
  * tests/scripts/check-dist.test.ts prüft, dass die Adresse dort wirklich steht.
  * Neue Einträge nur nach Rückfrage.
  */
 
-const file = /^assets\/sheet\.worker-[\w-]+\.js$/;
+const pkg = 'xlsx';
 const library = 'SheetJS CE 0.20.3';
 
 const NAMESPACE =
@@ -14,12 +14,12 @@ const NAMESPACE =
 const RELATIONSHIP =
   'Beziehungstyp nach ECMA-376 (OPC); SheetJS erkennt daran Teile einer .xlsx-Datei, ruft ihn nie ab.';
 
-/** @type {ReadonlyArray<{ url: string, library: string, file: RegExp, category: string, reason: string, source: string, test?: string }>} */
+/** @type {ReadonlyArray<{ url: string, library: string, package: string, category: string, reason: string, source: string, test?: string }>} */
 export const SHEETJS_URLS = [
   {
     url: 'http://purl.oclc.org/ooxml/spreadsheetml/main',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4127',
@@ -27,7 +27,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://purl.org/dc/dcmitype/',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4116',
@@ -35,7 +35,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://purl.org/dc/elements/1.1/',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4114',
@@ -43,7 +43,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://purl.org/dc/terms/',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4115',
@@ -51,7 +51,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/excel/2006/2',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4129',
@@ -59,7 +59,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/excel/2006/main',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4128',
@@ -67,7 +67,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/mac/excel/2008/main',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4117',
@@ -75,7 +75,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/spreadsheetml/2018/threadedcomments',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4113',
@@ -83,7 +83,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/drawingml/2006/main',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 12091',
@@ -91,7 +91,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/custom-properties',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4109',
@@ -99,7 +99,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4120',
@@ -107,7 +107,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4110',
@@ -115,7 +115,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4118',
@@ -123,7 +123,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/package/2006/content-types',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4111',
@@ -131,7 +131,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4108',
@@ -139,7 +139,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/package/2006/relationships',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4112',
@@ -147,7 +147,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/spreadsheetml/2006/main',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4126',
@@ -155,7 +155,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://www.w3.org/2001/XMLSchema',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4122',
@@ -163,7 +163,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://www.w3.org/2001/XMLSchema-instance',
     library,
-    file,
+    package: pkg,
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4121',
@@ -171,7 +171,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://purl.oclc.org/ooxml/officeDocument/relationships/worksheet',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5709',
@@ -179,7 +179,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/2006/relationships/vbaProject',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5719',
@@ -187,7 +187,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/2006/relationships/xlExternalLinkPath/xlPathMissing',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5693',
@@ -195,7 +195,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5712',
@@ -203,7 +203,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/2014/relationships/chartEx',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5705',
@@ -211,7 +211,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/2017/10/relationships/person',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5717',
@@ -219,7 +219,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.microsoft.com/office/2017/10/relationships/threadedComment',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5716',
@@ -227,7 +227,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5704',
@@ -235,7 +235,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5706',
@@ -243,7 +243,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5697',
@@ -251,7 +251,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5718',
@@ -259,7 +259,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5700',
@@ -267,7 +267,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5695',
@@ -275,7 +275,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5696',
@@ -283,7 +283,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5711',
@@ -291,7 +291,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5714',
@@ -299,7 +299,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5699',
@@ -307,7 +307,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5694',
@@ -315,7 +315,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5692',
@@ -323,7 +323,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5690',
@@ -331,7 +331,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5713',
@@ -339,7 +339,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5688',
@@ -347,7 +347,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5701',
@@ -355,7 +355,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/sheetMetadata',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5715',
@@ -363,7 +363,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5702',
@@ -371,7 +371,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5703',
@@ -379,7 +379,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5691',
@@ -387,7 +387,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5708',
@@ -395,7 +395,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties',
     library,
-    file,
+    package: pkg,
     category: 'ecma376-relationship',
     reason: RELATIONSHIP,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 5698',
@@ -403,7 +403,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://schemas.openxmlformats.org/package/2006/sheetjs/core-properties',
     library,
-    file,
+    package: pkg,
     category: 'dead-address',
     reason:
       'Eigener Namensraum von SheetJS (Präfix sjs), nur beim Schreiben eigener Dokumenteigenschaften; wir schreiben keine Excel-Dateien. Wird nie abgerufen.',
@@ -413,7 +413,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://sheetjs.com',
     library,
-    file,
+    package: pkg,
     category: 'dead-address',
     reason:
       'Lizenz- und Urheberhinweis von SheetJS in einem erhaltenen Kommentar (/*! … */). Wird nie ausgeführt.',
@@ -423,7 +423,7 @@ export const SHEETJS_URLS = [
   {
     url: 'http://sheetjs.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
     library,
-    file,
+    package: pkg,
     category: 'dead-address',
     reason:
       'Eigener Beziehungstyp von SheetJS mit ausgedachter Domain, erkennt von SheetJS geschriebene Dateien. Wird nie abgerufen.',

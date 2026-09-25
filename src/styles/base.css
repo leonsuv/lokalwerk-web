@@ -48,6 +48,11 @@ svg {
   padding: 0 1.25rem;
 }
 
+/* `hidden` gilt auch für Elemente, deren Klasse eine Anzeigeart setzt (z. B. .big-drop). */
+[hidden] {
+  display: none !important;
+}
+
 /* Für Screenreader sichtbar, optisch ausgeblendet. Bleibt fokussierbar (Datei-Eingaben). */
 .visually-hidden {
   position: absolute;

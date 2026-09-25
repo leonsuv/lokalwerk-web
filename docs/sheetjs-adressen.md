@@ -6,6 +6,8 @@ Fundstelle: Zeile in `node_modules/xlsx/xlsx.mjs`.
 
 Vorschlag: Alle Einträge gelten nur für `assets/sheet.worker-*.js`, nicht global (wie die pdf-lib-Ausnahme).
 
+**Nachtrag 25.09.2026 (plan-phase2.md E14):** Die Einträge gelten jetzt für jede Datei im Build, die SheetJS (Paket `xlsx`) laut `build/shipped-packages.ts` enthält, statt für einen festen Dateinamen. Weitere Werkzeuge mit SheetJS brauchen dadurch keine neue Freigabe; in Dateien ohne SheetJS greift die Liste nicht (Test in `tests/scripts/check-dist.test.ts`).
+
 ## Gruppe A1: XML-Namensräume (19)
 
 Kennungen, mit denen Office- und XML-Dateien ihre Elemente benennen. SheetJS vergleicht beim Lesen einer .xlsx/.ods-Datei die Namensräume in der Datei mit diesen Texten.

@@ -85,6 +85,7 @@ label.lbl,
   font-weight: 500;
 }
 input[type='text'],
+input[type='search'],
 input[type='date'],
 select {
   font: inherit;
@@ -96,6 +97,7 @@ select {
   color: var(--ink);
 }
 input[type='text']:focus,
+input[type='search']:focus,
 input[type='date']:focus,
 select:focus {
   outline: none;
@@ -738,4 +740,117 @@ tr.bad td {
 }
 .explain p {
   margin: 0 0 0.8rem;
+}
+
+/* Werkzeuglisten aus dem Register (plan-phase2.md Abschnitt 3): Übersicht, „Passt dazu“ */
+ul.tool-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul.tool-grid > li:not([hidden]) {
+  display: flex;
+}
+ul.tool-grid > li > .tool-card {
+  flex: 1;
+}
+.tool-search {
+  max-width: 32rem;
+  margin-bottom: 1.4rem;
+}
+.jump-links {
+  list-style: none;
+  margin: 0 0 2.2rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.jump-links a {
+  display: inline-block;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: var(--cs);
+  color: var(--ci);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.jump-links a:hover {
+  text-decoration: underline;
+}
+.tool-category {
+  padding-bottom: 2.6rem;
+  /* Überschrift nach einem Sprung nicht unter der festen Kopfzeile (WCAG 2.4.11) */
+  scroll-margin-top: calc(5rem + env(safe-area-inset-top, 0px));
+}
+.tool-category .section-head h2 {
+  font-size: 1.45rem;
+}
+.tool-category .section-head p {
+  white-space: nowrap;
+}
+.related {
+  padding-bottom: 4rem;
+}
+.related h2 {
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 1rem;
+}
+
+/* Auswahl nach dem Ablegen auf der Startseite (plan-phase2.md Abschnitt 3.4) */
+.choice h2 {
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.choice .hint {
+  margin-top: 0.2rem;
+}
+.choice-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  cursor: pointer;
+}
+.choice-btn:hover {
+  border-color: var(--c);
+}
+.choice-btn .ic {
+  flex: none;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--cs);
+  color: var(--c);
+}
+.choice-btn .txt {
+  min-width: 0;
+}
+.choice-btn b {
+  display: block;
+  font-weight: 600;
+}
+.choice-btn .txt span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
 }

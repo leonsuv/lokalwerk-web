@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <!-- @include partials/head.html -->
+    <!-- @head -->
+    <script type="module" src="/src/tools/werkzeuge/page.ts"></script>
+  </head>
+  <body>
+    <!-- @include partials/icons.svg -->
+    <!-- @include partials/header.html -->
+    <main>
+      <div class="wrap">
+        <div class="tool-top">
+          <div>
+            <h1>Alle Werkzeuge</h1>
+            <p>
+              Jedes Werkzeug läuft direkt in deinem Browser. Deine Dateien werden nicht hochgeladen.
+            </p>
+          </div>
+        </div>
+        <!-- Ohne JavaScript bleibt die Suche verborgen; die Liste darunter ist vollständig. -->
+        <div class="tool-search" id="tool-search" hidden>
+          <label class="lbl" for="tool-search-input">Werkzeug suchen</label>
+          <input
+            type="search"
+            id="tool-search-input"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="zum Beispiel PDF, Foto oder CSV"
+          />
+          <p class="hint" id="tool-search-status" role="status"></p>
+        </div>
+        <nav aria-label="Kategorien">
+          <!-- @block category-links -->
+        </nav>
+        <div id="tool-overview">
+          <!-- @block tool-overview -->
+        </div>
+      </div>
+    </main>
+    <!-- @include partials/footer.html -->
+  </body>
+</html>

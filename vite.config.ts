@@ -10,7 +10,19 @@ import {
   REQUIRED_DATA_LICENSES,
 } from './build/licenses.ts';
 import { PAGES, SITE_URL } from './build/pages.ts';
-import { recordShippedPackages, verifyLicensesListed } from './build/shipped-packages.ts';
+import { checkRegistry, iconIds } from './build/registry.ts';
+import {
+  recordShippedPackages,
+  verifyLicensesListed,
+  writeShippedManifest,
+} from './build/shipped-packages.ts';
+import {
+  renderCategoryLinks,
+  renderHomeTools,
+  renderRelated,
+  renderToolOverview,
+} from './build/tool-blocks.ts';
+import { SHIPPED_MANIFEST } from './scripts/shipped-manifest.mjs';
 
 const path = (p: string): string => fileURLToPath(new URL(p, import.meta.url));
 
@@ -18,6 +30,15 @@ const pagesDir = path('./pages');
 const srcDir = path('./src');
 const securityHeaders = parseGlobalHeaders(readFileSync(path('./public/_headers'), 'utf8'));
 const licenses = () => collectLicenses(path('.'));
+
+// Register vor jedem Start prüfen (plan-phase2.md Abschnitt 3.5).
+const registryProblems = checkRegistry(
+  PAGES,
+  iconIds(readFileSync(path('./src/partials/icons.svg'), 'utf8')),
+);
+if (registryProblems.length > 0) {
+  throw new Error(`Seitenregister build/pages.ts:\n  ${registryProblems.join('\n  ')}`);
+}
 
 export default defineConfig({
   root: pagesDir,
@@ -29,7 +50,13 @@ export default defineConfig({
       srcDir,
       pages: PAGES,
       siteUrl: SITE_URL,
-      blocks: { licenses: () => renderLicenses(licenses()) },
+      blocks: {
+        licenses: () => renderLicenses(licenses()),
+        'home-tools': renderHomeTools,
+        'tool-overview': renderToolOverview,
+        'category-links': renderCategoryLinks,
+        related: renderRelated,
+      },
     }),
     recordShippedPackages(),
     verifyLicensesListed({
@@ -40,6 +67,7 @@ export default defineConfig({
       fontsDir: path('./public/fonts'),
       fontPrefixes: FONT_FILE_PREFIXES,
     }),
+    writeShippedManifest(SHIPPED_MANIFEST),
   ],
   worker: {
     format: 'es',

@@ -143,28 +143,49 @@ describe('Tote Adressen in Bibliotheken (plan.md N3)', () => {
     }
   });
 
-  it('SheetJS-Adressen gelten nur im SEPA-Worker', () => {
+  // Zuordnung wie in node_modules/.cache/lokalwerk/shipped-files.json nach einem Build.
+  const packagesByFile = {
+    'assets/sheet.worker-w6J4Ywau.js': ['xlsx'],
+    'assets/tabelle.worker-Q1.js': ['xlsx'],
+    'assets/merge.worker-TScBrF7F.js': ['@pdf-lib/standard-fonts', 'pako', 'pdf-lib', 'tslib'],
+    'assets/nur-pako.worker-P1.js': ['pako'],
+  };
+  const inBuild = (text: string, file: string, kind: 'js' | 'html' = 'js') =>
+    checkText(text, kind, file, { packagesByFile });
+
+  it('SheetJS-Adressen gelten in jeder Datei mit SheetJS, und nur dort (E14)', () => {
     const url = '"http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
-    expect(checkText(url, 'js', 'assets/sheet.worker-w6J4Ywau.js')).toEqual([]);
-    expect(checkText(url, 'js', 'assets/merge.worker-TScBrF7F.js')).toHaveLength(1);
-    expect(checkText(url, 'js', 'assets/sepa-sammelueberweisung/index.html-x.js')).toHaveLength(1);
-    expect(checkText(url, 'html', 'assets/sheet.worker-w6J4Ywau.js')).toHaveLength(1);
+    expect(inBuild(url, 'assets/sheet.worker-w6J4Ywau.js')).toEqual([]);
+    expect(inBuild(url, 'assets/tabelle.worker-Q1.js')).toEqual([]);
+    expect(inBuild(url, 'assets/merge.worker-TScBrF7F.js')).toHaveLength(1);
+    expect(inBuild(url, 'assets/sepa-sammelueberweisung/index.html-x.js')).toHaveLength(1);
+    expect(inBuild(url, 'assets/sheet.worker-w6J4Ywau.js', 'html')).toHaveLength(1);
   });
 
-  it('gilt nur im PDF-Worker', () => {
-    expect(checkText(pdfLib, 'js', 'assets/merge.worker-TScBrF7F.js')).toEqual([]);
-    expect(checkText(pdfLib, 'js', 'assets/pdf-zusammenfuegen/index.html-Bz.js')).toHaveLength(1);
-    expect(checkText(pdfLib, 'js', 'assets/merge.worker-x.js.map')).toHaveLength(1);
+  it('greifen nicht in einem Worker ohne die Bibliothek, auch wenn er ähnlich heißt (E14)', () => {
+    const url = '"http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
+    expect(inBuild(url, 'assets/sheet.worker-ANDERS.js')).toHaveLength(1);
+    expect(inBuild(pdfLib, 'assets/nur-pako.worker-P1.js')).toHaveLength(1);
+    expect(inBuild(pdfLib, 'assets/merge.worker-ANDERS.js')).toHaveLength(1);
+  });
+
+  it('die pdf-lib-Adresse gilt nur in Dateien mit pdf-lib', () => {
+    expect(inBuild(pdfLib, 'assets/merge.worker-TScBrF7F.js')).toEqual([]);
+    expect(inBuild(pdfLib, 'assets/pdf-zusammenfuegen/index.html-Bz.js')).toHaveLength(1);
+    expect(inBuild(pdfLib, 'assets/merge.worker-TScBrF7F.js.map')).toHaveLength(1);
     expect(checkText(pdfLib, 'js')).toHaveLength(1);
-    expect(checkText(pdfLib, 'html', 'assets/merge.worker-TScBrF7F.js')).toHaveLength(1);
+    expect(checkText(pdfLib, 'js', 'assets/merge.worker-TScBrF7F.js')).toHaveLength(1);
+    expect(inBuild(pdfLib, 'assets/merge.worker-TScBrF7F.js', 'html')).toHaveLength(1);
   });
 
   it('gilt nur exakt, nicht für Unterseiten oder andere Adressen im Worker', () => {
     const worker = 'assets/merge.worker-TScBrF7F.js';
-    expect(
-      checkText('"https://github.com/Hopding/pdf-lib/tree/master"', 'js', worker),
-    ).toHaveLength(1);
-    expect(checkText('"https://example.com/"', 'js', worker)).toHaveLength(1);
+    expect(inBuild('"https://github.com/Hopding/pdf-lib/tree/master"', worker)).toHaveLength(1);
+    expect(inBuild('"https://example.com/"', worker)).toHaveLength(1);
+  });
+
+  it('jede Ausnahme nennt ein Paket', () => {
+    for (const entry of ALLOWED_LIBRARY_URLS) expect(entry.package, entry.url).toMatch(/^[@\w]/);
   });
 });
 

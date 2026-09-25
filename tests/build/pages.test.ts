@@ -17,10 +17,11 @@ describe('Seitenregister', () => {
     for (const p of PAGES) expect(existsSync(pagesDir + p.file), p.file).toBe(true);
   });
 
-  it('enthält genau die Seiten aus plan.md Abschnitt 3', () => {
+  it('enthält genau die Seiten aus plan.md Abschnitt 3 und plan-phase2.md', () => {
     expect(PAGES.map((p) => p.url).sort()).toEqual(
       [
         '/',
+        '/werkzeuge/',
         '/pdf-zusammenfuegen/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',

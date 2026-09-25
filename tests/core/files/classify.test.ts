@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
-  classifyDrop,
+  describeDrop,
+  dropKind,
+  type FileKind,
   isCsv,
   isImage,
   isPdf,
   isSpreadsheet,
   isWorkbook,
+  toolsForDrop,
 } from '../../../src/core/files/classify.ts';
 
 describe('isPdf', () => {
@@ -48,28 +51,65 @@ describe('Tabellen', () => {
   });
 });
 
-describe('classifyDrop (Ablage auf der Startseite)', () => {
+describe('dropKind (Ablage auf der Startseite)', () => {
   const f = (name: string, type = '') => ({ name, type });
 
   it.each([
-    [[f('a.pdf', 'application/pdf'), f('b.PDF')], 'pdf'],
-    [[f('a.jpg', 'image/jpeg'), f('b.png', 'image/png')], 'images'],
-    [[f('liste.xlsx')], 'sepa'],
-    [[f('liste.csv', 'text/csv')], 'sepa'],
-  ] as const)('%o → %s', (files, target) => {
-    expect(classifyDrop(files)).toEqual({ ok: true, target });
+    [[f('a.pdf', 'application/pdf'), f('b.PDF')], 'pdf', 2],
+    [[f('a.jpg', 'image/jpeg'), f('b.png', 'image/png')], 'image', 2],
+    [[f('liste.xlsx')], 'spreadsheet', 1],
+    [[f('liste.csv', 'text/csv'), f('b.ods')], 'spreadsheet', 2],
+  ] as const)('%o → %s', (files, kind, count) => {
+    expect(dropKind(files)).toEqual({ ok: true, kind, count });
   });
 
   it.each([
     [[f('a.pdf', 'application/pdf'), f('b.jpg', 'image/jpeg')]],
-    [[f('a.csv'), f('b.csv')]],
     [[f('a.docx')]],
     [[f('a.csv'), f('b.pdf', 'application/pdf')]],
+    [[f('a.pdf', 'application/pdf'), f('b.docx')]],
   ])('%o → gemischt oder nicht unterstützt', (files) => {
-    expect(classifyDrop(files)).toEqual({ ok: false, code: 'mixed' });
+    expect(dropKind(files)).toEqual({ ok: false, code: 'mixed' });
   });
 
   it('meldet eine leere Ablage', () => {
-    expect(classifyDrop([])).toEqual({ ok: false, code: 'empty' });
+    expect(dropKind([])).toEqual({ ok: false, code: 'empty' });
+  });
+});
+
+describe('toolsForDrop', () => {
+  const tools: { id: string; accepts?: { kind: FileKind; multiple: boolean } }[] = [
+    { id: 'merge', accepts: { kind: 'pdf', multiple: true } },
+    { id: 'split', accepts: { kind: 'pdf', multiple: false } },
+    { id: 'sepa', accepts: { kind: 'spreadsheet', multiple: false } },
+    { id: 'ohne' },
+  ];
+  const ids = (kind: FileKind, count: number) => toolsForDrop(tools, kind, count).map((t) => t.id);
+
+  it('nimmt bei einer Datei alle passenden Werkzeuge in Registerreihenfolge', () => {
+    expect(ids('pdf', 1)).toEqual(['merge', 'split']);
+    expect(ids('spreadsheet', 1)).toEqual(['sepa']);
+  });
+
+  it('lässt Werkzeuge für eine einzelne Datei bei mehreren weg', () => {
+    expect(ids('pdf', 3)).toEqual(['merge']);
+    expect(ids('spreadsheet', 2)).toEqual([]);
+  });
+
+  it('findet nichts für Dateiarten ohne Werkzeug', () => {
+    expect(ids('image', 1)).toEqual([]);
+  });
+});
+
+describe('describeDrop', () => {
+  it.each([
+    ['pdf', 1, '1 PDF'],
+    ['pdf', 2, '2 PDFs'],
+    ['image', 1, '1 Foto'],
+    ['image', 5, '5 Fotos'],
+    ['spreadsheet', 1, '1 Tabelle'],
+    ['spreadsheet', 2, '2 Tabellen'],
+  ] as const)('%s, %i → %s', (kind, count, text) => {
+    expect(describeDrop(kind, count)).toBe(text);
   });
 });

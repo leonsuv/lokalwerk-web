@@ -7,7 +7,8 @@
  *   weil die Content-Security-Policy sie blockieren würde.
  * - JavaScript: eigene Domain und exakte Einträge aus ALLOWED_JS_URLS.
  * - JavaScript zusätzlich: „tote Adressen in Bibliotheken“ aus ALLOWED_LIBRARY_URLS, jeweils nur
- *   in dem Bundle-Teil, der die Bibliothek enthält.
+ *   in den Dateien, die die Bibliothek laut Build enthalten (plan-phase2.md E14). Die Zuordnung
+ *   Datei → Pakete schreibt build/shipped-packages.ts beim Build (scripts/shipped-manifest.mjs).
  * - Einzige Ausnahme in HTML (plan.md N3, Variante A): Auf lizenzen/index.html sind Adressen
  *   erlaubt, die im Textinhalt stehen (nie in einem Attribut) und beim Build wörtlich in den
  *   gesammelten Lizenzdaten vorkommen (build/licenses.ts). Jede andere Adresse bricht ab.
@@ -15,11 +16,12 @@
  *   SVG zusätzlich ohne <script>, on…-Attribute und externe href/xlink:href.
  */
 
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { collectLicenses } from '../build/licenses.ts';
 import { SHEETJS_URLS } from './allowed-urls-sheetjs.mjs';
+import { SHIPPED_MANIFEST } from './shipped-manifest.mjs';
 
 export const SITE_ORIGIN = 'https://lokalwerk.eu';
 
@@ -54,21 +56,21 @@ export const ALLOWED_SVG_XML_URLS = [
 
 /**
  * „Tote Adressen in Bibliotheken“ (plan.md N3): Adressen im Code einer Bibliothek, die bei uns
- * nie ausgeführt werden. Gilt nur für Dateien, deren Pfad `file` entspricht (der Bundle-Teil mit
- * der Bibliothek), nie global. Jede Ausnahme braucht Fundstelle und einen Test, der belegt, dass
+ * nie ausgeführt werden. Gilt nur für Dateien, die das npm-Paket `package` laut Build enthalten
+ * (plan-phase2.md E14), nie global. Jede Ausnahme braucht Fundstelle und einen Test, der belegt, dass
  * die Adresse nicht in erzeugten Dateien landet. Neue Einträge nur nach Rückfrage.
  *
  * Seit 24.09.2026 außerdem freigegeben: XML-Namensräume und Beziehungstypen nach ECMA-376
  * aus SheetJS, jeweils nur im SEPA-Worker (scripts/allowed-urls-sheetjs.mjs).
  *
- * @type {ReadonlyArray<AllowedUrl & { library: string, file: RegExp, category?: string, test?: string }>}
+ * @type {ReadonlyArray<AllowedUrl & { library: string, package: string, category?: string, test?: string }>}
  */
 export const ALLOWED_LIBRARY_URLS = [
   ...SHEETJS_URLS,
   {
     url: 'https://github.com/Hopding/pdf-lib',
     library: 'pdf-lib 1.17.1',
-    file: /^assets\/merge\.worker-[\w-]+\.js$/,
+    package: 'pdf-lib',
     reason:
       'Standardtext für die PDF-Metadaten Producer/Creator. Wird nur geschrieben, wenn ' +
       'updateMetadata aktiv ist; wir setzen überall updateMetadata: false (docs/pdf-lib.md, Nr. 8 und 9).',
@@ -118,18 +120,28 @@ function insideTag(/** @type {string} */ text, /** @type {number} */ index) {
 }
 
 /**
+ * @typedef {{
+ *   licenseUrls?: ReadonlySet<string>,
+ *   packagesByFile?: Readonly<Record<string, readonly string[]>>,
+ * }} CheckContext
+ */
+
+/**
  * @param {string} text
  * @param {Kind} kind
  * @param {string} [file] Pfad relativ zu dist/, nötig für die Bibliotheks-Ausnahmen
- * @param {{ licenseUrls?: ReadonlySet<string> }} [context]
+ * @param {CheckContext} [context]
  * @returns {string[]} Beanstandungen, leer wenn alles in Ordnung ist
  */
 export function checkText(text, kind, file = '', context = {}) {
   /** @type {string[]} */
   const problems = [];
+  const packages = context.packagesByFile?.[file] ?? [];
   const allowed = [
     ...(ALLOWED_BY_KIND[kind] ?? []),
-    ...(kind === 'js' ? ALLOWED_LIBRARY_URLS.filter((entry) => entry.file.test(file)) : []),
+    ...(kind === 'js'
+      ? ALLOWED_LIBRARY_URLS.filter((entry) => packages.includes(entry.package))
+      : []),
   ];
 
   const onLicensePage = kind === 'html' && file === LICENSE_PAGE && context.licenseUrls;
@@ -181,7 +193,7 @@ const KINDS = {
 
 /**
  * @param {string} distDir
- * @param {{ licenseUrls?: ReadonlySet<string> }} [context]
+ * @param {CheckContext} [context]
  * @returns {string[]}
  */
 export function checkDist(distDir, context = {}) {
@@ -196,7 +208,17 @@ export function checkDist(distDir, context = {}) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const distDir = fileURLToPath(new URL('../dist', import.meta.url));
   const root = fileURLToPath(new URL('..', import.meta.url));
-  const problems = checkDist(distDir, { licenseUrls: licenseUrls(collectLicenses(root)) });
+  if (!existsSync(SHIPPED_MANIFEST)) {
+    console.error(`check-dist: ${SHIPPED_MANIFEST} fehlt. Erst „vite build“ ausführen.`);
+    process.exit(1);
+  }
+  /** @type {unknown} */
+  const manifest = JSON.parse(readFileSync(SHIPPED_MANIFEST, 'utf8'));
+  const packagesByFile = /** @type {Record<string, string[]>} */ (manifest);
+  const problems = checkDist(distDir, {
+    licenseUrls: licenseUrls(collectLicenses(root)),
+    packagesByFile,
+  });
   if (problems.length > 0) {
     console.error(`check-dist: ${problems.length} Problem(e) im Build gefunden:`);
     for (const p of problems) console.error(`  ${p}`);

@@ -111,7 +111,8 @@ select:focus {
 }
 input[type='range'] {
   width: 100%;
-  accent-color: var(--img);
+  /* Akzentfarbe der Kategorie (Fotos: türkis, wie bisher) */
+  accent-color: var(--c, var(--primary));
 }
 .field + .field {
   margin-top: 1rem;
@@ -861,4 +862,22 @@ ul.tool-grid > li > .tool-card {
   display: block;
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+/* Erzeugtes Passwort: groß, gut lesbar, bricht an jeder Stelle um */
+.password-out {
+  display: block;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  font:
+    600 1.35rem/1.45 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+  user-select: all;
 }

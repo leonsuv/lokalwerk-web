@@ -1,0 +1,83 @@
+<div class="wrap util">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-key" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Passwort-Generator</h1>
+      <p>
+        Sichere Passwörter erzeugen, direkt in deinem Browser. Kein Server bekommt sie zu sehen.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <h2 id="pw-label">Dein neues Passwort</h2>
+      <output class="password-out" id="pw-out" aria-labelledby="pw-label"></output>
+      <div class="actions mt-m">
+        <button class="btn" id="pw-copy" type="button">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-copy" /></svg>Kopieren
+        </button>
+        <button class="btn ghost" id="pw-new" type="button">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-refresh" /></svg>Neues
+          Passwort
+        </button>
+      </div>
+      <div class="summary" id="pw-rating" aria-live="polite"></div>
+      <p class="hint" id="pw-wlan" hidden>
+        Für WLAN-Passwörter nennt das BSI mindestens 20 Zeichen.
+      </p>
+    </div>
+    <div class="card side">
+      <h2>Einstellungen</h2>
+      <div class="field">
+        <label class="lbl" for="pw-length">Länge: <span id="pw-length-val">20</span> Zeichen</label>
+        <input type="range" id="pw-length" min="8" max="64" step="1" value="20" />
+      </div>
+      <div class="field">
+        <span class="lbl" id="pw-groups-label">Zeichenarten</span>
+        <div class="seg" role="group" aria-labelledby="pw-groups-label">
+          <button type="button" data-group="upper" aria-pressed="true">A–Z</button>
+          <button type="button" data-group="lower" aria-pressed="true">a–z</button>
+          <button type="button" data-group="digits" aria-pressed="true">0–9</button>
+          <button type="button" data-group="symbols" aria-pressed="true">!#%&amp;</button>
+        </div>
+        <p class="hint" id="pw-groups-hint">Mindestens eine Zeichenart bleibt immer gewählt.</p>
+      </div>
+      <div class="field">
+        <span class="lbl" id="pw-ambiguous-label">Verwechselbare Zeichen</span>
+        <div class="seg" role="group" aria-labelledby="pw-ambiguous-label">
+          <button type="button" data-ambiguous="allow" aria-pressed="true">Erlauben</button>
+          <button type="button" data-ambiguous="avoid" aria-pressed="false">Weglassen</button>
+        </div>
+        <p class="hint">Weglassen heißt: ohne 0, O, o, 1, l, I und |. Das hilft beim Abtippen.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="pw-explain">
+    <h2 id="pw-explain">So funktioniert es</h2>
+    <p>
+      Stell Länge und Zeichenarten ein, das Passwort entsteht sofort neu. Mit „Kopieren“ legst du es
+      in die Zwischenablage, mit „Neues Passwort“ erzeugst du ein anderes. Der Zufall kommt aus dem
+      Zufallsgenerator deines Browsers, der auch für Verschlüsselung verwendet wird. Jede gewählte
+      Zeichenart kommt mindestens einmal vor.
+    </p>
+    <h2>Was empfiehlt das BSI?</h2>
+    <p>
+      Das Bundesamt für Sicherheit in der Informationstechnik nennt als Beispiele für sichere
+      Passwörter: 8 bis 12 Zeichen mit vier Zeichenarten, 20 bis 25 Zeichen mit zwei Zeichenarten
+      oder mindestens 25 Zeichen. Für WLAN sollen es mindestens 20 Zeichen sein. Auf Umlaute, ß und
+      € soll man verzichten; der Generator verwendet sie nicht. Quelle: BSI, „Sichere Passwörter
+      erstellen“, abgerufen am 25.09.2026.
+    </p>
+    <h2>Nichts wird gespeichert</h2>
+    <p>
+      Das Passwort entsteht nur in deinem Browser und wird weder gesendet noch gespeichert. Lädst du
+      die Seite neu, ist es weg. Für viele verschiedene Passwörter empfiehlt das BSI einen
+      Passwortmanager.
+    </p>
+  </section>
+</div>

@@ -27,6 +27,7 @@ describe('Seitenregister', () => {
         '/pdf-metadaten-entfernen/',
         '/bildformat-umwandeln/',
         '/excel-csv-umwandeln/',
+        '/passwort-generator/',
         '/pdf-zusammenfuegen/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',

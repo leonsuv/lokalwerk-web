@@ -44,6 +44,21 @@ Copyright-Vermerk der EPC-Dokumente: „Reproduction for non-commercial purposes
 
 Die Übersichtsseiten des EPC lassen sich nicht automatisch abrufen (Bot-Schutz). Die direkten PDF-Adressen oben funktionieren.
 
+## NIST-Prüfvektoren für SHA-1 und SHA-256 (`nist/`)
+
+Quelle: NIST Cryptographic Algorithm Validation Program (CAVP), „SHA Test Vectors for Hashing Byte-Oriented Messages“, Datei `shabytetestvectors.zip` von
+https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents/shs/shabytetestvectors.zip
+(geladen am 25.09.2026, SHA-256 der ZIP-Datei `929ef80b7b3418aca026643f6f248815913b60e01741a44bba9e118067f4c9b8`, Dateikopf „CAVS 11.0“, erzeugt 2011). Unverändert übernommen:
+
+| Datei | Vektoren | SHA-256 |
+|---|---|---|
+| `SHA1ShortMsg.rsp` | 65 | `be0991ddc5372932d55804b11713c9140d10435ef4b316a0773e3506eec79cda` |
+| `SHA1LongMsg.rsp` | 64 | `c765dbc1609e9046b12f60a5285a88128dab4315080c94ce9f2a57a7b0b980be` |
+| `SHA256ShortMsg.rsp` | 65 | `75e1cb83994638481808e225b9eb0c1ebd0c232d952ac42b61abce6363be283c` |
+| `SHA256LongMsg.rsp` | 64 | `6fac36f37360bcf74ffcf4465c18e30d6d5a04cc90885b901fc3130c16060974` |
+
+Nutzung: NIST, „Copyrights“ (nist.gov/oism/copyrights, abgerufen am 25.09.2026): „With the exception of material marked as copyrighted, information presented on NIST sites are considered public information and may be distributed or copied.“ Die Dateien tragen keinen Urheberrechtsvermerk. Quellenangabe wird erbeten: hiermit erfolgt.
+
 ## Noch nicht vorhanden
 
 | Dokument | Grund |

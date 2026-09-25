@@ -1,5 +1,6 @@
 /**
- * Freigegebene Adressen in SheetJS CE 0.20.3 (plan.md N3, freigegeben am 24.09.2026).
+ * Freigegebene Adressen in SheetJS CE 0.20.3 (plan.md N3, freigegeben am 24.09.2026; drei
+ * Namensräume ergänzt am 25.09.2026, plan-phase2.md P1-1).
  * Übersicht und Einordnung: docs/sheetjs-adressen.md. Gilt nur für Dateien im Build, die
  * SheetJS (Paket xlsx) enthalten, nicht global (plan-phase2.md E14). Fundstelle: Zeile in node_modules/xlsx/xlsx.mjs;
  * tests/scripts/check-dist.test.ts prüft, dass die Adresse dort wirklich steht.
@@ -167,6 +168,34 @@ export const SHEETJS_URLS = [
     category: 'xml-namespace',
     reason: NAMESPACE,
     source: 'node_modules/xlsx/xlsx.mjs, Zeile 4121',
+  },
+  // Ergänzung zu Gruppe A1, freigegeben am 25.09.2026 (plan-phase2.md P1-1): kommen mit dem
+  // .xlsx-Schreiber (writeXLSX) in den Worker von „Excel und CSV umwandeln“.
+  {
+    url: 'http://www.w3.org/TR/REC-html40',
+    library,
+    package: pkg,
+    category: 'xml-namespace',
+    reason: NAMESPACE,
+    source: 'node_modules/xlsx/xlsx.mjs, Zeile 4139',
+  },
+  {
+    url: 'http://schemas.microsoft.com/office/spreadsheetml/2017/richdata',
+    library,
+    package: pkg,
+    category: 'xml-namespace',
+    reason:
+      'XML-Namensraum; SheetJS schreibt ihn in xl/metadata.xml jeder erzeugten .xlsx-Datei, ruft ihn nie ab.',
+    source: 'node_modules/xlsx/xlsx.mjs, Zeile 12542',
+  },
+  {
+    url: 'http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray',
+    library,
+    package: pkg,
+    category: 'xml-namespace',
+    reason:
+      'XML-Namensraum; SheetJS schreibt ihn in xl/metadata.xml jeder erzeugten .xlsx-Datei, ruft ihn nie ab.',
+    source: 'node_modules/xlsx/xlsx.mjs, Zeile 12542',
   },
   {
     url: 'http://purl.oclc.org/ooxml/officeDocument/relationships/worksheet',

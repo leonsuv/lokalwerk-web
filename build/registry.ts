@@ -51,6 +51,7 @@ export function checkRegistry(pages: readonly PageDef[], icons: ReadonlySet<stri
       problems.push(`${where}: unbekannte Kategorie ${tool.category}`);
     if (!icons.has(tool.icon)) problems.push(`${where}: Symbol ${tool.icon} fehlt in icons.svg`);
     if (tool.short.trim() === '') problems.push(`${where}: Kurztext fehlt`);
+    if (tool.related.length === 0) problems.push(`${where}: keine verwandten Werkzeuge`);
     for (const id of tool.related) {
       if (id === tool.id) problems.push(`${where}: verweist auf sich selbst`);
       else if (!ids.has(id)) problems.push(`${where}: verwandtes Werkzeug ${id} gibt es nicht`);

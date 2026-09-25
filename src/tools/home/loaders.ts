@@ -42,4 +42,8 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../sepa-sammelueberweisung/main.html?raw')).default,
     open: async () => (await import('../sepa-sammelueberweisung/page.ts')).openFiles,
   },
+  'excel-csv-umwandeln': {
+    markup: async () => (await import('../excel-csv-umwandeln/main.html?raw')).default,
+    open: async () => (await import('../excel-csv-umwandeln/page.ts')).openFiles,
+  },
 };

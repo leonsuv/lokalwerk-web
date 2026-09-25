@@ -17,6 +17,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | `/fotos-verkleinern/` | Fotos verkleinern und Metadaten entfernen – kostenlos \| Lokalwerk | Fotos kostenlos für E-Mail und Website verkleinern und dabei GPS-Position und Kameradaten entfernen. Direkt im Browser, ohne Upload. | 132 | ja |
 | **NEU** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
+| **NEU** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
 | `/pro/` | Lokalwerk Pro | Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen, Fotos und PDFs. Läuft wie alle Werkzeuge vollständig lokal. | 115 | noindex |
 | `/impressum/` | Impressum – Lokalwerk | Impressum von Lokalwerk. | 24 | noindex |
 | `/datenschutz/` | Datenschutzerklärung – Lokalwerk | Datenschutzerklärung von Lokalwerk. | 35 | noindex |
@@ -178,6 +179,30 @@ Nicht jedes Onlinebanking bietet den Upload von Überweisungsdateien an. Oft gib
 Liste und Kontodaten werden direkt in deinem Browser verarbeitet und nicht hochgeladen. Prüfe die Aufträge vor der Freigabe im Onlinebanking.
 
 _(Erklärtext: 152 Wörter)_
+
+## Excel und CSV umwandeln – NEU (`src/tools/excel-csv-umwandeln/main.html`)
+
+Karte: „Excel und CSV umwandeln“ – „Excel-Tabellen als CSV speichern und CSV-Dateien als Excel-Datei. Mit richtigen Umlauten.“
+
+Unterzeile im Kopf: „Excel- und ODS-Tabellen als CSV-Datei speichern, CSV-Dateien als Excel-Datei. Mit Semikolon, Dezimalkomma und richtigen Umlauten.“
+
+**So funktioniert es**
+
+Wähle eine Tabelle aus oder zieh sie in die Fläche oben. Aus einer Excel- oder ODS-Datei wird eine CSV-Datei, aus einer CSV-Datei eine Excel-Datei. Hat die Excel-Datei mehrere Tabellenblätter, wählst du eines aus. Die Vorschau zeigt die ersten Zeilen so, wie sie in der neuen Datei stehen.
+
+**Welche Einstellungen passen?**
+
+Excel in Deutschland erwartet Semikolon als Trennzeichen und Komma als Dezimalzeichen. „UTF-8 für Excel“ sorgt dafür, dass Excel Umlaute richtig anzeigt. Für Programme aus dem englischen Sprachraum wählst du Komma und Punkt. Windows-1252 brauchst du nur, wenn ein älteres Programm UTF-8 nicht lesen kann.
+
+**Gut zu wissen**
+
+In die CSV-Datei kommen die Werte ohne Formatierung: Formeln als Ergebnis, 19 % als 0,19, Beträge ohne Währungszeichen und Tausenderpunkte. Datumswerte werden als 25.09.2026 geschrieben. Farben, Rahmen und weitere Tabellenblätter gehen verloren. Beim Weg von CSV zu Excel wird eine Spalte nur dann zu Zahlen oder Datumswerten, wenn alle Werte darin eindeutig sind. Alles andere bleibt Text, so wie es in der CSV-Datei steht.
+
+**Deine Tabellen bleiben auf deinem Gerät**
+
+Die Dateien werden direkt in deinem Browser umgewandelt und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung. Deine Originale bleiben unverändert.
+
+_(Erklärtext: 181 Wörter)_
 
 ## Weitere Texte
 

@@ -52,7 +52,7 @@ Commits: Die neuen Farbwerte (`src/styles/tokens.css`) werden erst nach Leons en
 |---|---|
 | 0 | fertig, committet |
 | 1 | fertig, committet |
-| 2 | fertig, aber **auf dem Zweig `paket1-schritt2-wartet`**: SheetJS `writeXLSX` bringt drei XML-Namensräume in den Worker, die nicht auf der Liste stehen (N3). Übernahme in den Hauptzweig erst nach Freigabe (offene Frage P1-1) |
+| 2 | fertig, committet nach Freigabe der drei Namensräume (P1-1) |
 | 3–6 | fertig, committet |
 | 7 | Audit aller Seiten ohne Befund (bis auf das bekannte Datumsfeld aus Phase 1), Texte zur Freigabe in `docs/texte-zur-freigabe.md`, Screenshots für E15 |
 

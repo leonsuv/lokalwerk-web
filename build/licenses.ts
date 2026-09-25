@@ -74,7 +74,7 @@ export const REQUIRED_DATA_LICENSES: Record<string, Omit<DataLicense, 'text'> & 
 /** Wo die direkten Abhängigkeiten verwendet werden; ihre Unterabhängigkeiten erben das. */
 const USED_IN: Record<string, string> = {
   'pdf-lib': 'PDFs zusammenfügen, PDF teilen, Bilder zu PDF, PDF-Metadaten entfernen',
-  xlsx: 'SEPA-Sammelüberweisung (Excel- und ODS-Dateien lesen)',
+  xlsx: 'SEPA-Sammelüberweisung (Excel- und ODS-Dateien lesen), Excel und CSV umwandeln (lesen und schreiben)',
 };
 
 /** Selbst gehostete Schriften (public/fonts/, scripts/copy-fonts.mjs). */

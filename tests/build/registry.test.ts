@@ -40,6 +40,10 @@ describe('checkRegistry (plan-phase2.md Abschnitt 3.5)', () => {
     expect(checkRegistry(PAGES, icons)).toEqual([]);
   });
 
+  it('verlangt mindestens ein verwandtes Werkzeug', () => {
+    expect(checkRegistry([page('a')], icons)).toEqual(['/a/ (a): keine verwandten Werkzeuge']);
+  });
+
   it('meldet Verweise ins Leere und auf sich selbst', () => {
     expect(checkRegistry([page('a', { related: ['b', 'a'] })], icons)).toEqual([
       '/a/ (a): verwandtes Werkzeug b gibt es nicht',
@@ -71,6 +75,7 @@ describe('checkRegistry (plan-phase2.md Abschnitt 3.5)', () => {
     expect(checkRegistry([wrong], icons)).toEqual([
       '/b/ (a): id passt nicht zur URL',
       '/b/ (a): Werkzeugseiten müssen indexiert werden',
+      '/b/ (a): keine verwandten Werkzeuge',
     ]);
   });
 });

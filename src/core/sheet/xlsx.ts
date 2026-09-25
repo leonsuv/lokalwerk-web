@@ -4,7 +4,8 @@
  * Formeln werden nicht ausgewertet, es zählt der gespeicherte Wert.
  */
 
-import { read, utils } from 'xlsx';
+import { read, utils, type WorkBook, type WorkSheet } from 'xlsx';
+import { wallClockFromDate, type SheetValue } from './values.ts';
 
 export type SheetErrorCode = 'empty' | 'encrypted' | 'damaged' | 'not-spreadsheet';
 
@@ -33,12 +34,11 @@ function looksLikeSpreadsheet(bytes: Uint8Array): boolean {
   return /^\s*</.test(head);
 }
 
-export function readFirstSheet(bytes: Uint8Array): unknown[][] {
+function open(bytes: Uint8Array, cellDates: boolean): WorkBook {
   if (bytes.length === 0) throw new SheetError('empty');
   if (!looksLikeSpreadsheet(bytes)) throw new SheetError('not-spreadsheet');
-  let workbook;
   try {
-    workbook = read(bytes, {
+    return read(bytes, {
       type: 'array',
       // Wichtig: In Text-Formaten (HTML-/XML-Tabellen als „.xls“) keine Zahlen raten.
       // Sonst liest SheetJS „12,50“ nach englischer Konvention als 1250.
@@ -46,7 +46,7 @@ export function readFirstSheet(bytes: Uint8Array): unknown[][] {
       cellFormula: false,
       cellHTML: false,
       cellText: false,
-      cellDates: false,
+      cellDates,
     });
   } catch (error) {
     // SheetJS meldet verschlüsselte Dateien z. B. mit „password-protected“ oder
@@ -55,6 +55,10 @@ export function readFirstSheet(bytes: Uint8Array): unknown[][] {
     if (/password|encrypt/i.test(message)) throw new SheetError('encrypted', { cause: error });
     throw new SheetError('damaged', { cause: error });
   }
+}
+
+export function readFirstSheet(bytes: Uint8Array): unknown[][] {
+  const workbook = open(bytes, false);
   const name = workbook.SheetNames[0];
   const sheet = name === undefined ? undefined : workbook.Sheets[name];
   if (!sheet) throw new SheetError('empty');
@@ -64,4 +68,83 @@ export function readFirstSheet(bytes: Uint8Array): unknown[][] {
     defval: '',
     blankrows: false,
   });
+}
+
+export interface SheetData {
+  name: string;
+  /** Zeilen ab A1 bis zur letzten belegten Zelle; leere Zeilen dazwischen bleiben erhalten */
+  rows: SheetValue[][];
+}
+
+/**
+ * Fehlerwerte, wie sie in der Datei stehen (englische Kürzel, Tabelle BErr in SheetJS nach
+ * [MS-XLS] 2.5.10). Excel zeigt sie je nach Sprache anders an, z. B. #NV statt #N/A.
+ */
+const ERRORS: Record<number, string> = {
+  0x00: '#NULL!',
+  0x07: '#DIV/0!',
+  0x0f: '#VALUE!',
+  0x17: '#REF!',
+  0x1d: '#NAME?',
+  0x24: '#NUM!',
+  0x2a: '#N/A',
+};
+
+function cellValue(cell: { t: string; v?: unknown } | undefined): SheetValue {
+  if (!cell || cell.v === undefined || cell.v === null) return null;
+  switch (cell.t) {
+    case 'n':
+      return typeof cell.v === 'number' ? cell.v : null;
+    case 'b':
+      return cell.v === true;
+    case 'd':
+      return cell.v instanceof Date ? wallClockFromDate(cell.v) : null;
+    case 'e':
+      return typeof cell.v === 'number' ? (ERRORS[cell.v] ?? '#FEHLER') : '#FEHLER';
+    default:
+      return typeof cell.v === 'string' || typeof cell.v === 'number' ? String(cell.v) : null;
+  }
+}
+
+/**
+ * Alle Tabellenblätter mit Werten, wie sie in den Zellen stehen: Zahlen als Zahl, Datum als
+ * Wanduhrzeit, Formeln als gespeichertes Ergebnis. Zellen werden selbst gelesen statt über
+ * sheet_to_json, weil das Datumswerte in die Ortszeit des Browsers verschiebt. Wirft
+ * SheetError, auch wenn kein Blatt eine belegte Zelle hat.
+ */
+/**
+ * Zeilen eines Blatts ab A1. Nur belegte Zellen werden angesehen: Der Bereich in „!ref“ reicht
+ * in manchen Dateien über formatierte, aber leere Zellen bis zur letzten Zeile des Blatts.
+ */
+export function sheetRows(sheet: WorkSheet): SheetValue[][] {
+  const cells: { r: number; c: number; value: SheetValue }[] = [];
+  let lastRow = -1;
+  let lastColumn = -1;
+  for (const address of Object.keys(sheet)) {
+    if (address.startsWith('!')) continue;
+    const value = cellValue(sheet[address] as { t: string; v?: unknown });
+    if (value === null || value === '') continue;
+    const { r, c } = utils.decode_cell(address);
+    cells.push({ r, c, value });
+    lastRow = Math.max(lastRow, r);
+    lastColumn = Math.max(lastColumn, c);
+  }
+  const rows: SheetValue[][] = Array.from({ length: lastRow + 1 }, () =>
+    Array.from<SheetValue>({ length: lastColumn + 1 }).fill(null),
+  );
+  for (const { r, c, value } of cells) {
+    const row = rows[r];
+    if (row) row[c] = value;
+  }
+  return rows;
+}
+
+export function readSheets(bytes: Uint8Array): SheetData[] {
+  const workbook = open(bytes, true);
+  const sheets = workbook.SheetNames.map((name) => {
+    const sheet = workbook.Sheets[name];
+    return { name, rows: sheet ? sheetRows(sheet) : [] };
+  });
+  if (sheets.every((s) => s.rows.length === 0)) throw new SheetError('empty');
+  return sheets;
 }

@@ -107,11 +107,11 @@ describe('Tote Adressen in Bibliotheken (plan.md N3)', () => {
     }
   });
 
-  it('enthält für SheetJS 19 Namensräume, 29 Beziehungstypen und 3 einzeln freigegebene Adressen', () => {
+  it('enthält für SheetJS 22 Namensräume, 29 Beziehungstypen und 3 einzeln freigegebene Adressen', () => {
     const count = (category: string) =>
       sheetJsEntries.filter((e) => e.category === category).length;
-    expect(sheetJsEntries).toHaveLength(51);
-    expect(count('xml-namespace')).toBe(19);
+    expect(sheetJsEntries).toHaveLength(54);
+    expect(count('xml-namespace')).toBe(22);
     expect(count('ecma376-relationship')).toBe(29);
     expect(
       sheetJsEntries

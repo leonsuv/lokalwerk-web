@@ -77,3 +77,13 @@ Keine XML-Namensräume im engeren Sinn, aber ebenfalls reine Kennungen: In einer
 | B1 | `http://schemas.openxmlformats.org/package/2006/sheetjs/core-properties` | 4119 | Eigener Namensraum von SheetJS unter der Domain des OOXML-Standards (Präfix `sjs`), nur beim Schreiben eigener Dokumenteigenschaften. Wird nicht abgerufen; wir schreiben keine Excel-Dateien. |
 | B2 | `http://sheetjs.com` | 1, 316, 1432, 1452, 24183 | Lizenz- und Urheberhinweis von SheetJS in einem erhaltenen Kommentar (`/*! … */`), zweimal im Bundle. Wird nie ausgeführt. |
 | B3 | `http://sheetjs.openxmlformats.org/officeDocument/2006/relationships/officeDocument` | 5689 | Eigener Beziehungstyp von SheetJS mit ausgedachter Domain, erkennt von SheetJS geschriebene Dateien. Wird nicht abgerufen. |
+
+**Nachtrag 25.09.2026 (plan-phase2.md P1-1):** Für das Schreiben von .xlsx-Dateien (`writeXLSX`, Werkzeug „Excel und CSV umwandeln“) kommen drei XML-Namensräume hinzu, freigegeben als Ergänzung zu Gruppe A1:
+
+| Adresse | Fundstelle | Verwendung |
+|---|---|---|
+| `http://www.w3.org/TR/REC-html40` | `node_modules/xlsx/xlsx.mjs`, Zeile 4139 (Tabelle der Namensräume) | Namensraum, nie abgerufen |
+| `http://schemas.microsoft.com/office/spreadsheetml/2017/richdata` | Zeile 12542 | steht in `xl/metadata.xml` jeder erzeugten .xlsx-Datei, nie abgerufen |
+| `http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray` | Zeile 12542 | ebenso |
+
+Damit sind es 54 Einträge: 22 Namensräume, 29 Beziehungstypen, 3 einzeln freigegebene Adressen.

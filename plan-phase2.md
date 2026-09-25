@@ -62,11 +62,12 @@ Abweichungen vom Plan, die beim Bauen entschieden wurden:
 - Die Metadaten-Prüfung liest jetzt auch PNG (für Bildformat umwandeln).
 - „Kommentare und Markierungen“ bleiben beim Entfernen von PDF-Metadaten erhalten und werden angezeigt; ein Entfernen wäre eine eigene Funktion (Formularfelder und Verweise hängen daran).
 
-Offene Fragen aus Paket 1:
-- **P1-1:** Drei neue Adressen für die SheetJS-Liste (alle Gruppe A1, XML-Namensräume, nie abgerufen): `http://www.w3.org/TR/REC-html40` (XMLNS-Tabelle, `node_modules/xlsx/xlsx.mjs` Zeile 4139), `http://schemas.microsoft.com/office/spreadsheetml/2017/richdata` und `http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray` (beide Zeile 12542; SheetJS schreibt sie in `xl/metadata.xml` jeder erzeugten .xlsx-Datei).
-- **P1-2:** SheetJS schreibt in jede erzeugte .xlsx-Datei fest „SheetJS“ als Anwendung (`docProps/app.xml`, Zeile 6001). Keine personenbezogenen Daten; so lassen oder die Datei nachträglich umschreiben?
-- **P1-3:** Texte zur Freigabe (`docs/texte-zur-freigabe.md`, mit **NEU** markiert), darunter die Startseitentitel (E16).
-- **P1-4:** Farben endgültig (E15), Screenshots im Bericht.
+Entscheidungen zu Paket 1 (25.09.2026):
+- **P1-1:** Die drei Namensräume sind als Ergänzung zu Gruppe A1 freigegeben; Schritt 2 ist im Hauptzweig.
+- **P1-2:** „SheetJS“ soll nicht in den Dateieigenschaften stehen. SheetJS 0.20.3 hat dafür keine Option: `write_ext_props` setzt `Application` fest auf „SheetJS“ (`node_modules/xlsx/xlsx.mjs`, Zeile 6001), nachdem die Workbook-Eigenschaften gelesen wurden; `docProps/app.xml` wird immer geschrieben. Geprüft am 25.09.2026, auch mit `Props: { Application: … }`. Bibliothekscode bleibt unverändert; **offen**, Lösungsweg entscheidet Leon.
+- **P1-3:** „Fotos“ aus der Pro-Unterzeile gestrichen. Übrige Texte prüft Leon.
+- **P1-4:** Ocker und Violett endgültig freigegeben, in AGENTS.md Abschnitt 6 eingetragen (Ocker nie für Warnungen).
+- **Fokus Datumsfeld:** Fehler behoben. Tab springt im Datumsfeld zuletzt auf das Kalendersymbol; dann trifft `:focus` nicht mehr zu. Die Fokusregel gilt jetzt auch für `:focus-within`. Offen: Der Fokusring im Dunkelmodus (`--primary-soft`, 1,21:1 zur Karte) ist schwach; Vorschlag im Bericht.
 
 ## 0. Wie dieser Plan zu lesen ist
 

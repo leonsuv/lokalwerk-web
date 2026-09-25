@@ -145,6 +145,33 @@ export const PAGES: readonly PageDef[] = [
     },
   },
   {
+    file: 'pdf-seitenzahlen/index.html',
+    url: '/pdf-seitenzahlen/',
+    title: 'Seitenzahlen in PDF einfügen – kostenlos, ohne Upload | Lokalwerk',
+    description:
+      'Seitenzahlen wie „Seite 3 von 12“ kostenlos in eine PDF einfügen, Position und Startseite frei wählbar. Direkt im Browser, ohne Upload und ohne Anmeldung.',
+    index: true,
+    nav: 'werkzeuge',
+    tool: {
+      id: 'pdf-seitenzahlen',
+      name: 'Seitenzahlen einfügen',
+      short: 'Seitenzahlen wie „Seite 3 von 12“ in Kopf- oder Fußzeile einer PDF setzen.',
+      category: 'pdf',
+      icon: 'i-page-number',
+      keywords: [
+        'seitenzahl',
+        'nummerieren',
+        'paginieren',
+        'seitennummer',
+        'fußzeile',
+        'kopfzeile',
+        'anlagen',
+      ],
+      related: ['pdf-zusammenfuegen', 'pdf-teilen'],
+      accepts: { kind: 'pdf', multiple: false },
+    },
+  },
+  {
     file: 'pdf-metadaten-entfernen/index.html',
     url: '/pdf-metadaten-entfernen/',
     title: 'PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload | Lokalwerk',

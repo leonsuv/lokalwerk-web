@@ -31,6 +31,7 @@ describe('Seitenregister', () => {
         '/pruefsumme/',
         '/texte-vergleichen/',
         '/kontrast-pruefen/',
+        '/pdf-seitenzahlen/',
         '/pdf-zusammenfuegen/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',

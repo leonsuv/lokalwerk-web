@@ -18,6 +18,10 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
 | **NEU** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
+| **NEU** `/passwort-generator/` | Passwort-Generator: sichere Passwörter nach BSI – ohne Server \| Lokalwerk | Sichere Passwörter kostenlos erzeugen, mit Länge und Zeichenarten nach den Beispielen des BSI. Direkt im Browser, nichts wird gesendet oder gespeichert. | 152 | ja |
+| **NEU** `/pruefsumme/` | Prüfsumme berechnen: SHA-256 einer Datei prüfen – ohne Upload \| Lokalwerk | SHA-256 und SHA-1 einer Datei kostenlos berechnen und mit der angegebenen Prüfsumme vergleichen, auch bei sehr großen Dateien. Direkt im Browser, ohne Upload. | 158 | ja |
+| **NEU** `/texte-vergleichen/` | Texte vergleichen: Unterschiede zwischen zwei Fassungen finden \| Lokalwerk | Zwei Texte kostenlos vergleichen, etwa Vertragsentwürfe oder Satzungen: geänderte Zeilen und Wörter werden markiert. Direkt im Browser, ohne Upload. | 148 | ja |
+| **NEU** `/kontrast-pruefen/` | Kontrast prüfen nach WCAG 2.2 – Kontrastrechner für Farben \| Lokalwerk | Kontrastverhältnis zweier Farben kostenlos nach WCAG 2.2 berechnen und die Stufen AA und AAA prüfen, für Text, großen Text und Bedienelemente. Im Browser. | 154 | ja |
 | `/pro/` | Lokalwerk Pro | Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen und PDFs. Läuft wie alle Werkzeuge vollständig lokal. | 108 | noindex |
 | `/impressum/` | Impressum – Lokalwerk | Impressum von Lokalwerk. | 24 | noindex |
 | `/datenschutz/` | Datenschutzerklärung – Lokalwerk | Datenschutzerklärung von Lokalwerk. | 35 | noindex |
@@ -204,6 +208,86 @@ Die Dateien werden direkt in deinem Browser umgewandelt und nicht hochgeladen. N
 
 _(Erklärtext: 181 Wörter)_
 
+## Passwort-Generator – NEU (`src/tools/passwort-generator/main.html`)
+
+Karte: „Passwort-Generator“ – „Sichere Passwörter erzeugen, mit Länge und Zeichenarten nach den BSI-Beispielen.“
+
+Unterzeile im Kopf: „Sichere Passwörter erzeugen, direkt in deinem Browser. Kein Server bekommt sie zu sehen.“
+
+**So funktioniert es**
+
+Stell Länge und Zeichenarten ein, das Passwort entsteht sofort neu. Mit „Kopieren“ legst du es in die Zwischenablage, mit „Neues Passwort“ erzeugst du ein anderes. Der Zufall kommt aus dem Zufallsgenerator deines Browsers, der auch für Verschlüsselung verwendet wird. Jede gewählte Zeichenart kommt mindestens einmal vor.
+
+**Was empfiehlt das BSI?**
+
+Das Bundesamt für Sicherheit in der Informationstechnik nennt als Beispiele für sichere Passwörter: 8 bis 12 Zeichen mit vier Zeichenarten, 20 bis 25 Zeichen mit zwei Zeichenarten oder mindestens 25 Zeichen. Für WLAN sollen es mindestens 20 Zeichen sein. Auf Umlaute, ß und € soll man verzichten; der Generator verwendet sie nicht. Quelle: BSI, „Sichere Passwörter erstellen“, abgerufen am 25.09.2026.
+
+**Nichts wird gespeichert**
+
+Das Passwort entsteht nur in deinem Browser und wird weder gesendet noch gespeichert. Lädst du die Seite neu, ist es weg. Für viele verschiedene Passwörter empfiehlt das BSI einen Passwortmanager.
+
+_(Erklärtext: 136 Wörter)_
+
+## Prüfsumme berechnen – NEU (`src/tools/pruefsumme/main.html`)
+
+Karte: „Prüfsumme berechnen“ – „SHA-256 einer Datei berechnen und mit der angegebenen Prüfsumme vergleichen.“
+
+Unterzeile im Kopf: „SHA-256 einer Datei berechnen und mit einer angegebenen Prüfsumme vergleichen, zum Beispiel nach einem Download.“
+
+**So funktioniert es**
+
+Wähle eine Datei aus oder zieh sie in die Fläche oben. Lokalwerk berechnet ihre Prüfsummen nach SHA-256 und SHA-1. Füge rechts die Prüfsumme ein, die zum Beispiel neben einem Download steht; dann siehst du sofort, ob beide übereinstimmen. Stimmen sie überein, ist die Datei unverändert und vollständig angekommen.
+
+**Welches Verfahren?**
+
+SHA-256 ist heute üblich und sicher. SHA-1 wird nur noch angezeigt, weil manche ältere Angaben es verwenden; gegen gezielte Manipulation schützt es nicht mehr zuverlässig. Die Berechnung folgt dem Standard FIPS 180-4 und ist gegen die Prüfwerte des NIST getestet. Bei Dateien bis 64 MB rechnet der Browser zusätzlich mit seiner eigenen Kryptografie nach.
+
+**Deine Datei bleibt auf deinem Gerät**
+
+Die Datei wird direkt in deinem Browser gelesen und nicht hochgeladen, auch wenn sie mehrere Gigabyte groß ist. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 131 Wörter)_
+
+## Texte vergleichen – NEU (`src/tools/texte-vergleichen/main.html`)
+
+Karte: „Texte vergleichen“ – „Zwei Fassungen eines Textes vergleichen, geänderte Zeilen und Wörter markiert.“
+
+Unterzeile im Kopf: „Zwei Fassungen eines Textes vergleichen, zum Beispiel einen Vertragsentwurf oder eine Satzung. Geänderte Wörter werden markiert.“
+
+**So funktioniert es**
+
+Füge die beiden Fassungen in die Felder ein oder lade sie als Textdatei. „Texte vergleichen“ zeigt Zeile für Zeile, was entfernt (rot, mit Minus) und was hinzugekommen ist (grün, mit Plus). In geänderten Zeilen sind die betroffenen Wörter zusätzlich hervorgehoben. Mit „Nur Änderungen“ siehst du nur die geänderten Stellen und je zwei Zeilen davor und danach.
+
+**Gut zu wissen**
+
+Verglichen wird reiner Text. Aus Word- oder PDF-Dateien kopierst du den Text am besten heraus und fügst ihn ein. Formatierungen wie Fett oder Schriftgrößen werden nicht verglichen. Bei sehr vielen Unterschieden bricht der Vergleich mit einem Hinweis ab.
+
+**Deine Texte bleiben auf deinem Gerät**
+
+Der Vergleich läuft direkt in deinem Browser. Die Texte werden weder gesendet noch gespeichert. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 119 Wörter)_
+
+## Kontrast prüfen – NEU (`src/tools/kontrast-pruefen/main.html`)
+
+Karte: „Kontrast prüfen“ – „Kontrast von Text- und Hintergrundfarbe nach WCAG 2.2 prüfen, Stufe AA und AAA.“
+
+Unterzeile im Kopf: „Prüfen, ob Text- und Hintergrundfarbe genug Kontrast nach WCAG 2.2 haben, etwa für barrierefreie Websites und Dokumente.“
+
+**So funktioniert es**
+
+Gib die Textfarbe und die Hintergrundfarbe ein oder wähle sie aus. Das Werkzeug berechnet das Kontrastverhältnis nach der Formel der WCAG 2.2 und zeigt, welche Anforderungen erfüllt sind. Das Verhältnis wird abgerundet angezeigt: 4,49:1 reicht nicht für 4,5:1.
+
+**Welche Werte gelten?**
+
+Für Stufe AA braucht normaler Text mindestens 4,5:1, großer Text 3:1 (Erfolgskriterium 1.4.3). Für Stufe AAA sind es 7:1 und 4,5:1 (1.4.6). Rahmen von Eingabefeldern, Symbole und andere Bedienelemente brauchen mindestens 3:1 zu ihrer Umgebung (1.4.11). Quelle: Web Content Accessibility Guidelines (WCAG) 2.2, W3C-Empfehlung vom 12. Dezember 2024.
+
+**Deine Farben bleiben auf deinem Gerät**
+
+Die Berechnung läuft direkt in deinem Browser, es wird nichts gesendet oder gespeichert. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 110 Wörter)_
+
 ## Weitere Texte
 
 | Stelle | Text | Datei |
@@ -218,6 +302,7 @@ _(Erklärtext: 181 Wörter)_
 | **NEU** /werkzeuge/, Kopf | „Alle Werkzeuge“ – „Jedes Werkzeug läuft direkt in deinem Browser. Deine Dateien werden nicht hochgeladen.“ | `pages/werkzeuge/index.html` |
 | **NEU** /werkzeuge/, Suche | Beschriftung „Werkzeug suchen“, Platzhalter „zum Beispiel PDF, Foto oder CSV“, Meldungen „3 Werkzeuge gefunden.“ und „Kein Werkzeug gefunden. Versuch ein anderes Wort, zum Beispiel „PDF“, „Foto“ oder „Excel“.“ | `pages/werkzeuge/index.html`, `src/tools/werkzeuge/page.ts` |
 | **NEU** /werkzeuge/, Kategorien | „PDF“, „Fotos und Bilder“, „Tabellen und Listen“, „Zahlungsverkehr und Verein“, „Alltag und Sicherheit“; Zähler „4 Werkzeuge“ | `build/pages.ts` |
+| **NEU** Paket 2, Meldungen | Passwort-Generator: „Passwort kopiert. Es bleibt in der Zwischenablage, bis du etwas anderes kopierst.“, „Entspricht dem BSI-Beispiel: …“, „Kürzer oder einfacher als die BSI-Beispiele“; Prüfsumme: „Stimmt überein (SHA-256).“, „Stimmt nicht überein (SHA-256). Die Datei ist verändert, unvollständig oder eine andere.“; Textvergleich: „Die Texte unterscheiden sich in zu vielen Zeilen. Vergleiche kürzere Abschnitte.“; Kontrast: „erfüllt“ / „nicht erfüllt“ | `src/tools/<werkzeug>/page.ts` |
 | **NEU** Unter jedem Werkzeug | Überschrift „Passt dazu“ mit Karten | `build/tool-blocks.ts` |
 | **NEU** „Alle Werkzeuge“-Verweise | zeigen jetzt auf /werkzeuge/ statt auf die Startseite (Text unverändert) | alle Seiten |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |

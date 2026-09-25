@@ -69,6 +69,19 @@ Entscheidungen zu Paket 1 (25.09.2026):
 - **P1-4:** Ocker und Violett endgültig freigegeben, in AGENTS.md Abschnitt 6 eingetragen (Ocker nie für Warnungen).
 - **Fokus Datumsfeld:** Fehler behoben. Tab springt im Datumsfeld zuletzt auf das Kalendersymbol; dann trifft `:focus` nicht mehr zu. Die Fokusregel gilt jetzt auch für `:focus-within`. Offen: Der Fokusring im Dunkelmodus (`--primary-soft`, 1,21:1 zur Karte) ist schwach; Vorschlag im Bericht.
 
+### Stand Paket 2 (25.09.2026)
+
+Alle vier Werkzeuge gebaut, je ein Commit; Kategorie „Alltag und Sicherheit“ (Violett).
+
+| Werkzeug | Quelle | Prüfung |
+|---|---|---|
+| 25 Passwort-Generator | BSI, „Sichere Passwörter erstellen“, Wortlaut mit Abrufdatum in `docs/passwort-bsi.md` (Seite ohne Datum) | Verwerfen statt Modulo, Chi-Quadrat-Test, jede gewählte Zeichenart kommt vor |
+| 26 Prüfsumme | FIPS 180-4; NIST-CAVP-Vektoren in `tests/fixtures/nist/` | alle 258 Vektoren, Konstanten mit BigInt aus der Definition nachgerechnet, Gegenprobe WebCrypto und OpenSSL; im Browser bis 64 MB zusätzlich WebCrypto |
+| 27 Texte vergleichen | Myers (1986) | 400 Zufallsfälle gegen LCS (minimal), 20 000 Zeilen unter 0,5 s |
+| 30 Kontrast prüfen | WCAG 2.2 (W3C, 12.12.2024), Definitionen und 1.4.3, 1.4.6, 1.4.11 | bekannte Werte, abgerundete Anzeige, Farbleser gegen Chrome |
+
+Abweichungen: Die Prüfsumme bietet SHA-256 und SHA-1, kein MD5 (plan: „wahlweise“). Keine Passphrasen (E11).
+
 ## 0. Wie dieser Plan zu lesen ist
 
 - **Suchbegriffe** sind Vermutungen. Ich habe kein Werkzeug für Suchvolumen benutzt und keine Zahlen erhoben.

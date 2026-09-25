@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { read, utils, write, type BookType, type CellObject } from 'xlsx';
-import { writeXlsx } from '../../../src/core/sheet/write.ts';
+import { CFB, read, utils, write, writeXLSX, type BookType, type CellObject } from 'xlsx';
+import { removeApplicationName, writeXlsx } from '../../../src/core/sheet/write.ts';
 import { readSheets, SheetError, sheetRows } from '../../../src/core/sheet/xlsx.ts';
 
 /** Arbeitsmappe wie aus Excel: Datum als Zahl mit Datumsformat, Formel mit gespeichertem Ergebnis. */
@@ -89,5 +89,64 @@ describe('writeXlsx', () => {
     expect(sheet?.C3).toMatchObject({ z: 'dd.mm.yyyy hh:mm' });
     expect(sheet?.D2).toMatchObject({ t: 's', v: '01067' });
     expect(sheet?.B3).toMatchObject({ t: 's', v: '1.234,56' });
+  });
+});
+
+describe('Programmangabe (plan-phase2.md P1-2)', () => {
+  /** Alle Dateien im ZIP mit Inhalt, über die CFB-Schnittstelle von SheetJS gelesen. */
+  function entries(xlsx: Uint8Array): Map<string, string> {
+    const container = (
+      CFB as {
+        read(
+          d: Uint8Array,
+          o: { type: 'array' },
+        ): {
+          FullPaths: string[];
+          FileIndex: { type: number; content: Uint8Array }[];
+        };
+      }
+    ).read(xlsx, { type: 'array' });
+    const map = new Map<string, string>();
+    container.FullPaths.forEach((path, i) => {
+      const entry = container.FileIndex[i];
+      if (entry?.type === 2 && !path.endsWith('Sh33tJ5')) {
+        map.set(path.replace(/^Root Entry\//, ''), new TextDecoder().decode(entry.content));
+      }
+    });
+    return map;
+  }
+
+  it('erzeugte .xlsx-Dateien enthalten keine Programmangabe und nirgends „SheetJS“', () => {
+    const files = entries(
+      writeXlsx([
+        ['Name', 'Betrag'],
+        ['Anna', 12.5],
+      ]),
+    );
+    const app = files.get('docProps/app.xml') ?? '';
+    expect(app).toContain('<Properties');
+    expect(app).not.toMatch(/<Application/);
+    for (const [path, text] of files) expect(text, path).not.toMatch(/sheetjs/i);
+  });
+
+  it('entfernt nur das Element <Application>, alle anderen Teile bleiben gleich', () => {
+    const book = utils.book_new();
+    utils.book_append_sheet(book, utils.aoa_to_sheet([['a', 1]]), 'T');
+    const original = new Uint8Array(
+      writeXLSX(book, { type: 'array', compression: true, bookSST: true }) as ArrayBuffer,
+    );
+    const before = entries(original);
+    const after = entries(removeApplicationName(original));
+    expect([...after.keys()]).toEqual([...before.keys()]);
+    for (const [path, text] of before) {
+      const expected =
+        path === 'docProps/app.xml' ? text.replace('<Application>SheetJS</Application>', '') : text;
+      expect(after.get(path), path).toBe(expected);
+    }
+  });
+
+  it('lässt Dateien ohne Programmangabe unverändert', () => {
+    const cleaned = writeXlsx([['x']]);
+    expect(removeApplicationName(cleaned)).toBe(cleaned);
   });
 });

@@ -17,8 +17,9 @@ shasum -a 256 .local-specs/dk/*
 ├─ dk/
 │  ├─ pain.001.001.09_GBIC_5.xsd   DK-Schema (TVS) für SEPA-Überweisungen
 │  └─ pain.001.001.09.xml          DK-Beispieldatei
-└─ swift/
-   └─ iban-registry.txt            SWIFT IBAN Registry (TXT-Fassung)
+├─ swift/
+│  └─ iban-registry.txt            SWIFT IBAN Registry (TXT-Fassung)
+└─ ecma376/                        ECMA-376 Teil 1 und 4, 5. Ausgabe, nur zum Nachlesen (kein Test)
 ```
 
 ## Bezugsquellen
@@ -44,3 +45,11 @@ Sobald die Datei da ist, werden die IBAN-Längen in `src/core/sepa/iban-countrie
 ### EPC-Dokumente
 
 Adressen und Versionen stehen in `tests/fixtures/SOURCES.md`. Die Dateien werden für Tests nicht gebraucht, nur zum Nachlesen.
+
+### ECMA-376 (Office Open XML), nur zum Nachlesen
+
+Von https://ecma-international.org/publications-and-standards/standards/ecma-376/ (geladen am 25.09.2026):
+- `ECMA-376-1_5th_edition_december_2016.zip` (Teil 1, Normtext und Strict-Schemas)
+- `ECMA-376-4_5th_edition_december_2016.zip` (Teil 4, Transitional-Schemas)
+
+Verwendet für `docs/xlsx-programmangabe.md`. Kein Test hängt davon ab.

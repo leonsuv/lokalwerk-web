@@ -2,15 +2,59 @@
  * Excel-Datei (.xlsx) aus Zeilen schreiben, mit SheetJS CE (vendor/README.md).
  * Text bleibt Text, auch wenn er wie eine Zahl aussieht; Zahlen und Datumswerte kommen schon
  * gedeutet an (src/core/sheet/values.ts, parseCellText).
- * SheetJS schreibt fest „SheetJS“ als Anwendung in docProps/app.xml (docs/sheetjs-adressen.md).
+ *
+ * SheetJS schreibt fest „SheetJS“ als Programmangabe in docProps/app.xml und hat keine Option
+ * dagegen (xlsx.mjs Zeile 6001). removeApplicationName entfernt danach genau dieses Element;
+ * ECMA-376 erlaubt das (docs/xlsx-programmangabe.md, plan-phase2.md P1-2).
  */
 
-import { utils, writeXLSX, type CellObject, type WorkSheet } from 'xlsx';
+import { CFB, utils, writeXLSX, type CellObject, type WorkSheet } from 'xlsx';
 import { excelSerial, type WallClock } from './values.ts';
 
 export type OutputCell = string | number | WallClock;
 
 const MAX_COLUMN_WIDTH = 50;
+
+/** Teil der CFB-Schnittstelle von SheetJS, der ohne Typen ausgeliefert wird. */
+interface CfbEntry {
+  /** 2 = Datei */
+  type: number;
+  content: Uint8Array;
+  size: number;
+}
+interface CfbContainer {
+  FullPaths: string[];
+  FileIndex: CfbEntry[];
+}
+interface CfbApi {
+  read(data: Uint8Array, options: { type: 'array' }): CfbContainer;
+  write(
+    container: CfbContainer,
+    options: { fileType: 'zip'; type: 'array'; compression: boolean },
+  ): ArrayLike<number>;
+}
+const cfb = CFB as CfbApi;
+
+const APPLICATION = /<Application(?:\/>|>[^<]*<\/Application>)/;
+
+/**
+ * Entfernt das Element <Application> aus docProps/app.xml einer .xlsx-Datei. Alle anderen
+ * Teile bleiben Byte für Byte gleich; ECMA-376 Teil 1, 22.2: Die Elemente der erweiterten
+ * Eigenschaften „can be empty or omitted“.
+ */
+export function removeApplicationName(xlsx: Uint8Array): Uint8Array {
+  const container = cfb.read(xlsx, { type: 'array' });
+  const index = container.FullPaths.findIndex((path) => /\/docProps\/app\.xml$/.test(path));
+  const entry = container.FileIndex[index];
+  if (!entry) return xlsx;
+  const text = new TextDecoder().decode(entry.content);
+  if (!APPLICATION.test(text)) return xlsx;
+  entry.content = new TextEncoder().encode(text.replace(APPLICATION, ''));
+  entry.size = entry.content.length;
+  return new Uint8Array(
+    cfb.write(container, { fileType: 'zip', type: 'array', compression: true }),
+  );
+}
 
 function dateFormat(w: WallClock): string {
   if (w.seconds !== 0) return 'dd.mm.yyyy hh:mm:ss';
@@ -59,5 +103,5 @@ export function writeXlsx(
     // Gemeinsame Zeichenkettentabelle wie in Excel selbst, statt Text direkt in der Zelle
     bookSST: true,
   }) as ArrayBuffer;
-  return new Uint8Array(out);
+  return removeApplicationName(new Uint8Array(out));
 }

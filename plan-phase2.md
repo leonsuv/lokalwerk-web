@@ -64,7 +64,7 @@ Abweichungen vom Plan, die beim Bauen entschieden wurden:
 
 Entscheidungen zu Paket 1 (25.09.2026):
 - **P1-1:** Die drei Namensräume sind als Ergänzung zu Gruppe A1 freigegeben; Schritt 2 ist im Hauptzweig.
-- **P1-2:** „SheetJS“ soll nicht in den Dateieigenschaften stehen. SheetJS 0.20.3 hat dafür keine Option: `write_ext_props` setzt `Application` fest auf „SheetJS“ (`node_modules/xlsx/xlsx.mjs`, Zeile 6001), nachdem die Workbook-Eigenschaften gelesen wurden; `docProps/app.xml` wird immer geschrieben. Geprüft am 25.09.2026, auch mit `Props: { Application: … }`. Bibliothekscode bleibt unverändert; **offen**, Lösungsweg entscheidet Leon.
+- **P1-2:** Variante a umgesetzt: Das Element `<Application>` wird nach dem Schreiben aus `docProps/app.xml` entfernt, sonst bleibt die Datei gleich. ECMA-376 Teil 1, 22.2 erlaubt das Weglassen; Fundstelle in `docs/xlsx-programmangabe.md`. Gegenprobe in Excel/Numbers durch Leon (LibreOffice fehlt).
 - **P1-3:** „Fotos“ aus der Pro-Unterzeile gestrichen. Übrige Texte prüft Leon.
 - **P1-4:** Ocker und Violett endgültig freigegeben, in AGENTS.md Abschnitt 6 eingetragen (Ocker nie für Warnungen).
 - **Fokus Datumsfeld:** Fehler behoben. Tab springt im Datumsfeld zuletzt auf das Kalendersymbol; dann trifft `:focus` nicht mehr zu. Die Fokusregel gilt jetzt auch für `:focus-within`. Offen: Der Fokusring im Dunkelmodus (`--primary-soft`, 1,21:1 zur Karte) ist schwach; Vorschlag im Bericht.

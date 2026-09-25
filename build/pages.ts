@@ -1,6 +1,7 @@
 /**
  * Seitenregister: jede ausgelieferte HTML-Seite mit URL, Titel und Meta-Beschreibung.
- * Titel und Meta-Beschreibungen von Leon freigegeben am 25.09.2026 (docs/texte-zur-freigabe.md).
+ * Titel und Meta-Beschreibungen der Phase 1 von Leon freigegeben am 25.09.2026; neue und
+ * geänderte Texte aus Phase 2 sind Entwürfe zur Freigabe (docs/texte-zur-freigabe.md).
  * /pro/ ist bis zur Verfügbarkeit von Pro noindex und nicht in der Sitemap.
  *
  * Werkzeugseiten tragen zusätzlich `tool` (plan-phase2.md Abschnitt 3.5). Daraus entstehen
@@ -78,9 +79,10 @@ export const PAGES: readonly PageDef[] = [
   {
     file: 'index.html',
     url: '/',
-    title: 'Lokalwerk – PDF, Fotos und SEPA kostenlos im Browser bearbeiten',
+    // Entwurf zur Freigabe (plan-phase2.md E16)
+    title: 'Lokalwerk – PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten',
     description:
-      'PDF zusammenfügen, Fotos verkleinern und SEPA-Überweisungsdateien erstellen. Kostenlos, direkt im Browser, ohne Upload deiner Dateien.',
+      'PDFs zusammenfügen und teilen, Fotos verkleinern und umwandeln, SEPA-Dateien erstellen. Kostenlos, direkt im Browser, ohne Upload deiner Dateien.',
     index: true,
     nav: null,
   },

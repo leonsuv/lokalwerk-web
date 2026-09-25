@@ -2,7 +2,13 @@
 
 pdf-lib 1.17.1 (MIT) ist die letzte Version, veröffentlicht am 06.11.2021. Die Bibliothek wird nicht mehr gepflegt (Freigabe: plan.md, „Freigegebene Abhängigkeiten“). Hier steht, welche Grenzen uns betreffen und wie der Code damit umgeht. Der Code verweist an den betroffenen Stellen auf diese Datei.
 
-Verwendet in: `src/core/pdf/merge.ts` (läuft im Worker `src/tools/pdf-zusammenfuegen/merge.worker.ts`).
+Verwendet in (Stand 25.09.2026, jeweils im Worker des Werkzeugs):
+- `src/core/pdf/merge.ts`: PDF zusammenfügen; `loadPdf` und `toPdfError` nutzen auch die anderen Module
+- `src/core/pdf/split.ts`: PDF teilen
+- `src/core/pdf/from-images.ts`: Bilder zu PDF (`embedJpg`, `embedPng`)
+- `src/core/pdf/metadata.ts`: PDF-Metadaten anzeigen und entfernen
+
+Überall gilt: `updateMetadata: false` (Nr. 8 und 9), verschlüsselte PDFs werden abgelehnt (Nr. 1), und neue Dokumente übernehmen nur Seiten (Formularfelder, Lesezeichen, Anhänge und die Struktur für Screenreader gehen verloren).
 
 Netzwerk: Der Quellcode von pdf-lib enthält `fetch` nur in Beispielen in Dokumentationskommentaren, nicht im ausgeführten Code (geprüft am 24.09.2026 mit `grep` über `node_modules/pdf-lib/es/`). Zur Laufzeit blockiert die Content-Security-Policy ohnehin jede Anfrage (`connect-src 'none'`).
 

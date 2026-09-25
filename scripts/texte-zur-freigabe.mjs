@@ -5,14 +5,26 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { PAGES } from '../build/pages.ts';
+import { PAGES, TOOL_PAGES } from '../build/pages.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const TOOLS = [
-  ['PDFs zusammenfügen', 'src/tools/pdf-zusammenfuegen/main.html'],
-  ['Fotos verkleinern', 'src/tools/fotos-verkleinern/main.html'],
-  ['SEPA-Sammelüberweisung', 'src/tools/sepa-sammelueberweisung/main.html'],
-];
+const TOOLS = TOOL_PAGES.map((p) => ({
+  name: p.tool.name,
+  file: `src/tools/${p.tool.id}/main.html`,
+  page: p,
+}));
+/** Seiten und Werkzeuge, deren Texte seit der Freigabe am 25.09.2026 neu oder geändert sind */
+const PHASE1 = new Set([
+  '/pdf-zusammenfuegen/',
+  '/fotos-verkleinern/',
+  '/sepa-sammelueberweisung/',
+  '/pro/',
+  '/impressum/',
+  '/datenschutz/',
+  '/lizenzen/',
+  '/404.html',
+]);
+const isNew = (/** @type {string} */ url) => !PHASE1.has(url);
 const clean = (/** @type {string} */ html) =>
   html
     .replace(/<[^>]+>/g, '')
@@ -22,7 +34,7 @@ const clean = (/** @type {string} */ html) =>
 const out = [
   '# Texte zur Freigabe',
   '',
-  'Status: **freigegeben von Leon am 25.09.2026** (mit seinen Änderungen an Titeln, Meta-Beschreibungen und den Abschnitten „Gut zu wissen“). Neue oder geänderte Texte vor der Veröffentlichung erneut vorlegen.',
+  'Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Mit **NEU** markiert: neue oder geänderte Texte aus Phase 2, Paket 1, **zur Freigabe**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“.',
   '',
   'Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.',
   '',
@@ -32,15 +44,17 @@ const out = [
   '|---|---|---|---|---|',
   ...PAGES.map(
     (p) =>
-      `| \`${p.url}\` | ${p.title.replace(/\|/g, '\\|')} | ${p.description} | ${p.description.length} | ${p.index ? 'ja' : 'noindex'} |`,
+      `| ${isNew(p.url) ? '**NEU** ' : ''}\`${p.url}\` | ${p.title.replace(/\|/g, '\\|')} | ${p.description} | ${p.description.length} | ${p.index ? 'ja' : 'noindex'} |`,
   ),
 ];
 
-for (const [name, file] of TOOLS) {
+for (const { name, file, page } of TOOLS) {
   const html = readFileSync(`${root}/${file}`, 'utf8');
   const top = /<h1>[\s\S]*?<\/h1>\s*<p>([\s\S]*?)<\/p>/.exec(html);
   const section = html.slice(html.indexOf('<section class="explain"'));
-  out.push('', `## ${name} (\`${file}\`)`, '');
+  const mark = isNew(page.url) ? ' – NEU' : '';
+  out.push('', `## ${name}${mark} (\`${file}\`)`, '');
+  out.push(`Karte: „${page.tool.name}“ – „${page.tool.short}“`, '');
   if (top?.[1]) out.push(`Unterzeile im Kopf: „${clean(top[1])}“`, '');
   let words = 0;
   for (const m of section.matchAll(/<(h2|p)[^>]*>([\s\S]*?)<\/\1>/g)) {
@@ -57,11 +71,23 @@ out.push(
   '',
   '| Stelle | Text | Datei |',
   '|---|---|---|',
-  '| 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ | `pages/404.html` |',
+  '| **NEU** Startseite, Ablagefläche | „PDF, Foto oder Excel-Liste. Danach wählst du, was du damit machen möchtest.“ (vorher: „… Das passende Werkzeug öffnet sich automatisch.“) | `pages/index.html` |',
+  '| **NEU** Startseite, Auswahl nach dem Ablegen | Überschrift „2 PDFs ausgewählt“ (Zahl und Art je nach Ablage), „Was möchtest du damit machen?“, Knopf „Andere Dateien wählen“ | `pages/index.html`, `src/tools/home/page.ts` |',
+  '| **NEU** Startseite, Meldung | „Für 2 Tabellen auf einmal gibt es kein Werkzeug. Lege nur eine Datei ab.“ | `src/tools/home/page.ts` |',
+  '| **NEU** Startseite, unter den Karten | Knopf „Alle Werkzeuge ansehen“ | `pages/index.html` |',
+  '| **NEU** Startseite, Pro-Band | Punkt „Alle Fotos auf einmal als ZIP speichern“ gestrichen (E3) | `pages/index.html` |',
+  '| **NEU** Pro-Seite | Punkt „ZIP-Export – Alle verkleinerten Fotos mit einem Klick speichern.“ gestrichen, Nummern angepasst (E3). Unterzeile „Für alle, die Überweisungen, Fotos und PDFs regelmäßig bearbeiten.“ unverändert; Fotos kommen in den Pro-Punkten nicht mehr vor, bitte prüfen | `pages/pro/index.html` |',
+  '| **NEU** Fotos verkleinern | Knopf „Alle Fotos als ZIP speichern“ statt Hinweis „Alle Fotos als ZIP speichern: mit Lokalwerk Pro“; Meldungen „3 Fotos als ZIP gespeichert.“, „… 1 wird noch verkleinert und ist nicht enthalten.“, „Die ZIP-Datei wäre zu groß. Speichere die Fotos in kleineren Gruppen.“; im Erklärtext Ergänzung „… oder mit „Alle Fotos als ZIP speichern“ zusammen in einer Datei.“ | `src/tools/fotos-verkleinern/` |',
+  '| **NEU** /werkzeuge/, Kopf | „Alle Werkzeuge“ – „Jedes Werkzeug läuft direkt in deinem Browser. Deine Dateien werden nicht hochgeladen.“ | `pages/werkzeuge/index.html` |',
+  '| **NEU** /werkzeuge/, Suche | Beschriftung „Werkzeug suchen“, Platzhalter „zum Beispiel PDF, Foto oder CSV“, Meldungen „3 Werkzeuge gefunden.“ und „Kein Werkzeug gefunden. Versuch ein anderes Wort, zum Beispiel „PDF“, „Foto“ oder „Excel“.“ | `pages/werkzeuge/index.html`, `src/tools/werkzeuge/page.ts` |',
+  '| **NEU** /werkzeuge/, Kategorien | „PDF“, „Fotos und Bilder“, „Tabellen und Listen“, „Zahlungsverkehr und Verein“, „Alltag und Sicherheit“; Zähler „4 Werkzeuge“ | `build/pages.ts` |',
+  '| **NEU** Unter jedem Werkzeug | Überschrift „Passt dazu“ mit Karten | `build/tool-blocks.ts` |',
+  '| **NEU** „Alle Werkzeuge“-Verweise | zeigen jetzt auf /werkzeuge/ statt auf die Startseite (Text unverändert) | alle Seiten |',
+  '| 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |',
   '| Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |',
   '| SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |',
   '| SEPA, Warnung Datum | Wortlaut aus plan.md O7 | `src/tools/sepa-sammelueberweisung/messages.ts` |',
-  '| Fehler- und Hinweismeldungen | alle Meldungen der Werkzeuge | `src/tools/*/page.ts`, `src/tools/sepa-sammelueberweisung/messages.ts` |',
+  '| Fehler- und Hinweismeldungen | alle Meldungen der Werkzeuge; **NEU** die Meldungen der neuen Werkzeuge in `src/tools/<werkzeug>/page.ts` | `src/tools/*/page.ts`, `src/tools/sepa-sammelueberweisung/messages.ts` |',
   '',
 );
 writeFileSync(`${root}/docs/texte-zur-freigabe.md`, out.join('\n'));

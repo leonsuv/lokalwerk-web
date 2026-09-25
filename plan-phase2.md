@@ -46,6 +46,28 @@ Reihenfolge der Schritte. Nach jedem Schritt: Tests, Build mit check-dist, Sicht
 
 Commits: Die neuen Farbwerte (`src/styles/tokens.css`) werden erst nach Leons endgültiger Freigabe (E15) committet. Bis dahin enthalten die Commits der Schritte alles andere.
 
+### Stand Paket 1 (25.09.2026)
+
+| Schritt | Stand |
+|---|---|
+| 0 | fertig, committet |
+| 1 | fertig, committet |
+| 2 | fertig, aber **auf dem Zweig `paket1-schritt2-wartet`**: SheetJS `writeXLSX` bringt drei XML-Namensräume in den Worker, die nicht auf der Liste stehen (N3). Übernahme in den Hauptzweig erst nach Freigabe (offene Frage P1-1) |
+| 3–6 | fertig, committet |
+| 7 | Audit aller Seiten ohne Befund (bis auf das bekannte Datumsfeld aus Phase 1), Texte zur Freigabe in `docs/texte-zur-freigabe.md`, Screenshots für E15 |
+
+Abweichungen vom Plan, die beim Bauen entschieden wurden:
+- Lokale Suche nur auf `/werkzeuge/`, nicht auf der Startseite (Abschnitt 3.3). Die Startseite zeigt ausgewählte Karten und „Alle Werkzeuge ansehen“; eine zweite Suche dort hätte nur diese Karten gefiltert.
+- Excel ↔ CSV erkennt Zahlen und Datumswerte spaltenweise: Eine Spalte wird nur umgewandelt, wenn alle Werte darin eindeutig sind (sonst stünden in einer PLZ-Spalte Zahlen und Text gemischt).
+- Die Metadaten-Prüfung liest jetzt auch PNG (für Bildformat umwandeln).
+- „Kommentare und Markierungen“ bleiben beim Entfernen von PDF-Metadaten erhalten und werden angezeigt; ein Entfernen wäre eine eigene Funktion (Formularfelder und Verweise hängen daran).
+
+Offene Fragen aus Paket 1:
+- **P1-1:** Drei neue Adressen für die SheetJS-Liste (alle Gruppe A1, XML-Namensräume, nie abgerufen): `http://www.w3.org/TR/REC-html40` (XMLNS-Tabelle, `node_modules/xlsx/xlsx.mjs` Zeile 4139), `http://schemas.microsoft.com/office/spreadsheetml/2017/richdata` und `http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray` (beide Zeile 12542; SheetJS schreibt sie in `xl/metadata.xml` jeder erzeugten .xlsx-Datei).
+- **P1-2:** SheetJS schreibt in jede erzeugte .xlsx-Datei fest „SheetJS“ als Anwendung (`docProps/app.xml`, Zeile 6001). Keine personenbezogenen Daten; so lassen oder die Datei nachträglich umschreiben?
+- **P1-3:** Texte zur Freigabe (`docs/texte-zur-freigabe.md`, mit **NEU** markiert), darunter die Startseitentitel (E16).
+- **P1-4:** Farben endgültig (E15), Screenshots im Bericht.
+
 ## 0. Wie dieser Plan zu lesen ist
 
 - **Suchbegriffe** sind Vermutungen. Ich habe kein Werkzeug für Suchvolumen benutzt und keine Zahlen erhoben.

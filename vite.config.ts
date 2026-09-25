@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { parseGlobalHeaders } from './build/headers.ts';
+import { chunkGuard } from './build/chunk-guard.ts';
 import { htmlPartials } from './build/html-partials.ts';
 import {
   collectLicenses,
@@ -68,6 +69,7 @@ export default defineConfig({
       fontPrefixes: FONT_FILE_PREFIXES,
     }),
     writeShippedManifest(SHIPPED_MANIFEST),
+    chunkGuard(),
   ],
   worker: {
     format: 'es',

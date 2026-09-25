@@ -6,12 +6,8 @@
 import { isPdf } from '../../core/files/classify.ts';
 import { formatBytes } from '../../core/format/bytes.ts';
 import { parsePageRanges, type PageRange } from '../../core/pdf/page-ranges.ts';
-import {
-  unsupportedChars,
-  type StampColor,
-  type StampOptions,
-  type StampPlacement,
-} from '../../core/pdf/stamp.ts';
+import type { StampColor, StampOptions, StampPlacement } from '../../core/pdf/stamp.ts';
+import { unsupportedChars } from '../../core/pdf/winansi.ts';
 import { $ } from '../../ui/dom.ts';
 import { saveBlob } from '../../ui/download.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';

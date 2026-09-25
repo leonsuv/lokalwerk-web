@@ -19,6 +19,7 @@ import {
   StandardFonts,
 } from 'pdf-lib';
 import { loadPdf, toPdfError } from './merge.ts';
+export { unsupportedChars } from './winansi.ts';
 import { pageIndices, type PageRange } from './page-ranges.ts';
 import {
   diagonalAngle,
@@ -28,15 +29,6 @@ import {
   visibleSize,
   type Anchor,
 } from './stamp-geometry.ts';
-
-/** Zeichen des Texts, die die Schrift nicht darstellen kann, jedes einmal */
-export function unsupportedChars(text: string, charset: ReadonlySet<number>): string[] {
-  const missing = new Set<string>();
-  for (const char of text) {
-    if (!charset.has(char.codePointAt(0) ?? 0)) missing.add(char);
-  }
-  return [...missing];
-}
 
 /** Zeichenvorrat von Helvetica (WinAnsi), aus der in pdf-lib eingebauten Schrift gelesen */
 export async function standardFontCharset(): Promise<number[]> {

@@ -23,6 +23,7 @@ describe('Seitenregister', () => {
         '/',
         '/werkzeuge/',
         '/pdf-teilen/',
+        '/bilder-zu-pdf/',
         '/pdf-zusammenfuegen/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',

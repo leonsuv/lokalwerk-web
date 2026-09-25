@@ -6,6 +6,7 @@
 
 import { findMetadata } from '../../core/images/metadata-check.ts';
 import { targetSize, type OutputType } from '../../core/images/resize.ts';
+import { renderToBlob } from '../../ui/canvas.ts';
 import { WorkerError } from '../../ui/worker-protocol.ts';
 
 export interface ResizeSettings {
@@ -25,40 +26,10 @@ export interface ResizeOutput {
 /** Ab dieser Pixelzahl stoßen manche Browser (v. a. Safari auf iOS) an Canvas-Grenzen. */
 const LARGE_CANVAS_PIXELS = 16_777_216;
 
-type Context2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
-
-async function render(
-  width: number,
-  height: number,
-  settings: Pick<ResizeSettings, 'type' | 'quality'>,
-  draw: (ctx: Context2D) => void,
-): Promise<Blob> {
-  if (typeof OffscreenCanvas !== 'undefined') {
-    const canvas = new OffscreenCanvas(width, height);
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw new WorkerError('encode');
-    draw(ctx);
-    return canvas.convertToBlob({ type: settings.type, quality: settings.quality });
-  }
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new WorkerError('encode');
-  draw(ctx);
-  return new Promise((resolve, reject) =>
-    canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new WorkerError('encode'))),
-      settings.type,
-      settings.quality,
-    ),
-  );
-}
-
 /** Kann der Browser dieses Format erzeugen? Safari liefert z. B. statt WebP stillschweigend PNG. */
 export async function supportsOutputType(type: OutputType): Promise<boolean> {
   try {
-    const blob = await render(1, 1, { type, quality: 0.8 }, () => undefined);
+    const blob = await renderToBlob(1, 1, { type, quality: 0.8 }, () => undefined);
     return blob.type === type;
   } catch {
     return false;
@@ -77,7 +48,7 @@ export async function resizeImage(file: Blob, settings: ResizeSettings): Promise
   const { width, height } = targetSize(bitmap.width, bitmap.height, settings.maxWidth);
   let blob: Blob;
   try {
-    blob = await render(width, height, settings, (ctx) => {
+    blob = await renderToBlob(width, height, settings, (ctx) => {
       if (settings.type === 'image/jpeg') {
         // JPEG kennt keine Transparenz: transparente Bereiche weiß statt schwarz.
         ctx.fillStyle = '#fff';

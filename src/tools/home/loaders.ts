@@ -22,6 +22,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-teilen/main.html?raw')).default,
     open: async () => (await import('../pdf-teilen/page.ts')).openFiles,
   },
+  'bilder-zu-pdf': {
+    markup: async () => (await import('../bilder-zu-pdf/main.html?raw')).default,
+    open: async () => (await import('../bilder-zu-pdf/page.ts')).addFiles,
+  },
   'fotos-verkleinern': {
     markup: async () => (await import('../fotos-verkleinern/main.html?raw')).default,
     open: async () => (await import('../fotos-verkleinern/page.ts')).addFiles,

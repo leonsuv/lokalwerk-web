@@ -20,6 +20,7 @@ Ziel: öffentliche Website mit drei kostenlosen Werkzeugen (PDFs zusammenfügen,
 | A6 | Kontrast | Freigegeben: Nur im Hellmodus zusätzliche, dunklere Text-Tokens (z. B. `--ok-ink`, `--err-ink`, `--pdf-ink`, `--img-ink`). Flächen, Icons und Dunkelmodus bleiben unverändert. Farbwerte samt Kontrastverhältnis vor dem Einbau vorlegen. **Werte freigegeben (24.09.2026), nur für Text, Dunkelmodus unverändert:** `--ok-ink` #137A4B, `--err-ink` #BC3C22, `--pdf-ink` #CF1D23, `--img-ink` #0B796A (jeweils ≥ 4,6:1 auf der eigenen hellen Fläche, weiß, `--bg` und `--surface2`). |
 | A7 | Rechtstexte | Impressum und Datenschutz wörtlich aus dem Prototyp übernehmen, mit Platzhaltern und Entwurf-Kasten. Kontaktadresse ist **kontakt@lokalwerk.eu** (AGENTS.md gilt, der Prototyp wird ebenfalls angepasst). Rechtsseiten bekommen `noindex`, bis Leon sie fertiggestellt hat. **Die AGB-Seite wird in Phase 1 nicht gebaut**: nicht im Footer, nicht in der Sitemap. Den AGB-Text aus dem Prototyp unter `docs/agb-entwurf.md` ablegen. |
 | A8 | Hell/Dunkel-Umschalter | Keiner in Phase 1. Die Seite folgt der Systemeinstellung. `color-scheme: light dark` setzen. |
+| A9 | Fokus-Ring der Eingabefelder | Freigegeben (25.09.2026): Im Hellmodus kräftiger, neues Token `--focus-ring` = `--primary` mit 75 % Deckkraft (`rgba(58, 85, 224, 0.75)`), entspricht #6B80E8 auf Weiß. Kontrast 3,57:1 zur weißen Karte und 3,43:1 zu `--bg` (#F5F6FA); Mindestmaß WCAG 1.4.11: 3:1. Bisher #E7EBFF mit 1,18:1. Dunkelmodus unverändert (`--primary-soft`). |
 
 ### Beträge
 

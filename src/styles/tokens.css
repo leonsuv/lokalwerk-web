@@ -35,6 +35,10 @@
   --img-ink: #0b796a;
   --sepa-ink: var(--sepa);
 
+  /* Fokus-Ring der Eingabefelder (plan.md A9): --primary mit 75 % Deckkraft, entspricht
+     #6B80E8 auf Weiß, Kontrast 3,57:1 zu Weiß und 3,43:1 zu --bg (WCAG 1.4.11: 3:1) */
+  --focus-ring: rgba(58, 85, 224, 0.75);
+
   --font: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
@@ -65,6 +69,7 @@
     --err-ink: var(--err);
     --pdf-ink: var(--pdf);
     --img-ink: var(--img);
+    --focus-ring: var(--primary-soft);
   }
 }
 
@@ -100,6 +105,7 @@
   --err-ink: var(--err);
   --pdf-ink: var(--pdf);
   --img-ink: var(--img);
+  --focus-ring: var(--primary-soft);
 }
 
 /* Akzentfarbe je Werkzeug-Kategorie: --c (Icons, Rahmen), --cs (Fläche), --ci (Text) */

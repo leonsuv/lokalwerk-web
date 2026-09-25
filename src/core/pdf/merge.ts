@@ -22,7 +22,7 @@ export class PdfError extends Error {
 /** Speicherfehler der Browser: V8 „Array buffer allocation failed“, WebKit/Gecko „out of memory“. */
 const OUT_OF_MEMORY = /allocation failed|out of memory/i;
 
-function toPdfError(error: unknown): PdfError {
+export function toPdfError(error: unknown): PdfError {
   if (error instanceof PdfError) return error;
   if (error instanceof Error && OUT_OF_MEMORY.test(error.message)) {
     return new PdfError('out-of-memory', { cause: error });
@@ -30,7 +30,8 @@ function toPdfError(error: unknown): PdfError {
   return new PdfError('damaged', { cause: error });
 }
 
-async function load(bytes: Uint8Array): Promise<PDFDocument> {
+/** Lädt eine PDF und prüft Verschlüsselung und Seitenzahl. Wirft PdfError. */
+export async function loadPdf(bytes: Uint8Array): Promise<PDFDocument> {
   if (bytes.length === 0) throw new PdfError('empty');
   let doc: PDFDocument;
   try {
@@ -56,7 +57,7 @@ async function load(bytes: Uint8Array): Promise<PDFDocument> {
 
 /** Liest eine PDF und gibt die Seitenzahl zurück. Wirft PdfError. */
 export async function countPages(bytes: Uint8Array): Promise<number> {
-  return (await load(bytes)).getPageCount();
+  return (await loadPdf(bytes)).getPageCount();
 }
 
 export interface MergeResult {
@@ -78,7 +79,7 @@ export async function mergePdfs(
     // Ohne Producer/Creator von pdf-lib, siehe docs/pdf-lib.md Nr. 8 und 9 (tote Adresse im Bundle).
     const out = await PDFDocument.create({ updateMetadata: false });
     for (const [index, read] of sources.entries()) {
-      const source = await load(await read());
+      const source = await loadPdf(await read());
       const pages = await out.copyPages(source, source.getPageIndices());
       for (const page of pages) out.addPage(page);
       onProgress?.(index + 1, sources.length);

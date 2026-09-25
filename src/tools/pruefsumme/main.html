@@ -1,0 +1,89 @@
+<div class="wrap util">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-hash" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Prüfsumme berechnen</h1>
+      <p>
+        SHA-256 einer Datei berechnen und mit einer angegebenen Prüfsumme vergleichen, zum Beispiel
+        nach einem Download.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <label class="drop" id="hash-drop">
+        <input type="file" class="visually-hidden" id="hash-input" />
+        <span class="ic"
+          ><svg width="22" height="22" aria-hidden="true"><use href="#i-hash" /></svg
+        ></span>
+        <div>
+          <strong>Datei hinzufügen</strong
+          ><span>Jede Art von Datei, auch sehr große. Auswählen oder hierher ziehen.</span>
+        </div>
+      </label>
+      <ul class="file-list" id="hash-file" aria-label="Ausgewählte Datei"></ul>
+      <div class="empty-state" id="hash-empty">
+        <strong>Noch keine Datei</strong>Die Prüfsummen erscheinen hier.
+      </div>
+      <div class="mt-l" id="hash-panel" hidden>
+        <h2 id="hash-title" tabindex="-1">Prüfsummen</h2>
+        <div class="table-wrap">
+          <table id="hash-table">
+            <caption class="visually-hidden">
+              Prüfsummen der Datei
+            </caption>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="hint" id="hash-cross"></p>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Vergleichen</h2>
+      <div class="field">
+        <label class="lbl" for="hash-expected"
+          >Erwartete Prüfsumme <span class="opt">(optional)</span></label
+        >
+        <input
+          type="text"
+          id="hash-expected"
+          autocomplete="off"
+          spellcheck="false"
+          aria-describedby="hash-expected-hint"
+        />
+        <p class="hint" id="hash-expected-hint">
+          Steht meist auf der Download-Seite, als SHA-256 oder SHA-1.
+        </p>
+      </div>
+      <div class="summary" id="hash-compare" aria-live="polite"></div>
+      <button class="btn ghost wide mt-m" id="hash-clear" disabled>Andere Datei wählen</button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="hash-explain">
+    <h2 id="hash-explain">So funktioniert es</h2>
+    <p>
+      Wähle eine Datei aus oder zieh sie in die Fläche oben. Lokalwerk berechnet ihre Prüfsummen
+      nach SHA-256 und SHA-1. Füge rechts die Prüfsumme ein, die zum Beispiel neben einem Download
+      steht; dann siehst du sofort, ob beide übereinstimmen. Stimmen sie überein, ist die Datei
+      unverändert und vollständig angekommen.
+    </p>
+    <h2>Welches Verfahren?</h2>
+    <p>
+      SHA-256 ist heute üblich und sicher. SHA-1 wird nur noch angezeigt, weil manche ältere Angaben
+      es verwenden; gegen gezielte Manipulation schützt es nicht mehr zuverlässig. Die Berechnung
+      folgt dem Standard FIPS 180-4 und ist gegen die Prüfwerte des NIST getestet. Bei Dateien bis
+      64 MB rechnet der Browser zusätzlich mit seiner eigenen Kryptografie nach.
+    </p>
+    <h2>Deine Datei bleibt auf deinem Gerät</h2>
+    <p>
+      Die Datei wird direkt in deinem Browser gelesen und nicht hochgeladen, auch wenn sie mehrere
+      Gigabyte groß ist. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne
+      Internetverbindung.
+    </p>
+  </section>
+</div>

@@ -881,3 +881,10 @@ ul.tool-grid > li > .tool-card {
   overflow-wrap: anywhere;
   user-select: all;
 }
+
+/* Prüfsummen und ähnliche lange Zeichenfolgen */
+td.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}

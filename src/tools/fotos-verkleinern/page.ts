@@ -6,11 +6,14 @@
 import { isImage } from '../../core/files/classify.ts';
 import { formatBytes } from '../../core/format/bytes.ts';
 import { outputName, savedPercent, type OutputType } from '../../core/images/resize.ts';
+import { ZipError } from '../../core/zip/write.ts';
 import { $, $$ } from '../../ui/dom.ts';
 import { saveBlob } from '../../ui/download.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
+import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
+import { zipBlobs } from '../../ui/zip.ts';
 import {
   resizeImage,
   supportsOutputType,
@@ -64,6 +67,10 @@ const widthSelect = $<HTMLSelectElement>('#img-width');
 const quality = $<HTMLInputElement>('#img-quality');
 const formatButtons = $$<HTMLButtonElement>('.seg button[data-format]');
 const clearButton = $<HTMLButtonElement>('#img-clear');
+const zipButton = $<HTMLButtonElement>('#img-zip');
+const zipLabel = $('#img-zip-label');
+const zipIdleLabel = zipLabel.textContent ?? '';
+let zipping = false;
 
 let items: Item[] = [];
 let outputType: OutputType = 'image/jpeg';
@@ -134,7 +141,8 @@ function tile(item: Item, index: number): HTMLElement {
 function render(): void {
   grid.replaceChildren(...items.map(tile));
   $('#img-empty').hidden = items.length > 0;
-  clearButton.disabled = items.length === 0;
+  clearButton.disabled = items.length === 0 || zipping;
+  zipButton.disabled = zipping || !items.some((item) => item.state === 'done');
   const saved = items.reduce(
     (sum, item) => (item.state === 'done' ? sum + Math.max(0, item.inSize - item.blob.size) : sum),
     0,
@@ -197,6 +205,39 @@ grid.addEventListener('click', (event) => {
   const item = items[Number(button?.dataset.index)];
   if (item?.state === 'done') saveBlob(item.outName, item.blob);
 });
+
+zipButton.addEventListener('click', () => {
+  void saveZip();
+});
+
+async function saveZip(): Promise<void> {
+  const done = items.flatMap((item) =>
+    item.state === 'done' ? [{ name: item.outName, blob: item.blob }] : [],
+  );
+  zipping = true;
+  zipLabel.textContent = 'ZIP wird erstellt …';
+  render();
+  try {
+    saveBlob('fotos-verkleinert.zip', await zipBlobs(done));
+    const pending = items.filter((item) => item.state === 'pending').length;
+    const saved = `${done.length} ${done.length === 1 ? 'Foto' : 'Fotos'} als ZIP gespeichert.`;
+    showToast(
+      pending > 0
+        ? `${saved} ${pending} ${pending === 1 ? 'wird' : 'werden'} noch verkleinert und ${pending === 1 ? 'ist' : 'sind'} nicht enthalten.`
+        : saved,
+    );
+  } catch (error) {
+    showToast(
+      error instanceof ZipError
+        ? 'Die ZIP-Datei wäre zu groß. Speichere die Fotos in kleineren Gruppen.'
+        : 'Die ZIP-Datei konnte nicht erstellt werden. Lade die Seite neu und versuch es noch einmal.',
+    );
+  } finally {
+    zipping = false;
+    zipLabel.textContent = zipIdleLabel;
+    render();
+  }
+}
 
 clearButton.addEventListener('click', () => {
   for (const item of items) if (item.state === 'done') URL.revokeObjectURL(item.url);

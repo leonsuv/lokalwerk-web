@@ -949,3 +949,50 @@ td.mono {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
 }
+
+/* Kontrast prüfen: Farbfeld neben der Eingabe, Vorschau in den gewählten Farben */
+.color-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+.color-row input[type='color'] {
+  flex: none;
+  width: 3rem;
+  min-height: 2.6rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+}
+.contrast-preview {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+}
+.contrast-preview p {
+  margin: 0 0 0.6rem;
+}
+.contrast-preview p:last-child {
+  margin-bottom: 0;
+}
+.contrast-preview .large {
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+.contrast-preview .small {
+  font-size: 0.8125rem;
+}
+.check-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+.check-row:first-child {
+  border-top: 0;
+}

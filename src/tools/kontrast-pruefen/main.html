@@ -1,0 +1,102 @@
+<div class="wrap util">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-contrast" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Kontrast prüfen</h1>
+      <p>
+        Prüfen, ob Text- und Hintergrundfarbe genug Kontrast nach WCAG 2.2 haben, etwa für
+        barrierefreie Websites und Dokumente.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div>
+      <div class="card">
+        <h2>Farben</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label class="lbl" for="con-fg">Textfarbe</label>
+            <div class="color-row">
+              <input
+                type="text"
+                id="con-fg"
+                value="#5A6380"
+                spellcheck="false"
+                autocomplete="off"
+                aria-describedby="con-fg-error"
+              />
+              <input type="color" id="con-fg-pick" value="#5a6380" aria-label="Textfarbe wählen" />
+            </div>
+            <p class="hint err" id="con-fg-error"></p>
+          </div>
+          <div class="field">
+            <label class="lbl" for="con-bg">Hintergrundfarbe</label>
+            <div class="color-row">
+              <input
+                type="text"
+                id="con-bg"
+                value="#FFFFFF"
+                spellcheck="false"
+                autocomplete="off"
+                aria-describedby="con-bg-error"
+              />
+              <input
+                type="color"
+                id="con-bg-pick"
+                value="#ffffff"
+                aria-label="Hintergrundfarbe wählen"
+              />
+            </div>
+            <p class="hint err" id="con-bg-error"></p>
+          </div>
+        </div>
+        <p class="hint">
+          Erlaubt sind Angaben wie in CSS: #3A55E0, #FFF, rgb(58 85 224) oder hsl(230 73% 55%). Text
+          darf halbtransparent sein, der Hintergrund muss deckend sein.
+        </p>
+        <button class="btn ghost sm mt-m" id="con-swap" type="button">Farben tauschen</button>
+      </div>
+      <div class="card">
+        <h2>Vorschau</h2>
+        <div class="contrast-preview" id="con-preview">
+          <p class="large">Großer Text, 24 Pixel</p>
+          <p>Normaler Text in 16 Pixel. Der Mieter zahlt die Miete bis zum dritten Werktag.</p>
+          <p class="small">Kleiner Text in 13 Pixel, etwa für Hinweise.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Kontrastverhältnis</h2>
+      <div class="stat-big" id="con-ratio" aria-live="polite">–</div>
+      <div class="mt-m" id="con-results"></div>
+      <p class="hint mt-m">
+        Großer Text heißt nach WCAG: ab 18 Punkt (24 Pixel) oder fett ab 14 Punkt (etwa 18,7 Pixel).
+      </p>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="con-explain">
+    <h2 id="con-explain">So funktioniert es</h2>
+    <p>
+      Gib die Textfarbe und die Hintergrundfarbe ein oder wähle sie aus. Das Werkzeug berechnet das
+      Kontrastverhältnis nach der Formel der WCAG 2.2 und zeigt, welche Anforderungen erfüllt sind.
+      Das Verhältnis wird abgerundet angezeigt: 4,49:1 reicht nicht für 4,5:1.
+    </p>
+    <h2>Welche Werte gelten?</h2>
+    <p>
+      Für Stufe AA braucht normaler Text mindestens 4,5:1, großer Text 3:1 (Erfolgskriterium 1.4.3).
+      Für Stufe AAA sind es 7:1 und 4,5:1 (1.4.6). Rahmen von Eingabefeldern, Symbole und andere
+      Bedienelemente brauchen mindestens 3:1 zu ihrer Umgebung (1.4.11). Quelle: Web Content
+      Accessibility Guidelines (WCAG) 2.2, W3C-Empfehlung vom 12. Dezember 2024.
+    </p>
+    <h2>Deine Farben bleiben auf deinem Gerät</h2>
+    <p>
+      Die Berechnung läuft direkt in deinem Browser, es wird nichts gesendet oder gespeichert. Nach
+      dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+    </p>
+  </section>
+</div>

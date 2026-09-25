@@ -30,6 +30,7 @@ describe('Seitenregister', () => {
         '/passwort-generator/',
         '/pruefsumme/',
         '/texte-vergleichen/',
+        '/kontrast-pruefen/',
         '/pdf-zusammenfuegen/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',

@@ -25,7 +25,7 @@ Antworten auf die Fragen aus Abschnitt 7. Wo Abschnitte 1–6 davon abweichen, g
 | E13 | Kategorieseiten | Vorerst nur `/werkzeuge/` mit Sprungmarken. |
 | E14 | check-dist | Bibliotheks-Adresslisten gelten für jede Datei, die die Bibliothek laut `shipped-packages.ts` enthält. Mit Test, dass die Liste in einem Worker ohne die Bibliothek nicht greift. |
 | E15 | Farben | Ocker und Violett vorläufig freigegeben. Vor dem Commit Screenshots der Übersichtsseite in beiden Modi vorlegen; danach endgültige Freigabe. |
-| E16 | Startseiten-Titel | Mit Paket 1 erweitern, neue Texte zur Freigabe. |
+| E16 | Startseiten-Titel | Mit Paket 1 erweitern, neue Texte zur Freigabe. Titel und Meta-Beschreibung freigegeben von Leon am 25.09.2026. |
 | E17 | Lastschrift | Fachlogik und Tests in Paket 7. Leon legt die Unterlagen nach `.local-specs/dk/`. |
 | E18 | HEIC | Gestrichen. |
 

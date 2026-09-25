@@ -1,6 +1,6 @@
 # Texte zur Freigabe
 
-Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Mit **NEU** markiert: neue oder geänderte Texte aus Phase 2, Paket 1, **zur Freigabe**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“.
+Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“.
 
 Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.
 
@@ -8,24 +8,24 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 
 | URL | Titel | Meta-Beschreibung | Zeichen | Index |
 |---|---|---|---|---|
-| **NEU** `/` | Lokalwerk – PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten | PDFs zusammenfügen und teilen, Fotos verkleinern und umwandeln, SEPA-Dateien erstellen. Kostenlos, direkt im Browser, ohne Upload deiner Dateien. | 145 | ja |
-| **NEU** `/werkzeuge/` | Alle Werkzeuge – PDF, Fotos, Tabellen und SEPA ohne Upload \| Lokalwerk | Alle Werkzeuge von Lokalwerk auf einen Blick: PDF, Fotos, Tabellen und Zahlungsverkehr. Kostenlos, direkt im Browser, ohne Upload deiner Dateien. | 145 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/` | Lokalwerk – PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten | PDFs zusammenfügen und aufteilen, Fotos verkleinern, Excel und CSV umwandeln, SEPA-Dateien erstellen. Kostenlos im Browser, ohne Upload deiner Dateien. | 151 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/werkzeuge/` | Alle Werkzeuge – PDF, Fotos, Tabellen und SEPA ohne Upload \| Lokalwerk | Alle Werkzeuge von Lokalwerk auf einen Blick: PDF, Fotos, Tabellen und Zahlungsverkehr. Kostenlos, direkt im Browser, ohne Upload deiner Dateien. | 145 | ja |
 | `/pdf-zusammenfuegen/` | PDF zusammenfügen – kostenlos und ohne Upload \| Lokalwerk | Mehrere PDF-Dateien kostenlos zu einer zusammenfügen, Reihenfolge frei wählbar. Läuft komplett in deinem Browser, ohne Upload und ohne Anmeldung. | 145 | ja |
-| **NEU** `/pdf-teilen/` | PDF teilen und Seiten extrahieren – kostenlos, ohne Upload \| Lokalwerk | Seiten aus einer PDF kostenlos herausholen oder die PDF in mehrere Dateien aufteilen. Direkt im Browser, ohne Upload und ohne Anmeldung. | 136 | ja |
-| **NEU** `/pdf-seitenzahlen/` | Seitenzahlen in PDF einfügen – kostenlos, ohne Upload \| Lokalwerk | Seitenzahlen wie „Seite 3 von 12“ kostenlos in eine PDF einfügen, Position und Startseite frei wählbar. Direkt im Browser, ohne Upload und ohne Anmeldung. | 154 | ja |
-| **NEU** `/pdf-stempel/` | PDF-Wasserzeichen und Stempel einfügen – kostenlos, ohne Upload \| Lokalwerk | Text wie „Entwurf“ oder „Kopie“ kostenlos als Stempel oder Wasserzeichen auf die Seiten einer PDF setzen. Direkt im Browser, ohne Upload. | 137 | ja |
-| **NEU** `/pdf-metadaten-entfernen/` | PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload \| Lokalwerk | Kostenlos sehen, welche versteckten Angaben in einer PDF stecken, und Autor, Programm, Datum und frühere Fassungen entfernen. Direkt im Browser, ohne Upload. | 157 | ja |
-| **NEU** `/bilder-zu-pdf/` | Bilder zu PDF: JPG und PNG in PDF umwandeln – kostenlos \| Lokalwerk | Fotos und Scans kostenlos zu einer PDF zusammenfassen, eine Seite je Bild, auf DIN A4. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 145 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/pdf-teilen/` | PDF teilen und Seiten extrahieren – kostenlos, ohne Upload \| Lokalwerk | Seiten aus einer PDF kostenlos herausholen oder die PDF in mehrere Dateien aufteilen. Direkt im Browser, ohne Upload und ohne Anmeldung. | 136 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/pdf-seitenzahlen/` | Seitenzahlen in PDF einfügen – kostenlos, ohne Upload \| Lokalwerk | Seitenzahlen wie „Seite 3 von 12“ kostenlos in eine PDF einfügen, Position und Startseite frei wählbar. Direkt im Browser, ohne Upload und ohne Anmeldung. | 154 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/pdf-stempel/` | PDF-Wasserzeichen und Stempel einfügen – kostenlos, ohne Upload \| Lokalwerk | Text wie „Entwurf“ oder „Kopie“ kostenlos als Stempel oder Wasserzeichen auf die Seiten einer PDF setzen. Direkt im Browser, ohne Upload. | 137 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/pdf-metadaten-entfernen/` | PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload \| Lokalwerk | Kostenlos sehen, welche versteckten Angaben in einer PDF stecken, und Autor, Programm, Datum und frühere Fassungen entfernen. Direkt im Browser, ohne Upload. | 157 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/bilder-zu-pdf/` | Bilder zu PDF: JPG und PNG in PDF umwandeln – kostenlos \| Lokalwerk | Fotos und Scans kostenlos zu einer PDF zusammenfassen, eine Seite je Bild, auf DIN A4. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 145 | ja |
 | `/fotos-verkleinern/` | Fotos verkleinern und Metadaten entfernen – kostenlos \| Lokalwerk | Fotos kostenlos für E-Mail und Website verkleinern und dabei GPS-Position und Kameradaten entfernen. Direkt im Browser, ohne Upload. | 132 | ja |
-| **NEU** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
-| **NEU** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
-| **NEU** `/csv-reparieren/` | CSV reparieren: Umlaute und Trennzeichen korrigieren – kostenlos \| Lokalwerk | CSV-Dateien mit kaputten Umlauten wie „MÃ¼ller“ oder falschem Trennzeichen kostenlos reparieren, jede Änderung vorher sichtbar. Im Browser, ohne Upload. | 152 | ja |
-| **NEU** `/duplikate-finden/` | Duplikate in Excel- und CSV-Listen finden – kostenlos, ohne Upload \| Lokalwerk | Doppelte Einträge in Mitglieder-, Kunden- und Adresslisten kostenlos finden und markieren, ohne etwas zu löschen. Direkt im Browser, ohne Upload. | 145 | ja |
-| **NEU** `/passwort-generator/` | Passwort-Generator: sichere Passwörter nach BSI – ohne Server \| Lokalwerk | Sichere Passwörter kostenlos erzeugen, mit Länge und Zeichenarten nach den Beispielen des BSI. Direkt im Browser, nichts wird gesendet oder gespeichert. | 152 | ja |
-| **NEU** `/pruefsumme/` | Prüfsumme berechnen: SHA-256 einer Datei prüfen – ohne Upload \| Lokalwerk | SHA-256 und SHA-1 einer Datei kostenlos berechnen und mit der angegebenen Prüfsumme vergleichen, auch bei sehr großen Dateien. Direkt im Browser, ohne Upload. | 158 | ja |
-| **NEU** `/texte-vergleichen/` | Texte vergleichen: Unterschiede zwischen zwei Fassungen finden \| Lokalwerk | Zwei Texte kostenlos vergleichen, etwa Vertragsentwürfe oder Satzungen: geänderte Zeilen und Wörter werden markiert. Direkt im Browser, ohne Upload. | 148 | ja |
-| **NEU** `/kontrast-pruefen/` | Kontrast prüfen nach WCAG 2.2 – Kontrastrechner für Farben \| Lokalwerk | Kontrastverhältnis zweier Farben kostenlos nach WCAG 2.2 berechnen und die Stufen AA und AAA prüfen, für Text, großen Text und Bedienelemente. Im Browser. | 154 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/csv-reparieren/` | CSV reparieren: Umlaute und Trennzeichen korrigieren – kostenlos \| Lokalwerk | CSV-Dateien mit kaputten Umlauten wie „MÃ¼ller“ oder falschem Trennzeichen kostenlos reparieren, jede Änderung vorher sichtbar. Im Browser, ohne Upload. | 152 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/duplikate-finden/` | Duplikate in Excel- und CSV-Listen finden – kostenlos, ohne Upload \| Lokalwerk | Doppelte Einträge in Mitglieder-, Kunden- und Adresslisten kostenlos finden und markieren, ohne etwas zu löschen. Direkt im Browser, ohne Upload. | 145 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/passwort-generator/` | Passwort-Generator: sichere Passwörter nach BSI – ohne Server \| Lokalwerk | Sichere Passwörter kostenlos erzeugen, mit Länge und Zeichenarten nach den Beispielen des BSI. Direkt im Browser, nichts wird gesendet oder gespeichert. | 152 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/pruefsumme/` | Prüfsumme berechnen: SHA-256 einer Datei prüfen – ohne Upload \| Lokalwerk | SHA-256 und SHA-1 einer Datei kostenlos berechnen und mit der angegebenen Prüfsumme vergleichen, auch bei sehr großen Dateien. Direkt im Browser, ohne Upload. | 158 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/texte-vergleichen/` | Texte vergleichen: Unterschiede zwischen zwei Fassungen finden \| Lokalwerk | Zwei Texte kostenlos vergleichen, etwa Vertragsentwürfe oder Satzungen: geänderte Zeilen und Wörter werden markiert. Direkt im Browser, ohne Upload. | 148 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/kontrast-pruefen/` | Kontrast prüfen nach WCAG 2.2 – Kontrastrechner für Farben \| Lokalwerk | Kontrastverhältnis zweier Farben kostenlos nach WCAG 2.2 berechnen und die Stufen AA und AAA prüfen, für Text, großen Text und Bedienelemente. Im Browser. | 154 | ja |
 | `/pro/` | Lokalwerk Pro | Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen und PDFs. Läuft wie alle Werkzeuge vollständig lokal. | 108 | noindex |
 | `/impressum/` | Impressum – Lokalwerk | Impressum von Lokalwerk. | 24 | noindex |
 | `/datenschutz/` | Datenschutzerklärung – Lokalwerk | Datenschutzerklärung von Lokalwerk. | 35 | noindex |
@@ -52,7 +52,7 @@ Verschlüsselte PDFs lassen sich nicht zusammenfügen. Das gilt auch für Dateie
 
 _(Erklärtext: 125 Wörter)_
 
-## PDF teilen – NEU (`src/tools/pdf-teilen/main.html`)
+## PDF teilen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-teilen/main.html`)
 
 Karte: „PDF teilen“ – „Seiten aus einer PDF herausholen oder sie in mehrere Dateien aufteilen.“
 
@@ -72,7 +72,7 @@ Verschlüsselte PDFs lassen sich nicht teilen. Das gilt auch für Dateien, die s
 
 _(Erklärtext: 136 Wörter)_
 
-## Seitenzahlen einfügen – NEU (`src/tools/pdf-seitenzahlen/main.html`)
+## Seitenzahlen einfügen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-seitenzahlen/main.html`)
 
 Karte: „Seitenzahlen einfügen“ – „Seitenzahlen wie „Seite 3 von 12“ in Kopf- oder Fußzeile einer PDF setzen.“
 
@@ -92,7 +92,7 @@ Die PDF wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem
 
 _(Erklärtext: 117 Wörter)_
 
-## Stempel und Wasserzeichen – NEU (`src/tools/pdf-stempel/main.html`)
+## Stempel und Wasserzeichen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-stempel/main.html`)
 
 Karte: „Stempel und Wasserzeichen“ – „Text wie „Entwurf“ oder „Kopie“ quer über die Seiten einer PDF setzen.“
 
@@ -116,7 +116,7 @@ Die PDF wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem
 
 _(Erklärtext: 160 Wörter)_
 
-## PDF-Metadaten entfernen – NEU (`src/tools/pdf-metadaten-entfernen/main.html`)
+## PDF-Metadaten entfernen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-metadaten-entfernen/main.html`)
 
 Karte: „PDF-Metadaten entfernen“ – „Sehen, welche versteckten Angaben in einer PDF stecken, und sie entfernen.“
 
@@ -136,7 +136,7 @@ Die PDF wird direkt in deinem Browser geprüft und bereinigt, nicht hochgeladen.
 
 _(Erklärtext: 132 Wörter)_
 
-## Bilder zu PDF – NEU (`src/tools/bilder-zu-pdf/main.html`)
+## Bilder zu PDF – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/bilder-zu-pdf/main.html`)
 
 Karte: „Bilder zu PDF“ – „Fotos und Scans als JPEG oder PNG zu einer PDF zusammenfassen, eine Seite je Bild.“
 
@@ -184,7 +184,7 @@ Die Fotos werden direkt in deinem Browser verarbeitet und nicht hochgeladen. Nac
 
 _(Erklärtext: 158 Wörter)_
 
-## Bildformat umwandeln – NEU (`src/tools/bildformat-umwandeln/main.html`)
+## Bildformat umwandeln – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/bildformat-umwandeln/main.html`)
 
 Karte: „Bildformat umwandeln“ – „Bilder zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPEG.“
 
@@ -232,7 +232,7 @@ Liste und Kontodaten werden direkt in deinem Browser verarbeitet und nicht hochg
 
 _(Erklärtext: 152 Wörter)_
 
-## Excel und CSV umwandeln – NEU (`src/tools/excel-csv-umwandeln/main.html`)
+## Excel und CSV umwandeln – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/excel-csv-umwandeln/main.html`)
 
 Karte: „Excel und CSV umwandeln“ – „Excel-Tabellen als CSV speichern und CSV-Dateien als Excel-Datei. Mit richtigen Umlauten.“
 
@@ -256,7 +256,7 @@ Die Dateien werden direkt in deinem Browser umgewandelt und nicht hochgeladen. N
 
 _(Erklärtext: 181 Wörter)_
 
-## CSV reparieren – NEU (`src/tools/csv-reparieren/main.html`)
+## CSV reparieren – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/csv-reparieren/main.html`)
 
 Karte: „CSV reparieren“ – „Kaputte Umlaute, Trennzeichen und Kodierung einer CSV-Datei korrigieren.“
 
@@ -276,7 +276,7 @@ Die Datei wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach d
 
 _(Erklärtext: 118 Wörter)_
 
-## Duplikate finden – NEU (`src/tools/duplikate-finden/main.html`)
+## Duplikate finden – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/duplikate-finden/main.html`)
 
 Karte: „Duplikate finden“ – „Doppelte Einträge in Mitglieder- oder Adresslisten finden und markieren.“
 
@@ -296,7 +296,7 @@ Die Datei wird direkt in deinem Browser geprüft und nicht hochgeladen. Nach dem
 
 _(Erklärtext: 127 Wörter)_
 
-## Passwort-Generator – NEU (`src/tools/passwort-generator/main.html`)
+## Passwort-Generator – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/passwort-generator/main.html`)
 
 Karte: „Passwort-Generator“ – „Sichere Passwörter erzeugen, mit Länge und Zeichenarten nach den BSI-Beispielen.“
 
@@ -316,7 +316,7 @@ Das Passwort entsteht nur in deinem Browser und wird weder gesendet noch gespeic
 
 _(Erklärtext: 136 Wörter)_
 
-## Prüfsumme berechnen – NEU (`src/tools/pruefsumme/main.html`)
+## Prüfsumme berechnen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pruefsumme/main.html`)
 
 Karte: „Prüfsumme berechnen“ – „SHA-256 einer Datei berechnen und mit der angegebenen Prüfsumme vergleichen.“
 
@@ -336,7 +336,7 @@ Die Datei wird direkt in deinem Browser gelesen und nicht hochgeladen, auch wenn
 
 _(Erklärtext: 131 Wörter)_
 
-## Texte vergleichen – NEU (`src/tools/texte-vergleichen/main.html`)
+## Texte vergleichen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/texte-vergleichen/main.html`)
 
 Karte: „Texte vergleichen“ – „Zwei Fassungen eines Textes vergleichen, geänderte Zeilen und Wörter markiert.“
 
@@ -356,7 +356,7 @@ Der Vergleich läuft direkt in deinem Browser. Die Texte werden weder gesendet n
 
 _(Erklärtext: 119 Wörter)_
 
-## Kontrast prüfen – NEU (`src/tools/kontrast-pruefen/main.html`)
+## Kontrast prüfen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/kontrast-pruefen/main.html`)
 
 Karte: „Kontrast prüfen“ – „Kontrast von Text- und Hintergrundfarbe nach WCAG 2.2 prüfen, Stufe AA und AAA.“
 
@@ -380,22 +380,22 @@ _(Erklärtext: 110 Wörter)_
 
 | Stelle | Text | Datei |
 |---|---|---|
-| **NEU** Startseite, Ablagefläche | „PDF, Foto oder Excel-Liste. Danach wählst du, was du damit machen möchtest.“ (vorher: „… Das passende Werkzeug öffnet sich automatisch.“) | `pages/index.html` |
-| **NEU** Startseite, Auswahl nach dem Ablegen | Überschrift „2 PDFs ausgewählt“ (Zahl und Art je nach Ablage), „Was möchtest du damit machen?“, Knopf „Andere Dateien wählen“ | `pages/index.html`, `src/tools/home/page.ts` |
-| **NEU** Startseite, Meldung | „Für 2 Tabellen auf einmal gibt es kein Werkzeug. Lege nur eine Datei ab.“ | `src/tools/home/page.ts` |
-| **NEU** Startseite, unter den Karten | Knopf „Alle Werkzeuge ansehen“ | `pages/index.html` |
-| **NEU** Startseite, Pro-Band | Punkt „Alle Fotos auf einmal als ZIP speichern“ gestrichen (E3) | `pages/index.html` |
-| **NEU** Pro-Seite | Punkt „ZIP-Export – Alle verkleinerten Fotos mit einem Klick speichern.“ gestrichen, Nummern angepasst (E3). Unterzeile jetzt „Für alle, die Überweisungen und PDFs regelmäßig bearbeiten.“ (Fotos gestrichen, Leon 25.09.2026, P1-3). Meta-Beschreibung ebenso ohne „Fotos“ (Leon 25.09.2026) | `pages/pro/index.html` |
-| **NEU** Fotos verkleinern | Knopf „Alle Fotos als ZIP speichern“ statt Hinweis „Alle Fotos als ZIP speichern: mit Lokalwerk Pro“; Meldungen „3 Fotos als ZIP gespeichert.“, „… 1 wird noch verkleinert und ist nicht enthalten.“, „Die ZIP-Datei wäre zu groß. Speichere die Fotos in kleineren Gruppen.“; im Erklärtext Ergänzung „… oder mit „Alle Fotos als ZIP speichern“ zusammen in einer Datei.“ | `src/tools/fotos-verkleinern/` |
-| **NEU** /werkzeuge/, Kopf | „Alle Werkzeuge“ – „Jedes Werkzeug läuft direkt in deinem Browser. Deine Dateien werden nicht hochgeladen.“ | `pages/werkzeuge/index.html` |
-| **NEU** /werkzeuge/, Suche | Beschriftung „Werkzeug suchen“, Platzhalter „zum Beispiel PDF, Foto oder CSV“, Meldungen „3 Werkzeuge gefunden.“ und „Kein Werkzeug gefunden. Versuch ein anderes Wort, zum Beispiel „PDF“, „Foto“ oder „Excel“.“ | `pages/werkzeuge/index.html`, `src/tools/werkzeuge/page.ts` |
-| **NEU** /werkzeuge/, Kategorien | „PDF“, „Fotos und Bilder“, „Tabellen und Listen“, „Zahlungsverkehr und Verein“, „Alltag und Sicherheit“; Zähler „4 Werkzeuge“ | `build/pages.ts` |
-| **NEU** Paket 2, Meldungen | Passwort-Generator: „Passwort kopiert. Es bleibt in der Zwischenablage, bis du etwas anderes kopierst.“, „Entspricht dem BSI-Beispiel: …“, „Kürzer oder einfacher als die BSI-Beispiele“; Prüfsumme: „Stimmt überein (SHA-256).“, „Stimmt nicht überein (SHA-256). Die Datei ist verändert, unvollständig oder eine andere.“; Textvergleich: „Die Texte unterscheiden sich in zu vielen Zeilen. Vergleiche kürzere Abschnitte.“; Kontrast: „erfüllt“ / „nicht erfüllt“ | `src/tools/<werkzeug>/page.ts` |
-| **NEU** Paket 3, Meldungen | Seitenzahlen/Stempel: „Diese PDF ist digital signiert. Nach dem Einfügen der Seitenzahlen ist die Signatur ungültig. …“, „Diese Zeichen kann die PDF-Schrift nicht darstellen: „Ł“, „ź“. Ersetze sie, zum Beispiel Ł durch L.“; CSV reparieren: „2 Zellen werden beim Speichern so geändert. Mit „So lassen“ bleibt alles unverändert.“, „Diese Zeilen haben nicht 3 Spalten wie die meisten: … Prüfe sie im Tabellenprogramm.“; Duplikate: „2 Gruppen mit zusammen 4 Zeilen.“, „Keine Doppel gefunden.“ | `src/tools/<werkzeug>/` |
-| **NEU** Unter jedem Werkzeug | Überschrift „Passt dazu“ mit Karten | `build/tool-blocks.ts` |
-| **NEU** „Alle Werkzeuge“-Verweise | zeigen jetzt auf /werkzeuge/ statt auf die Startseite (Text unverändert) | alle Seiten |
+| **NEU, freigegeben von Leon am 25.09.2026** Startseite, Ablagefläche | „PDF, Foto oder Excel-Liste. Danach wählst du, was du damit machen möchtest.“ (vorher: „… Das passende Werkzeug öffnet sich automatisch.“) | `pages/index.html` |
+| **NEU, freigegeben von Leon am 25.09.2026** Startseite, Auswahl nach dem Ablegen | Überschrift „2 PDFs ausgewählt“ (Zahl und Art je nach Ablage), „Was möchtest du damit machen?“, Knopf „Andere Dateien wählen“ | `pages/index.html`, `src/tools/home/page.ts` |
+| **NEU, freigegeben von Leon am 25.09.2026** Startseite, Meldung | „Für 2 Tabellen auf einmal gibt es kein Werkzeug. Lege nur eine Datei ab.“ | `src/tools/home/page.ts` |
+| **NEU, freigegeben von Leon am 25.09.2026** Startseite, unter den Karten | Knopf „Alle Werkzeuge ansehen“ | `pages/index.html` |
+| **NEU, freigegeben von Leon am 25.09.2026** Startseite, Pro-Band | Punkt „Alle Fotos auf einmal als ZIP speichern“ gestrichen (E3) | `pages/index.html` |
+| **NEU, freigegeben von Leon am 25.09.2026** Pro-Seite | Punkt „ZIP-Export – Alle verkleinerten Fotos mit einem Klick speichern.“ gestrichen, Nummern angepasst (E3). Unterzeile jetzt „Für alle, die Überweisungen und PDFs regelmäßig bearbeiten.“ (Fotos gestrichen, Leon 25.09.2026, P1-3). Meta-Beschreibung ebenso ohne „Fotos“ (Leon 25.09.2026) | `pages/pro/index.html` |
+| **NEU, freigegeben von Leon am 25.09.2026** Fotos verkleinern | Knopf „Alle Fotos als ZIP speichern“ statt Hinweis „Alle Fotos als ZIP speichern: mit Lokalwerk Pro“; Meldungen „3 Fotos als ZIP gespeichert.“, „… 1 wird noch verkleinert und ist nicht enthalten.“, „Die ZIP-Datei wäre zu groß. Speichere die Fotos in kleineren Gruppen.“; im Erklärtext Ergänzung „… oder mit „Alle Fotos als ZIP speichern“ zusammen in einer Datei.“ | `src/tools/fotos-verkleinern/` |
+| **NEU, freigegeben von Leon am 25.09.2026** /werkzeuge/, Kopf | „Alle Werkzeuge“ – „Jedes Werkzeug läuft direkt in deinem Browser. Deine Dateien werden nicht hochgeladen.“ | `pages/werkzeuge/index.html` |
+| **NEU, freigegeben von Leon am 25.09.2026** /werkzeuge/, Suche | Beschriftung „Werkzeug suchen“, Platzhalter „zum Beispiel PDF, Foto oder CSV“, Meldungen „3 Werkzeuge gefunden.“ und „Kein Werkzeug gefunden. Versuch ein anderes Wort, zum Beispiel „PDF“, „Foto“ oder „Excel“.“ | `pages/werkzeuge/index.html`, `src/tools/werkzeuge/page.ts` |
+| **NEU, freigegeben von Leon am 25.09.2026** /werkzeuge/, Kategorien | „PDF“, „Fotos und Bilder“, „Tabellen und Listen“, „Zahlungsverkehr und Verein“, „Alltag und Sicherheit“; Zähler „4 Werkzeuge“ | `build/pages.ts` |
+| **NEU, freigegeben von Leon am 25.09.2026** Paket 2, Meldungen | Passwort-Generator: „Passwort kopiert. Es bleibt in der Zwischenablage, bis du etwas anderes kopierst.“, „Entspricht dem BSI-Beispiel: …“, „Kürzer oder einfacher als die BSI-Beispiele“; Prüfsumme: „Stimmt überein (SHA-256).“, „Stimmt nicht überein (SHA-256). Die Datei ist verändert, unvollständig oder eine andere.“; Textvergleich: „Die Texte unterscheiden sich in zu vielen Zeilen. Vergleiche kürzere Abschnitte.“; Kontrast: „erfüllt“ / „nicht erfüllt“ | `src/tools/<werkzeug>/page.ts` |
+| **NEU, freigegeben von Leon am 25.09.2026** Paket 3, Meldungen | Seitenzahlen/Stempel: „Diese PDF ist digital signiert. Nach dem Einfügen der Seitenzahlen ist die Signatur ungültig. …“, „Diese Zeichen kann die PDF-Schrift nicht darstellen: „Ł“, „ź“. Ersetze sie, zum Beispiel Ł durch L.“; CSV reparieren: „2 Zellen werden beim Speichern so geändert. Mit „So lassen“ bleibt alles unverändert.“, „Diese Zeilen haben nicht 3 Spalten wie die meisten: … Prüfe sie im Tabellenprogramm.“; Duplikate: „2 Gruppen mit zusammen 4 Zeilen.“, „Keine doppelten Einträge gefunden.“ | `src/tools/<werkzeug>/` |
+| **NEU, freigegeben von Leon am 25.09.2026** Unter jedem Werkzeug | Überschrift „Passt dazu“ mit Karten | `build/tool-blocks.ts` |
+| **NEU, freigegeben von Leon am 25.09.2026** „Alle Werkzeuge“-Verweise | zeigen jetzt auf /werkzeuge/ statt auf die Startseite (Text unverändert) | alle Seiten |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |
 | SEPA, Warnung Datum | Wortlaut aus plan.md O7 | `src/tools/sepa-sammelueberweisung/messages.ts` |
-| Fehler- und Hinweismeldungen | alle Meldungen der Werkzeuge; **NEU** die Meldungen der neuen Werkzeuge in `src/tools/<werkzeug>/page.ts` | `src/tools/*/page.ts`, `src/tools/sepa-sammelueberweisung/messages.ts` |
+| Fehler- und Hinweismeldungen | alle Meldungen der Werkzeuge; **NEU, freigegeben von Leon am 25.09.2026** die Meldungen der neuen Werkzeuge in `src/tools/<werkzeug>/page.ts` | `src/tools/*/page.ts`, `src/tools/sepa-sammelueberweisung/messages.ts` |

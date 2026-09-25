@@ -174,6 +174,7 @@ Das Design des Prototyps ist abgenommen. Keine neuen Farben, Schriften oder Komp
 - **Vor größeren Änderungen einen kurzen Plan zeigen** und auf Freigabe warten: neue Abhängigkeit, neue Seitenstruktur, Änderungen am Designsystem, alles mit Netzwerkzugriff.
 - **Nicht raten, fragen.** Lieber eine Rückfrage als eine erfundene Annahme über ein Bankformat.
 - **Keine Nebenbei-Refactorings** außerhalb der Aufgabe.
+- **Browser-Prüfung vor jedem Commit eines Werkzeugs**, nicht erst am Ende eines Pakets: Konsole, Netzwerk-Tab und CSP-Meldungen. Kein Commit mit bekannten Konsolenfehlern.
 - **Am Ende jeder Aufgabe kurz berichten:** was geändert wurde, welche Tests laufen, was offen ist und ob Datenschutzerklärung oder AGB betroffen sind.
 
 ## Definition of Done

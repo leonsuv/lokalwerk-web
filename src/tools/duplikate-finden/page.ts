@@ -98,7 +98,7 @@ function renderResult(): void {
     columns.length === 0
       ? 'Wähle mindestens eine Spalte.'
       : found.groups.length === 0
-        ? 'Keine Doppel gefunden.'
+        ? 'Keine doppelten Einträge gefunden.'
         : `${found.groups.length} ${found.groups.length === 1 ? 'Gruppe' : 'Gruppen'} mit zusammen ${found.affectedRows} Zeilen.`;
   $('#dup-summary').replaceChildren(chip);
 

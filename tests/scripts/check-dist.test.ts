@@ -1,4 +1,6 @@
-import { readFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { fileURLToPath } from 'node:url';
 import { collectLicenses } from '../../build/licenses.ts';
@@ -8,6 +10,8 @@ import {
   ALLOWED_JS_URLS,
   ALLOWED_LIBRARY_URLS,
   ALLOWED_SVG_XML_URLS,
+  checkDist,
+  checkForbidden,
   checkText,
 } from '../../scripts/check-dist.mjs';
 
@@ -237,5 +241,44 @@ describe('Lizenzseite (plan.md N3, Variante A)', () => {
     expect(checkText('<p>http://www.apache.org/licenses/</p>', 'html', LICENSE_PAGE)).toHaveLength(
       1,
     );
+  });
+});
+
+describe('pdf.js-Sandbox und QuickJS (plan-phase2.md Abschnitt 5.2)', () => {
+  const pdfjs = (file: string) =>
+    readFileSync(new URL(`../../node_modules/pdfjs-dist/${file}`, import.meta.url), 'utf8');
+
+  it('meldet den Code der Sandbox und der QuickJS-Engine', () => {
+    expect(checkForbidden('assets/a.js', pdfjs('build/pdf.sandbox.min.mjs'))).not.toEqual([]);
+    expect(checkForbidden('assets/b.js', pdfjs('wasm/quickjs-eval.js'))).not.toEqual([]);
+  });
+
+  it('meldet die Dateien auch unter ihrem Namen, binär ohne Inhalt', () => {
+    expect(checkForbidden('pdfjs/quickjs-eval.wasm', null)).toEqual([
+      'pdf.js-Sandbox oder QuickJS wird ausgeliefert',
+    ]);
+    expect(checkForbidden('assets/pdf.sandbox-AbC.mjs', '')).toEqual([
+      'pdf.js-Sandbox oder QuickJS wird ausgeliefert',
+    ]);
+  });
+
+  it('lässt pdf.js selbst und die Ersatzdekoder durch', () => {
+    for (const file of [
+      'build/pdf.min.mjs',
+      'build/pdf.worker.min.mjs',
+      'wasm/openjpeg_nowasm_fallback.js',
+      'wasm/jbig2_nowasm_fallback.js',
+    ]) {
+      expect(checkForbidden('assets/x.js', pdfjs(file)), file).toEqual([]);
+    }
+  });
+
+  it('prüft in checkDist auch Dateien, die keine Textdateien sind', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'check-dist-'));
+    mkdirSync(join(dir, 'pdfjs'));
+    writeFileSync(join(dir, 'pdfjs', 'quickjs-eval.wasm'), new Uint8Array([0, 97, 115, 109]));
+    expect(checkDist(dir)).toEqual([
+      'pdfjs/quickjs-eval.wasm: pdf.js-Sandbox oder QuickJS wird ausgeliefert',
+    ]);
   });
 });

@@ -62,3 +62,29 @@ describe('checkChunks', () => {
     ).toEqual(['assets/e.js lädt im Hauptthread: xlsx (gehört in einen Worker)']);
   });
 });
+
+describe('checkChunks: pdf.js', () => {
+  it('lässt pdf.js zu, wenn es per import() nachgeladen wird', () => {
+    expect(
+      checkChunks([
+        chunk('assets/page.js', { isEntry: true, moduleIds: ['/p/src/tools/x/page.ts'] }),
+        chunk('assets/pdfjs.js', {
+          moduleIds: ['/p/src/ui/pdfjs/pdfjs.ts', '/p/node_modules/pdfjs-dist/build/pdf.mjs'],
+        }),
+      ]),
+    ).toEqual([]);
+  });
+
+  it('meldet pdf.js im statischen Import einer Seite', () => {
+    expect(
+      checkChunks([
+        chunk('assets/page.js', {
+          isEntry: true,
+          imports: ['assets/pdfjs.js'],
+          moduleIds: ['/p/src/tools/x/page.ts'],
+        }),
+        chunk('assets/pdfjs.js', { moduleIds: ['/p/node_modules/pdfjs-dist/build/pdf.mjs'] }),
+      ]),
+    ).toEqual(['assets/page.js bindet pdfjs-dist statisch ein (nur per import() nachladen)']);
+  });
+});

@@ -3,7 +3,9 @@
  * gemeinsame Hilfsmodule in den Seiten-Chunk eines Werkzeugs gelegt, sodass andere Seiten dessen
  * Code und pdf-lib mitluden). Für jede Seite wird geprüft, was sie beim Laden statisch einbindet:
  * - höchstens die page.ts eines einzigen Werkzeugs,
- * - keine schweren Bibliotheken (pdf-lib, SheetJS); die gehören in Worker (AGENTS.md Abschnitt 3).
+ * - keine schweren Bibliotheken (pdf-lib, SheetJS); die gehören in Worker (AGENTS.md Abschnitt 3),
+ * - pdf.js nur dynamisch nachgeladen (src/ui/pdfjs/pdfjs.ts); der Teil im Hauptthread zeichnet
+ *   die Seiten, das Lesen der PDF läuft in seinem Worker.
  * Dynamisch nachgeladene Teile (Startseite → Werkzeug) zählen nicht.
  */
 
@@ -18,6 +20,7 @@ export interface ChunkInfo {
 
 const TOOL_PAGE = /[\\/]src[\\/]tools[\\/]([^\\/]+)[\\/]page\.ts$/;
 const MAIN_THREAD_FORBIDDEN = /[\\/]node_modules[\\/](pdf-lib|xlsx)[\\/]/;
+const STATIC_FORBIDDEN = /[\\/]node_modules[\\/](pdfjs-dist)[\\/]/;
 
 export function checkChunks(chunks: readonly ChunkInfo[]): string[] {
   const byName = new Map(chunks.map((c) => [c.fileName, c]));
@@ -27,6 +30,7 @@ export function checkChunks(chunks: readonly ChunkInfo[]): string[] {
     const stack = [entry.fileName];
     const tools = new Set<string>();
     const heavy = new Set<string>();
+    const eager = new Set<string>();
     while (stack.length > 0) {
       const name = stack.pop() ?? '';
       if (seen.has(name)) continue;
@@ -38,6 +42,8 @@ export function checkChunks(chunks: readonly ChunkInfo[]): string[] {
         if (tool) tools.add(tool);
         const lib = MAIN_THREAD_FORBIDDEN.exec(id)?.[1];
         if (lib) heavy.add(lib);
+        const dynamicOnly = STATIC_FORBIDDEN.exec(id)?.[1];
+        if (dynamicOnly) eager.add(dynamicOnly);
       }
       stack.push(...chunk.imports);
     }
@@ -49,6 +55,11 @@ export function checkChunks(chunks: readonly ChunkInfo[]): string[] {
     if (heavy.size > 0) {
       problems.push(
         `${entry.fileName} lädt im Hauptthread: ${[...heavy].sort().join(', ')} (gehört in einen Worker)`,
+      );
+    }
+    if (eager.size > 0) {
+      problems.push(
+        `${entry.fileName} bindet ${[...eager].sort().join(', ')} statisch ein (nur per import() nachladen)`,
       );
     }
   }

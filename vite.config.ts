@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 import { parseGlobalHeaders } from './build/headers.ts';
 import { chunkGuard } from './build/chunk-guard.ts';
 import { htmlPartials } from './build/html-partials.ts';
+import { pdfjsFallbacks } from './build/pdfjs.ts';
 import {
   collectLicenses,
   FONT_FILE_PREFIXES,
@@ -68,6 +69,7 @@ export default defineConfig({
       fontsDir: path('./public/fonts'),
       fontPrefixes: FONT_FILE_PREFIXES,
     }),
+    pdfjsFallbacks({ wasm: process.env.VITE_PDFJS_WASM === '1' }),
     writeShippedManifest(SHIPPED_MANIFEST),
     chunkGuard(),
   ],

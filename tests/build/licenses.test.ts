@@ -21,6 +21,7 @@ describe('collectLicenses (aus den installierten Paketen)', () => {
         '@pdf-lib/upng',
         'pako',
         'pdf-lib',
+        'pdfjs-dist',
         'tslib',
         'xlsx',
       ].sort(),

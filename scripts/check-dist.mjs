@@ -14,6 +14,9 @@
  *   gesammelten Lizenzdaten vorkommen (build/licenses.ts). Jede andere Adresse bricht ab.
  * - SVG und XML: eigene Domain und exakte Einträge aus ALLOWED_SVG_XML_URLS.
  *   SVG zusätzlich ohne <script>, on…-Attribute und externe href/xlink:href.
+ * - Nie ausgeliefert werden die PDF-JavaScript-Sandbox von pdf.js (pdf.sandbox.mjs) und ihre
+ *   QuickJS-Engine (quickjs-eval.js/.wasm), weder als Datei noch in einem Bundle
+ *   (plan-phase2.md Abschnitt 5.2).
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -173,6 +176,25 @@ export function checkText(text, kind, file = '', context = {}) {
   return problems;
 }
 
+/** Dateinamen und Code-Merkmale der pdf.js-Sandbox (node_modules/pdfjs-dist 6.3.289) */
+const FORBIDDEN_FILE = /(?:^|\/)(?:quickjs[^/]*|pdf\.sandbox[^/]*)$/i;
+const FORBIDDEN_CODE = ['QuickJSSandbox', 'SandboxSupportBase', 'quickjs-eval'];
+
+/**
+ * @param {string} path Pfad relativ zu dist/
+ * @param {string | null} text Inhalt bei Textdateien, sonst null
+ * @returns {string[]}
+ */
+export function checkForbidden(path, text) {
+  /** @type {string[]} */
+  const problems = [];
+  if (FORBIDDEN_FILE.test(path)) problems.push('pdf.js-Sandbox oder QuickJS wird ausgeliefert');
+  for (const marker of FORBIDDEN_CODE) {
+    if (text?.includes(marker)) problems.push(`enthält Code der pdf.js-Sandbox (${marker})`);
+  }
+  return problems;
+}
+
 /** @param {string} dir @returns {string[]} */
 function listFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -199,9 +221,12 @@ const KINDS = {
 export function checkDist(distDir, context = {}) {
   return listFiles(distDir).flatMap((file) => {
     const kind = KINDS[extname(file)];
-    if (!kind) return [];
     const path = relative(distDir, file).split(sep).join('/');
-    return checkText(readFileSync(file, 'utf8'), kind, path, context).map((p) => `${path}: ${p}`);
+    const text = kind ? readFileSync(file, 'utf8') : null;
+    return [
+      ...checkForbidden(path, text),
+      ...(kind && text !== null ? checkText(text, kind, path, context) : []),
+    ].map((p) => `${path}: ${p}`);
   });
 }
 

@@ -95,6 +95,16 @@ Alle vier Werkzeuge gebaut, je ein Commit.
 
 **Fehler während Paket 3, behoben:** Die Stempel-Seite zog pdf-lib in den Hauptthread; der Build legte daraufhin gemeinsame Hilfsmodule in ihren Chunk, und fast alle Werkzeugseiten luden deren Code mit (Fehler in der Konsole). Betroffen waren zwei Commits; behoben in einem eigenen Commit. Neu: `build/chunk-guard.ts` bricht den Build ab, wenn eine Seite den Seitencode eines anderen Werkzeugs oder pdf-lib/SheetJS im Hauptthread lädt.
 
+### Stand Paket 4, Schritt 0: pdf.js-Einbindung (25.09.2026)
+
+Eingebunden, noch in keiner Seite verwendet. Wartet auf Leons Entscheidung zu WebAssembly (E4, Frage 4) und zu den Adressen (`docs/pdfjs-adressen.md`).
+
+- pdfjs-dist 6.3.289 (Apache-2.0, 29.08.2026), exakt gepinnt. Optionale Node-Abhängigkeit `@napi-rs/canvas` (MIT) liegt nur in `node_modules`, wird nicht ausgeliefert und steht nicht auf der Lizenzseite.
+- `src/ui/pdfjs/`: Worker lokal über `workerPort`; eigene `LocalBinaryDataFactory` statt Nachladen; `useWorkerFetch: false`; kein `cMapUrl`, `standardFontDataUrl`, `iccUrl`; `enableXfa: false`. `isEvalSupported` gibt es in 6.3 nicht mehr; beide Bundles enthalten kein `eval`/`new Function`. `enableScripting` ist eine Viewer-Option; die Sandbox wird nicht eingebunden.
+- Variante per `VITE_PDFJS_WASM` bis zur Entscheidung. Ohne WASM: `useWasm: false`, JS-Ersatzdekoder unter `/pdfjs/`, im Worker vorgeladen (offline). Mit WASM: Dekoder als Base64 im JS-Bundle (kein fetch nötig).
+- Build: `build/pdfjs.ts` (Ersatzdekoder nur, wenn pdf.js im Build ist), `chunk-guard` verbietet pdf.js im statischen Import einer Seite, `check-dist` bricht ab bei `pdf.sandbox`/QuickJS (Datei oder Code).
+- Offen für Paket 4, Schritt 1: Adress-Freigabe eintragen, CSP-Pfadregeln falls WASM, Lizenztexte der Dekoder aus `node_modules/pdfjs-dist/wasm/` auf `/lizenzen/` (`LICENSE_OPENJPEG`, `LICENSE_JBIG2` mit PDFium, `LICENSE_PDFJS_OPENJPEG`, `LICENSE_PDFJS_JBIG2`; wörtlich übernehmen, SPDX-Zuordnung vorher prüfen). Die gelten in beiden Varianten, weil die JS-Ersatzdekoder mit wasm2js aus denselben Quellen übersetzt sind.
+
 ## 0. Wie dieser Plan zu lesen ist
 
 - **Suchbegriffe** sind Vermutungen. Ich habe kein Werkzeug für Suchvolumen benutzt und keine Zahlen erhoben.

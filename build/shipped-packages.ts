@@ -22,6 +22,12 @@ export function setShippedForTest(names: readonly string[]): void {
   for (const name of names) shipped.add(name);
 }
 
+/** Für Dateien, die ein Plugin unverändert aus einem Paket übernimmt (build/pdfjs.ts). */
+export function recordFilePackages(fileName: string, packages: readonly string[]): void {
+  for (const name of packages) shipped.add(name);
+  packagesByFile.set(fileName, new Set(packages));
+}
+
 /** Paketname aus einem Modulpfad, z. B. …/node_modules/@pdf-lib/upng/UPNG.js → @pdf-lib/upng */
 export function packageFromModuleId(id: string): string | null {
   const match = /[\\/]node_modules[\\/]((?:@[^\\/]+[\\/])?[^\\/]+)/.exec(id.replace(/\?.*$/, ''));

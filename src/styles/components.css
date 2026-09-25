@@ -130,6 +130,10 @@ input[type='range'] {
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
+/* Nebeneinander kein Abstand nach oben wie bei gestapelten Feldern */
+.form-grid > .field + .field {
+  margin-top: 0;
+}
 textarea {
   width: 100%;
   min-height: 16rem;
@@ -887,4 +891,61 @@ td.mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.85rem;
   overflow-wrap: anywhere;
+}
+
+/* Textvergleich: Zeilen mit Kennzeichen, geänderte Wörter hervorgehoben */
+.diff {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow-x: auto;
+  font:
+    0.85rem/1.55 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+}
+.diff-line {
+  display: grid;
+  grid-template-columns: 3.2rem 3.2rem 1.4rem 1fr;
+  padding: 0 0.6rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.diff-line .no {
+  color: var(--muted);
+  text-align: right;
+  padding-right: 0.6rem;
+  user-select: none;
+}
+.diff-line .sign {
+  user-select: none;
+}
+.diff-line.del {
+  background: var(--err-soft);
+}
+.diff-line.ins {
+  background: var(--ok-soft);
+}
+.diff-line del,
+.diff-line ins {
+  text-decoration: none;
+  border-radius: 3px;
+}
+.diff-line del {
+  background: color-mix(in srgb, var(--err) 28%, transparent);
+  text-decoration: line-through;
+}
+.diff-line ins {
+  background: color-mix(in srgb, var(--ok) 28%, transparent);
+}
+.diff-gap {
+  padding: 0.3rem 0.6rem;
+  color: var(--muted);
+  background: var(--surface2);
+  font-family: var(--font);
+}
+.file-btn:has(input:focus-visible) {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
 }

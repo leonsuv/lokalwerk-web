@@ -1,0 +1,106 @@
+<div class="wrap util">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-compare" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Texte vergleichen</h1>
+      <p>
+        Zwei Fassungen eines Textes vergleichen, zum Beispiel einen Vertragsentwurf oder eine
+        Satzung. Geänderte Wörter werden markiert.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="field">
+            <label class="lbl" for="cmp-old">Ursprünglicher Text</label>
+            <textarea id="cmp-old" spellcheck="false"></textarea>
+            <label class="btn ghost sm mt-s file-btn"
+              ><input
+                type="file"
+                class="visually-hidden"
+                id="cmp-old-file"
+                accept=".txt,.md,.csv,text/plain"
+              />Textdatei laden</label
+            >
+          </div>
+          <div class="field">
+            <label class="lbl" for="cmp-new">Neuer Text</label>
+            <textarea id="cmp-new" spellcheck="false"></textarea>
+            <label class="btn ghost sm mt-s file-btn"
+              ><input
+                type="file"
+                class="visually-hidden"
+                id="cmp-new-file"
+                accept=".txt,.md,.csv,text/plain"
+              />Textdatei laden</label
+            >
+          </div>
+        </div>
+      </div>
+      <div class="card" id="cmp-result-card" hidden>
+        <h2 id="cmp-result-title" tabindex="-1">Unterschiede</h2>
+        <div class="summary" id="cmp-summary"></div>
+        <div class="field mt-m">
+          <span class="lbl" id="cmp-view-label">Anzeigen</span>
+          <div class="seg" role="group" aria-labelledby="cmp-view-label">
+            <button type="button" data-view="all" aria-pressed="true">Ganzer Text</button>
+            <button type="button" data-view="changes" aria-pressed="false">Nur Änderungen</button>
+          </div>
+        </div>
+        <div class="diff mt-m" id="cmp-diff"></div>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Einstellungen</h2>
+      <div class="field">
+        <span class="lbl" id="cmp-case-label">Groß- und Kleinschreibung</span>
+        <div class="seg" role="group" aria-labelledby="cmp-case-label">
+          <button type="button" data-case="respect" aria-pressed="true">Beachten</button>
+          <button type="button" data-case="ignore" aria-pressed="false">Übergehen</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl" id="cmp-space-label">Leerzeichen</span>
+        <div class="seg" role="group" aria-labelledby="cmp-space-label">
+          <button type="button" data-space="respect" aria-pressed="true">Beachten</button>
+          <button type="button" data-space="ignore" aria-pressed="false">Übergehen</button>
+        </div>
+        <p class="hint">
+          „Übergehen“ zählt mehrere Leerzeichen wie eines und ignoriert sie am Zeilenrand.
+        </p>
+      </div>
+      <button class="btn wide mt-m" id="cmp-run">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-compare" /></svg>
+        <span id="cmp-run-label">Texte vergleichen</span>
+      </button>
+      <button class="btn ghost wide mt-s" id="cmp-clear">Beide Texte leeren</button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="cmp-explain">
+    <h2 id="cmp-explain">So funktioniert es</h2>
+    <p>
+      Füge die beiden Fassungen in die Felder ein oder lade sie als Textdatei. „Texte vergleichen“
+      zeigt Zeile für Zeile, was entfernt (rot, mit Minus) und was hinzugekommen ist (grün, mit
+      Plus). In geänderten Zeilen sind die betroffenen Wörter zusätzlich hervorgehoben. Mit „Nur
+      Änderungen“ siehst du nur die geänderten Stellen und je zwei Zeilen davor und danach.
+    </p>
+    <h2>Gut zu wissen</h2>
+    <p>
+      Verglichen wird reiner Text. Aus Word- oder PDF-Dateien kopierst du den Text am besten heraus
+      und fügst ihn ein. Formatierungen wie Fett oder Schriftgrößen werden nicht verglichen. Bei
+      sehr vielen Unterschieden bricht der Vergleich mit einem Hinweis ab.
+    </p>
+    <h2>Deine Texte bleiben auf deinem Gerät</h2>
+    <p>
+      Der Vergleich läuft direkt in deinem Browser. Die Texte werden weder gesendet noch
+      gespeichert. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+    </p>
+  </section>
+</div>

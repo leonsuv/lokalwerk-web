@@ -29,6 +29,7 @@ describe('Seitenregister', () => {
         '/excel-csv-umwandeln/',
         '/passwort-generator/',
         '/pruefsumme/',
+        '/texte-vergleichen/',
         '/pdf-zusammenfuegen/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',

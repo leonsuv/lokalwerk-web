@@ -26,6 +26,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-seitenzahlen/main.html?raw')).default,
     open: async () => (await import('../pdf-seitenzahlen/page.ts')).openFiles,
   },
+  'pdf-stempel': {
+    markup: async () => (await import('../pdf-stempel/main.html?raw')).default,
+    open: async () => (await import('../pdf-stempel/page.ts')).openFiles,
+  },
   'pdf-metadaten-entfernen': {
     markup: async () => (await import('../pdf-metadaten-entfernen/main.html?raw')).default,
     open: async () => (await import('../pdf-metadaten-entfernen/page.ts')).openFiles,

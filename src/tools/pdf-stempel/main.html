@@ -1,0 +1,118 @@
+<div class="wrap pdf">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-stamp" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Stempel und Wasserzeichen</h1>
+      <p>
+        Text wie „Entwurf“ oder „Kopie“ auf die Seiten einer PDF setzen, quer über die Seite oder
+        oben und unten.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <label class="drop" id="stamp-drop">
+        <input type="file" class="visually-hidden" id="stamp-input" accept="application/pdf,.pdf" />
+        <span class="ic"
+          ><svg width="22" height="22" aria-hidden="true"><use href="#i-pdf" /></svg
+        ></span>
+        <div><strong>PDF hinzufügen</strong><span>Auswählen oder hierher ziehen</span></div>
+      </label>
+      <ul class="file-list" id="stamp-file" aria-label="Ausgewählte PDF"></ul>
+      <div class="empty-state" id="stamp-empty">
+        <strong>Noch keine PDF</strong>Füge die PDF hinzu, die den Stempel bekommen soll.
+      </div>
+      <div class="note mt-m" id="stamp-signed" hidden>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
+        <span> Diese PDF ist digital signiert. Nach dem Stempeln ist die Signatur ungültig. </span>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Stempel</h2>
+      <div class="field">
+        <label class="lbl" for="stamp-text">Text</label>
+        <input
+          type="text"
+          id="stamp-text"
+          value="ENTWURF"
+          maxlength="60"
+          autocomplete="off"
+          aria-describedby="stamp-text-error"
+        />
+        <p class="hint err" id="stamp-text-error"></p>
+      </div>
+      <div class="field">
+        <label class="lbl" for="stamp-placement">Position</label>
+        <select id="stamp-placement">
+          <option value="diagonal" selected>Quer über die Seite</option>
+          <option value="top">Oben</option>
+          <option value="bottom">Unten</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl" for="stamp-color">Farbe</label>
+        <select id="stamp-color">
+          <option value="gray" selected>Grau</option>
+          <option value="red">Rot</option>
+          <option value="blue">Blau</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl" for="stamp-opacity"
+          >Deckkraft: <span id="stamp-opacity-val">30</span>&nbsp;%</label
+        >
+        <input type="range" id="stamp-opacity" min="10" max="100" step="5" value="30" />
+      </div>
+      <div class="field">
+        <label class="lbl" for="stamp-pages">Seiten <span class="opt">(leer: alle)</span></label>
+        <input
+          type="text"
+          id="stamp-pages"
+          inputmode="numeric"
+          autocomplete="off"
+          spellcheck="false"
+          aria-describedby="stamp-pages-hint stamp-pages-error"
+        />
+        <p class="hint" id="stamp-pages-hint">Zum Beispiel 1-3, 5 oder 2-.</p>
+        <p class="hint err" id="stamp-pages-error"></p>
+      </div>
+      <button class="btn wide mt-m" id="stamp-save" disabled>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
+        <span id="stamp-save-label">Stempel setzen und speichern</span>
+      </button>
+      <button class="btn ghost wide mt-s" id="stamp-clear" disabled>Andere PDF wählen</button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="stamp-explain">
+    <h2 id="stamp-explain">So funktioniert es</h2>
+    <p>
+      Wähle eine PDF aus oder zieh sie in die Fläche oben, gib den Text ein und stell Position,
+      Farbe und Deckkraft ein. „Stempel setzen und speichern“ erzeugt eine neue PDF; deine
+      Originaldatei bleibt unverändert. Lässt du „Seiten“ leer, bekommt jede Seite den Stempel.
+    </p>
+    <h2>Ein Wasserzeichen ist kein Schutz</h2>
+    <p>
+      Der Stempel liegt als eigene Ebene über dem Inhalt. Wer die PDF weiterbearbeitet, kann ihn mit
+      gängigen PDF-Programmen wieder entfernen. Er zeigt an, wofür eine Datei gedacht ist,
+      verhindert aber keine Weitergabe und kein Kopieren. Wer Inhalte sicher unkenntlich machen
+      will, braucht ein Werkzeug, das die Seiten in Bilder umwandelt.
+    </p>
+    <h2>Gut zu wissen</h2>
+    <p>
+      Die PDF-Schrift kennt die Zeichen westeuropäischer Sprachen, also auch Umlaute, ß und €.
+      Zeichen wie Ł oder ő gehören nicht dazu; dann erscheint ein Hinweis, welche Zeichen betroffen
+      sind. Digital signierte PDFs verlieren durch das Stempeln ihre gültige Signatur.
+      Verschlüsselte PDFs lassen sich nicht bearbeiten.
+    </p>
+    <h2>Deine Dateien bleiben auf deinem Gerät</h2>
+    <p>
+      Die PDF wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem Laden der
+      Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+    </p>
+  </section>
+</div>

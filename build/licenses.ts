@@ -137,7 +137,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-metadaten-entfernen',
     'bilder-zu-pdf',
   ],
-  xlsx: ['sepa-sammelueberweisung', 'excel-csv-umwandeln', 'duplikate-finden'],
+  xlsx: ['sepa-sammelueberweisung', 'excel-csv-umwandeln', 'duplikate-finden', 'iban-pruefen'],
   uqr: ['qr-code', 'qr-code-ueberweisung'],
   'pdfjs-dist': [
     'pdf-seiten-bearbeiten',

@@ -21,11 +21,13 @@ export function normalizeIban(input: string): string {
   return input.replace(/\s+/g, '').toUpperCase();
 }
 
-/** Modulo 97 über die umgestellte IBAN, stückweise, damit keine großen Zahlen entstehen. */
-function mod97(iban: string): number {
-  const rearranged = iban.slice(4) + iban.slice(0, 4);
+/**
+ * Rest modulo 97 eines Textes aus Ziffern und Großbuchstaben, Buchstaben als A=10 … Z=35
+ * (ISO 7064 Mod 97-10, wie bei IBAN und Gläubiger-ID). Stückweise, ohne große Zahlen.
+ */
+export function mod97(text: string): number {
   let remainder = 0;
-  for (const char of rearranged) {
+  for (const char of text) {
     const value = Number.parseInt(char, 36); // 0–9 → 0–9, A–Z → 10–35
     remainder = (remainder * (value > 9 ? 100 : 10) + value) % 97;
   }
@@ -45,7 +47,7 @@ export function validateIban(input: string): IbanResult {
   if (iban.length !== expected) {
     return { ok: false, code: 'wrong-length', country, expected, actual: iban.length };
   }
-  if (mod97(iban) !== 1) return { ok: false, code: 'checksum' };
+  if (mod97(iban.slice(4) + iban.slice(0, 4)) !== 1) return { ok: false, code: 'checksum' };
   return { ok: true, iban, country };
 }
 

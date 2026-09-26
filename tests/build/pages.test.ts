@@ -43,6 +43,7 @@ describe('Seitenregister', () => {
         '/iban-pruefen/',
         '/glaeubiger-id-pruefen/',
         '/foto-metadaten/',
+        '/foto-zuschneiden/',
         '/csv-reparieren/',
         '/duplikate-finden/',
         '/pdf-zusammenfuegen/',

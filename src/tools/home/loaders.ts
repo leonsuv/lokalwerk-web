@@ -58,6 +58,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../foto-metadaten/main.html?raw')).default,
     open: async () => (await import('../foto-metadaten/page.ts')).addFiles,
   },
+  'foto-zuschneiden': {
+    markup: async () => (await import('../foto-zuschneiden/main.html?raw')).default,
+    open: async () => (await import('../foto-zuschneiden/page.ts')).openFiles,
+  },
   'bilder-zu-pdf': {
     markup: async () => (await import('../bilder-zu-pdf/main.html?raw')).default,
     open: async () => (await import('../bilder-zu-pdf/page.ts')).addFiles,

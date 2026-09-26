@@ -1270,3 +1270,37 @@ select[multiple] {
   font-weight: 500;
   color: var(--muted);
 }
+
+/* Bildvorschau mit Rechtecken (Zuschneiden, Verpixeln, Ausweiskopie) */
+.image-view {
+  position: relative;
+  margin: 1rem auto 0;
+  width: fit-content;
+  max-width: 100%;
+  line-height: 0;
+}
+.image-view canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.rect-layer.crop .rect {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 9999px rgb(0 0 0 / 0.5);
+  outline: 1px dashed rgb(0 0 0 / 0.6);
+}
+.image-view {
+  overflow: hidden;
+}
+.rect-layer.pixel .rect {
+  background: rgb(255 255 255 / 0.12);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 3px rgb(0 0 0 / 0.5);
+}
+.tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}

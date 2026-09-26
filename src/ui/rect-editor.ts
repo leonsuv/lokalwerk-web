@@ -23,6 +23,8 @@ export interface RectEditorOptions {
   label: (index: number) => string;
   /** id eines Textes mit der Tastaturbedienung */
   describedBy: string;
+  /** Rechtecke lassen sich löschen (Standard); aus beim Zuschneiden mit genau einem Rechteck */
+  deletable?: boolean;
   /** Bekommt den Fokus, wenn das letzte Rechteck gelöscht wurde */
   home?: HTMLElement;
   /** Inhalt eines Rechtecks, z. B. das Bild der Unterschrift */
@@ -169,7 +171,7 @@ export class RectEditor {
     const index = Number(target.dataset.index);
     const r = this.rects[index];
     if (!r) return;
-    if (e.key === 'Delete' || e.key === 'Backspace') {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && this.options.deletable !== false) {
       e.preventDefault();
       this.remove(index, true);
       return;
@@ -226,15 +228,19 @@ export class RectEditor {
       el.style.width = `${r.w * 100}%`;
       el.style.height = `${r.h * 100}%`;
       decorate?.(el);
+      const handle = document.createElement('span');
+      handle.className = 'rect-handle';
+      handle.setAttribute('aria-hidden', 'true');
+      if (this.options.deletable === false) {
+        el.append(handle);
+        return el;
+      }
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'rect-del';
       del.dataset.delete = String(i);
       del.setAttribute('aria-label', `${label(i)} löschen`);
       del.innerHTML = '<svg width="14" height="14" aria-hidden="true"><use href="#i-x" /></svg>';
-      const handle = document.createElement('span');
-      handle.className = 'rect-handle';
-      handle.setAttribute('aria-hidden', 'true');
       el.append(del, handle);
       return el;
     });

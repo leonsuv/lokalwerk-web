@@ -10,11 +10,13 @@ import {
   FONT_FILE_PREFIXES,
   renderLicenses,
   REQUIRED_DATA_LICENSES,
+  USED_IN,
 } from './build/licenses.ts';
-import { PAGES, SITE_URL } from './build/pages.ts';
+import { PAGES, SITE_URL, TOOL_PAGES } from './build/pages.ts';
 import { checkRegistry, iconIds } from './build/registry.ts';
 import {
   recordShippedPackages,
+  recordToolPackages,
   verifyLicensesListed,
   writeShippedManifest,
 } from './build/shipped-packages.ts';
@@ -61,15 +63,17 @@ export default defineConfig({
       },
     }),
     recordShippedPackages(),
+    recordToolPackages(new Set(TOOL_PAGES.map((p) => p.tool.id))),
     verifyLicensesListed({
       listed: () => licenses().map((l) => l.id),
       dataLicenses: () =>
         Object.fromEntries(licenses().map((l) => [l.id, l.dataLicenses.map((d) => d.spdx)])),
+      usedIn: USED_IN,
       requiredDataLicenses: REQUIRED_DATA_LICENSES,
       fontsDir: path('./public/fonts'),
       fontPrefixes: FONT_FILE_PREFIXES,
     }),
-    pdfjsFallbacks({ wasm: process.env.VITE_PDFJS_WASM === '1' }),
+    pdfjsFallbacks(),
     writeShippedManifest(SHIPPED_MANIFEST),
     chunkGuard(),
   ],

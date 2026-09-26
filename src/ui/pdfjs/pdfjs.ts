@@ -9,6 +9,7 @@
  * - Kein PDF-JavaScript: Das führt pdf.js nur im Viewer über pdf.sandbox aus, das hier nicht
  *   eingebunden ist (scripts/check-dist.mjs prüft es). Die frühere Option isEvalSupported gibt
  *   es in pdf.js 6.3 nicht mehr; beide Bundles enthalten kein eval und kein new Function.
+ * - Kein WebAssembly (plan-phase2.md E4): Die CSP bleibt ohne 'wasm-unsafe-eval'.
  * - Schriften über die FontFace-API, keine <style>-Elemente.
  */
 
@@ -21,7 +22,6 @@ import {
 } from 'pdfjs-dist';
 import { LocalBinaryDataFactory } from './binary-data.ts';
 import { FALLBACK_DIR } from './fallbacks.ts';
-import { PDFJS_WASM } from './mode.ts';
 
 GlobalWorkerOptions.workerPort = new Worker(new URL('./pdfjs.worker.ts', import.meta.url), {
   type: 'module',
@@ -34,9 +34,10 @@ export function openPdf(data: Uint8Array): Promise<PDFDocumentProxy> {
     data,
     BinaryDataFactory: LocalBinaryDataFactory,
     useWorkerFetch: false,
-    useWasm: PDFJS_WASM,
-    // Nur für die JS-Ersatzdekoder: pdf.js lädt sie per import() von dieser Adresse.
-    ...(PDFJS_WASM ? {} : { wasmUrl: new URL(`/${FALLBACK_DIR}/`, location.origin).href }),
+    // Kein WebAssembly (E4, CSP ohne 'wasm-unsafe-eval'). Die JS-Ersatzdekoder lädt pdf.js per
+    // import() von wasmUrl; sie liegen dort und sind im Worker vorgeladen (./pdfjs.worker.ts).
+    useWasm: false,
+    wasmUrl: new URL(`/${FALLBACK_DIR}/`, location.origin).href,
     enableXfa: false,
     verbosity: VerbosityLevel.ERRORS,
   }).promise;

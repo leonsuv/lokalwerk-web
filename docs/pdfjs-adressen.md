@@ -1,8 +1,8 @@
-# pdf.js: Adressen im gebauten Bundle (zur Freigabe)
+# pdf.js: Adressen im gebauten Bundle
 
-Stand: 25.09.2026, pdfjs-dist 6.3.289. **Noch nicht freigegeben, noch nicht in `scripts/check-dist.mjs` eingetragen.** Heute liefert keine Seite pdf.js aus, deshalb läuft der Build weiter ohne diese Einträge durch.
+Stand: 25.09.2026, pdfjs-dist 6.3.289. **Freigegeben von Leon am 25.09.2026:** P1 und P2 als Gruppen, P3 einzeln als tote Adressen. Eingetragen in `scripts/allowed-urls-pdfjs.mjs`; sie gelten nur für Dateien, die das Paket `pdfjs-dist` laut `build/shipped-packages.ts` enthalten (plan-phase2.md E14).
 
-Erhoben aus zwei Testbuilds der Einbindung `src/ui/pdfjs/` (mit und ohne WebAssembly, Paket 4 Schritt 0). `scripts/check-dist.mjs` findet diese 19 Adressen in zwei Dateien:
+Erhoben aus zwei Testbuilds der Einbindung `src/ui/pdfjs/` (mit und ohne WebAssembly, Paket 4 Schritt 0; ausgeliefert wird nur die Variante ohne WebAssembly, E4). `scripts/check-dist.mjs` findet diese 19 Adressen in zwei Dateien:
 
 - `assets/pdfjs-*.js`: der Teil im Hauptthread (`pdf.mjs`)
 - `assets/pdfjs.worker-*.js`: der Worker (`pdf.worker.mjs`)
@@ -13,7 +13,6 @@ Fundstelle: Zeile in `node_modules/pdfjs-dist/build/pdf.mjs` bzw. `pdf.worker.mj
 
 Keine der Adressen wird abgerufen. pdf.js enthält zwar `fetch` und `XMLHttpRequest`, aber nur für Wege, die die Einbindung abschaltet: PDFs von einer Adresse laden (wir übergeben immer Bytes), CMaps, Standardschriften, WASM und ICC-Profile nachladen (`useWorkerFetch: false`, keine Adressen, eigene `LocalBinaryDataFactory`). Die Content-Security-Policy (`connect-src 'none'`) würde es zusätzlich verhindern. Im Browsertest gab es nach dem Laden der Seite keine einzige Anfrage.
 
-Vorschlag wie bei SheetJS: Die Einträge gelten nur für Dateien, die das Paket `pdfjs-dist` laut `build/shipped-packages.ts` enthalten (plan-phase2.md E14), nicht global.
 
 ## Gruppe P1: SVG-Namensraum (1)
 
@@ -70,4 +69,4 @@ pdf.js zerlegt Adresstexte mit `new URL(text, basis)`. Die Basis ist ein Platzha
 | Lizenzadresse | 0 | nicht im Build (Kommentare entfernt) | – |
 | **Summe** | **19** | | |
 
-Nach Freigabe: Einträge in `scripts/allowed-urls-pdfjs.mjs` (wie `allowed-urls-sheetjs.mjs`) mit `package: 'pdfjs-dist'` und Fundstelle, plus Test, dass jede Adresse in der genannten Zeile steht.
+`tests/scripts/check-dist.test.ts` prüft, dass jede Adresse in der genannten Zeile steht, nur in Dateien mit pdf.js gilt und dass unser Code pdf.js nie Dateien schreiben lässt (P2.16, P3).

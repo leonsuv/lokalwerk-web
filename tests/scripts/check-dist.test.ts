@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -186,6 +186,52 @@ describe('Tote Adressen in Bibliotheken (plan.md N3)', () => {
     const worker = 'assets/merge.worker-TScBrF7F.js';
     expect(inBuild('"https://github.com/Hopding/pdf-lib/tree/master"', worker)).toHaveLength(1);
     expect(inBuild('"https://example.com/"', worker)).toHaveLength(1);
+  });
+
+  const pdfjsEntries = ALLOWED_LIBRARY_URLS.filter((e) => e.package === 'pdfjs-dist');
+
+  it('enthält für pdf.js 17 Namensräume und 2 einzeln freigegebene tote Adressen', () => {
+    expect(pdfjsEntries).toHaveLength(19);
+    expect(pdfjsEntries.filter((e) => e.category === 'xml-namespace')).toHaveLength(17);
+    expect(pdfjsEntries.filter((e) => e.category === 'dead-address').map((e) => e.url)).toEqual([
+      'http://example.com',
+      'https://foo.bar',
+    ]);
+  });
+
+  it('jede pdf.js-Adresse steht wirklich an der angegebenen Fundstelle', () => {
+    for (const entry of pdfjsEntries) {
+      const [, file, line] = /^(node_modules\/\S+), Zeile (\d+)$/.exec(entry.source) ?? [];
+      const lines = readFileSync(new URL(`../../${file}`, import.meta.url), 'utf8').split('\n');
+      expect(lines[Number(line) - 1], entry.url).toContain(entry.url);
+    }
+  });
+
+  it('pdf.js-Adressen gelten nur in Dateien mit pdf.js (E14)', () => {
+    const files = { 'assets/pdfjs-Ab.js': ['pdfjs-dist'], 'assets/merge.worker-C.js': ['pdf-lib'] };
+    const check = (file: string) =>
+      checkText('"https://foo.bar"', 'js', file, { packagesByFile: files });
+    expect(check('assets/pdfjs-Ab.js')).toEqual([]);
+    expect(check('assets/merge.worker-C.js')).toHaveLength(1);
+    expect(check('assets/pdf-teilen/index.html-D.js')).toHaveLength(1);
+  });
+
+  it('pdf.js erzeugt bei uns keine Dateien (tote Adressen P2.16, P3)', () => {
+    // Die Adressen landen nur in Dateien, die pdf.js selbst schreibt (saveDocument, getData,
+    // Download-Hilfen). Unser Code nutzt pdf.js nur zum Lesen und Zeichnen.
+    const src = fileURLToPath(new URL('../../src', import.meta.url));
+    const files = readdirSync(src, { recursive: true, encoding: 'utf8' }).filter((f) =>
+      f.endsWith('.ts'),
+    );
+    for (const file of files) {
+      const text = readFileSync(join(src, file), 'utf8');
+      expect(text, file).not.toMatch(
+        /\.saveDocument\(|\.getData\(|updateUrlHash|getPdfFilenameFromUrl/,
+      );
+    }
+    for (const entry of pdfjsEntries.filter((e) => e.test)) {
+      expect(entry.test).toMatch(/^tests\//);
+    }
   });
 
   it('jede Ausnahme nennt ein Paket', () => {

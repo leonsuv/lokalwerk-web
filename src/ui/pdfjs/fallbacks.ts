@@ -1,5 +1,5 @@
 /**
- * Ort der JS-Ersatzdekoder von pdf.js (Variante ohne WebAssembly). Gemeinsam für den Worker
+ * Ort der JS-Ersatzdekoder von pdf.js (ohne WebAssembly, plan-phase2.md E4). Gemeinsam für den Worker
  * (src/ui/pdfjs/pdfjs.worker.ts), getDocument (wasmUrl) und den Build (build/pdfjs.ts), damit
  * die Adressen übereinstimmen: pdf.js lädt `${wasmUrl}${Dateiname}` per import().
  */

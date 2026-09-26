@@ -13,7 +13,7 @@ Antworten auf die Fragen aus Abschnitt 7. Wo Abschnitte 1–6 davon abweichen, g
 | E1 | GiroCode und Rechnungen | Bauen, ohne jeden Rechnungsbezug: Spenden, Beiträge, Aushänge, Auslagen. Keine Rechnungsfelder, keine Beispiele mit Rechnungen. |
 | E2 | Name | Titel neutral „QR-Code für Überweisungen (EPC-QR-Code)“. Das Wort „GiroCode“ vorerst **nirgends** verwenden, auch nicht im Erklärtext. Leon prüft die Marke im DPMA-Register. |
 | E3 | ZIP | Variante c: ZIP überall kostenlos, eigene Implementierung ohne Kompression. „ZIP-Export“ auf der Pro-Seite und der Startseite streichen, ebenso den Pro-Hinweis im Werkzeug Fotos verkleinern. Neue Texte zur Freigabe vorlegen. |
-| E4 | WebAssembly für pdf.js | `'wasm-unsafe-eval'` nur auf den Seiten mit pdf.js ist grundsätzlich freigegeben. Vorher Testergebnisse beider Varianten (mit/ohne WASM) vorlegen; Leon entscheidet dann endgültig. |
+| E4 | WebAssembly für pdf.js | **Nein** (Leon, 25.09.2026, nach den Testergebnissen aus Schritt 0). CSP bleibt unverändert; pdf.js läuft mit seinen JS-Ersatzdekodern. Messwerte bei Frage 4. |
 | E5 | QR-Bibliothek | uqr 0.1.3 freigegeben. |
 | E6 | XML-Leser, pako | Eigener Leser in `core/xml/`, der DOCTYPE und externe Entitäten strikt ablehnt. pako als direkte Abhängigkeit freigegeben. |
 | E7 | exifr | Freigegeben, Variante lite. Grenzen in `docs/` vermerken wie bei pdf-lib. |
@@ -97,13 +97,13 @@ Alle vier Werkzeuge gebaut, je ein Commit.
 
 ### Stand Paket 4, Schritt 0: pdf.js-Einbindung (25.09.2026)
 
-Eingebunden, noch in keiner Seite verwendet. Wartet auf Leons Entscheidung zu WebAssembly (E4, Frage 4) und zu den Adressen (`docs/pdfjs-adressen.md`).
+Eingebunden, noch in keiner Seite verwendet. **Entscheidungen (Leon, 25.09.2026):** ohne WebAssembly (E4, Messwerte bei Frage 4); Adressen P1 und P2 als Gruppen, P3 einzeln freigegeben (`docs/pdfjs-adressen.md`); `@napi-rs/canvas` darf in `node_modules` bleiben, der Build bricht ab, falls es je ausgeliefert wird; `/lizenzen/` führt nur ausgelieferte Pakete mit den Werkzeugen auf, die sie laden (vom Build geprüft).
 
 - pdfjs-dist 6.3.289 (Apache-2.0, 29.08.2026), exakt gepinnt. Optionale Node-Abhängigkeit `@napi-rs/canvas` (MIT) liegt nur in `node_modules`, wird nicht ausgeliefert und steht nicht auf der Lizenzseite.
 - `src/ui/pdfjs/`: Worker lokal über `workerPort`; eigene `LocalBinaryDataFactory` statt Nachladen; `useWorkerFetch: false`; kein `cMapUrl`, `standardFontDataUrl`, `iccUrl`; `enableXfa: false`. `isEvalSupported` gibt es in 6.3 nicht mehr; beide Bundles enthalten kein `eval`/`new Function`. `enableScripting` ist eine Viewer-Option; die Sandbox wird nicht eingebunden.
-- Variante per `VITE_PDFJS_WASM` bis zur Entscheidung. Ohne WASM: `useWasm: false`, JS-Ersatzdekoder unter `/pdfjs/`, im Worker vorgeladen (offline). Mit WASM: Dekoder als Base64 im JS-Bundle (kein fetch nötig).
+- `useWasm: false`, JS-Ersatzdekoder unter `/pdfjs/`, im Worker vorgeladen (offline). Die WASM-Testvariante ist wieder entfernt.
 - Build: `build/pdfjs.ts` (Ersatzdekoder nur, wenn pdf.js im Build ist), `chunk-guard` verbietet pdf.js im statischen Import einer Seite, `check-dist` bricht ab bei `pdf.sandbox`/QuickJS (Datei oder Code).
-- Offen für Paket 4, Schritt 1: Adress-Freigabe eintragen, CSP-Pfadregeln falls WASM, Lizenztexte der Dekoder aus `node_modules/pdfjs-dist/wasm/` auf `/lizenzen/` (`LICENSE_OPENJPEG`, `LICENSE_JBIG2` mit PDFium, `LICENSE_PDFJS_OPENJPEG`, `LICENSE_PDFJS_JBIG2`; wörtlich übernehmen, SPDX-Zuordnung vorher prüfen). Die gelten in beiden Varianten, weil die JS-Ersatzdekoder mit wasm2js aus denselben Quellen übersetzt sind.
+- Offen für das erste pdf.js-Werkzeug: Lizenztexte der Dekoder aus `node_modules/pdfjs-dist/wasm/` auf `/lizenzen/` (`LICENSE_OPENJPEG`, `LICENSE_JBIG2` mit PDFium, `LICENSE_PDFJS_OPENJPEG`, `LICENSE_PDFJS_JBIG2`; wörtlich übernehmen, SPDX-Zuordnung vorher prüfen). Die gelten in beiden Varianten, weil die JS-Ersatzdekoder mit wasm2js aus denselben Quellen übersetzt sind.
 
 ## 0. Wie dieser Plan zu lesen ist
 
@@ -949,6 +949,12 @@ Jedes Werkzeug ist ein eigener Schritt mit eigenem Commit, Tests, Audit (hell/du
    - c) ZIP überall kostenlos und die Pro-Ankündigung ändern
    Ein ZIP ohne Kompression schreibe ich selbst (etwa 100 Zeilen, CRC-32 nach der ZIP-Spezifikation von PKWARE), keine Abhängigkeit.
 4. **pdf.js und WebAssembly:** Darf ich auf den Seiten mit pdf.js `'wasm-unsafe-eval'` in `script-src` setzen, oder sollen diese Seiten ohne WASM laufen (mit dokumentierten Ausfällen bei JPEG 2000 und JBIG2)? Ich lege dir vorher Testergebnisse mit beiden Varianten vor.
+   - **Entschieden am 25.09.2026: ohne WebAssembly, CSP unverändert.** Messwerte aus Schritt 0 (Chrome, Testseite im Scratchpad, echte CSP, offline nach dem Laden):
+     - Darstellung: 11 Test-PDFs (normal, ohne eingebettete Schriften, JPEG 2000 mit 150 und 300 dpi sowie drei pdf.js-Testdateien, JBIG2 mit und ohne Globals, CCITT) sind mit und ohne WASM pixelgleich (SHA-256 der Canvas-Pixel). Ohne WASM fällt nichts aus.
+     - Geschwindigkeit ohne/mit WASM: JPEG-2000-Scan 300 dpi ca. 1,2 s / 0,15 s; 150 dpi ca. 0,55 s / 0,06 s; JBIG2-Buchscan ca. 0,45 s / 0,25 s; normale PDF und CCITT gleich.
+     - Größe je PDF-Werkzeugseite: ohne WASM 2,22 MB roh, 653 KB gzip, 540 KB brotli; mit WASM 2,10 MB, 666 KB, 551 KB.
+     - Gegenprobe: WASM-Bundle ohne CSP-Freigabe liefert leere Bilder ohne Fehlermeldung.
+     - In beiden Varianten: nicht eingebettete ostasiatische Schriften fehlen (keine CMaps), einzelne ZapfDingbats-Symbole falsch, keine ICC-Farbprofile.
 5. **QR-Bibliothek:** uqr 0.1.3 (MIT) als neue Abhängigkeit für 17 und 28 freigeben? Alternative qrcode-generator 2.0.4.
 6. **XML-Parser für camt.053:** `DOMParser` gibt es nicht in Web Workern und nicht in Node (Tests).
    - a) Eigener kleiner XML-Leser in `core/xml/` (etwa 200 Zeilen: Elemente, Attribute, Namensräume, Entitäten, CDATA; lehnt DOCTYPE ab)

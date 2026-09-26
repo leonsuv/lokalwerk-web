@@ -23,6 +23,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { collectLicenses } from '../build/licenses.ts';
+import { PDFJS_URLS } from './allowed-urls-pdfjs.mjs';
 import { SHEETJS_URLS } from './allowed-urls-sheetjs.mjs';
 import { SHIPPED_MANIFEST } from './shipped-manifest.mjs';
 
@@ -65,11 +66,13 @@ export const ALLOWED_SVG_XML_URLS = [
  *
  * Seit 24.09.2026 außerdem freigegeben: XML-Namensräume und Beziehungstypen nach ECMA-376
  * aus SheetJS, jeweils nur im SEPA-Worker (scripts/allowed-urls-sheetjs.mjs).
+ * Seit 25.09.2026: Namensräume und zwei tote Adressen aus pdf.js (scripts/allowed-urls-pdfjs.mjs).
  *
  * @type {ReadonlyArray<AllowedUrl & { library: string, package: string, category?: string, test?: string }>}
  */
 export const ALLOWED_LIBRARY_URLS = [
   ...SHEETJS_URLS,
+  ...PDFJS_URLS,
   {
     url: 'https://github.com/Hopding/pdf-lib',
     library: 'pdf-lib 1.17.1',

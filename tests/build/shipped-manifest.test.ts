@@ -2,7 +2,12 @@ import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { recordShippedPackages, writeShippedManifest } from '../../build/shipped-packages.ts';
+import {
+  packagesByTool,
+  recordShippedPackages,
+  writeShippedManifest,
+  type BundleChunk,
+} from '../../build/shipped-packages.ts';
 
 type Hook = (options: unknown, bundle: Record<string, unknown>) => void;
 
@@ -37,5 +42,38 @@ describe('Zuordnung Datei → Pakete (plan-phase2.md E14)', () => {
     expect(manifest['assets/tabelle.worker-X1.js']).toEqual(['xlsx']);
     expect(manifest).not.toHaveProperty('assets/nur-eigener-code-X2.js');
     expect(manifest).not.toHaveProperty('assets/main.css');
+  });
+});
+
+describe('packagesByTool (Lizenzseite: welche Werkzeuge welche Pakete laden)', () => {
+  const chunk = (fileName: string, over: Partial<BundleChunk> = {}): BundleChunk => ({
+    fileName,
+    code: '',
+    imports: [],
+    dynamicImports: [],
+    moduleIds: [],
+    ...over,
+  });
+
+  it('folgt statischen und dynamischen Importen und den Workern im Code', () => {
+    const chunks = [
+      chunk('assets/pdf-teilen/index.html-A.js', {
+        moduleIds: ['/p/src/tools/pdf-teilen/page.ts'],
+        code: 'new Worker(new URL("/assets/split.worker-X.js", import.meta.url))',
+        dynamicImports: ['assets/pdfjs-B.js'],
+      }),
+      chunk('assets/pdfjs-B.js', { moduleIds: ['/p/node_modules/pdfjs-dist/build/pdf.mjs'] }),
+      chunk('assets/index.html-H.js', {
+        moduleIds: ['/p/src/tools/home/page.ts'],
+        dynamicImports: ['assets/pdf-teilen/index.html-A.js'],
+      }),
+    ];
+    const files = new Map([
+      ['assets/split.worker-X.js', new Set(['pdf-lib', 'pako'])],
+      ['assets/sheet.worker-Y.js', new Set(['xlsx'])],
+    ]);
+    const result = packagesByTool(chunks, files, new Set(['pdf-teilen']));
+    expect([...result.keys()]).toEqual(['pdf-teilen']);
+    expect([...(result.get('pdf-teilen') ?? [])].sort()).toEqual(['pako', 'pdf-lib', 'pdfjs-dist']);
   });
 });

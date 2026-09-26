@@ -2,7 +2,8 @@
  * Lizenzhinweise der ausgelieferten Bibliotheken und Schriften, beim Build aus den
  * installierten Paketen gelesen (Seite /lizenzen/). So veraltet die Seite nicht bei Updates.
  *
- * Bibliotheken: alle Laufzeit-Abhängigkeiten aus package.json samt ihren Abhängigkeiten.
+ * Bibliotheken: die ausgelieferten Laufzeit-Abhängigkeiten (USED_IN) samt ihren Abhängigkeiten.
+ * Nicht ausgelieferte Abhängigkeiten stehen nicht auf der Seite (Leon, 25.09.2026).
  * Schriften: die selbst gehosteten Schriften aus public/fonts/ (FONTS unten).
  * Ob wirklich jede ausgelieferte Bibliothek hier steht, prüft build/shipped-packages.ts.
  */
@@ -11,6 +12,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { escapeHtml } from './html-partials.ts';
+import { toolById } from './pages.ts';
 
 export interface LicenseText {
   file: string;
@@ -71,11 +73,33 @@ export const REQUIRED_DATA_LICENSES: Record<string, Omit<DataLicense, 'text'> & 
     },
   };
 
-/** Wo die direkten Abhängigkeiten verwendet werden; ihre Unterabhängigkeiten erben das. */
-const USED_IN: Record<string, string> = {
-  'pdf-lib': 'PDFs zusammenfügen, PDF teilen, Bilder zu PDF, PDF-Metadaten entfernen',
-  xlsx: 'SEPA-Sammelüberweisung (Excel- und ODS-Dateien lesen), Excel und CSV umwandeln (lesen und schreiben)',
+/**
+ * Ausgelieferte direkte Abhängigkeiten und die Werkzeuge (ids aus build/pages.ts), die sie laden.
+ * Ihre Unterabhängigkeiten erben das. Nur diese Pakete stehen auf /lizenzen/. Der Build prüft,
+ * dass die Werkzeuge genau stimmen (build/shipped-packages.ts, verifyLicensesListed).
+ */
+export const USED_IN: Readonly<Record<string, readonly string[]>> = {
+  'pdf-lib': [
+    'pdf-zusammenfuegen',
+    'pdf-teilen',
+    'pdf-seitenzahlen',
+    'pdf-stempel',
+    'pdf-metadaten-entfernen',
+    'bilder-zu-pdf',
+  ],
+  xlsx: ['sepa-sammelueberweisung', 'excel-csv-umwandeln', 'duplikate-finden'],
 };
+
+/** Namen der Werkzeuge für die Lizenzseite, in der Reihenfolge von USED_IN */
+function toolNames(ids: readonly string[]): string {
+  return ids
+    .map((id) => {
+      const tool = toolById(id);
+      if (!tool) throw new Error(`Lizenzen: Werkzeug ${id} gibt es nicht (build/pages.ts)`);
+      return tool.tool.name;
+    })
+    .join(', ');
+}
 
 /** Selbst gehostete Schriften (public/fonts/, scripts/copy-fonts.mjs). */
 const FONTS = [{ id: '@fontsource/onest', filePrefix: 'onest-', name: 'Onest' }];
@@ -180,7 +204,8 @@ export function collectLicenses(root: string): LicenseEntry[] {
     for (const dep of Object.keys(pkg.dependencies ?? {})) visit(dep, dir, usedIn);
   };
   for (const dep of Object.keys(rootPkg.dependencies ?? {})) {
-    visit(dep, root, USED_IN[dep] ?? 'Lokalwerk');
+    const tools = USED_IN[dep];
+    if (tools) visit(dep, root, toolNames(tools));
   }
 
   for (const font of FONTS) {

@@ -21,11 +21,18 @@ describe('collectLicenses (aus den installierten Paketen)', () => {
         '@pdf-lib/upng',
         'pako',
         'pdf-lib',
-        'pdfjs-dist',
         'tslib',
         'xlsx',
       ].sort(),
     );
+  });
+
+  it('führt nur ausgelieferte Pakete auf, mit den Werkzeugen, die sie laden', () => {
+    expect(byId('pdfjs-dist')).toBeUndefined();
+    expect(byId('xlsx')?.usedIn).toBe(
+      'SEPA-Sammelüberweisung, Excel und CSV umwandeln, Duplikate finden',
+    );
+    expect(byId('pako')?.usedIn).toBe(byId('pdf-lib')?.usedIn);
   });
 
   it('liest Version und Lizenz aus package.json', () => {
@@ -161,6 +168,39 @@ describe('verifyLicensesListed (Build bricht ab, wenn etwas fehlt)', () => {
       fontPrefixes: { 'onest-': '@fontsource/onest' },
     });
     expect(() => (plugin.closeBundle as () => void).call({})).toThrow(/APAFML/);
+    setShippedForTest([]);
+  });
+
+  it('bricht ab, wenn eine aufgeführte Bibliothek gar nicht ausgeliefert wird', () => {
+    setShippedForTest([]);
+    expect(run(['@fontsource/onest', 'pdfjs-dist'], { 'onest-': '@fontsource/onest' })).toThrow(
+      /pdfjs-dist steht auf \/lizenzen\/, wird aber nicht ausgeliefert/,
+    );
+  });
+
+  it('bricht ab, wenn @napi-rs/canvas ausgeliefert wird (Leon, 25.09.2026)', () => {
+    setShippedForTest(['@napi-rs/canvas']);
+    expect(
+      run(['@fontsource/onest', '@napi-rs/canvas'], { 'onest-': '@fontsource/onest' }),
+    ).toThrow(/dürfen nie ausgeliefert werden: @napi-rs\/canvas/);
+    setShippedForTest([]);
+  });
+
+  it('bricht ab, wenn die genannten Werkzeuge nicht zum Build passen', () => {
+    setShippedForTest(['xlsx'], { xlsx: ['duplikate-finden', 'sepa-sammelueberweisung'] });
+    const plugin = (usedIn: Record<string, string[]>) =>
+      verifyLicensesListed({
+        listed: () => ['@fontsource/onest', 'xlsx'],
+        usedIn,
+        fontsDir,
+        fontPrefixes: { 'onest-': '@fontsource/onest' },
+      });
+    const close = (usedIn: Record<string, string[]>) => () =>
+      (plugin(usedIn).closeBundle as () => void).call({});
+    expect(close({ xlsx: ['sepa-sammelueberweisung'] })).toThrow(
+      /xlsx wird laut Build von \[duplikate-finden, sepa-sammelueberweisung\] geladen/,
+    );
+    expect(close({ xlsx: ['sepa-sammelueberweisung', 'duplikate-finden'] })).not.toThrow();
     setShippedForTest([]);
   });
 

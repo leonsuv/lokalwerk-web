@@ -74,6 +74,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../dokument-scannen/main.html?raw')).default,
     open: async () => (await import('../dokument-scannen/page.ts')).openFiles,
   },
+  etiketten: {
+    markup: async () => (await import('../etiketten/main.html?raw')).default,
+    open: async () => (await import('../etiketten/page.ts')).openFiles,
+  },
   'bilder-zu-pdf': {
     markup: async () => (await import('../bilder-zu-pdf/main.html?raw')).default,
     open: async () => (await import('../bilder-zu-pdf/page.ts')).addFiles,

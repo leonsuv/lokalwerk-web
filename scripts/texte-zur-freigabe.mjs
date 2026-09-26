@@ -26,6 +26,9 @@ const PHASE1 = new Set([
 ]);
 /** Paket 1 bis 3: alle neuen Texte freigegeben von Leon am 25.09.2026 */
 const NEW = 'NEU, freigegeben von Leon am 25.09.2026';
+/** Paket 7: neue Werkzeuge, Texte zur Freigabe */
+const PAKET7 = new Set(['/etiketten/', '/arbeitstage/']);
+const P7 = 'NEU, Paket 7, zur Freigabe';
 /** Paket 6: neue Werkzeuge, Texte zur Freigabe */
 const PAKET6 = new Set([
   '/foto-metadaten/',
@@ -53,7 +56,17 @@ const PAKET4 = new Set([
 ]);
 const P4 = 'NEU, Paket 4, freigegeben von Leon am 26.09.2026';
 const markFor = (/** @type {string} */ url) =>
-  PHASE1.has(url) ? '' : PAKET6.has(url) ? P6 : PAKET5.has(url) ? P5 : PAKET4.has(url) ? P4 : NEW;
+  PHASE1.has(url)
+    ? ''
+    : PAKET7.has(url)
+      ? P7
+      : PAKET6.has(url)
+        ? P6
+        : PAKET5.has(url)
+          ? P5
+          : PAKET4.has(url)
+            ? P4
+            : NEW;
 const clean = (/** @type {string} */ html) =>
   html
     .replace(/<[^>]+>/g, '')
@@ -63,7 +76,7 @@ const clean = (/** @type {string} */ html) =>
 const out = [
   '# Texte zur Freigabe',
   '',
-  'Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 6: „NEU, Paket 6, zur Freigabe“.**',
+  'Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 6: „NEU, Paket 6, zur Freigabe“. Paket 7: „NEU, Paket 7, zur Freigabe“.**',
   '',
   'Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.',
   '',
@@ -141,6 +154,7 @@ out.push(
   `| **${P6}** Gesichter verpixeln, Meldungen | Art „Verpixeln“ / „Schwarz“, Hinweis „Verpixelt wird mit großen Blöcken, nie weichgezeichnet.“, „Metadaten: werden entfernt“, „Das Foto ist sehr groß und wird verkleinert gespeichert, damit jeder Browser es verarbeiten kann.“, „Fertig: Das Foto ist gespeichert. Prüf es, bevor du es veröffentlichst.“; Bedienhinweis und Screenreader wie beim Schwärzen („Bereich 1“) | \`src/tools/foto-verpixeln/\` |`,
   `| **${P6}** Ausweiskopie, Meldungen und rechtlicher Hinweis (Hinweis freigegeben von Leon am 26.09.2026, die beiden Sätze zur Weitergabe sind neu; docs/ausweiskopie-recht.md) | Aufdruck „KOPIE – nur für [Zweck] – [Datum]“, Felder „Zweck (freiwillig)“, „Datum (leer lassen für ohne)“, Hinweis „Quer über das Bild steht: … „KOPIE“ steht immer darin.“; „Speichern als“ PDF/JPG mit „Eine PDF mit allen Seiten untereinander auf einem DIN-A4-Blatt.“, „Ein JPG-Bild je Seite, zusammen in einer ZIP-Datei.“, „Ein JPG-Bild.“; Knöpfe „Bereich schwärzen“, „Diese Seite entfernen“, „Neu beginnen“, „Seite 1“/„Seite 2“; „Es sind schon zwei Seiten da. Entferne erst eine Seite.“, „Eine Ausweiskopie hat höchstens zwei Seiten: Die ersten werden übernommen.“, „Fertig: Die Ausweiskopie ist gespeichert. Prüf sie, bevor du sie weitergibst.“; Screenreader „Geschwärzter Bereich 1“; Kasten rechts: „Einen Personalausweis oder Pass darf nur die Person kopieren, der er gehört, oder jemand mit ihrer Zustimmung. Die Kopie muss eindeutig und dauerhaft als Kopie erkennbar sein. **Neu:** Wer die Kopie erhält, darf sie nicht an Dritte weitergeben. Beim Pass gilt eine Ausnahme für einen Visumantrag der Person, der er gehört, wenn sie der Weitergabe zugestimmt hat (§ 20 Abs. 2 PAuswG, § 18 Abs. 3 PassG). Welche Angaben du schwärzt, entscheidest du. Frag im Zweifel die Stelle, die die Kopie verlangt, welche Angaben sie braucht.“ | \`src/tools/ausweiskopie/\`, \`src/core/images/copy-mark.ts\` |`,
   `| **${P6}** Dokument scannen, Meldungen | Knöpfe „Foto aufnehmen“, „Links drehen“, „Rechts drehen“, „Ecken zurücksetzen“, „Diese Seite entfernen“, „Scan als PDF speichern“, „Neu beginnen“, „Seite 1“ …; Aussehen „Farbe“, „Graustufen“, „Schwarzweiß“ mit „Gilt für alle Seiten. Schwarzweiß eignet sich für reinen Text.“; „Seitengröße: DIN A4“; Screenreader „Ecke oben links“ usw.; „Die Ecken überkreuzen sich. Zieh sie so, dass sie das Blatt umrahmen.“, „So sieht die Seite aus“, „Seite 2 von 3 …“, „PDF wird erstellt …“, „Ein Foto ist sehr groß und wird verkleinert verarbeitet, damit jeder Browser es schafft.“, „Fertig: Der Scan ist als PDF gespeichert.“, „Fertig: 3 Seiten sind als PDF gespeichert.“, „Die Seite konnte nicht erzeugt werden. Lade die Seite neu und versuch es noch einmal.“ | \`src/tools/dokument-scannen/\`, \`src/ui/corner-editor.ts\` |`,
+  `| **${P7}** Etiketten aus einer Liste, Meldungen | Auswahl „Etiketten je A4-Blatt“ mit „3 × 8, je 70 × 37 mm“ usw. und „Eigene Maße“; Felder „Spalten“, „Reihen“, „Breite (mm)“, „Höhe (mm)“, „Rand oben (mm)“, „Rand links (mm)“, „Abstand nebeneinander (mm)“, „Abstand untereinander (mm)“, „Schriftgröße (pt)“, „Innenabstand (mm)“, „Erstes freies Etikett auf dem Bogen“ mit „Für angebrochene Bögen: gezählt wird zeilenweise von oben links.“; „Die Maße stehen meist auf der Packung. Im Zweifel miss auf dem Bogen nach.“; Maßfehler „Prüf die Maße: Spalten und Reihen als ganze Zahl ab 1, Breite und Höhe ab 5 mm, Ränder und Abstände nicht negativ.“, „Der Bogen ist breiter als ein A4-Blatt (210 mm). Prüf Rand links, Breite, Spalten und Abstand nebeneinander.“, „Der Bogen ist höher als ein A4-Blatt (297 mm). Prüf Rand oben, Höhe, Reihen und Abstand untereinander.“; „Was auf dem Etikett steht“, „Jede Zeile des Etiketts setzt sich aus bis zu drei Spalten zusammen, mit Leerzeichen dazwischen. Leere Zeilen fallen weg.“, „Zeile 1“, Screenreader „Zeile 1, Angabe 2“; „Vorschau des ersten Blatts“, „Die grauen Rahmen zeigen die Etiketten; gedruckt werden sie nur beim Probedruck.“; Zahlen „Etiketten“, „Blätter“, „Leere Zeilen übersprungen“, „Nicht gedruckt“, „Schrift verkleinert“; „Nicht gedruckt“ mit „Diese Zeilen der Liste kommen nicht auf die Etiketten. Kürze den Text oder ersetze die Zeichen im Tabellenprogramm und füge die Liste erneut hinzu.“, Gründe „Zeichen, die die Schrift nicht kennt: ł“ und „Zu viel Text, passt auch mit 6 pt nicht aufs Etikett.“; Kasten „Drucke mit „Tatsächliche Größe“ oder 100 %, nicht mit „An Seite anpassen“. Mach vorher einen Probedruck auf normalem Papier und halte ihn gegen den Bogen.“; Knöpfe „Probedruck speichern“, „Etiketten-PDF speichern“, „Andere Liste wählen“; „Fertig: Der Probedruck ist gespeichert. Druck ihn auf normales Papier und halte ihn gegen den Bogen.“, „Fertig: Die Etiketten-PDF ist gespeichert.“; Messblatt im Probedruck „Diese Linie muss genau 100 mm lang sein.“, „Ist sie kürzer oder länger, drucke mit „Tatsächliche Größe“ oder 100 %.“; Lesefehler wie bei „IBAN-Liste prüfen“ | \`src/tools/etiketten/\`, \`src/core/pdf/labels.ts\` |`,
   '| 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |',
   '| Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |',
   '| SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |',

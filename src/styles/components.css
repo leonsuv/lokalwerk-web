@@ -1360,3 +1360,32 @@ select[multiple] {
   border-radius: 10px;
   background: #fff;
 }
+
+/* Etiketten: Spalten je Etikettenzeile, Vorschau des Blatts */
+.line-map {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.line-map legend {
+  padding: 0;
+  margin-bottom: 0.3rem;
+}
+.label-preview {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+@media (max-width: 640px) {
+  /* Auf schmalen Bildschirmen untereinander, sonst sind die Spaltennamen abgeschnitten */
+  .line-map {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

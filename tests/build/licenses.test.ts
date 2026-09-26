@@ -33,7 +33,7 @@ describe('collectLicenses (aus den installierten Paketen)', () => {
   it('führt nur ausgelieferte Pakete auf, mit den Werkzeugen, die sie laden', () => {
     expect(byId('@napi-rs/canvas')).toBeUndefined();
     expect(byId('xlsx')?.usedIn).toBe(
-      'SEPA-Sammelüberweisung, Excel und CSV umwandeln, Duplikate finden, IBAN-Liste prüfen',
+      'SEPA-Sammelüberweisung, Excel und CSV umwandeln, Duplikate finden, IBAN-Liste prüfen, Etiketten aus einer Liste',
     );
     expect(byId('pako')?.usedIn).toBe(byId('pdf-lib')?.usedIn);
   });

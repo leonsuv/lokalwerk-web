@@ -49,6 +49,7 @@ describe('Seitenregister', () => {
         '/dokument-scannen/',
         '/csv-reparieren/',
         '/duplikate-finden/',
+        '/etiketten/',
         '/pdf-zusammenfuegen/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',

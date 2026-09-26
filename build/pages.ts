@@ -662,7 +662,7 @@ export const PAGES: readonly PageDef[] = [
     url: '/qr-code-ueberweisung/',
     title: 'QR-Code für Überweisungen (EPC-QR-Code) erstellen – kostenlos | Lokalwerk',
     description:
-      'Einen QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet.',
+      'QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet.',
     index: true,
     nav: 'werkzeuge',
     tool: {

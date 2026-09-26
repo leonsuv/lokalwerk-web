@@ -1,6 +1,6 @@
 # Texte zur Freigabe
 
-Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: neue Texte mit „NEU, Paket 5, zur Freigabe“ markiert. Paket 6: „NEU, Paket 6, zur Freigabe“.**
+Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 6: „NEU, Paket 6, zur Freigabe“.**
 
 Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.
 
@@ -21,20 +21,22 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-stempel/` | PDF-Wasserzeichen und Stempel einfügen – kostenlos, ohne Upload \| Lokalwerk | Text wie „Entwurf“ oder „Kopie“ kostenlos als Stempel oder Wasserzeichen auf die Seiten einer PDF setzen. Direkt im Browser, ohne Upload. | 137 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-metadaten-entfernen/` | PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload \| Lokalwerk | Kostenlos sehen, welche versteckten Angaben in einer PDF stecken, und Autor, Programm, Datum und frühere Fassungen entfernen. Direkt im Browser, ohne Upload. | 157 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/bilder-zu-pdf/` | Bilder zu PDF: JPG und PNG in PDF umwandeln – kostenlos \| Lokalwerk | Fotos und Scans kostenlos zu einer PDF zusammenfassen, eine Seite je Bild, auf DIN A4. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 145 | ja |
+| **NEU, Paket 6, zur Freigabe** `/dokument-scannen/` | Dokument mit dem Handy scannen und als PDF speichern – ohne Upload \| Lokalwerk | Dokument kostenlos mit dem Handy scannen: Foto aufnehmen, Ecken setzen, gerade ausrichten und als PDF speichern. Direkt im Browser, ohne Upload und ohne App. | 157 | ja |
 | `/fotos-verkleinern/` | Fotos verkleinern und Metadaten entfernen – kostenlos \| Lokalwerk | Fotos kostenlos für E-Mail und Website verkleinern und dabei GPS-Position und Kameradaten entfernen. Direkt im Browser, ohne Upload. | 132 | ja |
 | **NEU, Paket 6, zur Freigabe** `/foto-metadaten/` | Foto-Metadaten anzeigen: GPS, Kamera, Datum – ohne Upload \| Lokalwerk | Kostenlos sehen, was ein Foto verrät: Aufnahmeort, Kamera, Uhrzeit und Programm, und das Foto ohne diese Angaben speichern. Direkt im Browser, ohne Upload. | 155 | ja |
 | **NEU, Paket 6, zur Freigabe** `/foto-zuschneiden/` | Foto zuschneiden und drehen – kostenlos, ohne Upload \| Lokalwerk | Fotos kostenlos zuschneiden, drehen und spiegeln, frei oder im Seitenverhältnis 1:1, 4:3 oder 16:9. Metadaten werden entfernt. Im Browser, ohne Upload. | 151 | ja |
 | **NEU, Paket 6, zur Freigabe** `/foto-verpixeln/` | Gesichter und Kennzeichen verpixeln – kostenlos, ohne Upload \| Lokalwerk | Gesichter, Kennzeichen oder Namen auf Fotos kostenlos verpixeln oder schwärzen, mit großen Blöcken statt Weichzeichner. Metadaten werden entfernt. Ohne Upload. | 159 | ja |
+| **NEU, Paket 6, zur Freigabe** `/ausweiskopie/` | Ausweiskopie schwärzen und als Kopie kennzeichnen – ohne Upload \| Lokalwerk | Ausweiskopie kostenlos erstellen: Angaben schwärzen, „KOPIE“ mit Zweck und Datum quer aufdrucken, als PDF oder JPG speichern. Direkt im Browser, ohne Upload. | 157 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
-| **NEU, Paket 5, zur Freigabe** `/qr-code-ueberweisung/` | QR-Code für Überweisungen (EPC-QR-Code) erstellen – kostenlos \| Lokalwerk | Einen QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet. | 160 | ja |
-| **NEU, Paket 5, zur Freigabe** `/iban-pruefen/` | IBAN prüfen: ganze IBAN-Listen aus Excel und CSV – ohne Upload \| Lokalwerk | Einzelne IBANs oder ganze Listen aus Excel und CSV kostenlos auf Tippfehler prüfen, dazu SEPA-Texte auf erlaubte Zeichen. Direkt im Browser, ohne Upload. | 153 | ja |
-| **NEU, Paket 5, zur Freigabe** `/glaeubiger-id-pruefen/` | Gläubiger-ID prüfen: Aufbau und Prüfziffer – kostenlos \| Lokalwerk | Eine Gläubiger-Identifikationsnummer für SEPA-Lastschriften kostenlos auf Aufbau und Prüfziffer prüfen, zum Beispiel vor dem ersten Einzug. Direkt im Browser. | 158 | ja |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026** `/qr-code-ueberweisung/` | QR-Code für Überweisungen (EPC-QR-Code) erstellen – kostenlos \| Lokalwerk | QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet. | 154 | ja |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026** `/iban-pruefen/` | IBAN prüfen: ganze IBAN-Listen aus Excel und CSV – ohne Upload \| Lokalwerk | Einzelne IBANs oder ganze Listen aus Excel und CSV kostenlos auf Tippfehler prüfen, dazu SEPA-Texte auf erlaubte Zeichen. Direkt im Browser, ohne Upload. | 153 | ja |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026** `/glaeubiger-id-pruefen/` | Gläubiger-ID prüfen: Aufbau und Prüfziffer – kostenlos \| Lokalwerk | Eine Gläubiger-Identifikationsnummer für SEPA-Lastschriften kostenlos auf Aufbau und Prüfziffer prüfen, zum Beispiel vor dem ersten Einzug. Direkt im Browser. | 158 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/csv-reparieren/` | CSV reparieren: Umlaute und Trennzeichen korrigieren – kostenlos \| Lokalwerk | CSV-Dateien mit kaputten Umlauten wie „MÃ¼ller“ oder falschem Trennzeichen kostenlos reparieren, jede Änderung vorher sichtbar. Im Browser, ohne Upload. | 152 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/duplikate-finden/` | Duplikate in Excel- und CSV-Listen finden – kostenlos, ohne Upload \| Lokalwerk | Doppelte Einträge in Mitglieder-, Kunden- und Adresslisten kostenlos finden und markieren, ohne etwas zu löschen. Direkt im Browser, ohne Upload. | 145 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/passwort-generator/` | Passwort-Generator: sichere Passwörter nach BSI – ohne Server \| Lokalwerk | Sichere Passwörter kostenlos erzeugen, mit Länge und Zeichenarten nach den Beispielen des BSI. Direkt im Browser, nichts wird gesendet oder gespeichert. | 152 | ja |
-| **NEU, Paket 5, zur Freigabe** `/qr-code/` | QR-Code erstellen: Link, WLAN, Kontakt – kostenlos, ohne Tracking \| Lokalwerk | QR-Codes für Links, WLAN-Zugänge, Kontakte und Texte kostenlos erstellen, als PNG oder SVG. Ohne Weiterleitung, ohne Tracking, direkt im Browser. | 145 | ja |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026** `/qr-code/` | QR-Code erstellen: Link, WLAN, Kontakt – kostenlos, ohne Tracking \| Lokalwerk | QR-Codes für Links, WLAN-Zugänge, Kontakte und Texte kostenlos erstellen, als PNG oder SVG. Ohne Weiterleitung, ohne Tracking, direkt im Browser. | 145 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pruefsumme/` | Prüfsumme berechnen: SHA-256 einer Datei prüfen – ohne Upload \| Lokalwerk | SHA-256 und SHA-1 einer Datei kostenlos berechnen und mit der angegebenen Prüfsumme vergleichen, auch bei sehr großen Dateien. Direkt im Browser, ohne Upload. | 158 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/texte-vergleichen/` | Texte vergleichen: Unterschiede zwischen zwei Fassungen finden \| Lokalwerk | Zwei Texte kostenlos vergleichen, etwa Vertragsentwürfe oder Satzungen: geänderte Zeilen und Wörter werden markiert. Direkt im Browser, ohne Upload. | 148 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/kontrast-pruefen/` | Kontrast prüfen nach WCAG 2.2 – Kontrastrechner für Farben \| Lokalwerk | Kontrastverhältnis zweier Farben kostenlos nach WCAG 2.2 berechnen und die Stufen AA und AAA prüfen, für Text, großen Text und Bedienelemente. Im Browser. | 154 | ja |
@@ -280,6 +282,26 @@ Die Bilder werden direkt in deinem Browser verarbeitet und nicht hochgeladen. Na
 
 _(Erklärtext: 142 Wörter)_
 
+## Dokument scannen – NEU, Paket 6, zur Freigabe (`src/tools/dokument-scannen/main.html`)
+
+Karte: „Dokument scannen“ – „Blatt mit dem Handy fotografieren, gerade ausrichten und als PDF speichern.“
+
+Unterzeile im Kopf: „Ein Blatt mit dem Handy fotografieren, die vier Ecken setzen und als gerade, gut lesbare PDF speichern.“
+
+**So funktioniert es**
+
+Tipp auf „Foto aufnehmen“: Auf dem Handy öffnet sich die Kamera-App, auf dem Computer die Dateiauswahl. Oder wähle vorhandene Fotos aus, eine Seite je Foto. Zieh dann die vier Ecken auf die Ecken des Blatts. Das Werkzeug richtet die Seite gerade aus, und „Scan als PDF speichern“ legt alle Seiten der Reihe nach in eine PDF.
+
+**Gut zu wissen**
+
+Am besten gelingt der Scan bei gleichmäßigem Licht, ohne Schatten auf dem Blatt und mit etwas Abstand zur Blattkante. Schwarzweiß vergleicht jeden Punkt mit seiner Umgebung, damit Text auch in dunkleren Ecken lesbar bleibt; Fotos und farbige Stempel speicherst du besser in Farbe oder Graustufen. Die Ecken setzt du selbst, das Werkzeug sucht sie nicht automatisch.
+
+**Deine Dokumente bleiben auf deinem Gerät**
+
+Die Kamera wird nur über die Dateiauswahl deines Geräts geöffnet; die Seite selbst greift nicht auf die Kamera zu. Die Fotos werden direkt in deinem Browser bearbeitet und nicht hochgeladen. Aufnahmeort und Kamera werden nicht übernommen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 159 Wörter)_
+
 ## Fotos verkleinern (`src/tools/fotos-verkleinern/main.html`)
 
 Karte: „Fotos verkleinern“ – „Für E-Mail und Website verkleinern. GPS-Position und Kameradaten werden entfernt.“
@@ -372,6 +394,30 @@ Das Foto wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach de
 
 _(Erklärtext: 127 Wörter)_
 
+## Ausweiskopie erstellen – NEU, Paket 6, zur Freigabe (`src/tools/ausweiskopie/main.html`)
+
+Karte: „Ausweiskopie erstellen“ – „Ausweis als Kopie kennzeichnen und Angaben schwärzen, als PDF oder JPG.“
+
+Unterzeile im Kopf: „Foto oder Scan eines Ausweises als Kopie kennzeichnen und nicht benötigte Angaben schwärzen, etwa für Vermieter, Verein oder Arbeitgeber.“
+
+**So funktioniert es**
+
+Wähle ein Foto oder einen Scan deines Ausweises aus, bei zwei Seiten beide Bilder zusammen. Dreh die Bilder bei Bedarf und zieh Rahmen über Angaben, die die andere Stelle nicht braucht. Trag rechts ein, wofür die Kopie ist. „Ausweiskopie speichern“ erzeugt eine PDF mit beiden Seiten auf einem DIN-A4-Blatt oder JPG-Bilder; deine Originale bleiben unverändert.
+
+**Der Aufdruck lässt sich nicht entfernen**
+
+„KOPIE“, der Zweck und das Datum werden in mehreren Zeilen schräg über das ganze Bild gelegt und fest in die Bildpunkte geschrieben, genau wie die schwarzen Flächen. Unter einer geschwärzten Stelle steckt in der neuen Datei nichts mehr. Mit dem Zweck im Aufdruck lässt sich die Kopie schlecht für etwas anderes verwenden.
+
+**Rechtlicher Rahmen**
+
+Nach § 20 Abs. 2 des Personalausweisgesetzes und § 18 Abs. 3 des Passgesetzes darf ein Ausweis nur von der Person selbst oder mit ihrer Zustimmung kopiert werden, und die Kopie muss eindeutig und dauerhaft als Kopie erkennbar sein. Wer eine fremde Kopie erhält, darf sie nicht an Dritte weitergeben. Welche Angaben geschwärzt werden dürfen, legt das Werkzeug nicht fest.
+
+**Dein Ausweis bleibt auf deinem Gerät**
+
+Die Bilder werden direkt in deinem Browser bearbeitet und nicht hochgeladen. Metadaten wie Aufnahmeort und Kamera werden nicht übernommen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 197 Wörter)_
+
 ## Bildformat umwandeln – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/bildformat-umwandeln/main.html`)
 
 Karte: „Bildformat umwandeln“ – „Bilder zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPEG.“
@@ -420,7 +466,7 @@ Liste und Kontodaten werden direkt in deinem Browser verarbeitet und nicht hochg
 
 _(Erklärtext: 152 Wörter)_
 
-## QR-Code für Überweisungen – NEU, Paket 5, zur Freigabe (`src/tools/qr-code-ueberweisung/main.html`)
+## QR-Code für Überweisungen – NEU, Paket 5, freigegeben von Leon am 26.09.2026 (`src/tools/qr-code-ueberweisung/main.html`)
 
 Karte: „QR-Code für Überweisungen“ – „EPC-QR-Code erstellen, den Banking-Apps als fertige Überweisung einlesen.“
 
@@ -428,7 +474,7 @@ Unterzeile im Kopf: „Einen QR-Code erstellen, den Banking-Apps als Überweisun
 
 **So funktioniert es**
 
-Trag Empfänger und IBAN ein, bei Bedarf Betrag und Verwendungszweck. Der Code entsteht sofort. Wer ihn mit der Banking-App scannt, bekommt eine fertig ausgefüllte Überweisung und muss sie dort nur noch prüfen und freigeben. Der Code folgt dem Standard EPC069-12 des European Payments Council, Version 3.1.
+Trag Empfänger und IBAN ein, bei Bedarf Betrag und Verwendungszweck. Der Code entsteht sofort. Wer ihn mit der Banking-App scannt, bekommt eine fertig ausgefüllte Überweisung und muss sie dort nur noch prüfen und freigeben. Der Code folgt den Leitlinien EPC069-12 des European Payments Council, Version 3.1.
 
 **Gut zu wissen**
 
@@ -440,7 +486,7 @@ Der Code entsteht direkt in deinem Browser. Deine Angaben werden weder gesendet 
 
 _(Erklärtext: 123 Wörter)_
 
-## IBAN-Liste prüfen – NEU, Paket 5, zur Freigabe (`src/tools/iban-pruefen/main.html`)
+## IBAN-Liste prüfen – NEU, Paket 5, freigegeben von Leon am 26.09.2026 (`src/tools/iban-pruefen/main.html`)
 
 Karte: „IBAN-Liste prüfen“ – „IBANs einer Liste auf Tippfehler prüfen, dazu SEPA-Texte auf erlaubte Zeichen.“
 
@@ -464,7 +510,7 @@ Die Liste wird direkt in deinem Browser geprüft und nicht hochgeladen. Nach dem
 
 _(Erklärtext: 163 Wörter)_
 
-## Gläubiger-ID prüfen – NEU, Paket 5, zur Freigabe (`src/tools/glaeubiger-id-pruefen/main.html`)
+## Gläubiger-ID prüfen – NEU, Paket 5, freigegeben von Leon am 26.09.2026 (`src/tools/glaeubiger-id-pruefen/main.html`)
 
 Karte: „Gläubiger-ID prüfen“ – „Gläubiger-Identifikationsnummer auf Aufbau und Prüfziffer prüfen.“
 
@@ -568,7 +614,7 @@ Das Passwort entsteht nur in deinem Browser und wird weder gesendet noch gespeic
 
 _(Erklärtext: 136 Wörter)_
 
-## QR-Code erstellen – NEU, Paket 5, zur Freigabe (`src/tools/qr-code/main.html`)
+## QR-Code erstellen – NEU, Paket 5, freigegeben von Leon am 26.09.2026 (`src/tools/qr-code/main.html`)
 
 Karte: „QR-Code erstellen“ – „QR-Codes für Links, WLAN, Kontakte und Texte, als PNG oder SVG.“
 
@@ -683,13 +729,16 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, Paket 4, freigegeben von Leon am 26.09.2026, Änderung nach Vorgabe von Leon** PDF-Formular ausfüllen | „Deine Eingaben landen nur in der neuen Datei und werden sonst nirgends gespeichert.“ | `src/tools/pdf-formular-ausfuellen/main.html` |
 | **Rechtstext auf Anweisung von Leon, 26.09.2026** Datenschutzerklärung, Abschnitt 4 | Überschrift „Verarbeitung deiner Dateien und Eingaben“, erster Satz „PDFs, Fotos und Tabellen, die du in ein Werkzeug lädst, sowie deine Eingaben, etwa Formulareingaben, Texte oder gezeichnete Unterschriften, werden mit JavaScript lokal in deinem Browser verarbeitet.“ Rest unverändert. Für die Rechtsprüfung vermerkt (plan.md Abschnitt 9). | `pages/datenschutz/index.html` |
 | **Regel, 26.09.2026** „hochladen“ | Nur verneint („nicht hochgeladen“, „ohne Upload“), nie für die Dateiauswahl; geprüft von `tests/build/upload-wording.test.ts`. Die SEPA-Seite verwendet „im Onlinebanking hochladen“ für das Einreichen der erzeugten Datei bei der Bank (4 Stellen, als Ausnahme im Test). Bleibt so (Leon, 26.09.2026: Banken nennen die Funktion so). | `src/tools/sepa-sammelueberweisung/main.html` |
-| **NEU, Paket 5, zur Freigabe** QR-Code erstellen, Meldungen | „Der Code enthält https://…“, „Das ist keine gültige Adresse. Schreib sie zum Beispiel so: lokalwerk.eu/werkzeuge/“, „Gib das WLAN-Passwort ein oder wähl „Ohne Passwort“.“, „Der Inhalt ist zu lang für einen QR-Code. Kürze ihn oder wähl eine niedrigere Fehlerkorrektur.“, „Fertig: Der QR-Code ist als PNG gespeichert.“ / „… als SVG gespeichert.“; Auswahl „Niedrig (7 %)“ bis „Sehr hoch (30 %)“, „Klein, etwa 500 Pixel“ bis „Groß, etwa 2000 Pixel“ | `src/tools/qr-code/` |
-| **NEU, Paket 5, zur Freigabe** QR-Code für Überweisungen, Meldungen | „Gib den Namen des Empfängers ein.“, „Umgeschrieben: é → e.“, „Auf 70 Zeichen gekürzt (vorher 75).“, „Betrag im Code: 12,50 €“, IBAN- und Betragsfehler wie auf der SEPA-Seite, „Die BIC hat ein ungültiges Format. Lass das Feld leer, wenn du sie nicht brauchst.“, „Zusammen sind es 340 Byte, erlaubt sind 331. Kürze Name oder Verwendungszweck.“, „Fertig: Der QR-Code ist gespeichert. Teste ihn vor dem Druck mit deiner Banking-App.“; Hinweis „Teste den Code vor dem Druck mit deiner eigenen Banking-App: Scanne ihn, prüfe Empfänger, IBAN, Betrag und Verwendungszweck und brich die Überweisung dann ab.“; Klartext im PNG „Empfänger: …“, „IBAN: …“, „BIC: …“, „Betrag: …“, „Verwendungszweck: …“ | `src/tools/qr-code-ueberweisung/` |
-| **NEU, Paket 5, zur Freigabe** IBAN-Liste prüfen, Meldungen | Ergebnisse „gültig“, „gültig, kommt mehrfach vor (Zeilen 2, 5)“, „leer“, „SEPA-Land außerhalb des EWR (CH): Prüfziffer stimmt, Länge nicht geprüft“ / „… Prüfziffer stimmt nicht (Tippfehler?)“, sonst wie auf der SEPA-Seite; „Keine Auffälligkeiten: Alle IBANs sind gültig.“, „Die ersten 500 von 800 Zeilen.“, „Fertig: Die Liste mit der Spalte „IBAN-Prüfung“ ist gespeichert.“; Reiter „SEPA-Texte prüfen“: „Umgeschrieben: …“, „Zu lang: 150 Zeichen, erlaubt sind 140. Die Bank bekäme nur den gekürzten Text.“, „Alles in Ordnung: Der Text bleibt, wie er ist.“ | `src/tools/iban-pruefen/` |
-| **NEU, Paket 5, zur Freigabe** Gläubiger-ID prüfen, Meldungen | „Formal gültig: Aufbau und Prüfziffer stimmen.“, „Der Aufbau stimmt nicht: zwei Buchstaben für das Land, zwei Ziffern, drei Zeichen für den Geschäftsbereich, dann die nationale Kennung.“, „XX ist kein Land im SEPA-Raum. …“, „Eine deutsche Gläubiger-ID hat 18 Stellen, diese hat 17. …“, „Bei einer deutschen Gläubiger-ID stehen ab Stelle 8 nur Ziffern.“, „Die Prüfziffer passt nicht zur Nummer. Meist ist eine Ziffer vertippt oder vertauscht.“ | `src/tools/glaeubiger-id-pruefen/` |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026** QR-Code erstellen, Meldungen | „Der Code enthält https://…“, „Das ist keine gültige Adresse. Schreib sie zum Beispiel so: lokalwerk.eu/werkzeuge/“, „Gib das WLAN-Passwort ein oder wähl „Ohne Passwort“.“, „Der Inhalt ist zu lang für einen QR-Code. Kürze ihn oder wähl eine niedrigere Fehlerkorrektur.“, „Fertig: Der QR-Code ist als PNG gespeichert.“ / „… als SVG gespeichert.“; Auswahl „Niedrig (7 %)“ bis „Sehr hoch (30 %)“, „Klein, etwa 500 Pixel“ bis „Groß, etwa 2000 Pixel“ | `src/tools/qr-code/` |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026** QR-Code für Überweisungen, Meldungen | „Gib den Namen des Empfängers ein.“, „Umgeschrieben: é → e.“, „Auf 70 Zeichen gekürzt (vorher 75).“, „Betrag im Code: 12,50 €“, IBAN- und Betragsfehler wie auf der SEPA-Seite, „Die BIC hat ein ungültiges Format. Lass das Feld leer, wenn du sie nicht brauchst.“, „Zusammen sind es 340 Byte, erlaubt sind 331. Kürze Name oder Verwendungszweck.“, „Fertig: Der QR-Code ist gespeichert. Teste ihn vor dem Druck mit deiner Banking-App.“; Hinweis „Teste den Code vor dem Druck mit deiner eigenen Banking-App: Scanne ihn, prüfe Empfänger, IBAN, Betrag und Verwendungszweck und brich die Überweisung dann ab.“; Klartext im PNG „Empfänger: …“, „IBAN: …“, „BIC: …“, „Betrag: …“, „Verwendungszweck: …“ | `src/tools/qr-code-ueberweisung/` |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026, Änderung nach Vorgabe von Leon** QR-Code für Überweisungen | Erklärtext „Der Code folgt den Leitlinien EPC069-12 des European Payments Council, Version 3.1.“ (statt „dem Standard“; Meldungen und docs enthielten das Wort in diesem Zusammenhang nicht); Meta „QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet.“ | `src/tools/qr-code-ueberweisung/main.html`, `build/pages.ts` |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026** IBAN-Liste prüfen, Meldungen | Ergebnisse „gültig“, „gültig, kommt mehrfach vor (Zeilen 2, 5)“, „leer“, „SEPA-Land außerhalb des EWR (CH): Prüfziffer stimmt, Länge nicht geprüft“ / „… Prüfziffer stimmt nicht (Tippfehler?)“, sonst wie auf der SEPA-Seite; „Keine Auffälligkeiten: Alle IBANs sind gültig.“, „Die ersten 500 von 800 Zeilen.“, „Fertig: Die Liste mit der Spalte „IBAN-Prüfung“ ist gespeichert.“; Reiter „SEPA-Texte prüfen“: „Umgeschrieben: …“, „Zu lang: 150 Zeichen, erlaubt sind 140. Die Bank bekäme nur den gekürzten Text.“, „Alles in Ordnung: Der Text bleibt, wie er ist.“ | `src/tools/iban-pruefen/` |
+| **NEU, Paket 5, freigegeben von Leon am 26.09.2026** Gläubiger-ID prüfen, Meldungen | „Formal gültig: Aufbau und Prüfziffer stimmen.“, „Der Aufbau stimmt nicht: zwei Buchstaben für das Land, zwei Ziffern, drei Zeichen für den Geschäftsbereich, dann die nationale Kennung.“, „XX ist kein Land im SEPA-Raum. …“, „Eine deutsche Gläubiger-ID hat 18 Stellen, diese hat 17. …“, „Bei einer deutschen Gläubiger-ID stehen ab Stelle 8 nur Ziffern.“, „Die Prüfziffer passt nicht zur Nummer. Meist ist eine Ziffer vertippt oder vertauscht.“ | `src/tools/glaeubiger-id-pruefen/` |
 | **NEU, Paket 6, zur Freigabe** Foto-Metadaten anzeigen, Meldungen | Abschnitte „Aufnahmeort“, „Kamera“, „Zeit“, „Person und Beschreibung“, „Software“, „Aufnahme“, „Weitere Angaben“ mit Feldnamen wie „Breite“, „Länge“, „Hersteller“, „Aufgenommen“, „Urheber“; Hinweise „Keine Metadaten gefunden“, „XMP-Daten: vorhanden (Text beliebigen Inhalts, oft Bearbeitungsverlauf oder Bildrechte)“, „IPTC-Daten: vorhanden (oft Beschreibung, Stichwörter, Urheber)“; „Fertig: Das Foto ist ohne Metadaten gespeichert.“, „Fertig: 3 Fotos ohne Metadaten als ZIP gespeichert.“, „In der neuen Datei steckten noch Angaben; sie wurde deshalb nicht gespeichert.“, „Das ist kein JPEG-, PNG- oder WebP-Bild, oder die Datei ist beschädigt.“ | `src/tools/foto-metadaten/`, `src/core/images/exif-read.ts` |
 | **NEU, Paket 6, zur Freigabe** Foto zuschneiden, Meldungen | Seitenverhältnisse „Frei“, „Wie das Original“, „Quadrat (1:1)“, „Querformat 4:3“, „Hochformat 3:4“, „Querformat 3:2“, „Hochformat 2:3“, „Breitbild 16:9“, „Hochkant 9:16“; Knöpfe „Links drehen“, „Rechts drehen“, „Spiegeln“, „Zurücksetzen“; „Der Ausschnitt ist sehr groß und wird verkleinert gespeichert, damit jeder Browser ihn verarbeiten kann.“, „Fertig: Das zugeschnittene Foto ist gespeichert.“; gemeinsame Bildfehler „Das Bild lässt sich in diesem Browser nicht öffnen. iPhone-Fotos im HEIC-Format speicherst du vorher als JPEG.“, „Das Bild ist zu groß für diesen Browser. Verkleinere es zuerst mit „Fotos verkleinern“.“ | `src/tools/foto-zuschneiden/`, `src/ui/image-edit.ts` |
 | **NEU, Paket 6, zur Freigabe** Gesichter verpixeln, Meldungen | Art „Verpixeln“ / „Schwarz“, Hinweis „Verpixelt wird mit großen Blöcken, nie weichgezeichnet.“, „Metadaten: werden entfernt“, „Das Foto ist sehr groß und wird verkleinert gespeichert, damit jeder Browser es verarbeiten kann.“, „Fertig: Das Foto ist gespeichert. Prüf es, bevor du es veröffentlichst.“; Bedienhinweis und Screenreader wie beim Schwärzen („Bereich 1“) | `src/tools/foto-verpixeln/` |
+| **NEU, Paket 6, zur Freigabe** Ausweiskopie, Meldungen und rechtlicher Hinweis (Entwurf, docs/ausweiskopie-recht.md) | Aufdruck „KOPIE – nur für [Zweck] – [Datum]“, Felder „Zweck (freiwillig)“, „Datum (leer lassen für ohne)“, Hinweis „Quer über das Bild steht: … „KOPIE“ steht immer darin.“; „Speichern als“ PDF/JPG mit „Eine PDF mit allen Seiten untereinander auf einem DIN-A4-Blatt.“, „Ein JPG-Bild je Seite, zusammen in einer ZIP-Datei.“, „Ein JPG-Bild.“; Knöpfe „Bereich schwärzen“, „Diese Seite entfernen“, „Neu beginnen“, „Seite 1“/„Seite 2“; „Es sind schon zwei Seiten da. Entferne erst eine Seite.“, „Eine Ausweiskopie hat höchstens zwei Seiten: Die ersten werden übernommen.“, „Fertig: Die Ausweiskopie ist gespeichert. Prüf sie, bevor du sie weitergibst.“; Screenreader „Geschwärzter Bereich 1“; Kasten rechts: „Einen Personalausweis oder Pass darf nur die Person kopieren, der er gehört, oder jemand mit ihrer Zustimmung. Die Kopie muss eindeutig und dauerhaft als Kopie erkennbar sein (§ 20 Abs. 2 PAuswG, § 18 Abs. 3 PassG). Welche Angaben du schwärzt, entscheidest du. Frag im Zweifel die Stelle, die die Kopie verlangt, welche Angaben sie braucht.“ | `src/tools/ausweiskopie/`, `src/core/images/copy-mark.ts` |
+| **NEU, Paket 6, zur Freigabe** Dokument scannen, Meldungen | Knöpfe „Foto aufnehmen“, „Links drehen“, „Rechts drehen“, „Ecken zurücksetzen“, „Diese Seite entfernen“, „Scan als PDF speichern“, „Neu beginnen“, „Seite 1“ …; Aussehen „Farbe“, „Graustufen“, „Schwarzweiß“ mit „Gilt für alle Seiten. Schwarzweiß eignet sich für reinen Text.“; „Seitengröße: DIN A4“; Screenreader „Ecke oben links“ usw.; „Die Ecken überkreuzen sich. Zieh sie so, dass sie das Blatt umrahmen.“, „So sieht die Seite aus“, „Seite 2 von 3 …“, „PDF wird erstellt …“, „Ein Foto ist sehr groß und wird verkleinert verarbeitet, damit jeder Browser es schafft.“, „Fertig: Der Scan ist als PDF gespeichert.“, „Fertig: 3 Seiten sind als PDF gespeichert.“, „Die Seite konnte nicht erzeugt werden. Lade die Seite neu und versuch es noch einmal.“ | `src/tools/dokument-scannen/`, `src/ui/corner-editor.ts` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

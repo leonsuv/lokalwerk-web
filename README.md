@@ -52,11 +52,11 @@ vendor/        SheetJS archive with checksum
 
 ## Quality
 
-- **Tests:** 1,094 tests in 75 files (Vitest). Every module in `src/core/` has unit tests.
+- **Tests:** 1,097 tests in 75 files (Vitest). Every module in `src/core/` has unit tests.
 - **Against official specifications:**
   - SEPA pain.001 files are validated against the German banking industry's XSD (`pain.001.001.09_GBIC_5.xsd`) with xmllint, and the text rules of the DFÜ Agreement, Annex 3 are tested separately. The schema and example files may not be redistributed, so they are kept locally in `.local-specs/`.
   - SHA-1 and SHA-256 against the NIST CAVP test vectors ([`tests/fixtures/nist/`](tests/fixtures/nist/)).
-  - EPC QR codes reproduce the examples in EPC069-12; creditor identifiers are checked against the example in EPC262-08.
+  - EPC QR codes reproduce the examples in EPC069-12, and creditor identifiers are checked against the example in EPC262-08. The EPC allows reproduction only for non-commercial purposes, so these examples are kept locally in `.local-specs/`; the project's own examples run everywhere.
   - Easter dates against the table of the Physikalisch-Technische Bundesanstalt (1980–2031); public holidays against the wording of all 16 state holiday laws and their versions since 2018 ([`docs/feiertage-recht.md`](docs/feiertage-recht.md)).
   - Redaction: tests extract all text with pdf.js and search every object and decompressed stream of the output for the redacted content.
 - **Accessibility:** target is WCAG 2.2 AA. Interactions are keyboard-operable, including alternatives to dragging (WCAG 2.5.7); focus is visible and `prefers-reduced-motion` is respected. Category colours: accent text at least 4.6:1 and accent icons at least 3.2:1 on their tinted backgrounds in light mode (values in `plan-phase2.md`, section 4). Screen reader tests on real devices are still outstanding.
@@ -78,7 +78,7 @@ npm run build     # production build into dist/
 npm run preview   # serve dist/ with the production security headers
 ```
 
-Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 12 tests are skipped with a clear notice; everything else runs. The GitHub Actions workflow runs `npm run check` the same way.
+Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 1,082 tests run and the tests that depend on those files are skipped with a clear notice. The GitHub Actions workflow runs `npm run check` the same way.
 
 ## Status
 

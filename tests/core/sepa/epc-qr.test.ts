@@ -7,6 +7,7 @@ import {
   epcPayload,
   type EpcFields,
 } from '../../../src/core/sepa/epc-qr.ts';
+import { epcExamples } from '../../local-specs.ts';
 
 const empty: EpcFields = {
   version: '002',
@@ -21,53 +22,65 @@ const empty: EpcFields = {
   info: '',
 };
 
-describe('EPC069-12 v3.1, Beispiele aus Kap. 2.3', () => {
-  it('V1: 95 Zeichen, 96 Byte UTF-8, QR-Version 6', () => {
+// Die Beispiele aus EPC069-12 Kap. 2.3 liegen lokal (.local-specs/epc/, Nutzung des EPC nur
+// nicht-kommerziell); ohne die Datei wird dieser Block übersprungen (Hinweis: tests/global-setup.ts).
+const official = epcExamples();
+
+describe.skipIf(!official)('EPC069-12 v3.1, Beispiele aus Kap. 2.3 (lokal)', () => {
+  for (const [i, example] of (official?.epc069_12.beispiele ?? []).entries()) {
+    it(`Beispiel ${i + 1}: Zeichen, Bytes und QR-Version wie im Dokument`, () => {
+      const fields: EpcFields = {
+        ...example.fields,
+        charset: example.fields.charset === 2 ? 2 : 1,
+      };
+      const payload = epcPayload(fields);
+      expect(payload).toBe(example.payload);
+      expect([...payload]).toHaveLength(example.zeichen);
+      const bytes = epcBytes(payload, fields.charset);
+      expect(bytes).toHaveLength(example.bytes);
+      expect(qrMatrix(bytes, { ecc: 'M', maxVersion: EPC_MAX_VERSION }).version).toBe(
+        example.qrVersion,
+      );
+    });
+  }
+});
+
+describe('eigene Beispiele nach dem Aufbau aus EPC069-12 Kap. 2.2', () => {
+  it('Version 001 mit BIC, UTF-8, Umlaut zählt zwei Byte', () => {
     const payload = epcPayload({
       ...empty,
       version: '001',
       charset: 1,
-      bic: '[EPC-Beispiel entfernt]',
-      name: '[EPC-Beispiel entfernt]',
-      iban: '[EPC-Beispiel entfernt]',
-      amountCents: 1230,
-      purposeCode: 'GDDS',
-      reference: '[EPC-Beispiel entfernt]',
+      bic: 'BANKDEFFXXX',
+      name: 'Musterverein Grünwald e. V.',
+      iban: 'DE69234567891234567800',
+      amountCents: 4250,
+      purposeCode: 'CHAR',
+      text: 'Mitgliedsbeitrag 2026',
     });
     expect(payload).toBe(
-      'BCD\n001\n1\nSCT\n[EPC-Beispiel entfernt]\n[EPC-Beispiel entfernt]\n[EPC-Beispiel entfernt]\nEUR12.3\nGDDS\n[EPC-Beispiel entfernt]',
+      'BCD\n001\n1\nSCT\nBANKDEFFXXX\nMusterverein Grünwald e. V.\nDE69234567891234567800\nEUR42.5\nCHAR\n\nMitgliedsbeitrag 2026',
     );
-    expect([...payload]).toHaveLength(95);
-    expect(epcBytes(payload, 1)).toHaveLength(96);
-    expect(qrMatrix(epcBytes(payload, 1), { ecc: 'M', maxVersion: EPC_MAX_VERSION })).toMatchObject(
-      {
-        version: 6,
-        size: 41,
-      },
-    );
+    expect(epcBytes(payload, 1)).toHaveLength([...payload].length + 1);
   });
 
-  it('V2: ohne BIC, 103 Zeichen, 103 Byte ISO 8859-1, QR-Version 6', () => {
+  it('Version 002 ohne BIC, ISO 8859-1, ein Byte je Zeichen', () => {
     const payload = epcPayload({
       ...empty,
       version: '002',
       charset: 2,
-      name: "[EPC-Beispiel entfernt]",
-      iban: '[EPC-Beispiel entfernt]',
-      amountCents: 1230,
-      text: '[EPC-Beispiel entfernt]',
+      name: 'Café Élise GmbH',
+      iban: 'DE50345678900123456789',
+      amountCents: 999,
+      text: 'Bestellung 4711',
     });
     expect(payload).toBe(
-      "BCD\n002\n2\nSCT\n\n[EPC-Beispiel entfernt]\n[EPC-Beispiel entfernt]\nEUR12.3\n\n\n[EPC-Beispiel entfernt]",
+      'BCD\n002\n2\nSCT\n\nCafé Élise GmbH\nDE50345678900123456789\nEUR9.99\n\n\nBestellung 4711',
     );
-    expect([...payload]).toHaveLength(103);
-    expect(epcBytes(payload, 2)).toHaveLength(103);
-    expect(qrMatrix(epcBytes(payload, 2), { ecc: 'M', maxVersion: EPC_MAX_VERSION })).toMatchObject(
-      {
-        version: 6,
-        size: 41,
-      },
-    );
+    expect(epcBytes(payload, 2)).toHaveLength([...payload].length);
+    expect(
+      qrMatrix(epcBytes(payload, 2), { ecc: 'M', maxVersion: EPC_MAX_VERSION }).version,
+    ).toBeLessThanOrEqual(EPC_MAX_VERSION);
   });
 });
 

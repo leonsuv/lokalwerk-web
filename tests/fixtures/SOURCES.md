@@ -45,6 +45,8 @@ Copyright-Vermerk der EPC-Dokumente: „Reproduction for non-commercial purposes
 
 Die Übersichtsseiten des EPC lassen sich nicht automatisch abrufen (Bot-Schutz). Die direkten PDF-Adressen oben funktionieren.
 
+Die Beispiele aus EPC069-12 (Kap. 2.3) und EPC262-08 (Kap. 8.1.15), gegen die die Tests früher im Repo liefen, liegen seit 26.09.2026 nur lokal in `.local-specs/epc/beispiele.json` (docs/lokale-spezifikationen.md).
+
 ## NIST-Prüfvektoren für SHA-1 und SHA-256 (`nist/`)
 
 Quelle: NIST Cryptographic Algorithm Validation Program (CAVP), „SHA Test Vectors for Hashing Byte-Oriented Messages“, Datei `shabytetestvectors.zip` von

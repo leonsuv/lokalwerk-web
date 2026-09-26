@@ -17,6 +17,8 @@ shasum -a 256 .local-specs/dk/*
 ├─ dk/
 │  ├─ pain.001.001.09_GBIC_5.xsd   DK-Schema (TVS) für SEPA-Überweisungen
 │  └─ pain.001.001.09.xml          DK-Beispieldatei
+├─ epc/
+│  └─ beispiele.json               Beispiele aus EPC069-12 Kap. 2.3 und EPC262-08 Kap. 8.1.15
 ├─ swift/
 │  └─ iban-registry.txt            SWIFT IBAN Registry (TXT-Fassung)
 └─ ecma376/                        ECMA-376 Teil 1 und 4, 5. Ausgabe, nur zum Nachlesen (kein Test)
@@ -42,9 +44,31 @@ Stand 24.09.2026: Das TVS ist „vom 01.04.2025“ und gilt „ab Version V 3.9�
 
 Sobald die Datei da ist, werden die IBAN-Längen in `src/core/sepa/iban-countries.ts` gegen die Registry geprüft und die Markierung „offen“ entfernt (plan.md O4).
 
-### EPC-Dokumente
+### EPC-Dokumente und -Beispiele
 
-Adressen und Versionen stehen in `tests/fixtures/SOURCES.md`. Die Dateien werden für Tests nicht gebraucht, nur zum Nachlesen.
+Adressen und Versionen der Dokumente stehen in `tests/fixtures/SOURCES.md`; die PDFs selbst werden für Tests nicht gebraucht.
+
+Die Beispiele aus EPC069-12 (QR-Code für Überweisungen, Kap. 2.3, zwei Beispiele) und EPC262-08 (Gläubiger-ID, Kap. 8.1.15) liegen seit 26.09.2026 nicht mehr im Repo, sondern in `.local-specs/epc/beispiele.json`, weil das EPC die Wiedergabe nur für nicht-kommerzielle Zwecke erlaubt (Leon, 26.09.2026). Fehlt die Datei, werden die Tests damit übersprungen (Hinweis beim Testlauf); eigene Beispiele in `tests/core/sepa/epc-qr.test.ts` und `creditor-id.test.ts` laufen immer.
+
+Aufbau der Datei (Werte aus den Dokumenten übertragen, Typen in `tests/local-specs.ts`, `EpcExamples`):
+
+```json
+{
+  "epc069_12": {
+    "quelle": "EPC069-12 Version 3.1, Kap. 2.3",
+    "beispiele": [
+      {
+        "fields": { "version": "001", "charset": 1, "bic": "…", "name": "…", "iban": "…",
+                    "amountCents": 1230, "purposeCode": "…", "reference": "…", "text": "", "info": "" },
+        "payload": "BCD\n001\n1\nSCT\n…",
+        "zeichen": 95, "bytes": 96, "qrVersion": 6
+      }
+    ]
+  },
+  "epc262_08": { "quelle": "EPC262-08 Version 12.0, Kap. 8.1.15", "land": "MT",
+                 "national": "…", "pruefziffer": "…", "id": "…" }
+}
+```
 
 ### ECMA-376 (Office Open XML), nur zum Nachlesen
 

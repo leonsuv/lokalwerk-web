@@ -34,6 +34,8 @@ Erledigt am 26.09.2026: Texte aller Pakete freigegeben (außer dem Kasten zu Fri
 | V2.5 | SEPA-Werkzeuge: reicht der Hinweis, dass Aufträge vor der Freigabe im Onlinebanking geprüft werden müssen? | `src/tools/sepa-sammelueberweisung/` | in V2.1 |
 | V2.6 | Adobe-Schriftmetriken in pdf-lib (APAFML, Weitergabe „without charge“; von pdf-lib veränderter Wert `IsFixedPitch`) | `docs/adobe-afm.md` | 15 min |
 | V2.7 | Barrierefreiheit: ob für kostenlose Werkzeuge ohne Verkauf eine Erklärung zur Barrierefreiheit nötig ist (BFSG). Nur Frage, keine Annahme von mir | – | in V2.1 |
+| V2.8 | Ostertabelle der PTB als Testdaten im Repo: nur Kalenderdaten mit Quellenangabe, aber keine ausdrückliche Weitergabeerlaubnis (bleibt vorerst so, Leon 26.09.2026) | `tests/fixtures/ptb-ostertermine-1980-2031.json`, `tests/fixtures/SOURCES.md` | 5 min |
+| V2.9 | Öffentliches GitHub-Repo: Die GitHub-Nutzungsbedingungen („License Grant to Other Users“) erlauben anderen Nutzern, öffentliche Repos auf GitHub anzusehen und zu forken; passt das zur `LICENSE` („nur zur Ansicht“)? | `LICENSE` | 10 min |
 
 **V3 Name.** „Lokalwerk“ im DPMAregister und bei TMview prüfen (plan.md Abschnitt 9). 30 min.
 
@@ -63,7 +65,7 @@ Erledigt am 26.09.2026: Texte aller Pakete freigegeben (außer dem Kasten zu Fri
 
 Befunde bitte mit Gerät, Browser-Version und Schritt melden, gern mit Bildschirmfoto.
 
-**Summe Leon, vor dem Start: etwa 10½ bis 11 Stunden** (V1 2¼ bis 2¾ h, V2 3¼ h, V3 ½ h, V4 2 h, V5 2¼ h), dazu Wartezeit auf Registrar und Rechtsprüfung.
+**Summe Leon, vor dem Start: etwa 10½ bis 11 Stunden** (V1 2¼ bis 2¾ h, V2 3½ h, V3 ½ h, V4 2 h, V5 2¼ h), dazu Wartezeit auf Registrar und Rechtsprüfung.
 
 ### Aufgaben für Claude nach deiner Zuarbeit
 

@@ -1,0 +1,71 @@
+<div class="wrap sepa">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-id" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Gläubiger-ID prüfen</h1>
+      <p>
+        Eine Gläubiger-Identifikationsnummer für SEPA-Lastschriften auf Aufbau und Prüfziffer
+        prüfen, bevor du sie in Mandate oder Lastschriftdateien überträgst.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <div class="field">
+        <label class="lbl" for="ci-input">Gläubiger-ID</label>
+        <input
+          type="text"
+          id="ci-input"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Aufbau: DE00ZZZ00000000000"
+          aria-describedby="ci-result"
+        />
+      </div>
+      <div class="summary" id="ci-result" aria-live="polite"></div>
+      <div class="table-wrap mt-m" id="ci-parts-wrap" hidden>
+        <table id="ci-parts">
+          <caption class="visually-hidden">
+            Bestandteile der Gläubiger-ID
+          </caption>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Aufbau</h2>
+      <div class="stat-row"><span>Stellen 1–2</span><b>Land</b></div>
+      <div class="stat-row"><span>Stellen 3–4</span><b>Prüfziffer</b></div>
+      <div class="stat-row"><span>Stellen 5–7</span><b>Geschäftsbereich</b></div>
+      <div class="stat-row"><span>ab Stelle 8</span><b>Nationale Kennung</b></div>
+      <p class="hint mt-m">
+        In Deutschland hat die Gläubiger-ID 18 Stellen. Der Geschäftsbereich ist meist „ZZZ“.
+      </p>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="ci-explain">
+    <h2 id="ci-explain">So funktioniert es</h2>
+    <p>
+      Gib die Gläubiger-ID ein, Leerzeichen und Kleinbuchstaben stören nicht. Das Werkzeug prüft den
+      Aufbau und rechnet die Prüfziffer nach, wie es das European Payments Council im Dokument
+      EPC262-08 beschreibt. Die drei Stellen des Geschäftsbereichs zählen dabei nicht mit; du kannst
+      statt „ZZZ“ eine eigene Kennung verwenden, ohne dass sich die Prüfziffer ändert.
+    </p>
+    <h2>Was die Prüfung sagt</h2>
+    <p>
+      Stimmen Aufbau und Prüfziffer, ist die Nummer formal richtig, meist also frei von Tippfehlern.
+      Ob sie vergeben ist und wem sie gehört, lässt sich so nicht feststellen; in Deutschland
+      erteilt die Deutsche Bundesbank die Gläubiger-ID. Für andere Länder prüft das Werkzeug
+      Prüfziffer und allgemeinen Aufbau, nicht die Länge des Landesteils.
+    </p>
+    <h2>Nichts wird gesendet</h2>
+    <p>
+      Die Prüfung läuft direkt in deinem Browser. Die Nummer wird weder gesendet noch gespeichert.
+    </p>
+  </section>
+</div>

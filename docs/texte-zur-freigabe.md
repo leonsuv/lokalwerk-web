@@ -26,6 +26,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
 | **NEU, Paket 5, zur Freigabe** `/qr-code-ueberweisung/` | QR-Code für Überweisungen (EPC-QR-Code) erstellen – kostenlos \| Lokalwerk | Einen QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet. | 160 | ja |
 | **NEU, Paket 5, zur Freigabe** `/iban-pruefen/` | IBAN prüfen: ganze IBAN-Listen aus Excel und CSV – ohne Upload \| Lokalwerk | Einzelne IBANs oder ganze Listen aus Excel und CSV kostenlos auf Tippfehler prüfen, dazu SEPA-Texte auf erlaubte Zeichen. Direkt im Browser, ohne Upload. | 153 | ja |
+| **NEU, Paket 5, zur Freigabe** `/glaeubiger-id-pruefen/` | Gläubiger-ID prüfen: Aufbau und Prüfziffer – kostenlos \| Lokalwerk | Eine Gläubiger-Identifikationsnummer für SEPA-Lastschriften kostenlos auf Aufbau und Prüfziffer prüfen, zum Beispiel vor dem ersten Einzug. Direkt im Browser. | 158 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/csv-reparieren/` | CSV reparieren: Umlaute und Trennzeichen korrigieren – kostenlos \| Lokalwerk | CSV-Dateien mit kaputten Umlauten wie „MÃ¼ller“ oder falschem Trennzeichen kostenlos reparieren, jede Änderung vorher sichtbar. Im Browser, ohne Upload. | 152 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/duplikate-finden/` | Duplikate in Excel- und CSV-Listen finden – kostenlos, ohne Upload \| Lokalwerk | Doppelte Einträge in Mitglieder-, Kunden- und Adresslisten kostenlos finden und markieren, ohne etwas zu löschen. Direkt im Browser, ohne Upload. | 145 | ja |
@@ -392,6 +393,26 @@ Die Liste wird direkt in deinem Browser geprüft und nicht hochgeladen. Nach dem
 
 _(Erklärtext: 163 Wörter)_
 
+## Gläubiger-ID prüfen – NEU, Paket 5, zur Freigabe (`src/tools/glaeubiger-id-pruefen/main.html`)
+
+Karte: „Gläubiger-ID prüfen“ – „Gläubiger-Identifikationsnummer auf Aufbau und Prüfziffer prüfen.“
+
+Unterzeile im Kopf: „Eine Gläubiger-Identifikationsnummer für SEPA-Lastschriften auf Aufbau und Prüfziffer prüfen, bevor du sie in Mandate oder Lastschriftdateien überträgst.“
+
+**So funktioniert es**
+
+Gib die Gläubiger-ID ein, Leerzeichen und Kleinbuchstaben stören nicht. Das Werkzeug prüft den Aufbau und rechnet die Prüfziffer nach, wie es das European Payments Council im Dokument EPC262-08 beschreibt. Die drei Stellen des Geschäftsbereichs zählen dabei nicht mit; du kannst statt „ZZZ“ eine eigene Kennung verwenden, ohne dass sich die Prüfziffer ändert.
+
+**Was die Prüfung sagt**
+
+Stimmen Aufbau und Prüfziffer, ist die Nummer formal richtig, meist also frei von Tippfehlern. Ob sie vergeben ist und wem sie gehört, lässt sich so nicht feststellen; in Deutschland erteilt die Deutsche Bundesbank die Gläubiger-ID. Für andere Länder prüft das Werkzeug Prüfziffer und allgemeinen Aufbau, nicht die Länge des Landesteils.
+
+**Nichts wird gesendet**
+
+Die Prüfung läuft direkt in deinem Browser. Die Nummer wird weder gesendet noch gespeichert.
+
+_(Erklärtext: 116 Wörter)_
+
 ## Excel und CSV umwandeln – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/excel-csv-umwandeln/main.html`)
 
 Karte: „Excel und CSV umwandeln“ – „Excel-Tabellen als CSV speichern und CSV-Dateien als Excel-Datei. Mit richtigen Umlauten.“
@@ -594,6 +615,7 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, Paket 5, zur Freigabe** QR-Code erstellen, Meldungen | „Der Code enthält https://…“, „Das ist keine gültige Adresse. Schreib sie zum Beispiel so: lokalwerk.eu/werkzeuge/“, „Gib das WLAN-Passwort ein oder wähl „Ohne Passwort“.“, „Der Inhalt ist zu lang für einen QR-Code. Kürze ihn oder wähl eine niedrigere Fehlerkorrektur.“, „Fertig: Der QR-Code ist als PNG gespeichert.“ / „… als SVG gespeichert.“; Auswahl „Niedrig (7 %)“ bis „Sehr hoch (30 %)“, „Klein, etwa 500 Pixel“ bis „Groß, etwa 2000 Pixel“ | `src/tools/qr-code/` |
 | **NEU, Paket 5, zur Freigabe** QR-Code für Überweisungen, Meldungen | „Gib den Namen des Empfängers ein.“, „Umgeschrieben: é → e.“, „Auf 70 Zeichen gekürzt (vorher 75).“, „Betrag im Code: 12,50 €“, IBAN- und Betragsfehler wie auf der SEPA-Seite, „Die BIC hat ein ungültiges Format. Lass das Feld leer, wenn du sie nicht brauchst.“, „Zusammen sind es 340 Byte, erlaubt sind 331. Kürze Name oder Verwendungszweck.“, „Fertig: Der QR-Code ist gespeichert. Teste ihn vor dem Druck mit deiner Banking-App.“; Hinweis „Teste den Code vor dem Druck mit deiner eigenen Banking-App: Scanne ihn, prüfe Empfänger, IBAN, Betrag und Verwendungszweck und brich die Überweisung dann ab.“; Klartext im PNG „Empfänger: …“, „IBAN: …“, „BIC: …“, „Betrag: …“, „Verwendungszweck: …“ | `src/tools/qr-code-ueberweisung/` |
 | **NEU, Paket 5, zur Freigabe** IBAN-Liste prüfen, Meldungen | Ergebnisse „gültig“, „gültig, kommt mehrfach vor (Zeilen 2, 5)“, „leer“, „SEPA-Land außerhalb des EWR (CH): Prüfziffer stimmt, Länge nicht geprüft“ / „… Prüfziffer stimmt nicht (Tippfehler?)“, sonst wie auf der SEPA-Seite; „Keine Auffälligkeiten: Alle IBANs sind gültig.“, „Die ersten 500 von 800 Zeilen.“, „Fertig: Die Liste mit der Spalte „IBAN-Prüfung“ ist gespeichert.“; Reiter „SEPA-Texte prüfen“: „Umgeschrieben: …“, „Zu lang: 150 Zeichen, erlaubt sind 140. Die Bank bekäme nur den gekürzten Text.“, „Alles in Ordnung: Der Text bleibt, wie er ist.“ | `src/tools/iban-pruefen/` |
+| **NEU, Paket 5, zur Freigabe** Gläubiger-ID prüfen, Meldungen | „Formal gültig: Aufbau und Prüfziffer stimmen.“, „Der Aufbau stimmt nicht: zwei Buchstaben für das Land, zwei Ziffern, drei Zeichen für den Geschäftsbereich, dann die nationale Kennung.“, „XX ist kein Land im SEPA-Raum. …“, „Eine deutsche Gläubiger-ID hat 18 Stellen, diese hat 17. …“, „Bei einer deutschen Gläubiger-ID stehen ab Stelle 8 nur Ziffern.“, „Die Prüfziffer passt nicht zur Nummer. Meist ist eine Ziffer vertippt oder vertauscht.“ | `src/tools/glaeubiger-id-pruefen/` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

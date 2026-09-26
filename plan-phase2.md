@@ -166,6 +166,7 @@ Nur die Teile ohne fehlende Unterlagen (Vorgabe von Leon): camt.053 und die Last
 
 - **Feiertage, die nicht aus dem Gedächtnis stammen:** Berlin hat den 17. Juni 2028 als einmaligen Feiertag beschlossen (Gesetz vom 10.07.2024); Sachsen-Anhalt hat das Gesetz am 4. Mai 2026 geändert, die Feiertagsliste aber nicht. Beides wurde erst beim Lesen der Portale sichtbar.
 - **Bremen:** Die Fassung vom 29.06.2018 bis 13.03.2020 ließ sich im Portal nicht aufrufen; belegt über das Änderungsgesetz im Gesetzblatt 2018 Nr. 63 und die folgende Fassung.
+- **Entscheidungen (Leon, 26.09.2026):** Texte von Paket 6 freigegeben (Änderung bei „Gesichter verpixeln“; Pass-Ausnahme auch im Erklärtext der Ausweiskopie; Sätze zur Weitergabe im Hinweis freigegeben). Regionale Feiertage bleiben standardmäßig aus; bei Bayern, Sachsen und Thüringen steht der Hinweis mit den Zusätzen gut sichtbar beim Ergebnis, ohne Zahlen zu Gemeinden.
 - **Offen:** Hinweistexte zum Rechner (Fristen, Umfang) sind Entwurf zur Freigabe und sollten mit der Rechtsprüfung angesehen werden. Einmalige Feiertage per Landesverordnung kennt der Rechner nicht.
 
 ## 0. Wie dieser Plan zu lesen ist

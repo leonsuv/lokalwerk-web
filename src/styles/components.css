@@ -1389,3 +1389,15 @@ select[multiple] {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Arbeitstage-Rechner: Zusätze für Feiertage in Teilen eines Landes, gut sichtbar beim Ergebnis */
+.regional-box {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--c, var(--line));
+  border-radius: 12px;
+  background: var(--cs, var(--surface2));
+}
+.regional-box > p {
+  margin: 0 0 0.4rem;
+  font-weight: 500;
+}

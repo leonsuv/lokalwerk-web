@@ -20,6 +20,13 @@ const ERRORS = {
   range: 'Der Rechner kennt die Feiertage der Jahre 2018 bis 2035. Wähle einen Zeitraum darin.',
 } as const;
 
+/** Hinweis beim Ergebnis für Länder mit Feiertagen, die nur in Teilen des Landes gelten */
+const REGIONAL_INTRO: Partial<Record<Land, string>> = {
+  BY: 'In vielen Gemeinden in Bayern ist auch Mariä Himmelfahrt ein Feiertag, in der Stadt Augsburg außerdem das Friedensfest. Gilt das bei dir, wähle es hier dazu.',
+  SN: 'In bestimmten Gemeinden in Sachsen ist auch Fronleichnam ein Feiertag. Gilt das bei dir, wähle es hier dazu.',
+  TH: 'In bestimmten Gemeinden in Thüringen ist auch Fronleichnam ein Feiertag. Gilt das bei dir, wähle es hier dazu.',
+};
+
 let saturday = false;
 const regional = new Set<string>();
 
@@ -35,6 +42,7 @@ toInput.value = isoFromDay(dayNumber(year, 12, 31));
 function renderRegional(land: Land | null): void {
   const options = land ? (REGIONAL[land] ?? []) : [];
   $('#wd-regional-box').hidden = options.length === 0;
+  $('#wd-regional-intro').textContent = land ? (REGIONAL_INTRO[land] ?? '') : '';
   $('#wd-regional').replaceChildren(
     ...options.map((o) => {
       const wrap = document.createElement('div');

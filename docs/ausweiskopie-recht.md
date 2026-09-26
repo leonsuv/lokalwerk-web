@@ -1,6 +1,6 @@
 # Ausweiskopie: rechtliche Grundlagen der Hinweistexte
 
-Abgerufen am 26.09.2026 bei gesetze-im-internet.de, für das Werkzeug „Ausweiskopie“ (plan-phase2.md Vorschlag A). Keine Rechtsberatung. Der Hinweis im Werkzeug ist **freigegeben von Leon am 26.09.2026**; die Sätze zur Weitergabe sind danach ergänzt und liegen zur Freigabe vor. Der Absatz „Rechtlicher Rahmen“ im Erklärtext ist Entwurf zur Freigabe.
+Abgerufen am 26.09.2026 bei gesetze-im-internet.de, für das Werkzeug „Ausweiskopie“ (plan-phase2.md Vorschlag A). Keine Rechtsberatung. Der Hinweis im Werkzeug ist **freigegeben von Leon am 26.09.2026**, einschließlich der Sätze zur Weitergabe. Der Absatz „Rechtlicher Rahmen“ im Erklärtext nennt auf Vorgabe von Leon die Pass-Ausnahme ebenfalls; die Texte von Paket 6 sind freigegeben.
 
 ## § 20 PAuswG (Verwendung des Ausweises), Absätze 1 und 2
 

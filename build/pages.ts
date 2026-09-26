@@ -80,7 +80,7 @@ export const PAGES: readonly PageDef[] = [
     file: 'index.html',
     url: '/',
     // plan-phase2.md E16, freigegeben von Leon am 25.09.2026
-    title: 'Lokalwerk – PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten',
+    title: 'PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten | Lokalwerk',
     description:
       'PDFs zusammenfügen und aufteilen, Fotos verkleinern, Excel und CSV umwandeln, SEPA-Dateien erstellen. Kostenlos im Browser, ohne Upload deiner Dateien.',
     index: true,

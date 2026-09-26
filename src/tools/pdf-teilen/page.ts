@@ -173,7 +173,7 @@ export function openFiles(files: File[]): void {
     showToast('Nur PDF-Dateien werden übernommen.');
     return;
   }
-  if (files.length > 1) showToast('Es wird eine PDF auf einmal geteilt: die erste.');
+  if (files.length > 1) showToast('Es wird eine PDF auf einmal aufgeteilt: die erste.');
   pagesInput.value = '';
   void inspect(file);
 }
@@ -195,14 +195,14 @@ async function save(): Promise<void> {
   if (current?.state !== 'ok' || !result.ok) return;
   const { file } = current;
   busy = true;
-  saveLabel.textContent = 'Wird geteilt …';
+  saveLabel.textContent = 'Wird aufgeteilt …';
   render();
   try {
     const outputs = await client.request<Uint8Array[]>(
       { type: 'split', file, groups: result.groups },
       (progress) => {
         const { done, total } = progress as SplitProgress;
-        if (total > 1) saveLabel.textContent = `Wird geteilt … (${done} von ${total})`;
+        if (total > 1) saveLabel.textContent = `Wird aufgeteilt … (${done} von ${total})`;
       },
     );
     const base = baseName(file.name);
@@ -215,7 +215,7 @@ async function save(): Promise<void> {
       saveBlob(single.name, single.blob);
     } else {
       saveLabel.textContent = 'ZIP wird erstellt …';
-      saveBlob(`${base}-geteilt.zip`, await zipBlobs(named));
+      saveBlob(`${base}-aufgeteilt.zip`, await zipBlobs(named));
     }
     countLocalBytes(file.size);
     showToast(

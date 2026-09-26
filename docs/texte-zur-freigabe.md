@@ -1,6 +1,6 @@
 # Texte zur Freigabe
 
-Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“.
+Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“.
 
 Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.
 
@@ -8,7 +8,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 
 | URL | Titel | Meta-Beschreibung | Zeichen | Index |
 |---|---|---|---|---|
-| **NEU, freigegeben von Leon am 25.09.2026** `/` | Lokalwerk – PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten | PDFs zusammenfügen und aufteilen, Fotos verkleinern, Excel und CSV umwandeln, SEPA-Dateien erstellen. Kostenlos im Browser, ohne Upload deiner Dateien. | 151 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/` | PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten \| Lokalwerk | PDFs zusammenfügen und aufteilen, Fotos verkleinern, Excel und CSV umwandeln, SEPA-Dateien erstellen. Kostenlos im Browser, ohne Upload deiner Dateien. | 151 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/werkzeuge/` | Alle Werkzeuge – PDF, Fotos, Tabellen und SEPA ohne Upload \| Lokalwerk | Alle Werkzeuge von Lokalwerk auf einen Blick: PDF, Fotos, Tabellen und Zahlungsverkehr. Kostenlos, direkt im Browser, ohne Upload deiner Dateien. | 145 | ja |
 | `/pdf-zusammenfuegen/` | PDF zusammenfügen – kostenlos und ohne Upload \| Lokalwerk | Mehrere PDF-Dateien kostenlos zu einer zusammenfügen, Reihenfolge frei wählbar. Läuft komplett in deinem Browser, ohne Upload und ohne Anmeldung. | 145 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-teilen/` | PDF teilen und Seiten extrahieren – kostenlos, ohne Upload \| Lokalwerk | Seiten aus einer PDF kostenlos herausholen oder die PDF in mehrere Dateien aufteilen. Direkt im Browser, ohne Upload und ohne Anmeldung. | 136 | ja |
@@ -64,11 +64,11 @@ Wähle eine PDF aus oder zieh sie in die Fläche oben. Unter „Seiten“ gibst 
 
 **Deine Dateien bleiben auf deinem Gerät**
 
-Die PDF wird direkt in deinem Browser geteilt und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+Die PDF wird direkt in deinem Browser aufgeteilt und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
 **Gut zu wissen**
 
-Verschlüsselte PDFs lassen sich nicht teilen. Das gilt auch für Dateien, die sich ohne Passwort öffnen lassen, aber zum Beispiel das Kopieren verbieten. Übernommen werden nur die Seiten: Formularfelder, Lesezeichen und digitale Signaturen sind in den neuen Dateien nicht mehr enthalten.
+Verschlüsselte PDFs lassen sich nicht aufteilen. Das gilt auch für Dateien, die sich ohne Passwort öffnen lassen, aber zum Beispiel das Kopieren verbieten. Übernommen werden nur die Seiten: Formularfelder, Lesezeichen und digitale Signaturen sind in den neuen Dateien nicht mehr enthalten.
 
 _(Erklärtext: 136 Wörter)_
 
@@ -284,7 +284,7 @@ Unterzeile im Kopf: „Doppelte Einträge in Mitglieder-, Kunden- oder Adresslis
 
 **So funktioniert es**
 
-Wähle eine Liste aus oder zieh sie in die Fläche oben und hake die Spalten an, nach denen verglichen werden soll, zum Beispiel Name und E-Mail-Adresse. Das Ergebnis erscheint sofort: jede Gruppe mit den Zeilennummern aus deiner Datei. Mit „Liste mit Markierung speichern“ bekommst du die ganze Liste zurück, mit einer zusätzlichen Spalte, die die Doppel markiert.
+Wähle eine Liste aus oder zieh sie in die Fläche oben und hake die Spalten an, nach denen verglichen werden soll, zum Beispiel Name und E-Mail-Adresse. Das Ergebnis erscheint sofort: jede Gruppe mit den Zeilennummern aus deiner Datei. Mit „Liste mit Markierung speichern“ bekommst du die ganze Liste zurück, mit einer zusätzlichen Spalte, die doppelte Einträge markiert.
 
 **Nur sichere Treffer**
 
@@ -324,7 +324,7 @@ Unterzeile im Kopf: „SHA-256 einer Datei berechnen und mit einer angegebenen P
 
 **So funktioniert es**
 
-Wähle eine Datei aus oder zieh sie in die Fläche oben. Lokalwerk berechnet ihre Prüfsummen nach SHA-256 und SHA-1. Füge rechts die Prüfsumme ein, die zum Beispiel neben einem Download steht; dann siehst du sofort, ob beide übereinstimmen. Stimmen sie überein, ist die Datei unverändert und vollständig angekommen.
+Wähle eine Datei aus oder zieh sie in die Fläche oben. Lokalwerk berechnet ihre Prüfsummen nach SHA-256 und SHA-1. Füge rechts die Prüfsumme ein, die zum Beispiel neben einem Download steht; dann siehst du sofort, ob beide übereinstimmen. Stimmen sie überein, ist die Datei unverändert und vollständig angekommen, vorausgesetzt, die Vergleichs-Prüfsumme stammt aus einer vertrauenswürdigen Quelle, etwa der offiziellen Seite des Herstellers.
 
 **Welches Verfahren?**
 
@@ -334,7 +334,7 @@ SHA-256 ist heute üblich und sicher. SHA-1 wird nur noch angezeigt, weil manche
 
 Die Datei wird direkt in deinem Browser gelesen und nicht hochgeladen, auch wenn sie mehrere Gigabyte groß ist. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 131 Wörter)_
+_(Erklärtext: 145 Wörter)_
 
 ## Texte vergleichen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/texte-vergleichen/main.html`)
 
@@ -394,6 +394,12 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, freigegeben von Leon am 25.09.2026** Paket 3, Meldungen | Seitenzahlen/Stempel: „Diese PDF ist digital signiert. Nach dem Einfügen der Seitenzahlen ist die Signatur ungültig. …“, „Diese Zeichen kann die PDF-Schrift nicht darstellen: „Ł“, „ź“. Ersetze sie, zum Beispiel Ł durch L.“; CSV reparieren: „2 Zellen werden beim Speichern so geändert. Mit „So lassen“ bleibt alles unverändert.“, „Diese Zeilen haben nicht 3 Spalten wie die meisten: … Prüfe sie im Tabellenprogramm.“; Duplikate: „2 Gruppen mit zusammen 4 Zeilen.“, „Keine doppelten Einträge gefunden.“ | `src/tools/<werkzeug>/` |
 | **NEU, freigegeben von Leon am 25.09.2026** Unter jedem Werkzeug | Überschrift „Passt dazu“ mit Karten | `build/tool-blocks.ts` |
 | **NEU, freigegeben von Leon am 25.09.2026** „Alle Werkzeuge“-Verweise | zeigen jetzt auf /werkzeuge/ statt auf die Startseite (Text unverändert) | alle Seiten |
+| **Nachtrag 26.09.2026, Vorgabe von Leon** Startseite, Titel | „PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten \| Lokalwerk“ | `build/pages.ts` |
+| **Nachtrag 26.09.2026, Vorgabe von Leon** PDF teilen | „Die PDF wird direkt in deinem Browser aufgeteilt und nicht hochgeladen.“ Dazu „teilen“ im Fließtext durch „aufteilen“ ersetzt, damit es nicht nach Weitergeben klingt: „Füge die PDF hinzu, die du aufteilen möchtest.“, Beschriftung „So aufteilen“, „Verschlüsselte PDFs lassen sich nicht aufteilen.“, „Es wird eine PDF auf einmal aufgeteilt: die erste.“, „Wird aufgeteilt …“, Dateiname „…-aufgeteilt.zip“. Titel und Name bleiben. | `src/tools/pdf-teilen/` |
+| **Nachtrag 26.09.2026, Vorgabe von Leon** Prüfsumme | „Stimmen sie überein, ist die Datei unverändert und vollständig angekommen, vorausgesetzt, die Vergleichs-Prüfsumme stammt aus einer vertrauenswürdigen Quelle, etwa der offiziellen Seite des Herstellers.“ | `src/tools/pruefsumme/main.html` |
+| **Nachtrag 26.09.2026, Vorgabe von Leon** Duplikate finden | „… mit einer zusätzlichen Spalte, die doppelte Einträge markiert.“ | `src/tools/duplikate-finden/main.html` |
+| **Nachtrag 26.09.2026, Vorgabe von Leon** Passwort-Generator | Standardlänge war schon 20 Zeichen mit allen vier Zeichenarten, keine Änderung | `src/tools/passwort-generator/main.html` |
+| **Nachtrag 26.09.2026, Vorgabe von Leon** Lizenzseite, „Verwendet für“ | nennt jetzt die Werkzeuge aus dem Seitenregister, die die Bibliothek tatsächlich laden (vom Build geprüft), z. B. „SEPA-Sammelüberweisung, Excel und CSV umwandeln, Duplikate finden“; nicht ausgelieferte Pakete stehen nicht mehr auf der Seite | `build/licenses.ts` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

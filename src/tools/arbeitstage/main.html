@@ -1,0 +1,118 @@
+<div class="wrap util">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-calendar" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Arbeitstage-Rechner</h1>
+      <p>
+        Arbeitstage zwischen zwei Daten zählen, mit den gesetzlichen Feiertagen deines Bundeslandes.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <div class="field">
+        <label class="lbl" for="wd-land">Bundesland</label>
+        <select id="wd-land"></select>
+      </div>
+      <div class="form-grid mt-s">
+        <div class="field">
+          <label class="lbl" for="wd-from">Von</label>
+          <input type="date" id="wd-from" min="2018-01-01" max="2035-12-31" />
+        </div>
+        <div class="field">
+          <label class="lbl" for="wd-to">Bis</label>
+          <input type="date" id="wd-to" min="2018-01-01" max="2035-12-31" />
+        </div>
+      </div>
+      <p class="hint">Der erste und der letzte Tag zählen mit.</p>
+      <div class="field mt-s">
+        <span class="lbl" id="wd-week-label">Arbeitstage sind</span>
+        <div class="seg" role="group" aria-labelledby="wd-week-label">
+          <button type="button" data-saturday="false" aria-pressed="true">
+            Montag bis Freitag
+          </button>
+          <button type="button" data-saturday="true" aria-pressed="false">
+            Montag bis Samstag
+          </button>
+        </div>
+      </div>
+      <fieldset class="check-list mt-m" id="wd-regional-box" hidden>
+        <legend class="lbl">Feiertage nur in Teilen des Landes</legend>
+        <p class="hint">
+          Diese Feiertage gelten nicht im ganzen Land. Wähle sie, wenn sie an deinem Ort gelten.
+        </p>
+        <div id="wd-regional"></div>
+      </fieldset>
+      <p class="hint err mt-m" id="wd-error" role="alert" hidden></p>
+      <div id="wd-list-box" hidden>
+        <h2 class="mt-m">Feiertage im Zeitraum</h2>
+        <p class="hint" id="wd-list-empty" hidden>Im Zeitraum liegt kein gesetzlicher Feiertag.</p>
+        <div class="table-wrap" id="wd-table-wrap">
+          <table id="wd-table">
+            <thead>
+              <tr>
+                <th scope="col">Datum</th>
+                <th scope="col">Feiertag</th>
+                <th scope="col">Wirkung</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Ergebnis</h2>
+      <div class="stat-row"><span>Arbeitstage</span><b id="wd-workdays">–</b></div>
+      <div class="stat-row"><span>Kalendertage</span><b id="wd-days">–</b></div>
+      <div class="stat-row">
+        <span id="wd-rest-label">Samstage und Sonntage</span><b id="wd-rest">–</b>
+      </div>
+      <div class="stat-row"><span>Feiertage an Arbeitstagen</span><b id="wd-holidays">–</b></div>
+      <p class="visually-hidden" aria-live="polite" id="wd-live"></p>
+      <!-- Hinweis: Entwurf zur Freigabe (docs/feiertage-recht.md). -->
+      <div class="note mt-m">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
+        <span
+          >Der Rechner zählt nur Tage, er berechnet keine Fristen. Für Fristen nach BGB, ZPO,
+          Verwaltungsverfahrensgesetz oder Abgabenordnung gelten eigene Regeln. Feiertage nach den
+          Landesgesetzen, Stand 26.09.2026.</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="wd-explain">
+    <h2 id="wd-explain">So funktioniert es</h2>
+    <p>
+      Wähle dein Bundesland und den Zeitraum. Der Rechner zählt alle Tage von Montag bis Freitag,
+      die kein gesetzlicher Feiertag sind; der erste und der letzte Tag zählen mit. Arbeitet dein
+      Betrieb samstags, wähle „Montag bis Samstag“. Die Tabelle zeigt, welche Feiertage im Zeitraum
+      liegen und ob sie auf einen Arbeitstag fallen.
+    </p>
+    <h2>Welche Feiertage der Rechner kennt</h2>
+    <p>
+      Die gesetzlichen Feiertage aus den Feiertagsgesetzen der 16 Länder und den Tag der Deutschen
+      Einheit nach dem Einigungsvertrag, im Wortlaut geprüft, Stand 26. September 2026, für die
+      Jahre 2018 bis 2035. Änderungen seit 2018 sind berücksichtigt, etwa der Frauentag in Berlin ab
+      2019 und in Mecklenburg-Vorpommern ab 2023. Feiertage, die nur in einzelnen Gemeinden gelten,
+      wie Mariä Himmelfahrt in Bayern, kannst du dazunehmen. Heiligabend und Silvester sind keine
+      gesetzlichen Feiertage. Einmalige Feiertage, die eine Landesregierung durch Verordnung
+      festlegt, kennt der Rechner nicht.
+    </p>
+    <h2>Keine Fristberechnung</h2>
+    <p>
+      Wann eine Frist beginnt und endet, regeln BGB, Zivilprozessordnung,
+      Verwaltungsverfahrensgesetz und Abgabenordnung jeweils eigens. Dieser Rechner zählt nur
+      Arbeitstage und ersetzt keine Fristberechnung.
+    </p>
+    <h2>Deine Eingaben bleiben auf deinem Gerät</h2>
+    <p>
+      Die Rechnung läuft direkt in deinem Browser. Es wird nichts gesendet und nichts gespeichert.
+    </p>
+  </section>
+</div>

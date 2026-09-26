@@ -10,6 +10,7 @@ Abgerufen am 24.09.2026.
 |---|---|
 | `pdf/*.pdf` | Selbst erzeugt mit macOS CoreGraphics, Skript `pdf/erzeuge-fixtures.swift` |
 | `images/*.jpg` | Selbst erzeugt mit macOS ImageIO, Skript `images/erzeuge-fixtures.swift` |
+| `ptb-ostertermine-1980-2031.json` | Osterfesttabelle der Physikalisch-Technischen Bundesanstalt, „Wann ist Ostern?“ (https://www.ptb.de/cms/ptb/fachabteilungen/abt4/fb-44/ag-441/darstellung-der-gesetzlichen-zeit/wann-ist-ostern.html), abgerufen am 26.09.2026; nur die Daten, als JSON abgeschrieben per Skript |
 
 ## Nicht im Repo: Deutsche Kreditwirtschaft (ebics.de)
 

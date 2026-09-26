@@ -1,0 +1,97 @@
+<div class="wrap img">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-pixelate" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Gesichter und Kennzeichen verpixeln</h1>
+      <p>
+        Personen, Kennzeichen oder Namen auf einem Foto unkenntlich machen, etwa für die
+        Vereinswebsite oder eine Schadensmeldung.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <label class="drop" id="pix-drop">
+        <input
+          type="file"
+          class="visually-hidden"
+          id="pix-input"
+          accept="image/jpeg,image/png,image/webp"
+        />
+        <span class="ic"
+          ><svg width="22" height="22" aria-hidden="true"><use href="#i-img" /></svg
+        ></span>
+        <div>
+          <strong>Foto hinzufügen</strong
+          ><span>JPEG, PNG oder WebP auswählen oder hierher ziehen</span>
+        </div>
+      </label>
+      <div class="empty-state" id="pix-empty">
+        <strong>Noch kein Foto</strong>Füge das Foto hinzu, auf dem du etwas unkenntlich machen
+        möchtest.
+      </div>
+      <div id="pix-editor" hidden>
+        <p class="hint mt-m" id="pix-keys">
+          Zieh mit Maus, Stift oder Finger einen Rahmen über die Stelle. Ohne Maus: „Bereich
+          hinzufügen“, dann mit den Pfeiltasten verschieben, mit Umschalt und Pfeiltasten die Größe
+          ändern, mit Entf löschen.
+        </p>
+        <button type="button" class="btn ghost sm mt-s" id="pix-add">Bereich hinzufügen</button>
+        <div class="image-view">
+          <canvas id="pix-canvas" aria-label="Vorschau des Fotos"></canvas>
+          <div class="rect-layer pixel" id="pix-layer"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Unkenntlich machen</h2>
+      <div class="field">
+        <span class="lbl" id="pix-mode-label">Art</span>
+        <div class="seg" role="group" aria-labelledby="pix-mode-label">
+          <button type="button" data-mode="pixel" aria-pressed="true">Verpixeln</button>
+          <button type="button" data-mode="black" aria-pressed="false">Schwarz</button>
+        </div>
+        <p class="hint">Verpixelt wird mit großen Blöcken, nie weichgezeichnet.</p>
+      </div>
+      <div class="stat-row mt-m"><span>Bereiche</span><b id="pix-count">–</b></div>
+      <div class="stat-row"><span>Metadaten</span><b>werden entfernt</b></div>
+      <p class="hint" id="pix-reduced" hidden></p>
+      <button class="btn wide mt-m" id="pix-save" type="button" disabled>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
+        <span id="pix-save-label">Foto speichern</span>
+      </button>
+      <button class="btn ghost wide mt-s" id="pix-clear" type="button" disabled>
+        Anderes Foto wählen
+      </button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="pix-explain">
+    <h2 id="pix-explain">So funktioniert es</h2>
+    <p>
+      Wähle ein Foto aus oder zieh es in die Fläche oben und zieh Rahmen über Gesichter, Kennzeichen
+      oder Namen. Die Vorschau zeigt sofort, wie es aussieht. „Foto speichern“ erzeugt ein neues
+      Bild im selben Format; dein Original bleibt unverändert.
+    </p>
+    <h2>Warum große Blöcke und kein Weichzeichnen</h2>
+    <p>
+      Weichgezeichnete Bereiche lassen sich teilweise zurückrechnen, feine Pixel lassen Gesichter
+      oft erkennbar. Das Werkzeug teilt jeden Bereich deshalb in höchstens acht Blöcke über die
+      längere Seite, egal wie groß das Foto ist. Wer ganz sicher gehen will, wählt „Schwarz“.
+    </p>
+    <h2>Metadaten werden entfernt</h2>
+    <p>
+      Das Bild wird neu erzeugt. Aufnahmeort, Kamera und Aufnahmezeit werden dabei nicht übernommen,
+      und jede fertige Datei wird darauf geprüft. Prüf das Ergebnis, bevor du es veröffentlichst.
+    </p>
+    <h2>Deine Fotos bleiben auf deinem Gerät</h2>
+    <p>
+      Das Foto wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem Laden der
+      Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+    </p>
+  </section>
+</div>

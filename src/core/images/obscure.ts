@@ -11,12 +11,16 @@ export interface PixelRect {
   height: number;
 }
 
-/** Höchstens so viele Blöcke über die kürzere Seite des Bereichs, damit nichts erkennbar bleibt */
+/**
+ * Höchstens so viele Blöcke über die längere Seite des Bereichs (plan-phase2.md 14: „höchstens
+ * etwa 8 Blöcke über die Breite“), damit nichts erkennbar bleibt, auch bei flachen Bereichen wie
+ * einer Textzeile oder einem Kennzeichen.
+ */
 export const MAX_BLOCKS = 8;
 
-/** Kantenlänge eines Blocks in Pixeln: kürzere Seite des Bereichs / MAX_BLOCKS, mindestens 1 */
+/** Kantenlänge eines Blocks in Pixeln: längere Seite des Bereichs / MAX_BLOCKS, mindestens 1 */
 export function blockSize(rect: PixelRect, maxBlocks = MAX_BLOCKS): number {
-  return Math.max(1, Math.ceil(Math.min(rect.width, rect.height) / maxBlocks));
+  return Math.max(1, Math.ceil(Math.max(rect.width, rect.height) / maxBlocks));
 }
 
 function clip(rect: PixelRect, width: number, height: number): PixelRect {

@@ -24,6 +24,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | `/fotos-verkleinern/` | Fotos verkleinern und Metadaten entfernen – kostenlos \| Lokalwerk | Fotos kostenlos für E-Mail und Website verkleinern und dabei GPS-Position und Kameradaten entfernen. Direkt im Browser, ohne Upload. | 132 | ja |
 | **NEU, Paket 6, zur Freigabe** `/foto-metadaten/` | Foto-Metadaten anzeigen: GPS, Kamera, Datum – ohne Upload \| Lokalwerk | Kostenlos sehen, was ein Foto verrät: Aufnahmeort, Kamera, Uhrzeit und Programm, und das Foto ohne diese Angaben speichern. Direkt im Browser, ohne Upload. | 155 | ja |
 | **NEU, Paket 6, zur Freigabe** `/foto-zuschneiden/` | Foto zuschneiden und drehen – kostenlos, ohne Upload \| Lokalwerk | Fotos kostenlos zuschneiden, drehen und spiegeln, frei oder im Seitenverhältnis 1:1, 4:3 oder 16:9. Metadaten werden entfernt. Im Browser, ohne Upload. | 151 | ja |
+| **NEU, Paket 6, zur Freigabe** `/foto-verpixeln/` | Gesichter und Kennzeichen verpixeln – kostenlos, ohne Upload \| Lokalwerk | Gesichter, Kennzeichen oder Namen auf Fotos kostenlos verpixeln oder schwärzen, mit großen Blöcken statt Weichzeichner. Metadaten werden entfernt. Ohne Upload. | 159 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
 | **NEU, Paket 5, zur Freigabe** `/qr-code-ueberweisung/` | QR-Code für Überweisungen (EPC-QR-Code) erstellen – kostenlos \| Lokalwerk | Einen QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet. | 160 | ja |
@@ -347,6 +348,30 @@ Das Foto wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach de
 
 _(Erklärtext: 113 Wörter)_
 
+## Gesichter verpixeln – NEU, Paket 6, zur Freigabe (`src/tools/foto-verpixeln/main.html`)
+
+Karte: „Gesichter verpixeln“ – „Gesichter, Kennzeichen oder Namen auf Fotos verpixeln oder schwärzen.“
+
+Unterzeile im Kopf: „Personen, Kennzeichen oder Namen auf einem Foto unkenntlich machen, etwa für die Vereinswebsite oder eine Schadensmeldung.“
+
+**So funktioniert es**
+
+Wähle ein Foto aus oder zieh es in die Fläche oben und zieh Rahmen über Gesichter, Kennzeichen oder Namen. Die Vorschau zeigt sofort, wie es aussieht. „Foto speichern“ erzeugt ein neues Bild im selben Format; dein Original bleibt unverändert.
+
+**Warum große Blöcke und kein Weichzeichnen**
+
+Weichgezeichnete Bereiche lassen sich teilweise zurückrechnen, feine Pixel lassen Gesichter oft erkennbar. Das Werkzeug teilt jeden Bereich deshalb in höchstens acht Blöcke über die längere Seite, egal wie groß das Foto ist. Wer ganz sicher gehen will, wählt „Schwarz“.
+
+**Metadaten werden entfernt**
+
+Das Bild wird neu erzeugt. Aufnahmeort, Kamera und Aufnahmezeit werden dabei nicht übernommen, und jede fertige Datei wird darauf geprüft. Prüf das Ergebnis, bevor du es veröffentlichst.
+
+**Deine Fotos bleiben auf deinem Gerät**
+
+Das Foto wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 127 Wörter)_
+
 ## Bildformat umwandeln – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/bildformat-umwandeln/main.html`)
 
 Karte: „Bildformat umwandeln“ – „Bilder zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPEG.“
@@ -664,6 +689,7 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, Paket 5, zur Freigabe** Gläubiger-ID prüfen, Meldungen | „Formal gültig: Aufbau und Prüfziffer stimmen.“, „Der Aufbau stimmt nicht: zwei Buchstaben für das Land, zwei Ziffern, drei Zeichen für den Geschäftsbereich, dann die nationale Kennung.“, „XX ist kein Land im SEPA-Raum. …“, „Eine deutsche Gläubiger-ID hat 18 Stellen, diese hat 17. …“, „Bei einer deutschen Gläubiger-ID stehen ab Stelle 8 nur Ziffern.“, „Die Prüfziffer passt nicht zur Nummer. Meist ist eine Ziffer vertippt oder vertauscht.“ | `src/tools/glaeubiger-id-pruefen/` |
 | **NEU, Paket 6, zur Freigabe** Foto-Metadaten anzeigen, Meldungen | Abschnitte „Aufnahmeort“, „Kamera“, „Zeit“, „Person und Beschreibung“, „Software“, „Aufnahme“, „Weitere Angaben“ mit Feldnamen wie „Breite“, „Länge“, „Hersteller“, „Aufgenommen“, „Urheber“; Hinweise „Keine Metadaten gefunden“, „XMP-Daten: vorhanden (Text beliebigen Inhalts, oft Bearbeitungsverlauf oder Bildrechte)“, „IPTC-Daten: vorhanden (oft Beschreibung, Stichwörter, Urheber)“; „Fertig: Das Foto ist ohne Metadaten gespeichert.“, „Fertig: 3 Fotos ohne Metadaten als ZIP gespeichert.“, „In der neuen Datei steckten noch Angaben; sie wurde deshalb nicht gespeichert.“, „Das ist kein JPEG-, PNG- oder WebP-Bild, oder die Datei ist beschädigt.“ | `src/tools/foto-metadaten/`, `src/core/images/exif-read.ts` |
 | **NEU, Paket 6, zur Freigabe** Foto zuschneiden, Meldungen | Seitenverhältnisse „Frei“, „Wie das Original“, „Quadrat (1:1)“, „Querformat 4:3“, „Hochformat 3:4“, „Querformat 3:2“, „Hochformat 2:3“, „Breitbild 16:9“, „Hochkant 9:16“; Knöpfe „Links drehen“, „Rechts drehen“, „Spiegeln“, „Zurücksetzen“; „Der Ausschnitt ist sehr groß und wird verkleinert gespeichert, damit jeder Browser ihn verarbeiten kann.“, „Fertig: Das zugeschnittene Foto ist gespeichert.“; gemeinsame Bildfehler „Das Bild lässt sich in diesem Browser nicht öffnen. iPhone-Fotos im HEIC-Format speicherst du vorher als JPEG.“, „Das Bild ist zu groß für diesen Browser. Verkleinere es zuerst mit „Fotos verkleinern“.“ | `src/tools/foto-zuschneiden/`, `src/ui/image-edit.ts` |
+| **NEU, Paket 6, zur Freigabe** Gesichter verpixeln, Meldungen | Art „Verpixeln“ / „Schwarz“, Hinweis „Verpixelt wird mit großen Blöcken, nie weichgezeichnet.“, „Metadaten: werden entfernt“, „Das Foto ist sehr groß und wird verkleinert gespeichert, damit jeder Browser es verarbeiten kann.“, „Fertig: Das Foto ist gespeichert. Prüf es, bevor du es veröffentlichst.“; Bedienhinweis und Screenreader wie beim Schwärzen („Bereich 1“) | `src/tools/foto-verpixeln/` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

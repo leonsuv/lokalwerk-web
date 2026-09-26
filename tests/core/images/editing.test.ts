@@ -65,8 +65,8 @@ describe('crop', () => {
 });
 
 describe('obscure', () => {
-  it('Blöcke richten sich nach dem Bereich: höchstens 8 über die kürzere Seite', () => {
-    expect(blockSize({ x: 0, y: 0, width: 400, height: 160 })).toBe(20);
+  it('Blöcke richten sich nach dem Bereich: höchstens 8 über die längere Seite', () => {
+    expect(blockSize({ x: 0, y: 0, width: 400, height: 160 })).toBe(50);
     expect(blockSize({ x: 0, y: 0, width: 3, height: 3 })).toBe(1);
   });
 

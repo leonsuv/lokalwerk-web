@@ -44,6 +44,7 @@ describe('Seitenregister', () => {
         '/glaeubiger-id-pruefen/',
         '/foto-metadaten/',
         '/foto-zuschneiden/',
+        '/foto-verpixeln/',
         '/csv-reparieren/',
         '/duplikate-finden/',
         '/pdf-zusammenfuegen/',

@@ -1,0 +1,175 @@
+<div class="wrap util">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-qr" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>QR-Code erstellen</h1>
+      <p>
+        QR-Codes für Links, WLAN-Zugänge, Kontakte und Texte, ohne Weiterleitung über fremde Server.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <div class="field">
+        <span class="lbl" id="qr-kind-label">Inhalt</span>
+        <div class="seg four" role="group" aria-labelledby="qr-kind-label">
+          <button type="button" data-kind="url" aria-pressed="true">Link</button>
+          <button type="button" data-kind="wifi" aria-pressed="false">WLAN</button>
+          <button type="button" data-kind="contact" aria-pressed="false">Kontakt</button>
+          <button type="button" data-kind="text" aria-pressed="false">Text</button>
+        </div>
+      </div>
+      <div class="qr-panel mt-m" data-panel="url">
+        <div class="field">
+          <label class="lbl" for="qr-url">Adresse</label>
+          <input
+            type="text"
+            id="qr-url"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="zum Beispiel lokalwerk.eu"
+            aria-describedby="qr-url-hint"
+          />
+          <p class="hint" id="qr-url-hint"></p>
+        </div>
+      </div>
+      <div class="qr-panel mt-m" data-panel="wifi" hidden>
+        <div class="form-grid">
+          <div class="field">
+            <label class="lbl" for="qr-ssid">Name des WLANs</label>
+            <input type="text" id="qr-ssid" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="field">
+            <label class="lbl" for="qr-pass">Passwort</label>
+            <input type="text" id="qr-pass" autocomplete="off" spellcheck="false" />
+          </div>
+        </div>
+        <div class="field mt-m">
+          <span class="lbl" id="qr-sec-label">Verschlüsselung</span>
+          <div class="seg" role="group" aria-labelledby="qr-sec-label">
+            <button type="button" data-security="WPA" aria-pressed="true">WPA2 oder WPA3</button>
+            <button type="button" data-security="nopass" aria-pressed="false">Ohne Passwort</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="lbl" id="qr-hidden-label">Versteckter Netzwerkname</span>
+          <div class="seg" role="group" aria-labelledby="qr-hidden-label">
+            <button type="button" data-hidden="no" aria-pressed="true">Nein</button>
+            <button type="button" data-hidden="yes" aria-pressed="false">Ja</button>
+          </div>
+        </div>
+        <p class="hint">
+          Das Passwort steht lesbar im Code. Wer den Code fotografiert, kann es auslesen.
+        </p>
+      </div>
+      <div class="qr-panel mt-m" data-panel="contact" hidden>
+        <div class="form-grid">
+          <div class="field">
+            <label class="lbl" for="qr-first">Vorname</label>
+            <input type="text" id="qr-first" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label class="lbl" for="qr-last">Nachname</label>
+            <input type="text" id="qr-last" autocomplete="off" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="lbl" for="qr-org">Firma oder Verein</label>
+          <input type="text" id="qr-org" autocomplete="off" />
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label class="lbl" for="qr-phone">Telefon</label>
+            <input type="text" id="qr-phone" inputmode="tel" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label class="lbl" for="qr-email">E-Mail</label>
+            <input
+              type="text"
+              id="qr-email"
+              inputmode="email"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="lbl" for="qr-web">Website</label>
+          <input type="text" id="qr-web" inputmode="url" autocomplete="off" spellcheck="false" />
+        </div>
+      </div>
+      <div class="qr-panel mt-m" data-panel="text" hidden>
+        <div class="field">
+          <label class="lbl" for="qr-text">Text</label>
+          <textarea id="qr-text" spellcheck="false"></textarea>
+        </div>
+      </div>
+      <p class="hint err" id="qr-error" aria-live="polite"></p>
+    </div>
+    <div class="card side">
+      <h2>QR-Code</h2>
+      <div class="qr-preview">
+        <canvas id="qr-canvas" role="img" aria-label="Vorschau des QR-Codes"></canvas>
+      </div>
+      <p class="hint" id="qr-empty">Gib einen Inhalt ein, dann erscheint hier der Code.</p>
+      <div class="field mt-m">
+        <label class="lbl" for="qr-ecc">Fehlerkorrektur</label>
+        <select id="qr-ecc">
+          <option value="L">Niedrig (7 %)</option>
+          <option value="M" selected>Mittel (15 %)</option>
+          <option value="Q">Hoch (25 %)</option>
+          <option value="H">Sehr hoch (30 %)</option>
+        </select>
+        <p class="hint">
+          Höher heißt: Der Code bleibt lesbar, auch wenn er teilweise verdeckt ist, wird aber
+          dichter.
+        </p>
+      </div>
+      <div class="field">
+        <label class="lbl" for="qr-size">Größe als PNG</label>
+        <select id="qr-size">
+          <option value="512">Klein, etwa 500 Pixel</option>
+          <option value="1024" selected>Mittel, etwa 1000 Pixel</option>
+          <option value="2048">Groß, etwa 2000 Pixel</option>
+        </select>
+      </div>
+      <div class="stat-row mt-m"><span>Größe des Codes</span><b id="qr-modules">–</b></div>
+      <button class="btn wide mt-m" id="qr-png" type="button" disabled>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
+        Als PNG speichern
+      </button>
+      <button class="btn ghost wide mt-s" id="qr-svg" type="button" disabled>
+        Als SVG speichern
+      </button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="qr-explain">
+    <h2 id="qr-explain">So funktioniert es</h2>
+    <p>
+      Wähl aus, was der Code enthalten soll, und füll die Felder aus. Der Code entsteht sofort und
+      lässt sich als PNG für Bildschirm und Office oder als SVG speichern; SVG bleibt in jeder Größe
+      scharf und eignet sich für den Druck. Der Code enthält deinen Inhalt direkt: Es gibt keinen
+      Umweg über einen Weiterleitungsdienst, der mitzählt, wer scannt, und der Code funktioniert,
+      solange es die Adresse gibt.
+    </p>
+    <h2>Gut zu wissen</h2>
+    <p>
+      Teste den Code vor dem Drucken mit einem Handy. Für den WLAN-Zugang verwendet das Werkzeug die
+      Schreibweise, die Kamera-Apps verbreitet erkennen; eine verbindliche Norm dafür gibt es nicht.
+      Kontakte werden als vCard gespeichert. Je mehr Inhalt, desto dichter wird der Code und desto
+      größer solltest du ihn drucken.
+    </p>
+    <h2>Nichts wird gesendet oder gespeichert</h2>
+    <p>
+      Der Code entsteht direkt in deinem Browser. Deine Eingaben, auch WLAN-Passwörter, werden weder
+      gesendet noch gespeichert. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne
+      Internetverbindung.
+    </p>
+  </section>
+</div>

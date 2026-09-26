@@ -23,6 +23,7 @@ describe('collectLicenses (aus den installierten Paketen)', () => {
         'pdf-lib',
         'pdfjs-dist',
         'tslib',
+        'uqr',
         'xlsx',
       ].sort(),
     );

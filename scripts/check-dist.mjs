@@ -25,6 +25,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { collectLicenses } from '../build/licenses.ts';
 import { PDFJS_URLS } from './allowed-urls-pdfjs.mjs';
 import { SHEETJS_URLS } from './allowed-urls-sheetjs.mjs';
+import { UQR_URLS } from './allowed-urls-uqr.mjs';
 import { SHIPPED_MANIFEST } from './shipped-manifest.mjs';
 
 export const SITE_ORIGIN = 'https://lokalwerk.eu';
@@ -67,12 +68,14 @@ export const ALLOWED_SVG_XML_URLS = [
  * Seit 24.09.2026 außerdem freigegeben: XML-Namensräume und Beziehungstypen nach ECMA-376
  * aus SheetJS, jeweils nur im SEPA-Worker (scripts/allowed-urls-sheetjs.mjs).
  * Seit 25.09.2026: Namensräume und zwei tote Adressen aus pdf.js (scripts/allowed-urls-pdfjs.mjs).
+ * 26.09.2026 vorgelegt, Freigabe ausstehend: SVG-Namensraum in uqr (scripts/allowed-urls-uqr.mjs).
  *
  * @type {ReadonlyArray<AllowedUrl & { library: string, package: string, category?: string, test?: string }>}
  */
 export const ALLOWED_LIBRARY_URLS = [
   ...SHEETJS_URLS,
   ...PDFJS_URLS,
+  ...UQR_URLS,
   {
     url: 'https://github.com/Hopding/pdf-lib',
     library: 'pdf-lib 1.17.1',
@@ -152,7 +155,8 @@ export function checkText(text, kind, file = '', context = {}) {
 
   const onLicensePage = kind === 'html' && file === LICENSE_PAGE && context.licenseUrls;
   for (const match of text.matchAll(URL_PATTERN)) {
-    const url = match[0];
+    // In HTML endet eine Adresse vor &lt; oder &gt; (< und > kommen in Adressen nicht vor).
+    const url = kind === 'html' ? match[0].replace(/&(?:lt|gt);.*$/, '') : match[0];
     if (isOwnDomain(url)) continue;
     if (allowed.some((entry) => entry.url === url)) continue;
     if (onLicensePage && context.licenseUrls?.has(url) && !insideTag(text, match.index)) continue;

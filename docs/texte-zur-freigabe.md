@@ -1,6 +1,6 @@
 # Texte zur Freigabe
 
-Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“).**
+Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: neue Texte mit „NEU, Paket 5, zur Freigabe“ markiert.**
 
 Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.
 
@@ -28,6 +28,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU, freigegeben von Leon am 25.09.2026** `/csv-reparieren/` | CSV reparieren: Umlaute und Trennzeichen korrigieren – kostenlos \| Lokalwerk | CSV-Dateien mit kaputten Umlauten wie „MÃ¼ller“ oder falschem Trennzeichen kostenlos reparieren, jede Änderung vorher sichtbar. Im Browser, ohne Upload. | 152 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/duplikate-finden/` | Duplikate in Excel- und CSV-Listen finden – kostenlos, ohne Upload \| Lokalwerk | Doppelte Einträge in Mitglieder-, Kunden- und Adresslisten kostenlos finden und markieren, ohne etwas zu löschen. Direkt im Browser, ohne Upload. | 145 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/passwort-generator/` | Passwort-Generator: sichere Passwörter nach BSI – ohne Server \| Lokalwerk | Sichere Passwörter kostenlos erzeugen, mit Länge und Zeichenarten nach den Beispielen des BSI. Direkt im Browser, nichts wird gesendet oder gespeichert. | 152 | ja |
+| **NEU, Paket 5, zur Freigabe** `/qr-code/` | QR-Code erstellen: Link, WLAN, Kontakt – kostenlos, ohne Tracking \| Lokalwerk | QR-Codes für Links, WLAN-Zugänge, Kontakte und Texte kostenlos erstellen, als PNG oder SVG. Ohne Weiterleitung, ohne Tracking, direkt im Browser. | 145 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pruefsumme/` | Prüfsumme berechnen: SHA-256 einer Datei prüfen – ohne Upload \| Lokalwerk | SHA-256 und SHA-1 einer Datei kostenlos berechnen und mit der angegebenen Prüfsumme vergleichen, auch bei sehr großen Dateien. Direkt im Browser, ohne Upload. | 158 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/texte-vergleichen/` | Texte vergleichen: Unterschiede zwischen zwei Fassungen finden \| Lokalwerk | Zwei Texte kostenlos vergleichen, etwa Vertragsentwürfe oder Satzungen: geänderte Zeilen und Wörter werden markiert. Direkt im Browser, ohne Upload. | 148 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/kontrast-pruefen/` | Kontrast prüfen nach WCAG 2.2 – Kontrastrechner für Farben \| Lokalwerk | Kontrastverhältnis zweier Farben kostenlos nach WCAG 2.2 berechnen und die Stufen AA und AAA prüfen, für Text, großen Text und Bedienelemente. Im Browser. | 154 | ja |
@@ -429,6 +430,26 @@ Das Passwort entsteht nur in deinem Browser und wird weder gesendet noch gespeic
 
 _(Erklärtext: 136 Wörter)_
 
+## QR-Code erstellen – NEU, Paket 5, zur Freigabe (`src/tools/qr-code/main.html`)
+
+Karte: „QR-Code erstellen“ – „QR-Codes für Links, WLAN, Kontakte und Texte, als PNG oder SVG.“
+
+Unterzeile im Kopf: „QR-Codes für Links, WLAN-Zugänge, Kontakte und Texte, ohne Weiterleitung über fremde Server.“
+
+**So funktioniert es**
+
+Wähl aus, was der Code enthalten soll, und füll die Felder aus. Der Code entsteht sofort und lässt sich als PNG für Bildschirm und Office oder als SVG speichern; SVG bleibt in jeder Größe scharf und eignet sich für den Druck. Der Code enthält deinen Inhalt direkt: Es gibt keinen Umweg über einen Weiterleitungsdienst, der mitzählt, wer scannt, und der Code funktioniert, solange es die Adresse gibt.
+
+**Gut zu wissen**
+
+Teste den Code vor dem Drucken mit einem Handy. Für den WLAN-Zugang verwendet das Werkzeug die Schreibweise, die Kamera-Apps verbreitet erkennen; eine verbindliche Norm dafür gibt es nicht. Kontakte werden als vCard gespeichert. Je mehr Inhalt, desto dichter wird der Code und desto größer solltest du ihn drucken.
+
+**Nichts wird gesendet oder gespeichert**
+
+Der Code entsteht direkt in deinem Browser. Deine Eingaben, auch WLAN-Passwörter, werden weder gesendet noch gespeichert. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 142 Wörter)_
+
 ## Prüfsumme berechnen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pruefsumme/main.html`)
 
 Karte: „Prüfsumme berechnen“ – „SHA-256 einer Datei berechnen und mit der angegebenen Prüfsumme vergleichen.“
@@ -524,6 +545,7 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, Paket 4, freigegeben von Leon am 26.09.2026, Änderung nach Vorgabe von Leon** PDF-Formular ausfüllen | „Deine Eingaben landen nur in der neuen Datei und werden sonst nirgends gespeichert.“ | `src/tools/pdf-formular-ausfuellen/main.html` |
 | **Rechtstext auf Anweisung von Leon, 26.09.2026** Datenschutzerklärung, Abschnitt 4 | Überschrift „Verarbeitung deiner Dateien und Eingaben“, erster Satz „PDFs, Fotos und Tabellen, die du in ein Werkzeug lädst, sowie deine Eingaben, etwa Formulareingaben, Texte oder gezeichnete Unterschriften, werden mit JavaScript lokal in deinem Browser verarbeitet.“ Rest unverändert. Für die Rechtsprüfung vermerkt (plan.md Abschnitt 9). | `pages/datenschutz/index.html` |
 | **Regel, 26.09.2026** „hochladen“ | Nur verneint („nicht hochgeladen“, „ohne Upload“), nie für die Dateiauswahl; geprüft von `tests/build/upload-wording.test.ts`. **Rückfrage:** Die SEPA-Seite verwendet „im Onlinebanking hochladen“ für das Einreichen der erzeugten Datei bei der Bank (4 Stellen, als Ausnahme im Test). Umformulieren, z. B. „im Onlinebanking einreichen“? | `src/tools/sepa-sammelueberweisung/main.html` |
+| **NEU, Paket 5, zur Freigabe** QR-Code erstellen, Meldungen | „Der Code enthält https://…“, „Das ist keine gültige Adresse. Schreib sie zum Beispiel so: lokalwerk.eu/werkzeuge/“, „Gib das WLAN-Passwort ein oder wähl „Ohne Passwort“.“, „Der Inhalt ist zu lang für einen QR-Code. Kürze ihn oder wähl eine niedrigere Fehlerkorrektur.“, „Fertig: Der QR-Code ist als PNG gespeichert.“ / „… als SVG gespeichert.“; Auswahl „Niedrig (7 %)“ bis „Sehr hoch (30 %)“, „Klein, etwa 500 Pixel“ bis „Groß, etwa 2000 Pixel“ | `src/tools/qr-code/` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

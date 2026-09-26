@@ -26,6 +26,14 @@ const PHASE1 = new Set([
 ]);
 /** Paket 1 bis 3: alle neuen Texte freigegeben von Leon am 25.09.2026 */
 const NEW = 'NEU, freigegeben von Leon am 25.09.2026';
+/** Paket 5: neue Werkzeuge, Texte zur Freigabe */
+const PAKET5 = new Set([
+  '/qr-code/',
+  '/qr-code-ueberweisung/',
+  '/iban-pruefen/',
+  '/glaeubiger-id-pruefen/',
+]);
+const P5 = 'NEU, Paket 5, zur Freigabe';
 /** Paket 4: neue Werkzeuge, Texte freigegeben von Leon am 26.09.2026 (mit Änderungen, eingearbeitet) */
 const PAKET4 = new Set([
   '/pdf-seiten-bearbeiten/',
@@ -35,7 +43,8 @@ const PAKET4 = new Set([
   '/pdf-formular-ausfuellen/',
 ]);
 const P4 = 'NEU, Paket 4, freigegeben von Leon am 26.09.2026';
-const markFor = (/** @type {string} */ url) => (PHASE1.has(url) ? '' : PAKET4.has(url) ? P4 : NEW);
+const markFor = (/** @type {string} */ url) =>
+  PHASE1.has(url) ? '' : PAKET5.has(url) ? P5 : PAKET4.has(url) ? P4 : NEW;
 const clean = (/** @type {string} */ html) =>
   html
     .replace(/<[^>]+>/g, '')
@@ -45,7 +54,7 @@ const clean = (/** @type {string} */ html) =>
 const out = [
   '# Texte zur Freigabe',
   '',
-  'Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“).**',
+  'Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: neue Texte mit „NEU, Paket 5, zur Freigabe“ markiert.**',
   '',
   'Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.',
   '',
@@ -113,6 +122,7 @@ out.push(
   `| **${P4}, Änderung nach Vorgabe von Leon** PDF-Formular ausfüllen | „Deine Eingaben landen nur in der neuen Datei und werden sonst nirgends gespeichert.“ | \`src/tools/pdf-formular-ausfuellen/main.html\` |`,
   '| **Rechtstext auf Anweisung von Leon, 26.09.2026** Datenschutzerklärung, Abschnitt 4 | Überschrift „Verarbeitung deiner Dateien und Eingaben“, erster Satz „PDFs, Fotos und Tabellen, die du in ein Werkzeug lädst, sowie deine Eingaben, etwa Formulareingaben, Texte oder gezeichnete Unterschriften, werden mit JavaScript lokal in deinem Browser verarbeitet.“ Rest unverändert. Für die Rechtsprüfung vermerkt (plan.md Abschnitt 9). | `pages/datenschutz/index.html` |',
   '| **Regel, 26.09.2026** „hochladen“ | Nur verneint („nicht hochgeladen“, „ohne Upload“), nie für die Dateiauswahl; geprüft von `tests/build/upload-wording.test.ts`. **Rückfrage:** Die SEPA-Seite verwendet „im Onlinebanking hochladen“ für das Einreichen der erzeugten Datei bei der Bank (4 Stellen, als Ausnahme im Test). Umformulieren, z. B. „im Onlinebanking einreichen“? | `src/tools/sepa-sammelueberweisung/main.html` |',
+  `| **${P5}** QR-Code erstellen, Meldungen | „Der Code enthält https://…“, „Das ist keine gültige Adresse. Schreib sie zum Beispiel so: lokalwerk.eu/werkzeuge/“, „Gib das WLAN-Passwort ein oder wähl „Ohne Passwort“.“, „Der Inhalt ist zu lang für einen QR-Code. Kürze ihn oder wähl eine niedrigere Fehlerkorrektur.“, „Fertig: Der QR-Code ist als PNG gespeichert.“ / „… als SVG gespeichert.“; Auswahl „Niedrig (7 %)“ bis „Sehr hoch (30 %)“, „Klein, etwa 500 Pixel“ bis „Groß, etwa 2000 Pixel“ | \`src/tools/qr-code/\` |`,
   '| 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |',
   '| Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |',
   '| SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |',

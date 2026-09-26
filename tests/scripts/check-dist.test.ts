@@ -239,7 +239,41 @@ describe('Tote Adressen in Bibliotheken (plan.md N3)', () => {
   });
 });
 
+describe('uqr (plan-phase2.md E5)', () => {
+  const entries = ALLOWED_LIBRARY_URLS.filter((e) => e.package === 'uqr');
+
+  it('nur der SVG-Namensraum, an der angegebenen Fundstelle', () => {
+    expect(entries.map((e) => e.url)).toEqual(['http://www.w3.org/2000/svg']);
+    const lines = readFileSync(
+      new URL('../../node_modules/uqr/dist/index.mjs', import.meta.url),
+      'utf8',
+    ).split('\n');
+    for (const entry of entries) {
+      const line = Number(/Zeile (\d+)/.exec(entry.source)?.[1]);
+      expect(lines[line - 1]).toContain(entry.url);
+    }
+  });
+
+  it('gilt nur in Dateien mit uqr', () => {
+    const files = { 'assets/qr-output-A.js': ['uqr'], 'assets/page-B.js': [] };
+    const check = (file: string) =>
+      checkText('"http://www.w3.org/2000/svg"', 'js', file, { packagesByFile: files });
+    expect(check('assets/qr-output-A.js')).toEqual([]);
+    expect(check('assets/page-B.js')).toHaveLength(1);
+  });
+});
+
 describe('Lizenzseite (plan.md N3, Variante A)', () => {
+  it('liest Adressen in spitzen Klammern ohne &gt; (z. B. „Anthony Fu <https://github.com/antfu>“)', () => {
+    const html = '<p>Copyright (c) 2023 Anthony Fu &lt;https://github.com/antfu&gt;</p>';
+    expect(
+      checkText(html, 'html', LICENSE_PAGE, { licenseUrls: new Set(['https://github.com/antfu']) }),
+    ).toEqual([]);
+    expect(checkText(html, 'html', 'index.html')).toEqual([
+      'fremde Adresse: https://github.com/antfu',
+    ]);
+  });
+
   const urls = licenseUrls(collectLicenses(fileURLToPath(new URL('../..', import.meta.url))));
   const check = (html: string, file = LICENSE_PAGE) =>
     checkText(html, 'html', file, { licenseUrls: urls });

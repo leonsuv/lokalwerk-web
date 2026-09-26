@@ -1206,3 +1206,36 @@ select[multiple] {
   outline-offset: 1px;
   border-radius: 2px;
 }
+
+/* QR-Code-Vorschau */
+.qr-preview {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border-radius: 16px;
+  background: var(--surface2);
+}
+.qr-preview canvas {
+  display: block;
+  width: min(100%, 18rem);
+  height: auto;
+  image-rendering: pixelated;
+  border-radius: 6px;
+}
+.qr-panel[hidden] {
+  display: none;
+}
+
+/* Reiter (IBAN-Liste prüfen) */
+.seg.tabs {
+  display: inline-flex;
+  margin-bottom: 0.25rem;
+}
+.seg.tabs button[aria-selected='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+.seg.four {
+  grid-template-columns: repeat(4, 1fr);
+}

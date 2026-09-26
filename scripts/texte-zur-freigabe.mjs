@@ -27,7 +27,7 @@ const PHASE1 = new Set([
 /** Paket 1 bis 3: alle neuen Texte freigegeben von Leon am 25.09.2026 */
 const NEW = 'NEU, freigegeben von Leon am 25.09.2026';
 /** Paket 4: neue Werkzeuge, Texte noch zur Freigabe */
-const PAKET4 = new Set(['/pdf-seiten-bearbeiten/', '/pdf-zu-bildern/']);
+const PAKET4 = new Set(['/pdf-seiten-bearbeiten/', '/pdf-zu-bildern/', '/pdf-schwaerzen/']);
 const P4 = 'NEU, Paket 4, zur Freigabe';
 const markFor = (/** @type {string} */ url) => (PHASE1.has(url) ? '' : PAKET4.has(url) ? P4 : NEW);
 const clean = (/** @type {string} */ html) =>
@@ -98,6 +98,8 @@ out.push(
   '| **Nachtrag 26.09.2026, Vorgabe von Leon** Lizenzseite, „Verwendet für“ | nennt jetzt die Werkzeuge aus dem Seitenregister, die die Bibliothek tatsächlich laden (vom Build geprüft), z. B. „SEPA-Sammelüberweisung, Excel und CSV umwandeln, Duplikate finden“; nicht ausgelieferte Pakete stehen nicht mehr auf der Seite | `build/licenses.ts` |',
   `| **${P4}** PDF-Seiten bearbeiten, Meldungen | „Seite 2 gelöscht.“, „Alle Änderungen zurückgesetzt.“, „Keine Vorschau möglich“, „Fertig: Die PDF mit 3 Seiten ist gespeichert.“, „Es wird eine PDF auf einmal bearbeitet: die erste.“; Knopf-Beschriftungen für Screenreader „Seite 3, Position 1: nach links drehen / nach rechts drehen / nach vorn schieben / nach hinten schieben / löschen“ | \`src/tools/pdf-seiten-bearbeiten/page.ts\` |`,
   `| **${P4}** PDF zu Bildern, Meldungen | „Seite 1 ist sehr groß und wurde mit 208 statt 300 dpi gespeichert.“, „Fertig: Das Bild ist gespeichert.“, „Fertig: 2 Bilder als ZIP gespeichert.“, „Die Bilder konnten nicht erzeugt werden. Wähle eine geringere Auflösung oder weniger Seiten auf einmal.“, „Die ZIP-Datei wäre zu groß. Wähle weniger Seiten oder eine geringere Auflösung.“, „Es wird eine PDF auf einmal umgewandelt: die erste.“; Auswahl „72 dpi, für den Bildschirm“, „150 dpi, Standard“, „300 dpi, für den Druck“ | \`src/tools/pdf-zu-bildern/\` |`,
+  `| **${P4}** PDF schwärzen, Meldungen | „Fertig: Die geschwärzte PDF ist gespeichert. Prüf sie, bevor du sie weitergibst.“, „Die geschwärzte PDF konnte nicht erzeugt werden. Wähle eine geringere Auflösung und versuch es noch einmal.“; Hinweis rechts „Prüf die neue PDF, bevor du sie weitergibst: Sind alle Stellen vollständig schwarz? Das Werkzeug schwärzt nur die Bereiche, die du markierst.“; Bedienhinweis „Zieh mit Maus, Stift oder Finger einen Bereich über die Stelle. Ohne Maus: …“; Screenreader „Bereich 1 auf Seite 2“, „Bereich 1 auf Seite 2 löschen“ | \`src/tools/pdf-schwaerzen/\` |`,
+  `| **${P4}** Stempel und Wasserzeichen, Verweis | „ein Werkzeug, das die Seiten in Bilder umwandelt“ verlinkt jetzt auf /pdf-schwaerzen/ (Vorgabe von Leon, 26.09.2026; Wortlaut unverändert) | \`src/tools/pdf-stempel/main.html\` |`,
   '| 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |',
   '| Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |',
   '| SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |',

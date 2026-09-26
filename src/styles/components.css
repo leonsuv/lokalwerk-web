@@ -1097,3 +1097,79 @@ fieldset.check-list {
   gap: 0.1rem;
   margin: 0 -0.3rem;
 }
+
+/* Seitenansicht mit Rechtecken (Schwärzen, Unterschrift) */
+.page-view {
+  position: relative;
+  margin: 1rem auto 0;
+  max-width: 100%;
+  width: fit-content;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.25);
+  background: #fff;
+}
+.page-view canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.rect-layer {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  cursor: crosshair;
+}
+.rect-layer.no-draw {
+  cursor: default;
+}
+.rect {
+  position: absolute;
+  cursor: move;
+  outline-offset: 2px;
+}
+.rect-layer.redact .rect {
+  background: rgb(0 0 0 / 0.78);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.6) inset;
+}
+.rect-layer.sign .rect {
+  box-shadow: 0 0 0 1.5px var(--primary);
+}
+.rect-layer.sign .rect img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.rect-del {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+.rect-handle {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--primary);
+  border: 2px solid #fff;
+  cursor: nwse-resize;
+}
+.page-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  font-variant-numeric: tabular-nums;
+}

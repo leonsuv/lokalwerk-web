@@ -14,6 +14,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-teilen/` | PDF teilen und Seiten extrahieren – kostenlos, ohne Upload \| Lokalwerk | Seiten aus einer PDF kostenlos herausholen oder die PDF in mehrere Dateien aufteilen. Direkt im Browser, ohne Upload und ohne Anmeldung. | 136 | ja |
 | **NEU, Paket 4, zur Freigabe** `/pdf-seiten-bearbeiten/` | PDF-Seiten drehen, sortieren und löschen – kostenlos, ohne Upload \| Lokalwerk | Seiten einer PDF kostenlos drehen, neu sortieren oder löschen, mit Vorschau jeder Seite. Direkt im Browser, ohne Upload und ohne Anmeldung. | 139 | ja |
 | **NEU, Paket 4, zur Freigabe** `/pdf-zu-bildern/` | PDF in JPG oder PNG umwandeln – kostenlos, ohne Upload \| Lokalwerk | Die Seiten einer PDF kostenlos als JPG- oder PNG-Bilder speichern, mit 72, 150 oder 300 dpi. Direkt im Browser, ohne Upload und ohne Anmeldung. | 143 | ja |
+| **NEU, Paket 4, zur Freigabe** `/pdf-schwaerzen/` | PDF schwärzen – Text sicher unkenntlich machen, ohne Upload \| Lokalwerk | Namen, Kontonummern und andere Stellen einer PDF kostenlos schwärzen, sodass sie auch in der Datei nicht mehr stecken. Direkt im Browser, ohne Upload. | 150 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-seitenzahlen/` | Seitenzahlen in PDF einfügen – kostenlos, ohne Upload \| Lokalwerk | Seitenzahlen wie „Seite 3 von 12“ kostenlos in eine PDF einfügen, Position und Startseite frei wählbar. Direkt im Browser, ohne Upload und ohne Anmeldung. | 154 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-stempel/` | PDF-Wasserzeichen und Stempel einfügen – kostenlos, ohne Upload \| Lokalwerk | Text wie „Entwurf“ oder „Kopie“ kostenlos als Stempel oder Wasserzeichen auf die Seiten einer PDF setzen. Direkt im Browser, ohne Upload. | 137 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-metadaten-entfernen/` | PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload \| Lokalwerk | Kostenlos sehen, welche versteckten Angaben in einer PDF stecken, und Autor, Programm, Datum und frühere Fassungen entfernen. Direkt im Browser, ohne Upload. | 157 | ja |
@@ -117,6 +118,30 @@ Die Bilder enthalten keinen durchsuchbaren Text und keine Angaben wie Autor oder
 Die PDF wird direkt in deinem Browser umgewandelt und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
 _(Erklärtext: 159 Wörter)_
+
+## PDF schwärzen – NEU, Paket 4, zur Freigabe (`src/tools/pdf-schwaerzen/main.html`)
+
+Karte: „PDF schwärzen“ – „Stellen einer PDF so schwärzen, dass sie auch in der Datei nicht mehr stecken.“
+
+Unterzeile im Kopf: „Namen, Kontonummern und andere Stellen einer PDF so schwärzen, dass sie auch in der Datei nicht mehr stecken.“
+
+**So funktioniert es**
+
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Blättere zu der Seite mit der Stelle und zieh einen Bereich darüber. In der Vorschau bleibt der Bereich leicht durchsichtig, damit du ihn genau setzen kannst; in der neuen PDF ist er vollständig schwarz. „Geschwärzte PDF speichern“ erzeugt eine neue Datei, deine Originaldatei bleibt unverändert.
+
+**Warum die Seiten zu Bildern werden**
+
+Ein schwarzer Kasten über dem Text reicht nicht: Der Text darunter lässt sich oft trotzdem kopieren oder durchsuchen. Dieses Werkzeug zeichnet deshalb jede Seite als Bild, schwärzt die Bereiche im Bild und baut daraus eine neue PDF. Aus dem Original wird nichts übernommen, kein Text, keine Schriften, keine Formularfelder, Kommentare, Anhänge oder Angaben wie Autor und Titel.
+
+**Gut zu wissen**
+
+Die neue PDF ist nicht mehr durchsuchbar, meist größer als das Original und für Screenreader nicht lesbar. Bewahre das Original deshalb auf. Verschlüsselte PDFs lassen sich nicht bearbeiten.
+
+**Deine Dateien bleiben auf deinem Gerät**
+
+Die PDF wird direkt in deinem Browser geschwärzt und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 163 Wörter)_
 
 ## Seitenzahlen einfügen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-seitenzahlen/main.html`)
 
@@ -448,6 +473,8 @@ _(Erklärtext: 110 Wörter)_
 | **Nachtrag 26.09.2026, Vorgabe von Leon** Lizenzseite, „Verwendet für“ | nennt jetzt die Werkzeuge aus dem Seitenregister, die die Bibliothek tatsächlich laden (vom Build geprüft), z. B. „SEPA-Sammelüberweisung, Excel und CSV umwandeln, Duplikate finden“; nicht ausgelieferte Pakete stehen nicht mehr auf der Seite | `build/licenses.ts` |
 | **NEU, Paket 4, zur Freigabe** PDF-Seiten bearbeiten, Meldungen | „Seite 2 gelöscht.“, „Alle Änderungen zurückgesetzt.“, „Keine Vorschau möglich“, „Fertig: Die PDF mit 3 Seiten ist gespeichert.“, „Es wird eine PDF auf einmal bearbeitet: die erste.“; Knopf-Beschriftungen für Screenreader „Seite 3, Position 1: nach links drehen / nach rechts drehen / nach vorn schieben / nach hinten schieben / löschen“ | `src/tools/pdf-seiten-bearbeiten/page.ts` |
 | **NEU, Paket 4, zur Freigabe** PDF zu Bildern, Meldungen | „Seite 1 ist sehr groß und wurde mit 208 statt 300 dpi gespeichert.“, „Fertig: Das Bild ist gespeichert.“, „Fertig: 2 Bilder als ZIP gespeichert.“, „Die Bilder konnten nicht erzeugt werden. Wähle eine geringere Auflösung oder weniger Seiten auf einmal.“, „Die ZIP-Datei wäre zu groß. Wähle weniger Seiten oder eine geringere Auflösung.“, „Es wird eine PDF auf einmal umgewandelt: die erste.“; Auswahl „72 dpi, für den Bildschirm“, „150 dpi, Standard“, „300 dpi, für den Druck“ | `src/tools/pdf-zu-bildern/` |
+| **NEU, Paket 4, zur Freigabe** PDF schwärzen, Meldungen | „Fertig: Die geschwärzte PDF ist gespeichert. Prüf sie, bevor du sie weitergibst.“, „Die geschwärzte PDF konnte nicht erzeugt werden. Wähle eine geringere Auflösung und versuch es noch einmal.“; Hinweis rechts „Prüf die neue PDF, bevor du sie weitergibst: Sind alle Stellen vollständig schwarz? Das Werkzeug schwärzt nur die Bereiche, die du markierst.“; Bedienhinweis „Zieh mit Maus, Stift oder Finger einen Bereich über die Stelle. Ohne Maus: …“; Screenreader „Bereich 1 auf Seite 2“, „Bereich 1 auf Seite 2 löschen“ | `src/tools/pdf-schwaerzen/` |
+| **NEU, Paket 4, zur Freigabe** Stempel und Wasserzeichen, Verweis | „ein Werkzeug, das die Seiten in Bilder umwandelt“ verlinkt jetzt auf /pdf-schwaerzen/ (Vorgabe von Leon, 26.09.2026; Wortlaut unverändert) | `src/tools/pdf-stempel/main.html` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

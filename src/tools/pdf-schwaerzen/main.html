@@ -1,0 +1,109 @@
+<div class="wrap pdf">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-redact" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>PDF schwärzen</h1>
+      <p>
+        Namen, Kontonummern und andere Stellen einer PDF so schwärzen, dass sie auch in der Datei
+        nicht mehr stecken.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <label class="drop" id="red-drop">
+        <input type="file" class="visually-hidden" id="red-input" accept="application/pdf,.pdf" />
+        <span class="ic"
+          ><svg width="22" height="22" aria-hidden="true"><use href="#i-pdf" /></svg
+        ></span>
+        <div><strong>PDF hinzufügen</strong><span>Auswählen oder hierher ziehen</span></div>
+      </label>
+      <ul class="file-list" id="red-file" aria-label="Ausgewählte PDF"></ul>
+      <div class="empty-state" id="red-empty">
+        <strong>Noch keine PDF</strong>Füge die PDF hinzu, in der du Stellen schwärzen möchtest.
+      </div>
+      <div id="red-editor" hidden>
+        <div class="page-nav">
+          <button type="button" class="btn icon" id="red-prev" aria-label="Vorherige Seite">
+            <svg width="18" height="18" aria-hidden="true"><use href="#i-left" /></svg>
+          </button>
+          <span id="red-page-label" aria-live="polite">Seite 1 von 1</span>
+          <button type="button" class="btn icon" id="red-next" aria-label="Nächste Seite">
+            <svg width="18" height="18" aria-hidden="true"><use href="#i-right" /></svg>
+          </button>
+        </div>
+        <p class="hint" id="red-keys">
+          Zieh mit Maus, Stift oder Finger einen Bereich über die Stelle. Ohne Maus: „Bereich
+          hinzufügen“, dann mit den Pfeiltasten verschieben, mit Umschalt und Pfeiltasten die Größe
+          ändern, mit Entf löschen.
+        </p>
+        <button type="button" class="btn ghost sm mt-s" id="red-add">Bereich hinzufügen</button>
+        <div class="page-view" id="red-view">
+          <canvas id="red-canvas" aria-label="Vorschau der Seite"></canvas>
+          <div class="rect-layer redact" id="red-layer"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Schwärzen</h2>
+      <div class="field">
+        <label class="lbl" for="red-dpi">Auflösung der neuen PDF</label>
+        <select id="red-dpi">
+          <option value="150">150 dpi, kleinere Datei</option>
+          <option value="200" selected>200 dpi, Standard</option>
+          <option value="300">300 dpi, für den Druck</option>
+        </select>
+      </div>
+      <div class="stat-row mt-m"><span>Geschwärzte Bereiche</span><b id="red-count">–</b></div>
+      <div class="stat-row"><span>Seiten mit Schwärzung</span><b id="red-pages">–</b></div>
+      <div class="note mt-m">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
+        <span
+          >Prüf die neue PDF, bevor du sie weitergibst: Sind alle Stellen vollständig schwarz? Das
+          Werkzeug schwärzt nur die Bereiche, die du markierst.</span
+        >
+      </div>
+      <button class="btn wide" id="red-save" disabled>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
+        <span id="red-save-label">Geschwärzte PDF speichern</span>
+      </button>
+      <button class="btn ghost wide mt-s" id="red-clear-page" disabled>
+        Bereiche dieser Seite entfernen
+      </button>
+      <button class="btn ghost wide mt-s" id="red-clear" disabled>Andere PDF wählen</button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="red-explain">
+    <h2 id="red-explain">So funktioniert es</h2>
+    <p>
+      Wähle eine PDF aus oder zieh sie in die Fläche oben. Blättere zu der Seite mit der Stelle und
+      zieh einen Bereich darüber. In der Vorschau bleibt der Bereich leicht durchsichtig, damit du
+      ihn genau setzen kannst; in der neuen PDF ist er vollständig schwarz. „Geschwärzte PDF
+      speichern“ erzeugt eine neue Datei, deine Originaldatei bleibt unverändert.
+    </p>
+    <h2>Warum die Seiten zu Bildern werden</h2>
+    <p>
+      Ein schwarzer Kasten über dem Text reicht nicht: Der Text darunter lässt sich oft trotzdem
+      kopieren oder durchsuchen. Dieses Werkzeug zeichnet deshalb jede Seite als Bild, schwärzt die
+      Bereiche im Bild und baut daraus eine neue PDF. Aus dem Original wird nichts übernommen, kein
+      Text, keine Schriften, keine Formularfelder, Kommentare, Anhänge oder Angaben wie Autor und
+      Titel.
+    </p>
+    <h2>Gut zu wissen</h2>
+    <p>
+      Die neue PDF ist nicht mehr durchsuchbar, meist größer als das Original und für Screenreader
+      nicht lesbar. Bewahre das Original deshalb auf. Verschlüsselte PDFs lassen sich nicht
+      bearbeiten.
+    </p>
+    <h2>Deine Dateien bleiben auf deinem Gerät</h2>
+    <p>
+      Die PDF wird direkt in deinem Browser geschwärzt und nicht hochgeladen. Nach dem Laden der
+      Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+    </p>
+  </section>
+</div>

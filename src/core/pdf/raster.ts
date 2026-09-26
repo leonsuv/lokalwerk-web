@@ -45,3 +45,17 @@ export function rasterSize(
   }
   return { ...size, dpi: used, reduced: used < dpi };
 }
+
+/**
+ * Dateiname für das Bild einer Seite, mit führenden Nullen, damit die Dateien im Ordner in der
+ * richtigen Reihenfolge stehen: „bericht-seite-07.jpg“ bei bis zu 99 Seiten.
+ */
+export function pageImageName(
+  base: string,
+  page: number,
+  total: number,
+  extension: string,
+): string {
+  const digits = String(Math.max(total, 1)).length;
+  return `${base}-seite-${String(page).padStart(digits, '0')}.${extension}`;
+}

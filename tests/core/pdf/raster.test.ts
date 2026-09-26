@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_CANVAS_PIXELS, rasterSize } from '../../../src/core/pdf/raster.ts';
+import { MAX_CANVAS_PIXELS, pageImageName, rasterSize } from '../../../src/core/pdf/raster.ts';
 
 describe('rasterSize', () => {
   it('rechnet Punkt in Pixel: DIN A4 mit 150 dpi', () => {
@@ -30,5 +30,13 @@ describe('rasterSize', () => {
     const r = rasterSize(50, 14400, 300);
     expect(r.height).toBeLessThanOrEqual(16384);
     expect(r.reduced).toBe(true);
+  });
+});
+
+describe('pageImageName', () => {
+  it('füllt mit Nullen auf, passend zur Seitenzahl', () => {
+    expect(pageImageName('bericht', 7, 9, 'jpg')).toBe('bericht-seite-7.jpg');
+    expect(pageImageName('bericht', 7, 12, 'png')).toBe('bericht-seite-07.png');
+    expect(pageImageName('bericht', 12, 120, 'jpg')).toBe('bericht-seite-012.jpg');
   });
 });

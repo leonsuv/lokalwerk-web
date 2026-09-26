@@ -135,7 +135,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'bilder-zu-pdf',
   ],
   xlsx: ['sepa-sammelueberweisung', 'excel-csv-umwandeln', 'duplikate-finden'],
-  'pdfjs-dist': ['pdf-seiten-bearbeiten'],
+  'pdfjs-dist': ['pdf-seiten-bearbeiten', 'pdf-zu-bildern'],
 };
 
 /** Namen der Werkzeuge für die Lizenzseite, in der Reihenfolge von USED_IN */

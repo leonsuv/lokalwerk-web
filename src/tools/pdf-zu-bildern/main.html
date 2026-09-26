@@ -1,0 +1,103 @@
+<div class="wrap pdf">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-pdf-img" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>PDF zu Bildern</h1>
+      <p>
+        Die Seiten einer PDF als JPEG- oder PNG-Bilder speichern, zum Beispiel für eine
+        Präsentation.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <label class="drop" id="img-drop">
+        <input type="file" class="visually-hidden" id="img-input" accept="application/pdf,.pdf" />
+        <span class="ic"
+          ><svg width="22" height="22" aria-hidden="true"><use href="#i-pdf" /></svg
+        ></span>
+        <div><strong>PDF hinzufügen</strong><span>Auswählen oder hierher ziehen</span></div>
+      </label>
+      <ul class="file-list" id="img-file" aria-label="Ausgewählte PDF"></ul>
+      <div class="empty-state" id="img-empty">
+        <strong>Noch keine PDF</strong>Füge die PDF hinzu, deren Seiten du als Bilder brauchst.
+      </div>
+      <ol class="page-grid" id="img-pages" aria-label="Seiten der PDF"></ol>
+    </div>
+    <div class="card side">
+      <h2>Bilder</h2>
+      <div class="field">
+        <span class="lbl" id="img-format-label">Format</span>
+        <div class="seg" role="group" aria-labelledby="img-format-label">
+          <button type="button" data-format="jpeg" aria-pressed="true">JPEG</button>
+          <button type="button" data-format="png" aria-pressed="false">PNG</button>
+        </div>
+        <p class="hint">JPEG für Fotos und Scans, PNG für Text und Grafiken ohne Verlust.</p>
+      </div>
+      <div class="field">
+        <label class="lbl" for="img-dpi">Auflösung</label>
+        <select id="img-dpi">
+          <option value="72">72 dpi, für den Bildschirm</option>
+          <option value="150" selected>150 dpi, Standard</option>
+          <option value="300">300 dpi, für den Druck</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl" for="img-pages-input">Seiten <span class="opt">(optional)</span></label>
+        <input
+          type="text"
+          id="img-pages-input"
+          inputmode="numeric"
+          autocomplete="off"
+          spellcheck="false"
+          aria-describedby="img-pages-hint img-pages-error"
+        />
+        <p class="hint" id="img-pages-hint">
+          Leer lassen für alle Seiten, sonst zum Beispiel 1-3, 5.
+        </p>
+        <p class="hint err" id="img-pages-error"></p>
+      </div>
+      <div class="stat-row mt-m"><span>Seiten in der PDF</span><b id="img-count">–</b></div>
+      <div class="stat-row"><span>Bilder</span><b id="img-images">–</b></div>
+      <div class="stat-row"><span>Bildgröße Seite 1</span><b id="img-size">–</b></div>
+      <p class="hint" id="img-reduced" hidden></p>
+      <button class="btn wide mt-m" id="img-save" disabled>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
+        <span id="img-save-label">Bilder speichern</span>
+      </button>
+      <button class="btn ghost wide mt-s" id="img-clear" disabled>Andere PDF wählen</button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf zur Freigabe (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="img-explain">
+    <h2 id="img-explain">So funktioniert es</h2>
+    <p>
+      Wähle eine PDF aus oder zieh sie in die Fläche oben. Stell rechts Format und Auflösung ein und
+      gib bei Bedarf an, welche Seiten du brauchst. „Bilder speichern“ erzeugt ein Bild je Seite.
+      Bei einer Seite bekommst du das Bild direkt, bei mehreren alle zusammen als ZIP-Datei. Deine
+      Originaldatei bleibt unverändert.
+    </p>
+    <h2>Welche Auflösung passt?</h2>
+    <p>
+      150 dpi reichen für Bildschirm, E-Mail und Präsentationen. 300 dpi brauchst du für den Druck;
+      die Bilder werden dann viermal so groß. Sehr große Seiten, etwa Pläne, speichert das Werkzeug
+      mit einer geringeren Auflösung, damit jeder Browser sie erzeugen kann; das steht dann rechts.
+    </p>
+    <h2>Gut zu wissen</h2>
+    <p>
+      Die Bilder enthalten keinen durchsuchbaren Text und keine Angaben wie Autor oder Titel der
+      PDF. Schriften, die nicht in der PDF stecken, ersetzt der Browser durch ähnliche; dann können
+      Bilder etwas anders aussehen als im PDF-Programm. Verschlüsselte PDFs lassen sich nicht
+      umwandeln.
+    </p>
+    <h2>Deine Dateien bleiben auf deinem Gerät</h2>
+    <p>
+      Die PDF wird direkt in deinem Browser umgewandelt und nicht hochgeladen. Nach dem Laden der
+      Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+    </p>
+  </section>
+</div>

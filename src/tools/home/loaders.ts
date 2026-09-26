@@ -70,6 +70,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../ausweiskopie/main.html?raw')).default,
     open: async () => (await import('../ausweiskopie/page.ts')).openFiles,
   },
+  'dokument-scannen': {
+    markup: async () => (await import('../dokument-scannen/main.html?raw')).default,
+    open: async () => (await import('../dokument-scannen/page.ts')).openFiles,
+  },
   'bilder-zu-pdf': {
     markup: async () => (await import('../bilder-zu-pdf/main.html?raw')).default,
     open: async () => (await import('../bilder-zu-pdf/page.ts')).addFiles,

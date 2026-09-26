@@ -46,6 +46,7 @@ describe('Seitenregister', () => {
         '/foto-zuschneiden/',
         '/foto-verpixeln/',
         '/ausweiskopie/',
+        '/dokument-scannen/',
         '/csv-reparieren/',
         '/duplikate-finden/',
         '/pdf-zusammenfuegen/',

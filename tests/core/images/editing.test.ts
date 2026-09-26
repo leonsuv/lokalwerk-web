@@ -7,9 +7,17 @@ import {
   rotatedSize,
   turn,
 } from '../../../src/core/images/crop.ts';
-import { blackAndWhite, grayscale, otsuThreshold } from '../../../src/core/images/enhance.ts';
+import { copyMarkText, markLines, todayGerman } from '../../../src/core/images/copy-mark.ts';
+import { blackAndWhite, grayscale } from '../../../src/core/images/enhance.ts';
 import { blockSize, fill, pixelate } from '../../../src/core/images/obscure.ts';
-import { apply, homography, outputSize, warp } from '../../../src/core/images/perspective.ts';
+import {
+  apply,
+  homography,
+  isConvexQuad,
+  outputSize,
+  turnCorners,
+  warp,
+} from '../../../src/core/images/perspective.ts';
 
 /** Bild mit eindeutigem Wert je Pixel: R = x, G = y */
 function gradient(width: number, height: number): Uint8ClampedArray {
@@ -124,6 +132,31 @@ describe('perspective', () => {
     expect(px(out, 10, 9, 9)).toEqual([14, 14, 0, 255]);
   });
 
+  it('erkennt überschlagene und entartete Vierecke', () => {
+    const square = [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 10 },
+      { x: 0, y: 10 },
+    ];
+    expect(isConvexQuad(square)).toBe(true);
+    expect(
+      isConvexQuad([square[0], square[2], square[1], square[3]].map((p) => p ?? { x: 0, y: 0 })),
+    ).toBe(false);
+    expect(isConvexQuad([...square.slice(0, 3), { x: 5, y: 5 }])).toBe(false);
+    expect(
+      isConvexQuad(
+        [square[0], { x: 5, y: 0 }, ...square.slice(1, 3)].map((p) => p ?? { x: 0, y: 0 }),
+      ),
+    ).toBe(false);
+  });
+
+  it('dreht die Ecken für ein gedrehtes Ergebnis', () => {
+    expect(turnCorners(['ol', 'or', 'ur', 'ul'], 1)).toEqual(['ul', 'ol', 'or', 'ur']);
+    expect(turnCorners(['ol', 'or', 'ur', 'ul'], -1)).toEqual(['or', 'ur', 'ul', 'ol']);
+    expect(turnCorners(['ol', 'or', 'ur', 'ul'], 4)).toEqual(['ol', 'or', 'ur', 'ul']);
+  });
+
   it('lehnt Ecken ab, die kein Viereck bilden', () => {
     const p = { x: 1, y: 1 };
     expect(homography([p, p, p, p], [p, { x: 2, y: 2 }, p, p])).toBeNull();
@@ -131,20 +164,28 @@ describe('perspective', () => {
 });
 
 describe('enhance', () => {
-  it('Otsu trennt zwei Helligkeitsgruppen', () => {
-    const hist = new Array<number>(256).fill(0);
-    hist[40] = 100;
-    hist[200] = 300;
-    const t = otsuThreshold(hist);
-    expect(t).toBeGreaterThanOrEqual(40);
-    expect(t).toBeLessThan(200);
+  it('Schwarzweiß mit örtlicher Schwelle: Text bleibt auch im Schatten lesbar', () => {
+    // Seite 200 × 20, links im Schatten (Papier 60, Schrift 20), rechts hell (Papier 240, Schrift 120).
+    // Eine Schwelle für das ganze Bild machte links alles schwarz oder rechts die Schrift weiß.
+    const width = 200;
+    const height = 20;
+    const data = new Uint8ClampedArray(width * height * 4);
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const paper = x < 100 ? 60 : 240;
+        const ink = x < 100 ? 20 : 120;
+        const v = x % 25 === 12 && y > 4 && y < 15 ? ink : paper;
+        data.set([v, v, v, 255], (y * width + x) * 4);
+      }
+    }
+    blackAndWhite(data, width, height);
+    const at = (x: number, y: number) => data[(y * width + x) * 4];
+    expect([at(37, 10), at(187, 10)]).toEqual([0, 0]);
+    expect([at(30, 2), at(180, 2), at(30, 10), at(180, 10)]).toEqual([255, 255, 255, 255]);
   });
 
-  it('Schwarzweiß und Graustufen', () => {
+  it('Graustufen spreizen auf Schwarz und Weiß', () => {
     const data = new Uint8ClampedArray([30, 30, 30, 255, 220, 220, 220, 255, 60, 70, 50, 255]);
-    const bw = data.slice();
-    blackAndWhite(bw);
-    expect([bw[0], bw[4], bw[8]]).toEqual([0, 255, 0]);
     grayscale(data);
     expect(data[0]).toBe(data[1]);
     expect(data[0]).toBe(0);
@@ -153,12 +194,10 @@ describe('enhance', () => {
 });
 
 describe('copy-mark (Ausweiskopie)', () => {
-  it('beginnt immer mit KOPIE, Zweck und Datum freiwillig', async () => {
-    const { copyMarkText, todayGerman, markLines } =
-      await import('../../../src/core/images/copy-mark.ts');
+  it('beginnt immer mit KOPIE, Zweck und Datum freiwillig', () => {
     expect(copyMarkText({ purpose: '', date: '' })).toBe('KOPIE');
-    expect(copyMarkText({ purpose: '  Wohnungs­bewerbung  ', date: '26.09.2026' })).toBe(
-      'KOPIE – nur für Wohnungs­bewerbung – 26.09.2026',
+    expect(copyMarkText({ purpose: '  Wohnungsbewerbung  ', date: '26.09.2026' })).toBe(
+      'KOPIE – nur für Wohnungsbewerbung – 26.09.2026',
     );
     expect(todayGerman(new Date(2026, 8, 6))).toBe('06.09.2026');
     const lines = markLines(400, 300, 100);

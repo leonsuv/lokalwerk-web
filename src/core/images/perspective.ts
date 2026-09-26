@@ -110,3 +110,32 @@ export function warp(
   }
   return dst;
 }
+
+/**
+ * Bilden die Ecken (in Reihenfolge) ein echtes, nicht überschlagenes Viereck? Alle Kreuzprodukte
+ * aufeinanderfolgender Kanten haben dann dasselbe Vorzeichen.
+ */
+export function isConvexQuad(corners: readonly Point[]): boolean {
+  if (corners.length !== 4) return false;
+  let sign = 0;
+  for (let i = 0; i < 4; i++) {
+    const a = corners[i] as Point;
+    const b = corners[(i + 1) % 4] as Point;
+    const c = corners[(i + 2) % 4] as Point;
+    const cross = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+    if (Math.abs(cross) < 1e-9) return false;
+    if (sign === 0) sign = Math.sign(cross);
+    else if (Math.sign(cross) !== sign) return false;
+  }
+  return true;
+}
+
+/**
+ * Ecken für ein gedrehtes Ergebnis: Bei `turns` Vierteldrehungen rechts herum wird die Ecke
+ * unten links zur Ecke oben links usw. Die Reihenfolge bleibt oben links, oben rechts,
+ * unten rechts, unten links.
+ */
+export function turnCorners<T>(corners: readonly T[], turns: number): T[] {
+  const shift = ((turns % 4) + 4) % 4;
+  return corners.map((_, i) => corners[(i - shift + 4) % 4] as T);
+}

@@ -1,6 +1,6 @@
 node_modules/
 dist/
 .DS_Store
-out
+out/
 # Lokale Kopien von Spezifikationen (DK/EPC/SWIFT), dürfen nicht ins Repo (docs/lokale-spezifikationen.md)
 .local-specs/

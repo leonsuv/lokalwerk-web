@@ -13,8 +13,8 @@ export interface SignatureImage {
   url: string;
 }
 
-/** Längste Kante eines hochgeladenen Bildes, bevor es aufbereitet wird */
-const MAX_UPLOAD_SIDE = 1600;
+/** Längste Kante eines ausgewählten Bildes, bevor es aufbereitet wird */
+const MAX_IMAGE_SIDE = 1600;
 
 /** Schneidet auf die Schrift zu und kodiert als PNG; null, wenn nichts zu sehen ist. */
 async function cropToPng(source: HTMLCanvasElement): Promise<SignatureImage | null> {
@@ -43,7 +43,7 @@ export async function signatureFromFile(
   removeWhite: boolean,
 ): Promise<SignatureImage | null> {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_UPLOAD_SIDE / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(bitmap.width * scale));
   canvas.height = Math.max(1, Math.round(bitmap.height * scale));

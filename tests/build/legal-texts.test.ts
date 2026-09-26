@@ -1,7 +1,7 @@
 /**
  * Rechtstexte werden nicht umgeschrieben, sondern wörtlich aus dem Prototyp übernommen
- * (AGENTS.md Abschnitt 9, plan.md A7). Einzige Abweichung: die feststehende Kontaktadresse
- * ist kein markierter Platzhalter mehr.
+ * (AGENTS.md Abschnitt 9, plan.md A7). Abweichungen: die feststehende Kontaktadresse ist kein
+ * markierter Platzhalter mehr, und Änderungen auf ausdrückliche Anweisung von Leon (INSTRUCTED).
  */
 
 import { readFileSync } from 'node:fs';
@@ -28,6 +28,22 @@ function blocks(source: string): string[] {
     .filter((t) => t !== '');
 }
 
+/** Änderungen auf Anweisung von Leon, wörtlich: [Seite, vorher, nachher, Anweisung] */
+const INSTRUCTED: ReadonlyArray<[string, string, string, string]> = [
+  [
+    'datenschutz',
+    '4. Verarbeitung deiner Dateien',
+    '4. Verarbeitung deiner Dateien und Eingaben',
+    'Leon, 26.09.2026',
+  ],
+  [
+    'datenschutz',
+    'PDFs, Fotos und Tabellen, die du in ein Werkzeug lädst, werden mit JavaScript lokal in deinem Browser verarbeitet.',
+    'PDFs, Fotos und Tabellen, die du in ein Werkzeug lädst, sowie deine Eingaben, etwa Formulareingaben, Texte oder gezeichnete Unterschriften, werden mit JavaScript lokal in deinem Browser verarbeitet.',
+    'Leon, 26.09.2026',
+  ],
+];
+
 function prototypeSection(id: string): string {
   const html = read('prototype/lokalwerk-prototyp.html');
   const start = html.indexOf(`id="page-${id}"`);
@@ -36,9 +52,15 @@ function prototypeSection(id: string): string {
 
 describe.each(['impressum', 'datenschutz'])('Rechtstext %s', (id) => {
   it('stimmt wörtlich mit dem Prototyp überein', () => {
-    const expected = blocks(prototypeSection(id)).map((t) =>
-      t.replace('[[kontakt@lokalwerk.eu]]', 'kontakt@lokalwerk.eu'),
-    );
+    const expected = blocks(prototypeSection(id)).map((t) => {
+      let text = t.replace('[[kontakt@lokalwerk.eu]]', 'kontakt@lokalwerk.eu');
+      for (const [page, before, after] of INSTRUCTED) {
+        if (page === id && (text === before || text.startsWith(`${before} `))) {
+          text = after + text.slice(before.length);
+        }
+      }
+      return text;
+    });
     expect(blocks(read(`pages/${id}/index.html`))).toEqual(expected);
   });
 

@@ -62,10 +62,10 @@ let page = 1;
 let busy = false;
 let openToken = 0;
 let renderToken = 0;
-let source: 'draw' | 'upload' = 'draw';
+let source: 'draw' | 'image' = 'draw';
 let removeWhite = true;
 let signature: SignatureImage | null = null;
-let uploaded: SignatureImage | null = null;
+let chosenImage: SignatureImage | null = null;
 const placements = new Map<number, NormRect[]>();
 
 const editor = new RectEditor({
@@ -94,8 +94,9 @@ const pad = new SignaturePad($<HTMLCanvasElement>('#sig-pad'), () => {
 
 /** Unterschrift aus der gewählten Quelle neu erzeugen und in allen Platzierungen zeigen */
 async function updateSignature(): Promise<void> {
-  const next = source === 'draw' ? (pad.isEmpty ? null : await pad.toImage()) : uploaded;
-  if (signature && signature !== uploaded && signature !== next) URL.revokeObjectURL(signature.url);
+  const next = source === 'draw' ? (pad.isEmpty ? null : await pad.toImage()) : chosenImage;
+  if (signature && signature !== chosenImage && signature !== next)
+    URL.revokeObjectURL(signature.url);
   signature = next;
   if (!signature) {
     placements.clear();
@@ -170,7 +171,7 @@ function render(): void {
     b.setAttribute('aria-pressed', String((b.dataset.white === 'remove') === removeWhite));
   }
   $('#sig-draw-panel').hidden = source !== 'draw';
-  $('#sig-upload-panel').hidden = source !== 'upload';
+  $('#sig-image-panel').hidden = source !== 'image';
   const count = allPlacements().length;
   $('#sig-ready').textContent = signature ? 'ja' : 'nein';
   $('#sig-count').textContent = ok ? String(new Set(allPlacements().map((p) => p.page)).size) : '–';
@@ -277,7 +278,7 @@ async function save(): Promise<void> {
 
 for (const b of sourceButtons) {
   b.addEventListener('click', () => {
-    source = b.dataset.source === 'upload' ? 'upload' : 'draw';
+    source = b.dataset.source === 'image' ? 'image' : 'draw';
     void updateSignature();
   });
 }
@@ -305,8 +306,8 @@ $<HTMLInputElement>('#sig-image').addEventListener('change', (event) => {
         showToast('Auf dem Bild ist keine Unterschrift zu erkennen. Wähle ein anderes Bild.');
         return;
       }
-      if (uploaded) URL.revokeObjectURL(uploaded.url);
-      uploaded = image;
+      if (chosenImage) URL.revokeObjectURL(chosenImage.url);
+      chosenImage = image;
       void updateSignature();
     },
     () => showToast('Das Bild konnte nicht gelesen werden. Wähle ein PNG- oder JPEG-Bild.'),

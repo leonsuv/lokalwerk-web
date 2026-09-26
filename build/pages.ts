@@ -242,7 +242,7 @@ export const PAGES: readonly PageDef[] = [
     url: '/pdf-unterschreiben/',
     title: 'Unterschrift in PDF einfügen – kostenlos, ohne Upload | Lokalwerk',
     description:
-      'Eine Unterschrift kostenlos zeichnen oder als Foto hochladen und als Bild auf eine PDF-Seite setzen. Nichts wird gespeichert. Direkt im Browser, ohne Upload.',
+      'Eine Unterschrift kostenlos zeichnen oder als Foto auswählen und als Bild auf eine PDF-Seite setzen. Nichts wird gespeichert. Direkt im Browser, ohne Upload.',
     index: true,
     nav: 'werkzeuge',
     tool: {

@@ -30,7 +30,13 @@ Artikel 25:
 
 > Soll die gesetzlich vorgeschriebene schriftliche Form durch die elektronische Form ersetzt werden, so muss der Aussteller der Erklärung dieser seinen Namen hinzufügen und das elektronische Dokument mit seiner qualifizierten elektronischen Signatur versehen.
 
+§ 623 (Schriftform der Kündigung), abgerufen am 26.09.2026:
+
+> Die Beendigung von Arbeitsverhältnissen durch Kündigung oder Auflösungsvertrag bedürfen zu ihrer Wirksamkeit der Schriftform; die elektronische Form ist ausgeschlossen.
+
+Folge für den Erklärtext: Nach dem Beispiel § 623 darf der Satz zu § 126a nicht so klingen, als ginge die Kündigung mit einer qualifizierten elektronischen Signatur. Er lautet deshalb „Die elektronische Form braucht dafür, wo sie zulässig ist, eine qualifizierte elektronische Signatur (§ 126a BGB).“ (Einschub „wo sie zulässig ist“ zur Freigabe durch Leon.)
+
 ## Folgerung für die Texte
 
-- Art. 3 Nr. 10 ist weit gefasst. Ein eingefügtes Bild der Unterschrift kann darunter fallen (einfache elektronische Signatur). Die Aussage „keine elektronische Signatur“ wäre deshalb angreifbar. Die Texte sagen stattdessen genau, was es nicht ist: keine digitale (kryptografische) Signatur der Datei, keine fortgeschrittene und keine qualifizierte elektronische Signatur, kein Ersatz für die Schriftform nach § 126 BGB. **Zur Entscheidung durch Leon.**
+- Art. 3 Nr. 10 ist weit gefasst. Ein eingefügtes Bild der Unterschrift kann darunter fallen (einfache elektronische Signatur). Die Aussage „keine elektronische Signatur“ wäre deshalb angreifbar. Die Texte sagen stattdessen genau, was es nicht ist: keine digitale (kryptografische) Signatur der Datei, keine fortgeschrittene und keine qualifizierte elektronische Signatur, kein Ersatz für die Schriftform nach § 126 BGB. **Freigegeben von Leon am 26.09.2026.**
 - Die Anforderungen an eine fortgeschrittene Signatur (Art. 26, u. a. Zuordnung, Identifizierung, Erkennbarkeit späterer Änderungen) erfüllt ein eingefügtes Bild nicht.

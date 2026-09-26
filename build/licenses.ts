@@ -138,6 +138,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'bilder-zu-pdf',
   ],
   xlsx: ['sepa-sammelueberweisung', 'excel-csv-umwandeln', 'duplikate-finden', 'iban-pruefen'],
+  exifr: ['foto-metadaten'],
   uqr: ['qr-code', 'qr-code-ueberweisung'],
   'pdfjs-dist': [
     'pdf-seiten-bearbeiten',

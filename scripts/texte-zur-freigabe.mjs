@@ -26,6 +26,15 @@ const PHASE1 = new Set([
 ]);
 /** Paket 1 bis 3: alle neuen Texte freigegeben von Leon am 25.09.2026 */
 const NEW = 'NEU, freigegeben von Leon am 25.09.2026';
+/** Paket 6: neue Werkzeuge, Texte zur Freigabe */
+const PAKET6 = new Set([
+  '/foto-metadaten/',
+  '/foto-zuschneiden/',
+  '/foto-verpixeln/',
+  '/ausweiskopie/',
+  '/dokument-scannen/',
+]);
+const P6 = 'NEU, Paket 6, zur Freigabe';
 /** Paket 5: neue Werkzeuge, Texte zur Freigabe */
 const PAKET5 = new Set([
   '/qr-code/',
@@ -44,7 +53,7 @@ const PAKET4 = new Set([
 ]);
 const P4 = 'NEU, Paket 4, freigegeben von Leon am 26.09.2026';
 const markFor = (/** @type {string} */ url) =>
-  PHASE1.has(url) ? '' : PAKET5.has(url) ? P5 : PAKET4.has(url) ? P4 : NEW;
+  PHASE1.has(url) ? '' : PAKET6.has(url) ? P6 : PAKET5.has(url) ? P5 : PAKET4.has(url) ? P4 : NEW;
 const clean = (/** @type {string} */ html) =>
   html
     .replace(/<[^>]+>/g, '')
@@ -54,7 +63,7 @@ const clean = (/** @type {string} */ html) =>
 const out = [
   '# Texte zur Freigabe',
   '',
-  'Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: neue Texte mit „NEU, Paket 5, zur Freigabe“ markiert.**',
+  'Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: neue Texte mit „NEU, Paket 5, zur Freigabe“ markiert. Paket 6: „NEU, Paket 6, zur Freigabe“.**',
   '',
   'Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.',
   '',
@@ -126,6 +135,7 @@ out.push(
   `| **${P5}** QR-Code für Überweisungen, Meldungen | „Gib den Namen des Empfängers ein.“, „Umgeschrieben: é → e.“, „Auf 70 Zeichen gekürzt (vorher 75).“, „Betrag im Code: 12,50 €“, IBAN- und Betragsfehler wie auf der SEPA-Seite, „Die BIC hat ein ungültiges Format. Lass das Feld leer, wenn du sie nicht brauchst.“, „Zusammen sind es 340 Byte, erlaubt sind 331. Kürze Name oder Verwendungszweck.“, „Fertig: Der QR-Code ist gespeichert. Teste ihn vor dem Druck mit deiner Banking-App.“; Hinweis „Teste den Code vor dem Druck mit deiner eigenen Banking-App: Scanne ihn, prüfe Empfänger, IBAN, Betrag und Verwendungszweck und brich die Überweisung dann ab.“; Klartext im PNG „Empfänger: …“, „IBAN: …“, „BIC: …“, „Betrag: …“, „Verwendungszweck: …“ | \`src/tools/qr-code-ueberweisung/\` |`,
   `| **${P5}** IBAN-Liste prüfen, Meldungen | Ergebnisse „gültig“, „gültig, kommt mehrfach vor (Zeilen 2, 5)“, „leer“, „SEPA-Land außerhalb des EWR (CH): Prüfziffer stimmt, Länge nicht geprüft“ / „… Prüfziffer stimmt nicht (Tippfehler?)“, sonst wie auf der SEPA-Seite; „Keine Auffälligkeiten: Alle IBANs sind gültig.“, „Die ersten 500 von 800 Zeilen.“, „Fertig: Die Liste mit der Spalte „IBAN-Prüfung“ ist gespeichert.“; Reiter „SEPA-Texte prüfen“: „Umgeschrieben: …“, „Zu lang: 150 Zeichen, erlaubt sind 140. Die Bank bekäme nur den gekürzten Text.“, „Alles in Ordnung: Der Text bleibt, wie er ist.“ | \`src/tools/iban-pruefen/\` |`,
   `| **${P5}** Gläubiger-ID prüfen, Meldungen | „Formal gültig: Aufbau und Prüfziffer stimmen.“, „Der Aufbau stimmt nicht: zwei Buchstaben für das Land, zwei Ziffern, drei Zeichen für den Geschäftsbereich, dann die nationale Kennung.“, „XX ist kein Land im SEPA-Raum. …“, „Eine deutsche Gläubiger-ID hat 18 Stellen, diese hat 17. …“, „Bei einer deutschen Gläubiger-ID stehen ab Stelle 8 nur Ziffern.“, „Die Prüfziffer passt nicht zur Nummer. Meist ist eine Ziffer vertippt oder vertauscht.“ | \`src/tools/glaeubiger-id-pruefen/\` |`,
+  `| **${P6}** Foto-Metadaten anzeigen, Meldungen | Abschnitte „Aufnahmeort“, „Kamera“, „Zeit“, „Person und Beschreibung“, „Software“, „Aufnahme“, „Weitere Angaben“ mit Feldnamen wie „Breite“, „Länge“, „Hersteller“, „Aufgenommen“, „Urheber“; Hinweise „Keine Metadaten gefunden“, „XMP-Daten: vorhanden (Text beliebigen Inhalts, oft Bearbeitungsverlauf oder Bildrechte)“, „IPTC-Daten: vorhanden (oft Beschreibung, Stichwörter, Urheber)“; „Fertig: Das Foto ist ohne Metadaten gespeichert.“, „Fertig: 3 Fotos ohne Metadaten als ZIP gespeichert.“, „In der neuen Datei steckten noch Angaben; sie wurde deshalb nicht gespeichert.“, „Das ist kein JPEG-, PNG- oder WebP-Bild, oder die Datei ist beschädigt.“ | \`src/tools/foto-metadaten/\`, \`src/core/images/exif-read.ts\` |`,
   '| 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |',
   '| Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |',
   '| SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |',

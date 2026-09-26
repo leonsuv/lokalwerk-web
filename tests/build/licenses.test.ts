@@ -19,6 +19,7 @@ describe('collectLicenses (aus den installierten Paketen)', () => {
         '@fontsource/onest',
         '@pdf-lib/standard-fonts',
         '@pdf-lib/upng',
+        'exifr',
         'pako',
         'pdf-lib',
         'pdfjs-dist',

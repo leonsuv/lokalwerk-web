@@ -263,6 +263,32 @@ describe('uqr (plan-phase2.md E5)', () => {
   });
 });
 
+describe('exifr (plan-phase2.md E7)', () => {
+  const entries = ALLOWED_LIBRARY_URLS.filter((e) => e.package === 'exifr');
+
+  it('drei XMP-Namensräume und eine tote Adresse, alle im Lite-Bundle', () => {
+    expect(entries.map((e) => e.url).sort()).toEqual([
+      'http://ns.adobe.com/',
+      'http://ns.adobe.com/xap/1.0/',
+      'http://ns.adobe.com/xmp/extension/',
+      'https://github.com/MikeKovarik/exifr',
+    ]);
+    const code = readFileSync(
+      new URL('../../node_modules/exifr/dist/lite.esm.mjs', import.meta.url),
+      'utf8',
+    );
+    for (const entry of entries) expect(code, entry.url).toContain(entry.url);
+  });
+
+  it('gelten nur in Dateien mit exifr', () => {
+    const files = { 'assets/meta.worker-A.js': ['exifr'], 'assets/page-B.js': [] };
+    const check = (file: string) =>
+      checkText('"http://ns.adobe.com/xap/1.0/"', 'js', file, { packagesByFile: files });
+    expect(check('assets/meta.worker-A.js')).toEqual([]);
+    expect(check('assets/page-B.js')).toHaveLength(1);
+  });
+});
+
 describe('Lizenzseite (plan.md N3, Variante A)', () => {
   it('liest Adressen in spitzen Klammern ohne &gt; (z. B. „Anthony Fu <https://github.com/antfu>“)', () => {
     const html = '<p>Copyright (c) 2023 Anthony Fu &lt;https://github.com/antfu&gt;</p>';

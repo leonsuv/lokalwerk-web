@@ -42,6 +42,7 @@ describe('Seitenregister', () => {
         '/qr-code-ueberweisung/',
         '/iban-pruefen/',
         '/glaeubiger-id-pruefen/',
+        '/foto-metadaten/',
         '/csv-reparieren/',
         '/duplikate-finden/',
         '/pdf-zusammenfuegen/',

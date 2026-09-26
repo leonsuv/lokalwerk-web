@@ -23,6 +23,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { collectLicenses } from '../build/licenses.ts';
+import { EXIFR_URLS } from './allowed-urls-exifr.mjs';
 import { PDFJS_URLS } from './allowed-urls-pdfjs.mjs';
 import { SHEETJS_URLS } from './allowed-urls-sheetjs.mjs';
 import { UQR_URLS } from './allowed-urls-uqr.mjs';
@@ -69,6 +70,8 @@ export const ALLOWED_SVG_XML_URLS = [
  * aus SheetJS, jeweils nur im SEPA-Worker (scripts/allowed-urls-sheetjs.mjs).
  * Seit 25.09.2026: Namensräume und zwei tote Adressen aus pdf.js (scripts/allowed-urls-pdfjs.mjs).
  * Seit 26.09.2026: SVG-Namensraum in uqr (scripts/allowed-urls-uqr.mjs).
+ * 26.09.2026 vorgelegt, Freigabe ausstehend: XMP-Namensräume und eine Adresse aus exifr
+ * (scripts/allowed-urls-exifr.mjs).
  *
  * @type {ReadonlyArray<AllowedUrl & { library: string, package: string, category?: string, test?: string }>}
  */
@@ -76,6 +79,7 @@ export const ALLOWED_LIBRARY_URLS = [
   ...SHEETJS_URLS,
   ...PDFJS_URLS,
   ...UQR_URLS,
+  ...EXIFR_URLS,
   {
     url: 'https://github.com/Hopding/pdf-lib',
     library: 'pdf-lib 1.17.1',

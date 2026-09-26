@@ -1239,3 +1239,34 @@ select[multiple] {
 .seg.four {
   grid-template-columns: repeat(4, 1fr);
 }
+
+/* Foto-Metadaten */
+.meta-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: var(--bg);
+}
+.meta-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.meta-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.meta-table caption {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.5rem 0.2rem;
+}
+.meta-table th {
+  width: 40%;
+  font-weight: 500;
+  color: var(--muted);
+}

@@ -1,6 +1,6 @@
 # Texte zur Freigabe
 
-Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: neue Texte mit „NEU, Paket 5, zur Freigabe“ markiert.**
+Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: neue Texte mit „NEU, Paket 5, zur Freigabe“ markiert. Paket 6: „NEU, Paket 6, zur Freigabe“.**
 
 Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.
 
@@ -22,6 +22,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-metadaten-entfernen/` | PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload \| Lokalwerk | Kostenlos sehen, welche versteckten Angaben in einer PDF stecken, und Autor, Programm, Datum und frühere Fassungen entfernen. Direkt im Browser, ohne Upload. | 157 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/bilder-zu-pdf/` | Bilder zu PDF: JPG und PNG in PDF umwandeln – kostenlos \| Lokalwerk | Fotos und Scans kostenlos zu einer PDF zusammenfassen, eine Seite je Bild, auf DIN A4. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 145 | ja |
 | `/fotos-verkleinern/` | Fotos verkleinern und Metadaten entfernen – kostenlos \| Lokalwerk | Fotos kostenlos für E-Mail und Website verkleinern und dabei GPS-Position und Kameradaten entfernen. Direkt im Browser, ohne Upload. | 132 | ja |
+| **NEU, Paket 6, zur Freigabe** `/foto-metadaten/` | Foto-Metadaten anzeigen: GPS, Kamera, Datum – ohne Upload \| Lokalwerk | Kostenlos sehen, was ein Foto verrät: Aufnahmeort, Kamera, Uhrzeit und Programm, und das Foto ohne diese Angaben speichern. Direkt im Browser, ohne Upload. | 155 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
 | **NEU, Paket 5, zur Freigabe** `/qr-code-ueberweisung/` | QR-Code für Überweisungen (EPC-QR-Code) erstellen – kostenlos \| Lokalwerk | Einen QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet. | 160 | ja |
@@ -300,6 +301,30 @@ iPhone-Fotos im HEIC-Format kann nicht jeder Browser öffnen. Dann erscheint ein
 Die Fotos werden direkt in deinem Browser verarbeitet und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung. Deine Originale bleiben unverändert.
 
 _(Erklärtext: 158 Wörter)_
+
+## Foto-Metadaten anzeigen – NEU, Paket 6, zur Freigabe (`src/tools/foto-metadaten/main.html`)
+
+Karte: „Foto-Metadaten anzeigen“ – „Sehen, was ein Foto verrät: Aufnahmeort, Kamera, Uhrzeit. Auf Wunsch entfernen.“
+
+Unterzeile im Kopf: „Sieh nach, was ein Foto über dich verrät, zum Beispiel Aufnahmeort, Kamera und Uhrzeit, bevor du es weitergibst.“
+
+**So funktioniert es**
+
+Wähle Fotos aus oder zieh sie in die Fläche oben. Für jedes Foto siehst du, welche Angaben darin stecken: Aufnahmeort als Koordinaten, Kamera und Objektiv, Aufnahmezeit, Programm und Angaben zur Person. Den Ort zeigt das Werkzeug nur als Zahlen, ohne Karte; eine Karte müsste bei einem Kartendienst geladen werden.
+
+**Metadaten entfernen**
+
+„Ohne Metadaten speichern“ erzeugt das Bild neu, in voller Größe und im selben Format. Dabei bleiben keine Angaben übrig; jede fertige Datei wird darauf noch einmal geprüft. JPEG und WebP werden dabei neu komprimiert und können minimal anders aussehen. Deine Originale bleiben unverändert.
+
+**Gut zu wissen**
+
+Aufnahmezeiten stehen so da, wie die Kamera sie gespeichert hat; eine Zeitzone enthalten sie meist nicht. Manche Angaben sieht das Werkzeug nur als „vorhanden“, etwa IPTC-Daten mit Beschreibung und Stichwörtern. Auch die entfernt „Ohne Metadaten speichern“.
+
+**Deine Fotos bleiben auf deinem Gerät**
+
+Die Fotos werden direkt in deinem Browser gelesen und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 150 Wörter)_
 
 ## Bildformat umwandeln – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/bildformat-umwandeln/main.html`)
 
@@ -616,6 +641,7 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, Paket 5, zur Freigabe** QR-Code für Überweisungen, Meldungen | „Gib den Namen des Empfängers ein.“, „Umgeschrieben: é → e.“, „Auf 70 Zeichen gekürzt (vorher 75).“, „Betrag im Code: 12,50 €“, IBAN- und Betragsfehler wie auf der SEPA-Seite, „Die BIC hat ein ungültiges Format. Lass das Feld leer, wenn du sie nicht brauchst.“, „Zusammen sind es 340 Byte, erlaubt sind 331. Kürze Name oder Verwendungszweck.“, „Fertig: Der QR-Code ist gespeichert. Teste ihn vor dem Druck mit deiner Banking-App.“; Hinweis „Teste den Code vor dem Druck mit deiner eigenen Banking-App: Scanne ihn, prüfe Empfänger, IBAN, Betrag und Verwendungszweck und brich die Überweisung dann ab.“; Klartext im PNG „Empfänger: …“, „IBAN: …“, „BIC: …“, „Betrag: …“, „Verwendungszweck: …“ | `src/tools/qr-code-ueberweisung/` |
 | **NEU, Paket 5, zur Freigabe** IBAN-Liste prüfen, Meldungen | Ergebnisse „gültig“, „gültig, kommt mehrfach vor (Zeilen 2, 5)“, „leer“, „SEPA-Land außerhalb des EWR (CH): Prüfziffer stimmt, Länge nicht geprüft“ / „… Prüfziffer stimmt nicht (Tippfehler?)“, sonst wie auf der SEPA-Seite; „Keine Auffälligkeiten: Alle IBANs sind gültig.“, „Die ersten 500 von 800 Zeilen.“, „Fertig: Die Liste mit der Spalte „IBAN-Prüfung“ ist gespeichert.“; Reiter „SEPA-Texte prüfen“: „Umgeschrieben: …“, „Zu lang: 150 Zeichen, erlaubt sind 140. Die Bank bekäme nur den gekürzten Text.“, „Alles in Ordnung: Der Text bleibt, wie er ist.“ | `src/tools/iban-pruefen/` |
 | **NEU, Paket 5, zur Freigabe** Gläubiger-ID prüfen, Meldungen | „Formal gültig: Aufbau und Prüfziffer stimmen.“, „Der Aufbau stimmt nicht: zwei Buchstaben für das Land, zwei Ziffern, drei Zeichen für den Geschäftsbereich, dann die nationale Kennung.“, „XX ist kein Land im SEPA-Raum. …“, „Eine deutsche Gläubiger-ID hat 18 Stellen, diese hat 17. …“, „Bei einer deutschen Gläubiger-ID stehen ab Stelle 8 nur Ziffern.“, „Die Prüfziffer passt nicht zur Nummer. Meist ist eine Ziffer vertippt oder vertauscht.“ | `src/tools/glaeubiger-id-pruefen/` |
+| **NEU, Paket 6, zur Freigabe** Foto-Metadaten anzeigen, Meldungen | Abschnitte „Aufnahmeort“, „Kamera“, „Zeit“, „Person und Beschreibung“, „Software“, „Aufnahme“, „Weitere Angaben“ mit Feldnamen wie „Breite“, „Länge“, „Hersteller“, „Aufgenommen“, „Urheber“; Hinweise „Keine Metadaten gefunden“, „XMP-Daten: vorhanden (Text beliebigen Inhalts, oft Bearbeitungsverlauf oder Bildrechte)“, „IPTC-Daten: vorhanden (oft Beschreibung, Stichwörter, Urheber)“; „Fertig: Das Foto ist ohne Metadaten gespeichert.“, „Fertig: 3 Fotos ohne Metadaten als ZIP gespeichert.“, „In der neuen Datei steckten noch Angaben; sie wurde deshalb nicht gespeichert.“, „Das ist kein JPEG-, PNG- oder WebP-Bild, oder die Datei ist beschädigt.“ | `src/tools/foto-metadaten/`, `src/core/images/exif-read.ts` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

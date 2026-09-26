@@ -68,7 +68,7 @@ export const ALLOWED_SVG_XML_URLS = [
  * Seit 24.09.2026 außerdem freigegeben: XML-Namensräume und Beziehungstypen nach ECMA-376
  * aus SheetJS, jeweils nur im SEPA-Worker (scripts/allowed-urls-sheetjs.mjs).
  * Seit 25.09.2026: Namensräume und zwei tote Adressen aus pdf.js (scripts/allowed-urls-pdfjs.mjs).
- * 26.09.2026 vorgelegt, Freigabe ausstehend: SVG-Namensraum in uqr (scripts/allowed-urls-uqr.mjs).
+ * Seit 26.09.2026: SVG-Namensraum in uqr (scripts/allowed-urls-uqr.mjs).
  *
  * @type {ReadonlyArray<AllowedUrl & { library: string, package: string, category?: string, test?: string }>}
  */

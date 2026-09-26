@@ -3,9 +3,8 @@
  * die uqr enthalten (E14). Fundstelle: Zeile in node_modules/uqr/dist/index.mjs;
  * tests/scripts/check-dist.test.ts prüft, dass die Adresse dort steht.
  *
- * VORGELEGT am 26.09.2026, Freigabe durch Leon ausstehend (plan.md N3). Der Eintrag war in
- * plan-phase2.md Abschnitt 5.2 angekündigt. Wird er abgelehnt, entfällt der SVG-Export der
- * beiden QR-Werkzeuge, und der Eintrag wird gelöscht.
+ * Freigegeben von Leon am 26.09.2026 (plan.md N3); angekündigt in plan-phase2.md Abschnitt 5.2.
+ * Übersicht: docs/uqr-adressen.md. Neue Einträge nur nach Rückfrage.
  */
 
 /** @type {ReadonlyArray<{ url: string, library: string, package: string, category: string, reason: string, source: string }>} */

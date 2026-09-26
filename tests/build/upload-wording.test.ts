@@ -17,7 +17,7 @@ const NEGATION = /\b(?:nicht|ohne|keine?[nmrs]?|weder|nie|nichts)\b|\b0 B\b/i;
 
 /**
  * Ausnahmen mit Begründung: „hochladen“ im Sinn von Einreichen einer erzeugten Datei bei der
- * Bank, nicht für die Dateiauswahl im Browser. Freigegebene Texte der Phase 1; Rückfrage an Leon.
+ * Bank, nicht für die Dateiauswahl im Browser. Freigegebene Texte der Phase 1; bleiben so (Leon, 26.09.2026: Banken nennen die Funktion so).
  */
 const BANK_UPLOAD = [
   'die du im Onlinebanking hochladen kannst',

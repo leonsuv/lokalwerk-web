@@ -38,6 +38,8 @@ export interface LicenseEntry {
 }
 
 export interface DataLicense {
+  /** Datei mit dem Lizenztext, relativ zum Projektordner; zugleich Kennung für die Build-Prüfung */
+  file: string;
   /** SPDX-Kennung */
   spdx: string;
   name: string;
@@ -49,14 +51,58 @@ export interface DataLicense {
   text: string;
 }
 
+const PDFJS_WASM = 'node_modules/pdfjs-dist/wasm';
+const PDFJS_DECODERS =
+  'pdf.js enthält diesen Dekoder als von Mozilla übersetzten Code (WebAssembly und daraus ' +
+  'erzeugtes JavaScript). Ausgeliefert wird nur die JavaScript-Fassung, unverändert.';
+
 /**
- * Lizenzen mitgelieferter Daten, die das npm-Paket nicht selbst enthält. Der Build verlangt
- * sie, sobald das Paket ausgeliefert wird (build/shipped-packages.ts).
+ * Lizenzen mitgelieferter Teile, deren Text nicht in der Hauptlizenzdatei des npm-Pakets steht.
+ * Der Build verlangt jede davon, sobald das Paket ausgeliefert wird (build/shipped-packages.ts).
  * APAFML: docs/adobe-afm.md (Quellen, Abgleich, Prüfung der Metriken).
+ * pdfjs-dist: Dekoder für JPEG 2000 (OpenJPEG) und JBIG2/CCITT (PDFium), Texte wörtlich aus dem
+ * Paket (Leon, 25.09.2026).
  */
-export const REQUIRED_DATA_LICENSES: Record<string, Omit<DataLicense, 'text'> & { file: string }> =
-  {
-    '@pdf-lib/standard-fonts': {
+export const REQUIRED_DATA_LICENSES: Record<string, ReadonlyArray<Omit<DataLicense, 'text'>>> = {
+  'pdfjs-dist': [
+    {
+      file: `${PDFJS_WASM}/LICENSE_OPENJPEG`,
+      spdx: 'BSD-2-Clause',
+      name: 'BSD 2-Clause License',
+      subject: 'JPEG-2000-Dekoder OpenJPEG',
+      note: PDFJS_DECODERS,
+      source: 'Datei wasm/LICENSE_OPENJPEG aus dem npm-Paket pdfjs-dist, unverändert.',
+    },
+    {
+      file: `${PDFJS_WASM}/LICENSE_PDFJS_OPENJPEG`,
+      spdx: 'BSD-2-Clause',
+      name: 'BSD 2-Clause License',
+      subject: 'Anbindung von OpenJPEG an pdf.js',
+      note: 'Der von Mozilla geschriebene Teil, der OpenJPEG mit pdf.js verbindet.',
+      source: 'Datei wasm/LICENSE_PDFJS_OPENJPEG aus dem npm-Paket pdfjs-dist, unverändert.',
+    },
+    {
+      file: `${PDFJS_WASM}/LICENSE_JBIG2`,
+      spdx: 'BSD-3-Clause AND Apache-2.0',
+      name: 'BSD 3-Clause License und Apache License 2.0',
+      subject: 'JBIG2- und CCITT-Dekoder aus PDFium',
+      note:
+        PDFJS_DECODERS +
+        ' Die Lizenzdatei enthält den Hinweis der PDFium-Autoren (BSD 3-Clause) und den vollständigen Text der Apache License 2.0.',
+      source: 'Datei wasm/LICENSE_JBIG2 aus dem npm-Paket pdfjs-dist, unverändert.',
+    },
+    {
+      file: `${PDFJS_WASM}/LICENSE_PDFJS_JBIG2`,
+      spdx: 'Apache-2.0',
+      name: 'Apache License 2.0',
+      subject: 'Anbindung des JBIG2-Dekoders an pdf.js',
+      note: 'Der von Mozilla geschriebene Teil, der den PDFium-Dekoder mit pdf.js verbindet.',
+      source: 'Datei wasm/LICENSE_PDFJS_JBIG2 aus dem npm-Paket pdfjs-dist, unverändert.',
+    },
+  ],
+  '@pdf-lib/standard-fonts': [
+    {
+      file: 'build/third-party/APAFML.txt',
       spdx: 'APAFML',
       name: 'Adobe Postscript AFM License',
       subject: 'Enthaltene Schriftmetriken der 14 PDF-Standardschriften (Adobe Core 14 AFM)',
@@ -69,9 +115,9 @@ export const REQUIRED_DATA_LICENSES: Record<string, Omit<DataLicense, 'text'> & 
       source:
         'Wortlaut aus der SPDX-Lizenzliste (Kennung APAFML), abgeglichen mit MustRead.html aus Adobes ' +
         'Core14_AFMs.tar, wie sie im Quellcode-Repository von @pdf-lib/standard-fonts liegt.',
-      file: 'build/third-party/APAFML.txt',
     },
-  };
+  ],
+};
 
 /**
  * Ausgelieferte direkte Abhängigkeiten und die Werkzeuge (ids aus build/pages.ts), die sie laden.
@@ -81,6 +127,7 @@ export const REQUIRED_DATA_LICENSES: Record<string, Omit<DataLicense, 'text'> & 
 export const USED_IN: Readonly<Record<string, readonly string[]>> = {
   'pdf-lib': [
     'pdf-zusammenfuegen',
+    'pdf-seiten-bearbeiten',
     'pdf-teilen',
     'pdf-seitenzahlen',
     'pdf-stempel',
@@ -88,6 +135,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'bilder-zu-pdf',
   ],
   xlsx: ['sepa-sammelueberweisung', 'excel-csv-umwandeln', 'duplikate-finden'],
+  'pdfjs-dist': ['pdf-seiten-bearbeiten'],
 };
 
 /** Namen der Werkzeuge für die Lizenzseite, in der Reihenfolge von USED_IN */
@@ -173,10 +221,10 @@ function standardFontNotices(dir: string): NonNullable<LicenseEntry['extra']> {
 }
 
 function dataLicensesFor(name: string, root: string): DataLicense[] {
-  const config = REQUIRED_DATA_LICENSES[name];
-  if (!config) return [];
-  const { file, ...rest } = config;
-  return [{ ...rest, text: readFileSync(join(root, file), 'utf8').trim() }];
+  return (REQUIRED_DATA_LICENSES[name] ?? []).map((config) => ({
+    ...config,
+    text: readFileSync(join(root, config.file), 'utf8').trim(),
+  }));
 }
 
 export function collectLicenses(root: string): LicenseEntry[] {

@@ -21,6 +21,7 @@ describe('collectLicenses (aus den installierten Paketen)', () => {
         '@pdf-lib/upng',
         'pako',
         'pdf-lib',
+        'pdfjs-dist',
         'tslib',
         'xlsx',
       ].sort(),
@@ -28,7 +29,7 @@ describe('collectLicenses (aus den installierten Paketen)', () => {
   });
 
   it('führt nur ausgelieferte Pakete auf, mit den Werkzeugen, die sie laden', () => {
-    expect(byId('pdfjs-dist')).toBeUndefined();
+    expect(byId('@napi-rs/canvas')).toBeUndefined();
     expect(byId('xlsx')?.usedIn).toBe(
       'SEPA-Sammelüberweisung, Excel und CSV umwandeln, Duplikate finden',
     );
@@ -105,6 +106,46 @@ describe('Adobe Postscript AFM License (APAFML) für die Schriftmetriken', () =>
     const html = renderLicenses(entries);
     expect(html).toContain('Adobe Postscript AFM License (APAFML)');
     expect(html).toContain('MIT; APAFML (Enthaltene Schriftmetriken');
+  });
+});
+
+describe('Lizenzen der Dekoder in pdf.js (Leon, 25.09.2026)', () => {
+  const data = byId('pdfjs-dist')?.dataLicenses ?? [];
+  const wasm = (file: string) =>
+    readFileSync(new URL(`../../node_modules/pdfjs-dist/wasm/${file}`, import.meta.url), 'utf8');
+
+  it('nennt OpenJPEG und PDFium-JBIG2 samt Anbindung, wörtlich aus dem Paket', () => {
+    expect(data.map((d) => d.file.split('/').pop())).toEqual([
+      'LICENSE_OPENJPEG',
+      'LICENSE_PDFJS_OPENJPEG',
+      'LICENSE_JBIG2',
+      'LICENSE_PDFJS_JBIG2',
+    ]);
+    for (const d of data) {
+      expect(d.text, d.file).toBe(wasm(d.file.split('/').pop() ?? '').trim());
+      expect(d.source, d.file).toMatch(/aus dem npm-Paket pdfjs-dist, unverändert/);
+    }
+    expect(data[0]?.text).toContain('Universite catholique de Louvain');
+    expect(data[2]?.text).toContain('The PDFium Authors');
+  });
+
+  it('der Build verlangt jede davon, sobald pdf.js ausgeliefert wird', () => {
+    setShippedForTest(['pdfjs-dist']);
+    const fontsDir = fileURLToPath(new URL('../../public/fonts', import.meta.url));
+    const run = (files: string[]) => () =>
+      (
+        verifyLicensesListed({
+          listed: () => ['pdfjs-dist', '@fontsource/onest'],
+          dataLicenses: () => ({ 'pdfjs-dist': files }),
+          requiredDataLicenses: REQUIRED_DATA_LICENSES,
+          fontsDir,
+          fontPrefixes: { 'onest-': '@fontsource/onest' },
+        }).closeBundle as () => void
+      ).call({});
+    const all = data.map((d) => d.file);
+    expect(run(all)).not.toThrow();
+    expect(run(all.filter((f) => !f.endsWith('LICENSE_JBIG2')))).toThrow(/LICENSE_JBIG2/);
+    setShippedForTest([]);
   });
 });
 

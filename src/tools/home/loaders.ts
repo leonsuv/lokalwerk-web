@@ -22,6 +22,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-teilen/main.html?raw')).default,
     open: async () => (await import('../pdf-teilen/page.ts')).openFiles,
   },
+  'pdf-seiten-bearbeiten': {
+    markup: async () => (await import('../pdf-seiten-bearbeiten/main.html?raw')).default,
+    open: async () => (await import('../pdf-seiten-bearbeiten/page.ts')).openFiles,
+  },
   'pdf-seitenzahlen': {
     markup: async () => (await import('../pdf-seitenzahlen/main.html?raw')).default,
     open: async () => (await import('../pdf-seitenzahlen/page.ts')).openFiles,

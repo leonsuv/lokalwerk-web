@@ -33,6 +33,7 @@ describe('Seitenregister', () => {
         '/kontrast-pruefen/',
         '/pdf-seitenzahlen/',
         '/pdf-stempel/',
+        '/pdf-seiten-bearbeiten/',
         '/csv-reparieren/',
         '/duplikate-finden/',
         '/pdf-zusammenfuegen/',

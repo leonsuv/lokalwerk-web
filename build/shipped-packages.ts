@@ -165,7 +165,7 @@ export function writeShippedManifest(file: string): Plugin {
 export interface VerifyOptions {
   /** Paketnamen auf der Lizenzseite */
   listed: () => readonly string[];
-  /** Je Paket die SPDX-Kennungen der Datenlizenzen auf der Lizenzseite */
+  /** Je Paket die Dateien der Datenlizenzen auf der Lizenzseite (DataLicense.file) */
   dataLicenses?: () => Record<string, readonly string[]>;
   /**
    * Werkzeuge je direkter Abhängigkeit, wie auf der Lizenzseite genannt (build/licenses.ts).
@@ -173,7 +173,7 @@ export interface VerifyOptions {
    */
   usedIn?: Readonly<Record<string, readonly string[]>>;
   /** Je Paket verlangte Datenlizenzen, sobald das Paket ausgeliefert wird */
-  requiredDataLicenses?: Record<string, { spdx: string }>;
+  requiredDataLicenses?: Record<string, ReadonlyArray<{ file: string; spdx: string }>>;
   /** Ordner der selbst gehosteten Schriften und Zuordnung Dateipräfix → Paket */
   fontsDir: string;
   fontPrefixes: Record<string, string>;
@@ -227,11 +227,14 @@ export function verifyLicensesListed(options: VerifyOptions): Plugin {
         }
       }
       const listedData = options.dataLicenses?.() ?? {};
-      for (const [pkg, { spdx }] of Object.entries(options.requiredDataLicenses ?? {})) {
-        if (shipped.has(pkg) && !(listedData[pkg] ?? []).includes(spdx)) {
-          throw new Error(
-            `Lizenzen: ${pkg} wird ausgeliefert, aber die Datenlizenz ${spdx} fehlt auf /lizenzen/.`,
-          );
+      for (const [pkg, required] of Object.entries(options.requiredDataLicenses ?? {})) {
+        if (!shipped.has(pkg)) continue;
+        for (const { file, spdx } of required) {
+          if (!(listedData[pkg] ?? []).includes(file)) {
+            throw new Error(
+              `Lizenzen: ${pkg} wird ausgeliefert, aber die Datenlizenz ${spdx} (${file}) fehlt auf /lizenzen/.`,
+            );
+          }
         }
       }
       console.log(

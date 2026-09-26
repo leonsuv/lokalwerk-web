@@ -1,6 +1,6 @@
 # Texte zur Freigabe
 
-Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“.
+Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4 (ab 26.09.2026): neue Texte mit „NEU, Paket 4, zur Freigabe“ markiert.**
 
 Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.
 
@@ -12,6 +12,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU, freigegeben von Leon am 25.09.2026** `/werkzeuge/` | Alle Werkzeuge – PDF, Fotos, Tabellen und SEPA ohne Upload \| Lokalwerk | Alle Werkzeuge von Lokalwerk auf einen Blick: PDF, Fotos, Tabellen und Zahlungsverkehr. Kostenlos, direkt im Browser, ohne Upload deiner Dateien. | 145 | ja |
 | `/pdf-zusammenfuegen/` | PDF zusammenfügen – kostenlos und ohne Upload \| Lokalwerk | Mehrere PDF-Dateien kostenlos zu einer zusammenfügen, Reihenfolge frei wählbar. Läuft komplett in deinem Browser, ohne Upload und ohne Anmeldung. | 145 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-teilen/` | PDF teilen und Seiten extrahieren – kostenlos, ohne Upload \| Lokalwerk | Seiten aus einer PDF kostenlos herausholen oder die PDF in mehrere Dateien aufteilen. Direkt im Browser, ohne Upload und ohne Anmeldung. | 136 | ja |
+| **NEU, Paket 4, zur Freigabe** `/pdf-seiten-bearbeiten/` | PDF-Seiten drehen, sortieren und löschen – kostenlos, ohne Upload \| Lokalwerk | Seiten einer PDF kostenlos drehen, neu sortieren oder löschen, mit Vorschau jeder Seite. Direkt im Browser, ohne Upload und ohne Anmeldung. | 139 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-seitenzahlen/` | Seitenzahlen in PDF einfügen – kostenlos, ohne Upload \| Lokalwerk | Seitenzahlen wie „Seite 3 von 12“ kostenlos in eine PDF einfügen, Position und Startseite frei wählbar. Direkt im Browser, ohne Upload und ohne Anmeldung. | 154 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-stempel/` | PDF-Wasserzeichen und Stempel einfügen – kostenlos, ohne Upload \| Lokalwerk | Text wie „Entwurf“ oder „Kopie“ kostenlos als Stempel oder Wasserzeichen auf die Seiten einer PDF setzen. Direkt im Browser, ohne Upload. | 137 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-metadaten-entfernen/` | PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload \| Lokalwerk | Kostenlos sehen, welche versteckten Angaben in einer PDF stecken, und Autor, Programm, Datum und frühere Fassungen entfernen. Direkt im Browser, ohne Upload. | 157 | ja |
@@ -71,6 +72,26 @@ Die PDF wird direkt in deinem Browser aufgeteilt und nicht hochgeladen. Nach dem
 Verschlüsselte PDFs lassen sich nicht aufteilen. Das gilt auch für Dateien, die sich ohne Passwort öffnen lassen, aber zum Beispiel das Kopieren verbieten. Übernommen werden nur die Seiten: Formularfelder, Lesezeichen und digitale Signaturen sind in den neuen Dateien nicht mehr enthalten.
 
 _(Erklärtext: 136 Wörter)_
+
+## PDF-Seiten bearbeiten – NEU, Paket 4, zur Freigabe (`src/tools/pdf-seiten-bearbeiten/main.html`)
+
+Karte: „PDF-Seiten bearbeiten“ – „Seiten einer PDF mit Vorschau drehen, umsortieren oder löschen.“
+
+Unterzeile im Kopf: „Seiten einer PDF mit Vorschau drehen, umsortieren oder löschen.“
+
+**So funktioniert es**
+
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Du siehst jede Seite als kleines Bild. Mit den Knöpfen unter einer Seite drehst du sie, schiebst sie nach vorn oder hinten oder löschst sie. „PDF speichern“ erzeugt eine neue Datei in der gezeigten Reihenfolge; deine Originaldatei bleibt unverändert. Mit „Änderungen zurücksetzen“ fängst du von vorn an.
+
+**Gut zu wissen**
+
+Übernommen werden nur die Seiten: Formularfelder, Lesezeichen und digitale Signaturen sind in der neuen Datei nicht mehr enthalten, ebenso Angaben wie Autor oder Titel. Verschlüsselte PDFs lassen sich nicht bearbeiten. Die Vorschau kann bei Schriften, die nicht in der PDF stecken, etwas anders aussehen als im PDF-Programm; an der Datei selbst ändert das nichts.
+
+**Deine Dateien bleiben auf deinem Gerät**
+
+Die PDF wird direkt in deinem Browser angezeigt und bearbeitet, nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 135 Wörter)_
 
 ## Seitenzahlen einfügen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-seitenzahlen/main.html`)
 
@@ -400,6 +421,7 @@ _(Erklärtext: 110 Wörter)_
 | **Nachtrag 26.09.2026, Vorgabe von Leon** Duplikate finden | „… mit einer zusätzlichen Spalte, die doppelte Einträge markiert.“ | `src/tools/duplikate-finden/main.html` |
 | **Nachtrag 26.09.2026, Vorgabe von Leon** Passwort-Generator | Standardlänge war schon 20 Zeichen mit allen vier Zeichenarten, keine Änderung | `src/tools/passwort-generator/main.html` |
 | **Nachtrag 26.09.2026, Vorgabe von Leon** Lizenzseite, „Verwendet für“ | nennt jetzt die Werkzeuge aus dem Seitenregister, die die Bibliothek tatsächlich laden (vom Build geprüft), z. B. „SEPA-Sammelüberweisung, Excel und CSV umwandeln, Duplikate finden“; nicht ausgelieferte Pakete stehen nicht mehr auf der Seite | `build/licenses.ts` |
+| **NEU, Paket 4, zur Freigabe** PDF-Seiten bearbeiten, Meldungen | „Seite 2 gelöscht.“, „Alle Änderungen zurückgesetzt.“, „Keine Vorschau möglich“, „Fertig: Die PDF mit 3 Seiten ist gespeichert.“, „Es wird eine PDF auf einmal bearbeitet: die erste.“; Knopf-Beschriftungen für Screenreader „Seite 3, Position 1: nach links drehen / nach rechts drehen / nach vorn schieben / nach hinten schieben / löschen“ | `src/tools/pdf-seiten-bearbeiten/page.ts` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

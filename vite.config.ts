@@ -67,7 +67,7 @@ export default defineConfig({
     verifyLicensesListed({
       listed: () => licenses().map((l) => l.id),
       dataLicenses: () =>
-        Object.fromEntries(licenses().map((l) => [l.id, l.dataLicenses.map((d) => d.spdx)])),
+        Object.fromEntries(licenses().map((l) => [l.id, l.dataLicenses.map((d) => d.file)])),
       usedIn: USED_IN,
       requiredDataLicenses: REQUIRED_DATA_LICENSES,
       fontsDir: path('./public/fonts'),

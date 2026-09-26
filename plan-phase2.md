@@ -121,6 +121,22 @@ Alle fünf Werkzeuge gebaut, je ein Commit mit Browser-Prüfung vorher (Konsole,
 - Unterschrift: Wortlaut von eIDAS Art. 3 Nr. 10–12, Art. 25 und §§ 126, 126a BGB in `docs/unterschrift-recht.md`. **Offen für Leon:** Der Hinweis sagt nicht „keine elektronische Signatur“, weil ein eingefügtes Bild nach Art. 3 Nr. 10 eine einfache elektronische Signatur sein kann.
 - Größe je Seite mit pdf.js (gzip): pdf.js 637 KB (Hauptteil 124, Worker 357, Ersatzdekoder 156) plus pdf-lib-Worker 172 KB (außer PDF zu Bildern). Seiten ohne pdf.js unverändert.
 
+### Stand Paket 5 (26.09.2026)
+
+Alle vier Werkzeuge gebaut, je ein Commit; jeder Commit einzeln in einem eigenen Arbeitsverzeichnis geprüft (Lint, Format, Tests, Build, check-dist). Texte als „NEU, Paket 5, zur Freigabe“ in `docs/texte-zur-freigabe.md`.
+
+| Werkzeug | Umsetzung | Prüfung |
+|---|---|---|
+| 28 QR-Code erstellen | Link, WLAN, Kontakt (vCard 3.0), Text; PNG und SVG; uqr nur für die Matrix und SVG | Ausgaben mit dem QR-Detektor von macOS zurückgelesen, auch Umlaute und WLAN-Sonderzeichen |
+| 17 QR-Code für Überweisungen | EPC069-12 v3.1, Version 002, UTF-8, Stufe M, bis Version 13 und 331 Byte; ohne Rechnungsfelder (E1), ohne das Wort aus E2 | beide offiziellen Beispiele aus Kap. 2.3 exakt nachgebildet (Zeichen, Bytes, QR-Version 6); gespeicherter Code zurückgelesen |
+| 16 IBAN-Liste prüfen + D | ohne Bankdaten (E9), Nachschlage-Funktion für später vorgesehen; Reiter „SEPA-Texte prüfen“ | Tests; im Browser mit gültigen, falschen, leeren, doppelten und Schweizer IBANs |
+| E Gläubiger-ID prüfen | EPC262-08 v12.0, Mod 97-10 ohne Geschäftsbereichskennung | offiziell durchgerechnetes Beispiel MT50ZZZ[EPC-Beispiel entfernt] |
+
+- **Freigabe ausstehend:** SVG-Namensraum in uqr (`docs/uqr-adressen.md`, vorläufig in `scripts/allowed-urls-uqr.mjs`).
+- WLAN-Format: Die WPA3-Spezifikation der Wi-Fi Alliance war nicht abrufbar; verwendet wird die verbreitete ZXing-Schreibweise, im Erklärtext ausdrücklich nicht als Norm.
+- Gläubiger-ID: Die Seite der Bundesbank zum Aufbau ließ sich nicht im Wortlaut abrufen. Grundlage ist allein EPC262-08; eine mögliche Zusatzregel für Stelle 8 wird nicht geprüft.
+- IBAN außerhalb des EWR: Länge weiter ungeprüft, bis die SWIFT IBAN Registry in `.local-specs/swift/` liegt (plan.md O4).
+
 ## 0. Wie dieser Plan zu lesen ist
 
 - **Suchbegriffe** sind Vermutungen. Ich habe kein Werkzeug für Suchvolumen benutzt und keine Zahlen erhoben.

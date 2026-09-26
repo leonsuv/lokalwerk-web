@@ -2,7 +2,8 @@
  * Seitenregister: jede ausgelieferte HTML-Seite mit URL, Titel und Meta-Beschreibung.
  * Titel und Meta-Beschreibungen der Phase 1 von Leon freigegeben am 25.09.2026; neue und
  * geänderte Texte aus Phase 2 sind Entwürfe zur Freigabe (docs/texte-zur-freigabe.md).
- * /pro/ ist bis zur Verfügbarkeit von Pro noindex und nicht in der Sitemap.
+ * /pro/ ist bis zur Verfügbarkeit von Pro noindex, nicht in der Sitemap und nirgends verlinkt
+ * (Menüpunkt und Pro-Block der Startseite ausgeblendet, Leon 26.09.2026; tests/build/pro-hidden.test.ts).
  *
  * Werkzeugseiten tragen zusätzlich `tool` (plan-phase2.md Abschnitt 3.5). Daraus entstehen
  * beim Build die Übersicht /werkzeuge/, die Karten der Startseite, die Blöcke „Passt dazu“
@@ -1043,7 +1044,7 @@ export const PAGES: readonly PageDef[] = [
     description:
       'Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen und PDFs. Läuft wie alle Werkzeuge vollständig lokal.',
     index: false,
-    nav: 'pro',
+    nav: null,
   },
   {
     file: 'impressum/index.html',

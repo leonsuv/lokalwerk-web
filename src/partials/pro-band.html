@@ -1,0 +1,32 @@
+<!--
+  Pro-Block der Startseite, bis zum Start von Pro ausgeblendet (Leon, 26.09.2026).
+  Wieder einblenden: in pages/index.html vor </main> die Zeile
+  „@include partials/pro-band.html“ als Kommentar einfügen und den Menüpunkt in partials/header.html
+  zurückholen; den Test in tests/build/pro-hidden.test.ts anpassen.
+-->
+<div class="wrap section flush">
+  <div class="pro-band">
+    <div>
+      <h2>Jede Woche im Einsatz? Dann lohnt sich Pro.</h2>
+      <p>
+        Die Werkzeuge bleiben kostenlos. Pro spart Zeit bei wiederkehrender Arbeit und läuft genauso
+        vollständig lokal.
+      </p>
+      <a class="btn inv" href="/pro/">Mehr zu Pro</a>
+    </div>
+    <ul>
+      <li>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg
+        >SEPA-Lastschriften für Mitgliedsbeiträge
+      </li>
+      <li>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg>Konten und
+        Spalten als Vorlage merken
+      </li>
+      <li>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-check" /></svg>Texterkennung
+        für gescannte PDFs
+      </li>
+    </ul>
+  </div>
+</div>

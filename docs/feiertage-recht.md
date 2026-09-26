@@ -8,7 +8,8 @@ Grundlage für den „Arbeitstage-Rechner“ (plan-phase2.md Werkzeug 29, Entsch
 - **Gültigkeit:** Ein Feiertag zählt, wenn die Fassung, die ihn aufführt, an seinem Datum galt.
 - **Landesweit** zählen die Feiertage aus der Liste des jeweiligen Landes, dazu der 3. Oktober nach Art. 2 Abs. 2 Einigungsvertrag (in Baden-Württemberg steht er nicht im Landesgesetz).
 - **Regional** (nur als abwählbare Zusätze, Vorgabe E12): Mariä Himmelfahrt und Augsburger Friedensfest in Bayern, Fronleichnam in Teilen Sachsens und Thüringens. Welche Gemeinden das sind, legen Verordnungen und Bekanntmachungen fest; der Rechner kennt sie nicht.
-- **Nicht enthalten:** einmalige Feiertage, die eine Landesregierung durch Verordnung bestimmen kann (z. B. § 2 Abs. 3 FTG M-V, § 2 Abs. 2 LFtG RP, § 2 Abs. 2 SFTG SH, § 2 Abs. 3 ThürFGtG, § 2 Abs. 1 Nr. 1 FeiertG HH), kirchliche oder religiöse Feiertage ohne Arbeitsruhe (z. B. Gründonnerstag und Buß- und Bettag in Baden-Württemberg), Gedenktage. Heiligabend und Silvester sind in keinem Land gesetzliche Feiertage.
+- **Enthalten:** einmalige Feiertage, die in den Feiertagsgesetzen selbst stehen (Berlin: 8. Mai 2020, 8. Mai 2025, 17. Juni 2028).
+- **Nicht enthalten:** einmalige Feiertage, die eine Landesregierung durch Verordnung bestimmen kann; solche Verordnungen wurden nicht recherchiert (z. B. § 2 Abs. 3 FTG M-V, § 2 Abs. 2 LFtG RP, § 2 Abs. 2 SFTG SH, § 2 Abs. 3 ThürFGtG, § 2 Abs. 1 Nr. 1 FeiertG HH), kirchliche oder religiöse Feiertage ohne Arbeitsruhe (z. B. Gründonnerstag und Buß- und Bettag in Baden-Württemberg), Gedenktage. Heiligabend und Silvester sind in keinem Land gesetzliche Feiertage.
 - **Oster- und Pfingstsonntag** (Brandenburg) fallen immer auf einen Sonntag und ändern die Zählung nicht.
 
 ## Bund: Tag der Deutschen Einheit

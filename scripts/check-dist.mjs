@@ -70,8 +70,7 @@ export const ALLOWED_SVG_XML_URLS = [
  * aus SheetJS, jeweils nur im SEPA-Worker (scripts/allowed-urls-sheetjs.mjs).
  * Seit 25.09.2026: Namensräume und zwei tote Adressen aus pdf.js (scripts/allowed-urls-pdfjs.mjs).
  * Seit 26.09.2026: SVG-Namensraum in uqr (scripts/allowed-urls-uqr.mjs).
- * 26.09.2026 vorgelegt, Freigabe ausstehend: XMP-Namensräume und eine Adresse aus exifr
- * (scripts/allowed-urls-exifr.mjs).
+ * Seit 26.09.2026: XMP-Namensräume und eine tote Adresse aus exifr (scripts/allowed-urls-exifr.mjs).
  *
  * @type {ReadonlyArray<AllowedUrl & { library: string, package: string, category?: string, test?: string }>}
  */

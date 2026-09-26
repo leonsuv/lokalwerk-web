@@ -152,7 +152,8 @@ Alle fünf Werkzeuge gebaut, je ein Commit mit Browser-Prüfung vorher (Konsole,
 - **Ausweiskopie, Recht:** Wortlaut von § 20 Abs. 1–2 PAuswG und § 18 Abs. 1–3 PassG in `docs/ausweiskopie-recht.md`. Hinweiskasten und Absatz „Rechtlicher Rahmen“ sind **Entwurf zur Freigabe**.
 - **Metadaten:** Bei Zuschneiden, Verpixeln und Ausweiskopie gibt es keinen Schalter: Das Neu-Kodieren übernimmt keine Metadaten, und jede Datei wird geprüft.
 - **Schwarzweiß beim Scannen:** örtliche Schwelle nach Bradley und Roth (2007) statt Otsu für das ganze Bild; Otsu machte Schattenbereiche von Handyfotos ganz schwarz.
-- **Offen:** exifr-Adressen X1–X4 (`docs/exifr-adressen.md`) liegen zur Freigabe vor, bis dahin vorläufig eingetragen. „Foto aufnehmen“ ist nur in Chrome am Computer geprüft, nicht auf einem echten Handy.
+- **Entscheidungen (Leon, 26.09.2026):** Paket 6 freigegeben. exifr-Adressen X1–X4 freigegeben (`docs/exifr-adressen.md`). Türkis `--img` im Hellmodus #0D9684 (siehe Abschnitt 4). Hinweis zur Ausweiskopie freigegeben, ergänzt um die Weitergabe an Dritte (Wortlaut siehe `docs/ausweiskopie-recht.md`).
+- **Offen:** „Foto aufnehmen“ ist nur in Chrome am Computer geprüft, nicht auf einem echten Handy.
 
 ## 0. Wie dieser Plan zu lesen ist
 
@@ -843,6 +844,8 @@ Zum Vergleich die vorhandenen Farben:
 | Zahlungsverkehr (vorhanden) | 4,99 | 5,91 | 5,91 | 5,47 | 4,99 | 4,96 | 6,03 |
 
 Hinweis nebenbei: Türkis `--img` auf `--img-soft` liegt mit 2,90:1 knapp unter 3:1. Die Icons in diesen Chips sind rein schmückend (Name steht daneben), daher kein Verstoß. Ich ändere nichts daran (keine Nebenbei-Änderungen), erwähne es nur.
+
+**Nachtrag 26.09.2026, freigegeben von Leon:** `--img` im Hellmodus von #0E9F8C auf **#0D9684** angehoben (gleicher Farbton, etwas dunkler). Kontraste neu: `--c`/`--cs` 3,22 (vorher 2,90), `--c`/`--surface` 3,68 (vorher 3,30), `--c`/`--bg` 3,40 (vorher 3,06). `--img-soft`, `--img-ink` und der Dunkelmodus (#3DD4BE, 7,66 auf `--cs`) bleiben unverändert.
 
 Vorschlag:
 

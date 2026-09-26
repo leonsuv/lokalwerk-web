@@ -1,6 +1,6 @@
-# exifr: Adressen im gebauten Bundle (zur Freigabe)
+# exifr: Adressen im gebauten Bundle
 
-Stand: 26.09.2026, exifr 7.1.3, Fassung lite. **Vorgelegt, Freigabe ausstehend** (plan.md N3). Bis dahin stehen die Einträge vorläufig in `scripts/allowed-urls-exifr.mjs`, damit der Build durchläuft. Gilt nur für Dateien, die exifr laut `build/shipped-packages.ts` enthalten (E14), hier nur der Worker von „Foto-Metadaten anzeigen“.
+Stand: 26.09.2026, exifr 7.1.3, Fassung lite. **Freigegeben von Leon am 26.09.2026** (plan.md N3), eingetragen in `scripts/allowed-urls-exifr.mjs`. Gilt nur für Dateien, die exifr laut `build/shipped-packages.ts` enthalten (E14), hier nur der Worker von „Foto-Metadaten anzeigen“.
 
 Fundstelle: `node_modules/exifr/dist/lite.esm.mjs` (eine einzige Zeile, minifiziert).
 

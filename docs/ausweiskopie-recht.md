@@ -1,6 +1,6 @@
 # Ausweiskopie: rechtliche Grundlagen der Hinweistexte
 
-Abgerufen am 26.09.2026 bei gesetze-im-internet.de, für das Werkzeug „Ausweiskopie“ (plan-phase2.md Vorschlag A). Keine Rechtsberatung. Die Hinweistexte im Werkzeug sind **Entwurf zur Freigabe durch Leon**.
+Abgerufen am 26.09.2026 bei gesetze-im-internet.de, für das Werkzeug „Ausweiskopie“ (plan-phase2.md Vorschlag A). Keine Rechtsberatung. Der Hinweis im Werkzeug ist **freigegeben von Leon am 26.09.2026**; die Sätze zur Weitergabe sind danach ergänzt und liegen zur Freigabe vor. Der Absatz „Rechtlicher Rahmen“ im Erklärtext ist Entwurf zur Freigabe.
 
 ## § 20 PAuswG (Verwendung des Ausweises), Absätze 1 und 2
 
@@ -19,5 +19,6 @@ Abgerufen am 26.09.2026 bei gesetze-im-internet.de, für das Werkzeug „Ausweis
 ## Folgerungen für das Werkzeug
 
 - „Eindeutig und dauerhaft als Kopie erkennbar“: Der Aufdruck „KOPIE“ wird fest in die Pixel geschrieben (kein eigenes, entfernbares Objekt). Er ist deshalb immer an; ergänzen lassen sich Zweck und Datum.
+- Weitergabe: Beide Vorschriften regeln in Satz 2, dass andere Personen als der Inhaber die Kopie nicht an Dritte weitergeben dürfen. Das PassG macht eine Ausnahme: zur Beantragung eines Visums für den Passinhaber, wenn er der Weitergabe zugestimmt hat. Der Hinweis im Werkzeug nennt beides (Ergänzung auf Vorgabe von Leon, 26.09.2026).
 - Welche Felder geschwärzt werden dürfen oder sollen, ergibt sich aus den Vorschriften nicht ausdrücklich. Das Werkzeug bietet Schwärzen an, schreibt aber nichts vor (Vorgabe von Leon, 26.09.2026).
 - Die Rechtsprüfung sollte die Hinweistexte des Werkzeugs mit ansehen.

@@ -3,7 +3,7 @@
  * exifr enthalten (E14). Übersicht: docs/exifr-adressen.md. Fundstelle: node_modules/exifr/
  * dist/lite.esm.mjs (eine Zeile); tests/scripts/check-dist.test.ts prüft, dass die Adresse dort steht.
  *
- * VORGELEGT am 26.09.2026, Freigabe durch Leon ausstehend (plan.md N3).
+ * Freigegeben von Leon am 26.09.2026 (plan.md N3). Neue Einträge nur nach Rückfrage.
  */
 
 const library = 'exifr 7.1.3 (lite)';

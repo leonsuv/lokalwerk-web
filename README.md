@@ -1,5 +1,10 @@
 # Lokalwerk
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/startseite-dunkel.png">
+  <img src="docs/screenshots/startseite-hell.png" alt="Lokalwerk home page: headline &quot;Dateien bearbeiten, ohne sie hochzuladen.&quot; (edit files without uploading them), a drop zone for PDF, photo or Excel files, and a green badge &quot;0 B lokal verarbeitet, 0 B hochgeladen&quot; in the header" width="1280">
+</picture>
+
 Lokalwerk is a German-language website with 32 tools for everyday files: PDFs, photos, spreadsheets and address lists, SEPA payments, and a few small utilities. It is aimed at small businesses, freelancers, associations and administrations in Germany, Austria and Switzerland.
 
 **Core principle: every tool runs entirely in the browser. No file ever leaves the device.** There is no backend, no database, no account, no tracking and no cookies. After a tool page has loaded, it works offline.
@@ -29,6 +34,53 @@ The promise is backed by mechanisms that fail the build or block the browser, no
 **Payments and associations (4):** SEPA bulk transfer (pain.001 for German banks) · QR code for bank transfers (EPC069-12) · check an IBAN list · check a SEPA creditor identifier
 
 **Everyday and security (6):** password generator · working-days calculator (statutory holidays of all 16 German states) · QR code generator · file checksum (SHA-256, SHA-1) · compare texts · contrast checker (WCAG 2.2)
+
+## Screenshots
+
+All screenshots show the German interface with example data from the project. They follow the viewer's light or dark mode on GitHub. The bank details are example numbers (see [`docs/beispiel-ibans.md`](docs/beispiel-ibans.md)); the landscape photos are drawn by the screenshot script itself.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/werkzeuge-suche-dunkel.png">
+  <img src="docs/screenshots/werkzeuge-suche-hell.png" alt="Tool overview with the search term &quot;pdf&quot; in the search field: 14 tools found, category filters, and the first cards of the PDF category" width="1280">
+</picture>
+
+The tool overview filters all 32 tools locally while you type; here the search for "pdf" finds 14 tools.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/sepa-dunkel.png">
+  <img src="docs/screenshots/sepa-hell.png" alt="SEPA bulk transfer page with a loaded list: five valid transfers totalling 1,553.96 euros, one row flagged with an IBAN check-digit error and skipped, and a note that accented characters were replaced (é → e, ê → e); on the right the payer account and the execution date" width="1280">
+</picture>
+
+SEPA bulk transfer: an Excel or CSV list becomes a pain.001 file. Invalid rows are flagged and skipped, never silently corrected, and every character replacement required by the German banks is shown. At 1280 px the table scrolls inside its frame; this view shows its right-hand columns.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/pdf-schwaerzen-dunkel.png">
+  <img src="docs/screenshots/pdf-schwaerzen-hell.png" alt="PDF redaction page with a sample meeting protocol: two areas over a name and an IBAN are marked; on the right the resolution setting, the count of two redacted areas and the save button" width="1280">
+</picture>
+
+Redacting a PDF: areas are shown semi-transparent while editing. The saved PDF is rebuilt from rasterised pages with solid black areas, so nothing of the original text remains in the file.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/fotos-verkleinern-dunkel.png">
+  <img src="docs/screenshots/fotos-verkleinern-hell.png" alt="Photo resizing page with four generated landscape images, each reduced by about 79 percent, 539 KB saved in total, and the settings for width, format and quality" width="1280">
+</picture>
+
+Resizing photos: four generated landscape images (no people), each about 79 % smaller. Metadata such as GPS position is removed and every output file is checked for it.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/kontrast-pruefen-dunkel.png">
+  <img src="docs/screenshots/kontrast-pruefen-hell.png" alt="Contrast checker with text colour #5A6380 on white: ratio 5.94:1, WCAG AA fulfilled, AAA for normal text not fulfilled" width="1280">
+</picture>
+
+Contrast checker: #5A6380 on white reaches 5.94:1, which passes WCAG 2.2 level AA but not AAA for normal text.
+
+<p>
+  <img src="docs/screenshots/handy-startseite-hell.png" alt="Home page on a phone, 390 pixels wide: headline, the three promises no upload, works offline, no account, and the drop zone" width="300">
+  &nbsp;
+  <img src="docs/screenshots/handy-arbeitstage-hell.png" alt="Working-days calculator on a phone for Bavaria in 2026: 252 working days, and a highlighted note offering to add the regional holidays Assumption Day and the Augsburg Peace Festival" width="300">
+</p>
+
+On a phone (390 px): the home page, and the working-days calculator for Bavaria, which offers regional holidays as explicit additions.
 
 ## Architecture
 
@@ -76,6 +128,7 @@ npm run dev       # development server
 npm run check     # ESLint, Prettier, tests, type check, build, build checks
 npm run build     # production build into dist/
 npm run preview   # serve dist/ with the production security headers
+npm run screenshots  # rebuild and regenerate docs/screenshots/ (needs Google Chrome)
 ```
 
 Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 1,086 tests run and the tests that depend on those files are skipped with a clear notice. The GitHub Actions workflow runs `npm run check` the same way.

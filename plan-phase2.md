@@ -103,7 +103,7 @@ Eingebunden, noch in keiner Seite verwendet. **Entscheidungen (Leon, 25.09.2026)
 - `src/ui/pdfjs/`: Worker lokal über `workerPort`; eigene `LocalBinaryDataFactory` statt Nachladen; `useWorkerFetch: false`; kein `cMapUrl`, `standardFontDataUrl`, `iccUrl`; `enableXfa: false`. `isEvalSupported` gibt es in 6.3 nicht mehr; beide Bundles enthalten kein `eval`/`new Function`. `enableScripting` ist eine Viewer-Option; die Sandbox wird nicht eingebunden.
 - `useWasm: false`, JS-Ersatzdekoder unter `/pdfjs/`, im Worker vorgeladen (offline). Die WASM-Testvariante ist wieder entfernt.
 - Build: `build/pdfjs.ts` (Ersatzdekoder nur, wenn pdf.js im Build ist), `chunk-guard` verbietet pdf.js im statischen Import einer Seite, `check-dist` bricht ab bei `pdf.sandbox`/QuickJS (Datei oder Code).
-- Offen für das erste pdf.js-Werkzeug: Lizenztexte der Dekoder aus `node_modules/pdfjs-dist/wasm/` auf `/lizenzen/` (`LICENSE_OPENJPEG`, `LICENSE_JBIG2` mit PDFium, `LICENSE_PDFJS_OPENJPEG`, `LICENSE_PDFJS_JBIG2`; wörtlich übernehmen, SPDX-Zuordnung vorher prüfen). Die gelten in beiden Varianten, weil die JS-Ersatzdekoder mit wasm2js aus denselben Quellen übersetzt sind.
+- Erledigt mit dem ersten pdf.js-Werkzeug (PDF-Seiten bearbeiten): Lizenztexte der Dekoder wörtlich aus `node_modules/pdfjs-dist/wasm/` auf `/lizenzen/` (OpenJPEG BSD-2-Clause, PDFium-JBIG2 BSD-3-Clause und Apache-2.0 in einer Datei, dazu die beiden Anbindungen von Mozilla); `REQUIRED_DATA_LICENSES` verlangt jede davon, sobald pdfjs-dist ausgeliefert wird.
 
 ### Stand Paket 4 (26.09.2026)
 

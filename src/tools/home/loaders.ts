@@ -66,6 +66,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../foto-verpixeln/main.html?raw')).default,
     open: async () => (await import('../foto-verpixeln/page.ts')).openFiles,
   },
+  ausweiskopie: {
+    markup: async () => (await import('../ausweiskopie/main.html?raw')).default,
+    open: async () => (await import('../ausweiskopie/page.ts')).openFiles,
+  },
   'bilder-zu-pdf': {
     markup: async () => (await import('../bilder-zu-pdf/main.html?raw')).default,
     open: async () => (await import('../bilder-zu-pdf/page.ts')).addFiles,

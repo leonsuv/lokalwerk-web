@@ -151,3 +151,18 @@ describe('enhance', () => {
     expect(data[4]).toBe(255);
   });
 });
+
+describe('copy-mark (Ausweiskopie)', () => {
+  it('beginnt immer mit KOPIE, Zweck und Datum freiwillig', async () => {
+    const { copyMarkText, todayGerman, markLines } =
+      await import('../../../src/core/images/copy-mark.ts');
+    expect(copyMarkText({ purpose: '', date: '' })).toBe('KOPIE');
+    expect(copyMarkText({ purpose: '  Wohnungs­bewerbung  ', date: '26.09.2026' })).toBe(
+      'KOPIE – nur für Wohnungs­bewerbung – 26.09.2026',
+    );
+    expect(todayGerman(new Date(2026, 8, 6))).toBe('06.09.2026');
+    const lines = markLines(400, 300, 100);
+    expect(lines.length).toBeGreaterThanOrEqual(6);
+    expect(lines[0]?.offset).toBeLessThan(-200);
+  });
+});

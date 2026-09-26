@@ -45,6 +45,7 @@ describe('Seitenregister', () => {
         '/foto-metadaten/',
         '/foto-zuschneiden/',
         '/foto-verpixeln/',
+        '/ausweiskopie/',
         '/csv-reparieren/',
         '/duplikate-finden/',
         '/pdf-zusammenfuegen/',

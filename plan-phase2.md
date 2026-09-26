@@ -105,6 +105,22 @@ Eingebunden, noch in keiner Seite verwendet. **Entscheidungen (Leon, 25.09.2026)
 - Build: `build/pdfjs.ts` (Ersatzdekoder nur, wenn pdf.js im Build ist), `chunk-guard` verbietet pdf.js im statischen Import einer Seite, `check-dist` bricht ab bei `pdf.sandbox`/QuickJS (Datei oder Code).
 - Offen für das erste pdf.js-Werkzeug: Lizenztexte der Dekoder aus `node_modules/pdfjs-dist/wasm/` auf `/lizenzen/` (`LICENSE_OPENJPEG`, `LICENSE_JBIG2` mit PDFium, `LICENSE_PDFJS_OPENJPEG`, `LICENSE_PDFJS_JBIG2`; wörtlich übernehmen, SPDX-Zuordnung vorher prüfen). Die gelten in beiden Varianten, weil die JS-Ersatzdekoder mit wasm2js aus denselben Quellen übersetzt sind.
 
+### Stand Paket 4 (26.09.2026)
+
+Alle fünf Werkzeuge gebaut, je ein Commit mit Browser-Prüfung vorher (Konsole, Netzwerk, CSP). Texte stehen als „NEU, Paket 4, zur Freigabe“ in `docs/texte-zur-freigabe.md`.
+
+| Werkzeug | Umsetzung | Prüfung |
+|---|---|---|
+| 2 PDF-Seiten bearbeiten | Vorschau mit pdf.js, Vorschaubilder erst bei Sichtbarkeit; drehen, verschieben, löschen über Knöpfe (WCAG 2.5.7) | Tests für `organize.ts`; im Browser Reihenfolge, Drehung (auch vorhandene /Rotate) und Löschen geprüft |
+| 4 PDF zu Bildern | JPEG oder PNG, 72/150/300 dpi, Seitenauswahl mit Vorschau, ZIP bei mehreren Bildern; Canvas-Grenze 4096 × 4096 Pixel Fläche, Auflösung wird sonst gesenkt und genannt | A2 mit 300 dpi → 208 dpi; Bilder ohne EXIF (JPEG nur JFIF und sRGB-Profil) |
+| 5 PDF schwärzen | Bereiche ziehen oder per Tastatur; jede Seite gerastert, der Worker bekommt nur Bilder | Test: kein Text (pdf.js), keine Inhalte des Originals in Datei, Objekten oder Strömen; im Browser zusätzlich geprüft und mit PDFKit gerendert |
+| 10 Unterschrift einfügen | zeichnen oder Bild hochladen (weißer Hintergrund wird durchsichtig), auf mehrere Seiten, auch gedrehte; Hinweis auf fehlende Signaturwirkung | `place-image.ts` für /Rotate 0/90/180/270; Ergebnis mit PDFKit gerendert |
+| B PDF-Formular ausfüllen | alle AcroForm-Feldarten, Vorschau mit Markierung, festschreiben; XFA rein abgelehnt, gemischt entfernt; WinAnsi-Prüfung am Feld | Tests mit allen Feldarten, Höchstlänge, schreibgeschützt, XFA |
+
+- Schwärzen: Hinweise des BSI zum Schwärzen habe ich gesucht und nicht gefunden; der Erklärtext stützt sich auf keine Quelle.
+- Unterschrift: Wortlaut von eIDAS Art. 3 Nr. 10–12, Art. 25 und §§ 126, 126a BGB in `docs/unterschrift-recht.md`. **Offen für Leon:** Der Hinweis sagt nicht „keine elektronische Signatur“, weil ein eingefügtes Bild nach Art. 3 Nr. 10 eine einfache elektronische Signatur sein kann.
+- Größe je Seite mit pdf.js (gzip): pdf.js 637 KB (Hauptteil 124, Worker 357, Ersatzdekoder 156) plus pdf-lib-Worker 172 KB (außer PDF zu Bildern). Seiten ohne pdf.js unverändert.
+
 ## 0. Wie dieser Plan zu lesen ist
 
 - **Suchbegriffe** sind Vermutungen. Ich habe kein Werkzeug für Suchvolumen benutzt und keine Zahlen erhoben.

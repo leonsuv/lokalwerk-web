@@ -1,6 +1,6 @@
 # Texte zur Freigabe
 
-Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 6: „NEU, Paket 6, zur Freigabe“.**
+Status: Texte der Phase 1 **freigegeben von Leon am 25.09.2026**. Neue und geänderte Texte aus Phase 2, Paket 1 bis 3, sind mit „NEU, freigegeben von Leon am 25.09.2026“ markiert und damit ebenfalls **freigegeben**. Geändert wurden in Phase-1-Werkzeugen nur der Erklärtext von Fotos verkleinern (ZIP) und die Pro-Listen (ZIP gestrichen), siehe „Weitere Texte“. Nachtrag vom 26.09.2026: Änderungen nach Vorgabe von Leon (Startseiten-Titel, PDF teilen, Prüfsumme, Duplikate finden) sind eingearbeitet, siehe „Weitere Texte“. **Paket 4: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 5: freigegeben von Leon am 26.09.2026, seine Änderungen sind eingearbeitet (siehe „Weitere Texte“). Paket 6: „NEU, Paket 6, zur Freigabe“. Paket 7: „NEU, Paket 7, zur Freigabe“.**
 
 Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den Werkzeug-Markups.
 
@@ -35,7 +35,9 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU, freigegeben von Leon am 25.09.2026** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/csv-reparieren/` | CSV reparieren: Umlaute und Trennzeichen korrigieren – kostenlos \| Lokalwerk | CSV-Dateien mit kaputten Umlauten wie „MÃ¼ller“ oder falschem Trennzeichen kostenlos reparieren, jede Änderung vorher sichtbar. Im Browser, ohne Upload. | 152 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/duplikate-finden/` | Duplikate in Excel- und CSV-Listen finden – kostenlos, ohne Upload \| Lokalwerk | Doppelte Einträge in Mitglieder-, Kunden- und Adresslisten kostenlos finden und markieren, ohne etwas zu löschen. Direkt im Browser, ohne Upload. | 145 | ja |
+| **NEU, Paket 7, zur Freigabe** `/etiketten/` | Adressetiketten aus Excel oder CSV drucken – kostenlos, ohne Upload \| Lokalwerk | Adressetiketten kostenlos aus einer Excel- oder CSV-Liste erstellen: Bogen nach Maßen wählen, Probedruck mit Rahmen, PDF drucken. Im Browser, ohne Upload. | 154 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/passwort-generator/` | Passwort-Generator: sichere Passwörter nach BSI – ohne Server \| Lokalwerk | Sichere Passwörter kostenlos erzeugen, mit Länge und Zeichenarten nach den Beispielen des BSI. Direkt im Browser, nichts wird gesendet oder gespeichert. | 152 | ja |
+| **NEU, Paket 7, zur Freigabe** `/arbeitstage/` | Arbeitstage berechnen: mit Feiertagen aller Bundesländer – kostenlos \| Lokalwerk | Arbeitstage zwischen zwei Daten kostenlos berechnen, mit den gesetzlichen Feiertagen aller 16 Bundesländer laut Landesgesetz. Direkt im Browser, ohne Anmeldung. | 160 | ja |
 | **NEU, Paket 5, freigegeben von Leon am 26.09.2026** `/qr-code/` | QR-Code erstellen: Link, WLAN, Kontakt – kostenlos, ohne Tracking \| Lokalwerk | QR-Codes für Links, WLAN-Zugänge, Kontakte und Texte kostenlos erstellen, als PNG oder SVG. Ohne Weiterleitung, ohne Tracking, direkt im Browser. | 145 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pruefsumme/` | Prüfsumme berechnen: SHA-256 einer Datei prüfen – ohne Upload \| Lokalwerk | SHA-256 und SHA-1 einer Datei kostenlos berechnen und mit der angegebenen Prüfsumme vergleichen, auch bei sehr großen Dateien. Direkt im Browser, ohne Upload. | 158 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/texte-vergleichen/` | Texte vergleichen: Unterschiede zwischen zwei Fassungen finden \| Lokalwerk | Zwei Texte kostenlos vergleichen, etwa Vertragsentwürfe oder Satzungen: geänderte Zeilen und Wörter werden markiert. Direkt im Browser, ohne Upload. | 148 | ja |
@@ -594,6 +596,30 @@ Die Datei wird direkt in deinem Browser geprüft und nicht hochgeladen. Nach dem
 
 _(Erklärtext: 127 Wörter)_
 
+## Etiketten aus einer Liste – NEU, Paket 7, zur Freigabe (`src/tools/etiketten/main.html`)
+
+Karte: „Etiketten aus einer Liste“ – „Adressetiketten aus einer Excel- oder CSV-Liste als druckfertige PDF.“
+
+Unterzeile im Kopf: „Adressetiketten aus einer Excel- oder CSV-Liste als druckfertige PDF, etwa für Einladungen oder Vereinspost.“
+
+**So funktioniert es**
+
+Wähle eine Excel-, ODS- oder CSV-Liste aus. Das Werkzeug erkennt übliche Überschriften wie Vorname, Nachname, Straße, PLZ und Ort und schlägt vor, was auf jedes Etikett kommt; du kannst es ändern. Wähl rechts den Bogen nach seinen Maßen. „Etiketten-PDF speichern“ erzeugt eine PDF mit allen Etiketten, Blatt für Blatt.
+
+**Richtig drucken**
+
+Druckprogramme verkleinern Seiten gern, damit sie „auf die Seite passen“. Dann verrutschen die Etiketten. Stell im Druckdialog „Tatsächliche Größe“ oder 100 % ein. Der Probedruck zeigt das erste Blatt mit Rahmen um jedes Etikett und auf einem zweiten Blatt eine Linie, die genau 100 mm lang sein muss. Halte das erste Blatt gegen den Bogen, bevor du auf Etiketten druckst.
+
+**Gut zu wissen**
+
+Passt ein Text nicht, wird die Schrift für dieses Etikett verkleinert, bis 6 pt. Reicht auch das nicht, wird das Etikett nicht gedruckt und unten mit der Zeilennummer aufgeführt; gekürzt wird nie. Die Schrift kennt die Zeichen westeuropäischer Sprachen, aber zum Beispiel keine polnischen oder tschechischen Sonderzeichen; solche Zeilen werden ebenfalls aufgeführt.
+
+**Deine Liste bleibt auf deinem Gerät**
+
+Die Liste wird direkt in deinem Browser gelesen und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 183 Wörter)_
+
 ## Passwort-Generator – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/passwort-generator/main.html`)
 
 Karte: „Passwort-Generator“ – „Sichere Passwörter erzeugen, mit Länge und Zeichenarten nach den BSI-Beispielen.“
@@ -613,6 +639,30 @@ Das Bundesamt für Sicherheit in der Informationstechnik nennt als Beispiele fü
 Das Passwort entsteht nur in deinem Browser und wird weder gesendet noch gespeichert. Lädst du die Seite neu, ist es weg. Für viele verschiedene Passwörter empfiehlt das BSI einen Passwortmanager.
 
 _(Erklärtext: 136 Wörter)_
+
+## Arbeitstage-Rechner – NEU, Paket 7, zur Freigabe (`src/tools/arbeitstage/main.html`)
+
+Karte: „Arbeitstage-Rechner“ – „Arbeitstage zwischen zwei Daten zählen, mit den Feiertagen deines Bundeslandes.“
+
+Unterzeile im Kopf: „Arbeitstage zwischen zwei Daten zählen, mit den gesetzlichen Feiertagen deines Bundeslandes.“
+
+**So funktioniert es**
+
+Wähle dein Bundesland und den Zeitraum. Der Rechner zählt alle Tage von Montag bis Freitag, die kein gesetzlicher Feiertag sind; der erste und der letzte Tag zählen mit. Arbeitet dein Betrieb samstags, wähle „Montag bis Samstag“. Die Tabelle zeigt, welche Feiertage im Zeitraum liegen und ob sie auf einen Arbeitstag fallen.
+
+**Welche Feiertage der Rechner kennt**
+
+Die gesetzlichen Feiertage aus den Feiertagsgesetzen der 16 Länder und den Tag der Deutschen Einheit nach dem Einigungsvertrag, im Wortlaut geprüft, Stand 26. September 2026, für die Jahre 2018 bis 2035. Änderungen seit 2018 sind berücksichtigt, etwa der Frauentag in Berlin ab 2019 und in Mecklenburg-Vorpommern ab 2023. Feiertage, die nur in einzelnen Gemeinden gelten, wie Mariä Himmelfahrt in Bayern, kannst du dazunehmen. Heiligabend und Silvester sind keine gesetzlichen Feiertage. Einmalige Feiertage, die eine Landesregierung durch Verordnung festlegt, kennt der Rechner nicht.
+
+**Keine Fristberechnung**
+
+Wann eine Frist beginnt und endet, regeln BGB, Zivilprozessordnung, Verwaltungsverfahrensgesetz und Abgabenordnung jeweils eigens. Dieser Rechner zählt nur Arbeitstage und ersetzt keine Fristberechnung.
+
+**Deine Eingaben bleiben auf deinem Gerät**
+
+Die Rechnung läuft direkt in deinem Browser. Es wird nichts gesendet und nichts gespeichert.
+
+_(Erklärtext: 170 Wörter)_
 
 ## QR-Code erstellen – NEU, Paket 5, freigegeben von Leon am 26.09.2026 (`src/tools/qr-code/main.html`)
 
@@ -739,6 +789,8 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, Paket 6, zur Freigabe** Gesichter verpixeln, Meldungen | Art „Verpixeln“ / „Schwarz“, Hinweis „Verpixelt wird mit großen Blöcken, nie weichgezeichnet.“, „Metadaten: werden entfernt“, „Das Foto ist sehr groß und wird verkleinert gespeichert, damit jeder Browser es verarbeiten kann.“, „Fertig: Das Foto ist gespeichert. Prüf es, bevor du es veröffentlichst.“; Bedienhinweis und Screenreader wie beim Schwärzen („Bereich 1“) | `src/tools/foto-verpixeln/` |
 | **NEU, Paket 6, zur Freigabe** Ausweiskopie, Meldungen und rechtlicher Hinweis (Hinweis freigegeben von Leon am 26.09.2026, die beiden Sätze zur Weitergabe sind neu; docs/ausweiskopie-recht.md) | Aufdruck „KOPIE – nur für [Zweck] – [Datum]“, Felder „Zweck (freiwillig)“, „Datum (leer lassen für ohne)“, Hinweis „Quer über das Bild steht: … „KOPIE“ steht immer darin.“; „Speichern als“ PDF/JPG mit „Eine PDF mit allen Seiten untereinander auf einem DIN-A4-Blatt.“, „Ein JPG-Bild je Seite, zusammen in einer ZIP-Datei.“, „Ein JPG-Bild.“; Knöpfe „Bereich schwärzen“, „Diese Seite entfernen“, „Neu beginnen“, „Seite 1“/„Seite 2“; „Es sind schon zwei Seiten da. Entferne erst eine Seite.“, „Eine Ausweiskopie hat höchstens zwei Seiten: Die ersten werden übernommen.“, „Fertig: Die Ausweiskopie ist gespeichert. Prüf sie, bevor du sie weitergibst.“; Screenreader „Geschwärzter Bereich 1“; Kasten rechts: „Einen Personalausweis oder Pass darf nur die Person kopieren, der er gehört, oder jemand mit ihrer Zustimmung. Die Kopie muss eindeutig und dauerhaft als Kopie erkennbar sein. **Neu:** Wer die Kopie erhält, darf sie nicht an Dritte weitergeben. Beim Pass gilt eine Ausnahme für einen Visumantrag der Person, der er gehört, wenn sie der Weitergabe zugestimmt hat (§ 20 Abs. 2 PAuswG, § 18 Abs. 3 PassG). Welche Angaben du schwärzt, entscheidest du. Frag im Zweifel die Stelle, die die Kopie verlangt, welche Angaben sie braucht.“ | `src/tools/ausweiskopie/`, `src/core/images/copy-mark.ts` |
 | **NEU, Paket 6, zur Freigabe** Dokument scannen, Meldungen | Knöpfe „Foto aufnehmen“, „Links drehen“, „Rechts drehen“, „Ecken zurücksetzen“, „Diese Seite entfernen“, „Scan als PDF speichern“, „Neu beginnen“, „Seite 1“ …; Aussehen „Farbe“, „Graustufen“, „Schwarzweiß“ mit „Gilt für alle Seiten. Schwarzweiß eignet sich für reinen Text.“; „Seitengröße: DIN A4“; Screenreader „Ecke oben links“ usw.; „Die Ecken überkreuzen sich. Zieh sie so, dass sie das Blatt umrahmen.“, „So sieht die Seite aus“, „Seite 2 von 3 …“, „PDF wird erstellt …“, „Ein Foto ist sehr groß und wird verkleinert verarbeitet, damit jeder Browser es schafft.“, „Fertig: Der Scan ist als PDF gespeichert.“, „Fertig: 3 Seiten sind als PDF gespeichert.“, „Die Seite konnte nicht erzeugt werden. Lade die Seite neu und versuch es noch einmal.“ | `src/tools/dokument-scannen/`, `src/ui/corner-editor.ts` |
+| **NEU, Paket 7, zur Freigabe** Etiketten aus einer Liste, Meldungen | Auswahl „Etiketten je A4-Blatt“ mit „3 × 8, je 70 × 37 mm“ usw. und „Eigene Maße“; Felder „Spalten“, „Reihen“, „Breite (mm)“, „Höhe (mm)“, „Rand oben (mm)“, „Rand links (mm)“, „Abstand nebeneinander (mm)“, „Abstand untereinander (mm)“, „Schriftgröße (pt)“, „Innenabstand (mm)“, „Erstes freies Etikett auf dem Bogen“ mit „Für angebrochene Bögen: gezählt wird zeilenweise von oben links.“; „Die Maße stehen meist auf der Packung. Im Zweifel miss auf dem Bogen nach.“; Maßfehler „Prüf die Maße: Spalten und Reihen als ganze Zahl ab 1, Breite und Höhe ab 5 mm, Ränder und Abstände nicht negativ.“, „Der Bogen ist breiter als ein A4-Blatt (210 mm). Prüf Rand links, Breite, Spalten und Abstand nebeneinander.“, „Der Bogen ist höher als ein A4-Blatt (297 mm). Prüf Rand oben, Höhe, Reihen und Abstand untereinander.“; „Was auf dem Etikett steht“, „Jede Zeile des Etiketts setzt sich aus bis zu drei Spalten zusammen, mit Leerzeichen dazwischen. Leere Zeilen fallen weg.“, „Zeile 1“, Screenreader „Zeile 1, Angabe 2“; „Vorschau des ersten Blatts“, „Die grauen Rahmen zeigen die Etiketten; gedruckt werden sie nur beim Probedruck.“; Zahlen „Etiketten“, „Blätter“, „Leere Zeilen übersprungen“, „Nicht gedruckt“, „Schrift verkleinert“; „Nicht gedruckt“ mit „Diese Zeilen der Liste kommen nicht auf die Etiketten. Kürze den Text oder ersetze die Zeichen im Tabellenprogramm und füge die Liste erneut hinzu.“, Gründe „Zeichen, die die Schrift nicht kennt: ł“ und „Zu viel Text, passt auch mit 6 pt nicht aufs Etikett.“; Kasten „Drucke mit „Tatsächliche Größe“ oder 100 %, nicht mit „An Seite anpassen“. Mach vorher einen Probedruck auf normalem Papier und halte ihn gegen den Bogen.“; Knöpfe „Probedruck speichern“, „Etiketten-PDF speichern“, „Andere Liste wählen“; „Fertig: Der Probedruck ist gespeichert. Druck ihn auf normales Papier und halte ihn gegen den Bogen.“, „Fertig: Die Etiketten-PDF ist gespeichert.“; Messblatt im Probedruck „Diese Linie muss genau 100 mm lang sein.“, „Ist sie kürzer oder länger, drucke mit „Tatsächliche Größe“ oder 100 %.“; Lesefehler wie bei „IBAN-Liste prüfen“ | `src/tools/etiketten/`, `src/core/pdf/labels.ts` |
+| **NEU, Paket 7, zur Freigabe** Arbeitstage-Rechner, Meldungen und Hinweis (Entwurf, docs/feiertage-recht.md) | „Bundesland wählen“, „Von“, „Bis“, „Der erste und der letzte Tag zählen mit.“, „Arbeitstage sind“ „Montag bis Freitag“ / „Montag bis Samstag“; „Feiertage nur in Teilen des Landes“ mit „Diese Feiertage gelten nicht im ganzen Land. Wähle sie, wenn sie an deinem Ort gelten.“ und den Erklärungen „Gesetzlicher Feiertag in Gemeinden mit überwiegend katholischer Bevölkerung (Art. 1 Abs. 1 Nr. 2 und Abs. 3 FTG). Ob das für deine Gemeinde gilt, macht die Gemeinde bekannt.“, „Gesetzlicher Feiertag nur in der Stadt Augsburg (Art. 1 Abs. 2 FTG).“, „Gesetzlicher Feiertag nur in den Regionen, die das Staatsministerium des Innern durch Rechtsverordnung bestimmt (§ 1 Abs. 1 SächsSFG).“, „Gesetzlicher Feiertag nur in Gemeinden mit überwiegend katholischer Wohnbevölkerung, die das zuständige Ministerium durch Rechtsverordnung festlegt (§ 2 Abs. 2 ThürFGtG).“; Ergebnis „Arbeitstage“, „Kalendertage“, „Samstage und Sonntage“ / „Sonntage“, „Feiertage an Arbeitstagen“; Tabelle „Feiertage im Zeitraum“ mit „kein Arbeitstag“, „fällt auf einen Samstag“, „fällt auf einen Sonntag“, „Im Zeitraum liegt kein gesetzlicher Feiertag.“; Fehler „Gib zwei vollständige Daten ein.“, „„Bis“ liegt vor „Von“. Tausche die beiden Daten.“, „Der Rechner kennt die Feiertage der Jahre 2018 bis 2035. Wähle einen Zeitraum darin.“; Namen der einmaligen Berliner Feiertage „75. Jahrestag der Befreiung vom Nationalsozialismus“, „80. Jahrestag der Befreiung vom Nationalsozialismus“, „75. Jahrestag des Aufstandes vom 17. Juni 1953“; Kasten rechts (Entwurf): „Der Rechner zählt nur Tage, er berechnet keine Fristen. Für Fristen nach BGB, ZPO, Verwaltungsverfahrensgesetz oder Abgabenordnung gelten eigene Regeln. Feiertage nach den Landesgesetzen, Stand 26.09.2026.“ | `src/tools/arbeitstage/`, `src/core/dates/` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

@@ -155,6 +155,19 @@ Alle fünf Werkzeuge gebaut, je ein Commit mit Browser-Prüfung vorher (Konsole,
 - **Entscheidungen (Leon, 26.09.2026):** Paket 6 freigegeben. exifr-Adressen X1–X4 freigegeben (`docs/exifr-adressen.md`). Türkis `--img` im Hellmodus #0D9684 (siehe Abschnitt 4). Hinweis zur Ausweiskopie freigegeben, ergänzt um die Weitergabe an Dritte (Wortlaut siehe `docs/ausweiskopie-recht.md`).
 - **Offen:** „Foto aufnehmen“ ist nur in Chrome am Computer geprüft, nicht auf einem echten Handy.
 
+### Stand Paket 7, erster Teil (26.09.2026)
+
+Nur die Teile ohne fehlende Unterlagen (Vorgabe von Leon): camt.053 und die Lastschrift-Logik warten auf die Unterlagen in `.local-specs/dk/`. Je Werkzeug ein Commit mit Browser-Prüfung vorher, jeder Commit einzeln in einem eigenen Arbeitsverzeichnis geprüft. Texte als „NEU, Paket 7, zur Freigabe“ in `docs/texte-zur-freigabe.md`. Endprüfung aller 39 Seiten hell/dunkel, 1280/360 px ohne Befund.
+
+| Werkzeug | Umsetzung | Prüfung |
+|---|---|---|
+| 24 Etiketten aus einer Liste | Bögen nur nach Maßen (E10), sieben Voreinstellungen ohne Abstände, alle Maße anpassbar; bis zu drei Spalten je Etikettenzeile, aus den Überschriften geraten; Startplatz für angebrochene Bögen; Schrift je Etikett bis 6 pt verkleinert, sonst wird die Zeile mit Grund aufgeführt und nicht gedruckt, nie gekürzt; Zeichen außerhalb von WinAnsi ebenso (E8a); Probedruck mit Rahmen und eigenem Blatt mit 100-mm-Linie; Hinweis „Tatsächliche Größe“ | Tests für Geometrie, Zeilen, Einpassen und PDF (Lage jedes Texts mit pdf.js nachgemessen); PDF und Probedruck mit PDFKit gerendert |
+| 29 Arbeitstage-Rechner | nur Arbeitstage, keine BGB-Fristen (E12); 2018 bis 2035; Montag bis Freitag oder Samstag; landesweite Feiertage automatisch, regionale (Mariä Himmelfahrt und Augsburger Friedensfest in Bayern, Fronleichnam in Teilen Sachsens und Thüringens) als abwählbare Zusätze mit Erklärung, standardmäßig aus | Wortlaut der 16 Landesgesetze, des Einigungsvertrags und der Änderungsgesetze in `docs/feiertage-recht.md`; Ostern gegen die Tabelle der PTB 1980–2031; Gültigkeitsgrenzen seit 2018 einzeln getestet |
+
+- **Feiertage, die nicht aus dem Gedächtnis stammen:** Berlin hat den 17. Juni 2028 als einmaligen Feiertag beschlossen (Gesetz vom 10.07.2024); Sachsen-Anhalt hat das Gesetz am 4. Mai 2026 geändert, die Feiertagsliste aber nicht. Beides wurde erst beim Lesen der Portale sichtbar.
+- **Bremen:** Die Fassung vom 29.06.2018 bis 13.03.2020 ließ sich im Portal nicht aufrufen; belegt über das Änderungsgesetz im Gesetzblatt 2018 Nr. 63 und die folgende Fassung.
+- **Offen:** Hinweistexte zum Rechner (Fristen, Umfang) sind Entwurf zur Freigabe und sollten mit der Rechtsprüfung angesehen werden. Einmalige Feiertage per Landesverordnung kennt der Rechner nicht.
+
 ## 0. Wie dieser Plan zu lesen ist
 
 - **Suchbegriffe** sind Vermutungen. Ich habe kein Werkzeug für Suchvolumen benutzt und keine Zahlen erhoben.

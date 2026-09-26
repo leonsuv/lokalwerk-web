@@ -37,6 +37,7 @@ describe('Seitenregister', () => {
         '/pdf-zu-bildern/',
         '/pdf-schwaerzen/',
         '/pdf-unterschreiben/',
+        '/pdf-formular-ausfuellen/',
         '/csv-reparieren/',
         '/duplikate-finden/',
         '/pdf-zusammenfuegen/',

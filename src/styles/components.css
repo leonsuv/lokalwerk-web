@@ -1185,3 +1185,24 @@ fieldset.check-list {
   touch-action: none;
   cursor: crosshair;
 }
+
+/* Formularfelder (PDF-Formular ausfüllen) */
+.check-list .pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.check-list input[type='radio'] {
+  accent-color: var(--c, var(--primary));
+  width: 1rem;
+  height: 1rem;
+}
+select[multiple] {
+  padding: 0.3rem;
+}
+.field-mark {
+  position: absolute;
+  outline: 3px solid var(--primary);
+  outline-offset: 1px;
+  border-radius: 2px;
+}

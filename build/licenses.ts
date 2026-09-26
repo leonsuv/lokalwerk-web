@@ -130,6 +130,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-seiten-bearbeiten',
     'pdf-schwaerzen',
     'pdf-unterschreiben',
+    'pdf-formular-ausfuellen',
     'pdf-teilen',
     'pdf-seitenzahlen',
     'pdf-stempel',
@@ -137,7 +138,13 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'bilder-zu-pdf',
   ],
   xlsx: ['sepa-sammelueberweisung', 'excel-csv-umwandeln', 'duplikate-finden'],
-  'pdfjs-dist': ['pdf-seiten-bearbeiten', 'pdf-zu-bildern', 'pdf-schwaerzen', 'pdf-unterschreiben'],
+  'pdfjs-dist': [
+    'pdf-seiten-bearbeiten',
+    'pdf-zu-bildern',
+    'pdf-schwaerzen',
+    'pdf-unterschreiben',
+    'pdf-formular-ausfuellen',
+  ],
 };
 
 /** Namen der Werkzeuge für die Lizenzseite, in der Reihenfolge von USED_IN */

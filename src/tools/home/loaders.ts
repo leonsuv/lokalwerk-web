@@ -38,6 +38,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-unterschreiben/main.html?raw')).default,
     open: async () => (await import('../pdf-unterschreiben/page.ts')).openFiles,
   },
+  'pdf-formular-ausfuellen': {
+    markup: async () => (await import('../pdf-formular-ausfuellen/main.html?raw')).default,
+    open: async () => (await import('../pdf-formular-ausfuellen/page.ts')).openFiles,
+  },
   'pdf-seitenzahlen': {
     markup: async () => (await import('../pdf-seitenzahlen/main.html?raw')).default,
     open: async () => (await import('../pdf-seitenzahlen/page.ts')).openFiles,

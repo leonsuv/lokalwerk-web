@@ -23,6 +23,17 @@ describe('validateIban mit Beispielen aus offiziellen Quellen', () => {
   // Gültige Beispiele je Land aus der SWIFT IBAN Registry folgen, sobald sie vorliegt (plan.md O4).
 });
 
+describe('eigene Beispiel-IBANs mit nicht vergebener Bankleitzahl (docs/beispiel-ibans.md)', () => {
+  it.each([
+    'DE89 1234 5678 1049 6387 12',
+    'DE69 2345 6789 1234 5678 00',
+    'DE50 3456 7890 0123 4567 89',
+    'DE15 8765 4321 0000 2020 51',
+  ])('%s hat eine gültige Prüfziffer', (iban) => {
+    expect(validateIban(iban)).toEqual({ ok: true, iban: iban.replace(/ /g, ''), country: 'DE' });
+  });
+});
+
 describe('validateIban', () => {
   it('normalisiert Leerzeichen, geschützte Leerzeichen und Kleinbuchstaben', () => {
     const nbsp = String.fromCodePoint(0xa0);

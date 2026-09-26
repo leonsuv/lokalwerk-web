@@ -24,6 +24,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | `/fotos-verkleinern/` | Fotos verkleinern und Metadaten entfernen – kostenlos \| Lokalwerk | Fotos kostenlos für E-Mail und Website verkleinern und dabei GPS-Position und Kameradaten entfernen. Direkt im Browser, ohne Upload. | 132 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/bildformat-umwandeln/` | Bildformat umwandeln: WebP in JPG, PNG in JPG – kostenlos \| Lokalwerk | Bilder kostenlos zwischen JPEG, PNG und WebP umwandeln, zum Beispiel WebP in JPG. Metadaten werden entfernt. Direkt im Browser, ohne Upload. | 140 | ja |
 | `/sepa-sammelueberweisung/` | SEPA-XML aus Excel oder CSV erstellen – Sammelüberweisung \| Lokalwerk | Aus einer Excel- oder CSV-Liste kostenlos eine SEPA-XML-Datei für die Sammelüberweisung bei deutschen Banken erstellen. Ohne Upload. | 132 | ja |
+| **NEU, Paket 5, zur Freigabe** `/qr-code-ueberweisung/` | QR-Code für Überweisungen (EPC-QR-Code) erstellen – kostenlos \| Lokalwerk | Einen QR-Code für Überweisungen kostenlos erstellen, den Banking-Apps einlesen, etwa für Spenden und Mitgliedsbeiträge. Direkt im Browser, nichts wird gesendet. | 160 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/excel-csv-umwandeln/` | Excel in CSV umwandeln und CSV in Excel – kostenlos, ohne Upload \| Lokalwerk | Excel- und ODS-Tabellen kostenlos als CSV speichern oder CSV in Excel umwandeln, mit Semikolon und richtigen Umlauten. Direkt im Browser, ohne Upload. | 150 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/csv-reparieren/` | CSV reparieren: Umlaute und Trennzeichen korrigieren – kostenlos \| Lokalwerk | CSV-Dateien mit kaputten Umlauten wie „MÃ¼ller“ oder falschem Trennzeichen kostenlos reparieren, jede Änderung vorher sichtbar. Im Browser, ohne Upload. | 152 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/duplikate-finden/` | Duplikate in Excel- und CSV-Listen finden – kostenlos, ohne Upload \| Lokalwerk | Doppelte Einträge in Mitglieder-, Kunden- und Adresslisten kostenlos finden und markieren, ohne etwas zu löschen. Direkt im Browser, ohne Upload. | 145 | ja |
@@ -346,6 +347,26 @@ Liste und Kontodaten werden direkt in deinem Browser verarbeitet und nicht hochg
 
 _(Erklärtext: 152 Wörter)_
 
+## QR-Code für Überweisungen – NEU, Paket 5, zur Freigabe (`src/tools/qr-code-ueberweisung/main.html`)
+
+Karte: „QR-Code für Überweisungen“ – „EPC-QR-Code erstellen, den Banking-Apps als fertige Überweisung einlesen.“
+
+Unterzeile im Kopf: „Einen QR-Code erstellen, den Banking-Apps als Überweisung einlesen, zum Beispiel für Spendenaufrufe, Mitgliedsbeiträge oder Aushänge.“
+
+**So funktioniert es**
+
+Trag Empfänger und IBAN ein, bei Bedarf Betrag und Verwendungszweck. Der Code entsteht sofort. Wer ihn mit der Banking-App scannt, bekommt eine fertig ausgefüllte Überweisung und muss sie dort nur noch prüfen und freigeben. Der Code folgt dem Standard EPC069-12 des European Payments Council, Version 3.1.
+
+**Gut zu wissen**
+
+Nicht jede Banking-App liest diese Codes. Zeichen, die im SEPA-Zahlungsverkehr nicht erlaubt sind, werden umgeschrieben, zum Beispiel é zu e; das steht dann unter dem Feld. Der Name darf höchstens 70 Zeichen haben, der Verwendungszweck 140. Unterstützt werden Konten in Ländern der EU und des EWR. Die BIC brauchst du dort nicht.
+
+**Nichts wird gesendet oder gespeichert**
+
+Der Code entsteht direkt in deinem Browser. Deine Angaben werden weder gesendet noch gespeichert. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 123 Wörter)_
+
 ## Excel und CSV umwandeln – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/excel-csv-umwandeln/main.html`)
 
 Karte: „Excel und CSV umwandeln“ – „Excel-Tabellen als CSV speichern und CSV-Dateien als Excel-Datei. Mit richtigen Umlauten.“
@@ -546,6 +567,7 @@ _(Erklärtext: 110 Wörter)_
 | **Rechtstext auf Anweisung von Leon, 26.09.2026** Datenschutzerklärung, Abschnitt 4 | Überschrift „Verarbeitung deiner Dateien und Eingaben“, erster Satz „PDFs, Fotos und Tabellen, die du in ein Werkzeug lädst, sowie deine Eingaben, etwa Formulareingaben, Texte oder gezeichnete Unterschriften, werden mit JavaScript lokal in deinem Browser verarbeitet.“ Rest unverändert. Für die Rechtsprüfung vermerkt (plan.md Abschnitt 9). | `pages/datenschutz/index.html` |
 | **Regel, 26.09.2026** „hochladen“ | Nur verneint („nicht hochgeladen“, „ohne Upload“), nie für die Dateiauswahl; geprüft von `tests/build/upload-wording.test.ts`. **Rückfrage:** Die SEPA-Seite verwendet „im Onlinebanking hochladen“ für das Einreichen der erzeugten Datei bei der Bank (4 Stellen, als Ausnahme im Test). Umformulieren, z. B. „im Onlinebanking einreichen“? | `src/tools/sepa-sammelueberweisung/main.html` |
 | **NEU, Paket 5, zur Freigabe** QR-Code erstellen, Meldungen | „Der Code enthält https://…“, „Das ist keine gültige Adresse. Schreib sie zum Beispiel so: lokalwerk.eu/werkzeuge/“, „Gib das WLAN-Passwort ein oder wähl „Ohne Passwort“.“, „Der Inhalt ist zu lang für einen QR-Code. Kürze ihn oder wähl eine niedrigere Fehlerkorrektur.“, „Fertig: Der QR-Code ist als PNG gespeichert.“ / „… als SVG gespeichert.“; Auswahl „Niedrig (7 %)“ bis „Sehr hoch (30 %)“, „Klein, etwa 500 Pixel“ bis „Groß, etwa 2000 Pixel“ | `src/tools/qr-code/` |
+| **NEU, Paket 5, zur Freigabe** QR-Code für Überweisungen, Meldungen | „Gib den Namen des Empfängers ein.“, „Umgeschrieben: é → e.“, „Auf 70 Zeichen gekürzt (vorher 75).“, „Betrag im Code: 12,50 €“, IBAN- und Betragsfehler wie auf der SEPA-Seite, „Die BIC hat ein ungültiges Format. Lass das Feld leer, wenn du sie nicht brauchst.“, „Zusammen sind es 340 Byte, erlaubt sind 331. Kürze Name oder Verwendungszweck.“, „Fertig: Der QR-Code ist gespeichert. Teste ihn vor dem Druck mit deiner Banking-App.“; Hinweis „Teste den Code vor dem Druck mit deiner eigenen Banking-App: Scanne ihn, prüfe Empfänger, IBAN, Betrag und Verwendungszweck und brich die Überweisung dann ab.“; Klartext im PNG „Empfänger: …“, „IBAN: …“, „BIC: …“, „Betrag: …“, „Verwendungszweck: …“ | `src/tools/qr-code-ueberweisung/` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

@@ -34,6 +34,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-schwaerzen/main.html?raw')).default,
     open: async () => (await import('../pdf-schwaerzen/page.ts')).openFiles,
   },
+  'pdf-unterschreiben': {
+    markup: async () => (await import('../pdf-unterschreiben/main.html?raw')).default,
+    open: async () => (await import('../pdf-unterschreiben/page.ts')).openFiles,
+  },
   'pdf-seitenzahlen': {
     markup: async () => (await import('../pdf-seitenzahlen/main.html?raw')).default,
     open: async () => (await import('../pdf-seitenzahlen/page.ts')).openFiles,

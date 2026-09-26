@@ -15,6 +15,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU, Paket 4, zur Freigabe** `/pdf-seiten-bearbeiten/` | PDF-Seiten drehen, sortieren und löschen – kostenlos, ohne Upload \| Lokalwerk | Seiten einer PDF kostenlos drehen, neu sortieren oder löschen, mit Vorschau jeder Seite. Direkt im Browser, ohne Upload und ohne Anmeldung. | 139 | ja |
 | **NEU, Paket 4, zur Freigabe** `/pdf-zu-bildern/` | PDF in JPG oder PNG umwandeln – kostenlos, ohne Upload \| Lokalwerk | Die Seiten einer PDF kostenlos als JPG- oder PNG-Bilder speichern, mit 72, 150 oder 300 dpi. Direkt im Browser, ohne Upload und ohne Anmeldung. | 143 | ja |
 | **NEU, Paket 4, zur Freigabe** `/pdf-schwaerzen/` | PDF schwärzen – Text sicher unkenntlich machen, ohne Upload \| Lokalwerk | Namen, Kontonummern und andere Stellen einer PDF kostenlos schwärzen, sodass sie auch in der Datei nicht mehr stecken. Direkt im Browser, ohne Upload. | 150 | ja |
+| **NEU, Paket 4, zur Freigabe** `/pdf-unterschreiben/` | Unterschrift in PDF einfügen – kostenlos, ohne Upload \| Lokalwerk | Eine Unterschrift kostenlos zeichnen oder als Foto hochladen und als Bild auf eine PDF-Seite setzen. Nichts wird gespeichert. Direkt im Browser, ohne Upload. | 157 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-seitenzahlen/` | Seitenzahlen in PDF einfügen – kostenlos, ohne Upload \| Lokalwerk | Seitenzahlen wie „Seite 3 von 12“ kostenlos in eine PDF einfügen, Position und Startseite frei wählbar. Direkt im Browser, ohne Upload und ohne Anmeldung. | 154 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-stempel/` | PDF-Wasserzeichen und Stempel einfügen – kostenlos, ohne Upload \| Lokalwerk | Text wie „Entwurf“ oder „Kopie“ kostenlos als Stempel oder Wasserzeichen auf die Seiten einer PDF setzen. Direkt im Browser, ohne Upload. | 137 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-metadaten-entfernen/` | PDF-Metadaten anzeigen und entfernen – kostenlos, ohne Upload \| Lokalwerk | Kostenlos sehen, welche versteckten Angaben in einer PDF stecken, und Autor, Programm, Datum und frühere Fassungen entfernen. Direkt im Browser, ohne Upload. | 157 | ja |
@@ -142,6 +143,26 @@ Die neue PDF ist nicht mehr durchsuchbar, meist größer als das Original und f�
 Die PDF wird direkt in deinem Browser geschwärzt und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
 _(Erklärtext: 163 Wörter)_
+
+## Unterschrift einfügen – NEU, Paket 4, zur Freigabe (`src/tools/pdf-unterschreiben/main.html`)
+
+Karte: „Unterschrift einfügen“ – „Eine gezeichnete oder fotografierte Unterschrift als Bild auf eine PDF-Seite setzen.“
+
+Unterzeile im Kopf: „Eine gezeichnete oder fotografierte Unterschrift als Bild auf eine PDF-Seite setzen.“
+
+**So funktioniert es**
+
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Zeichne rechts deine Unterschrift oder lade ein Foto davon hoch. Blättere zur richtigen Seite, setz die Unterschrift darauf und schieb sie an die Stelle, an der sie stehen soll. Du kannst sie auf mehrere Seiten setzen. „PDF mit Unterschrift speichern“ erzeugt eine neue Datei; deine Originaldatei bleibt unverändert.
+
+**Was bedeutet die eingefügte Unterschrift?**
+
+Das Werkzeug setzt ein Bild deiner Unterschrift in die PDF, so als hättest du sie ausgedruckt, unterschrieben und wieder eingescannt. Es signiert die Datei nicht. Eine fortgeschrittene oder qualifizierte elektronische Signatur nach der eIDAS-Verordnung entsteht dabei nicht. Wo das Gesetz die Schriftform verlangt (§ 126 BGB), reicht das Bild deshalb nicht; die elektronische Form braucht dafür eine qualifizierte elektronische Signatur (§ 126a BGB). Für viele Formulare, Bestätigungen und Vereinsunterlagen genügt ein unterschriebener Scan; frag im Zweifel beim Empfänger nach.
+
+**Nichts wird gespeichert**
+
+Deine Unterschrift entsteht nur in deinem Browser und wird weder hochgeladen noch gespeichert. Lädst du die Seite neu, ist sie weg. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+
+_(Erklärtext: 170 Wörter)_
 
 ## Seitenzahlen einfügen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-seitenzahlen/main.html`)
 
@@ -475,6 +496,8 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, Paket 4, zur Freigabe** PDF zu Bildern, Meldungen | „Seite 1 ist sehr groß und wurde mit 208 statt 300 dpi gespeichert.“, „Fertig: Das Bild ist gespeichert.“, „Fertig: 2 Bilder als ZIP gespeichert.“, „Die Bilder konnten nicht erzeugt werden. Wähle eine geringere Auflösung oder weniger Seiten auf einmal.“, „Die ZIP-Datei wäre zu groß. Wähle weniger Seiten oder eine geringere Auflösung.“, „Es wird eine PDF auf einmal umgewandelt: die erste.“; Auswahl „72 dpi, für den Bildschirm“, „150 dpi, Standard“, „300 dpi, für den Druck“ | `src/tools/pdf-zu-bildern/` |
 | **NEU, Paket 4, zur Freigabe** PDF schwärzen, Meldungen | „Fertig: Die geschwärzte PDF ist gespeichert. Prüf sie, bevor du sie weitergibst.“, „Die geschwärzte PDF konnte nicht erzeugt werden. Wähle eine geringere Auflösung und versuch es noch einmal.“; Hinweis rechts „Prüf die neue PDF, bevor du sie weitergibst: Sind alle Stellen vollständig schwarz? Das Werkzeug schwärzt nur die Bereiche, die du markierst.“; Bedienhinweis „Zieh mit Maus, Stift oder Finger einen Bereich über die Stelle. Ohne Maus: …“; Screenreader „Bereich 1 auf Seite 2“, „Bereich 1 auf Seite 2 löschen“ | `src/tools/pdf-schwaerzen/` |
 | **NEU, Paket 4, zur Freigabe** Stempel und Wasserzeichen, Verweis | „ein Werkzeug, das die Seiten in Bilder umwandelt“ verlinkt jetzt auf /pdf-schwaerzen/ (Vorgabe von Leon, 26.09.2026; Wortlaut unverändert) | `src/tools/pdf-stempel/main.html` |
+| **NEU, Paket 4, zur Freigabe** Unterschrift einfügen, rechtlicher Hinweis (Entscheidung nötig, siehe docs/unterschrift-recht.md) | Hinweis rechts: „Das ist ein Bild deiner Unterschrift, keine digitale Signatur: Die Datei wird nicht signiert, und es ist weder eine fortgeschrittene noch eine qualifizierte elektronische Signatur. Wo das Gesetz die Schriftform verlangt, ersetzt es die eigenhändige Unterschrift nicht.“ Nicht „keine elektronische Signatur“, weil ein eingefügtes Bild nach Art. 3 Nr. 10 eIDAS eine (einfache) elektronische Signatur sein kann. | `src/tools/pdf-unterschreiben/main.html` |
+| **NEU, Paket 4, zur Freigabe** Unterschrift einfügen, Meldungen | „Fertig: Die PDF mit Unterschrift ist gespeichert.“, „Auf dem Bild ist keine Unterschrift zu erkennen. Wähle ein anderes Bild.“, „Das Bild konnte nicht gelesen werden. Wähle ein PNG- oder JPEG-Bild.“, „Diese PDF ist digital signiert. Nach dem Einfügen der Unterschrift ist die vorhandene Signatur ungültig.“; Bedienhinweise zur Zeichenfläche und zum Verschieben; Screenreader „Unterschrift 1 auf Seite 2“ | `src/tools/pdf-unterschreiben/` |
 | 404-Seite | „Diese Seite gibt es nicht.“ / „Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.“ / Button „Zu allen Werkzeugen“ (zeigt jetzt auf /werkzeuge/) | `pages/404.html` |
 | Lizenzseite, Einleitung | siehe Datei | `pages/lizenzen/index.html` |
 | SEPA, Hinweis nur eine Überweisung | Wortlaut aus plan.md O9 | `src/tools/sepa-sammelueberweisung/messages.ts` |

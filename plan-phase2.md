@@ -137,6 +137,23 @@ Alle vier Werkzeuge gebaut, je ein Commit; jeder Commit einzeln in einem eigenen
 - Gläubiger-ID: Die Seite der Bundesbank zum Aufbau ließ sich nicht im Wortlaut abrufen. Grundlage ist allein EPC262-08; eine mögliche Zusatzregel für Stelle 8 wird nicht geprüft.
 - IBAN außerhalb des EWR: Länge weiter ungeprüft, bis die SWIFT IBAN Registry in `.local-specs/swift/` liegt (plan.md O4).
 
+### Stand Paket 6 (26.09.2026)
+
+Alle fünf Werkzeuge gebaut, je ein Commit mit Browser-Prüfung vorher (Konsole, Netzwerk, CSP), jeder Commit einzeln in einem eigenen Arbeitsverzeichnis geprüft. Texte als „NEU, Paket 6, zur Freigabe“ in `docs/texte-zur-freigabe.md`. Endprüfung aller 37 Seiten hell/dunkel, 1280/360 px: keine fremden Anfragen, kein Überlauf, keine Konsolenmeldungen, Fokus überall sichtbar.
+
+| Werkzeug | Umsetzung | Prüfung |
+|---|---|---|
+| 15 Foto-Metadaten anzeigen | exifr lite im Worker; Ort nur als Text, ohne Karte; „Ohne Metadaten speichern“ über das Neu-Kodieren von Bildformat umwandeln | Tests für `exif-read.ts`; im Browser mit GPS-, Kamera- und IPTC-Fotos |
+| Foto zuschneiden und drehen | freie und feste Seitenverhältnisse, Vierteldrehung, Spiegeln; **ohne Passbild-Voreinstellung** (Maße nicht belegt, Passbilder entstehen digital beim Fotografen oder in der Behörde) | Tests für `crop.ts`; Ausgabe pixelgenau im gewählten Verhältnis |
+| 14 Gesichter verpixeln | große Blöcke (höchstens acht über die längere Seite) oder Schwarz, kein Weichzeichnen; Metadaten immer entfernt | Tests für `obscure.ts`; jede Datei mit `findMetadata` geprüft |
+| A Ausweiskopie | Schwärzen und Aufdruck „KOPIE – nur für [Zweck] – [Datum]“ fest in den Bildpunkten, „KOPIE“ immer an; bis zwei Seiten; PDF (eine A4-Seite) oder JPG; schreibt nicht vor, was geschwärzt wird | Tests für `id-copy.ts` und `copy-mark.ts`; PDF mit PDFKit gerendert; JPG nur mit JFIF und Farbprofil |
+| C Dokument scannen | Kamera nur über `<input capture>`, kein getUserMedia, `camera=()` bleibt; vier Ecken mit Maus, Finger oder Tastatur; Entzerren und Verbessern im Worker; jede Seite auf A4 | Tests für `perspective.ts` und `enhance.ts`; im Browser mit einem schräg fotografierten, abgeschatteten Blatt |
+
+- **Ausweiskopie, Recht:** Wortlaut von § 20 Abs. 1–2 PAuswG und § 18 Abs. 1–3 PassG in `docs/ausweiskopie-recht.md`. Hinweiskasten und Absatz „Rechtlicher Rahmen“ sind **Entwurf zur Freigabe**.
+- **Metadaten:** Bei Zuschneiden, Verpixeln und Ausweiskopie gibt es keinen Schalter: Das Neu-Kodieren übernimmt keine Metadaten, und jede Datei wird geprüft.
+- **Schwarzweiß beim Scannen:** örtliche Schwelle nach Bradley und Roth (2007) statt Otsu für das ganze Bild; Otsu machte Schattenbereiche von Handyfotos ganz schwarz.
+- **Offen:** exifr-Adressen X1–X4 (`docs/exifr-adressen.md`) liegen zur Freigabe vor, bis dahin vorläufig eingetragen. „Foto aufnehmen“ ist nur in Chrome am Computer geprüft, nicht auf einem echten Handy.
+
 ## 0. Wie dieser Plan zu lesen ist
 
 - **Suchbegriffe** sind Vermutungen. Ich habe kein Werkzeug für Suchvolumen benutzt und keine Zahlen erhoben.

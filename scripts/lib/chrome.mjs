@@ -75,7 +75,9 @@ export async function startChrome(
       `--user-data-dir=${userDataDir}`,
       'about:blank',
     ],
-    { stdio: 'ignore' },
+    // Unter Linux richtet sich die Oberflächensprache (z. B. Datumsfelder) nach LANGUAGE/LANG,
+    // nicht nach --lang; unter macOS ändert das nichts.
+    { stdio: 'ignore', env: { ...process.env, LANG: 'de_DE.UTF-8', LANGUAGE: 'de' } },
   );
   /** @type {string | undefined} */
   let wsUrl;

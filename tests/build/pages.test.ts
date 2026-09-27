@@ -52,6 +52,7 @@ describe('Seitenregister', () => {
         '/duplikate-finden/',
         '/etiketten/',
         '/pdf-zusammenfuegen/',
+        '/pdf-werkstatt/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',
         '/pro/',

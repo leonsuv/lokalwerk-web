@@ -126,6 +126,7 @@ export const REQUIRED_DATA_LICENSES: Record<string, ReadonlyArray<Omit<DataLicen
  */
 export const USED_IN: Readonly<Record<string, readonly string[]>> = {
   'pdf-lib': [
+    'pdf-werkstatt',
     'pdf-zusammenfuegen',
     'pdf-seiten-bearbeiten',
     'pdf-schwaerzen',
@@ -150,6 +151,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
   exifr: ['foto-metadaten'],
   uqr: ['qr-code', 'qr-code-ueberweisung'],
   'pdfjs-dist': [
+    'pdf-werkstatt',
     'pdf-seiten-bearbeiten',
     'pdf-zu-bildern',
     'pdf-schwaerzen',

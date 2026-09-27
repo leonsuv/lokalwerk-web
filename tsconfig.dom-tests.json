@@ -1,0 +1,11 @@
+{
+  // Tests für Browser-Module aus src/ui/ (z. B. LazyRenderer): laufen in Node mit nachgebauten
+  // Browser-Objekten, brauchen aber die DOM-Typen. Getrennt von tsconfig.node.json, damit die
+  // DOM-Typen dort nicht die Typen von Node-Skripten verändern.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["node"]
+  },
+  "include": ["tests/ui"]
+}

@@ -15,5 +15,6 @@
     "vitest.config.ts",
     "eslint.config.js",
     "eslint.restrictions.js"
-  ]
+  ],
+  "exclude": ["tests/ui"]
 }

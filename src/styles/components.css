@@ -1401,3 +1401,302 @@ select[multiple] {
   margin: 0 0 0.4rem;
   font-weight: 500;
 }
+
+/* PDF-Werkstatt (plan-phase3.md 5.1, Entwurf prototype/pdf-werkstatt-entwurf.html). Breiter als
+   andere Werkzeuge, damit mehrere Dokumente nebeneinander passen. */
+.wrap.ws-wide {
+  max-width: 88rem;
+}
+.ws-toolbar {
+  position: sticky;
+  top: calc(4rem + env(safe-area-inset-top, 0px));
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+.ws-tb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font: inherit;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.45rem 0.6rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ws-tb:hover:not(:disabled) {
+  background: var(--surface2);
+}
+.ws-tb:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ws-tb svg {
+  flex: none;
+}
+.ws-tb.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-ink);
+  font-weight: 600;
+}
+.ws-sep {
+  width: 1px;
+  height: 1.6rem;
+  margin: 0 0.2rem;
+  background: var(--line);
+}
+.ws-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18rem;
+  gap: 1.25rem;
+  align-items: start;
+  margin: 1rem 0 3rem;
+}
+.ws-main {
+  min-width: 0;
+}
+.ws-side {
+  top: calc(8.4rem + env(safe-area-inset-top, 0px));
+}
+.ws-board {
+  display: flex;
+  gap: 0.9rem;
+  overflow-x: auto;
+  padding: 0.25rem 0.15rem 0.75rem;
+}
+.ws-board:empty {
+  display: none;
+}
+.ws-col {
+  flex: 0 0 17.25rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+.ws-col.drop-target {
+  outline: 2px dashed var(--primary);
+  outline-offset: -4px;
+}
+.ws-col-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.6rem 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+/* Mit Elternklasse: stärker als die allgemeine Regel für input[type='text'] */
+.ws-col-head .ws-name {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.2rem 0.4rem;
+}
+.ws-col-head .ws-name:hover {
+  border-color: var(--line);
+  background: var(--surface2);
+}
+.ws-col-head .ws-name:focus {
+  background: var(--surface2);
+}
+.ws-count {
+  color: var(--muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+.ws-col-body {
+  overflow-y: auto;
+  max-height: max(24rem, calc(100vh - 14rem));
+  padding: 0.75rem;
+}
+.ws-pages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-content: start;
+}
+.ws-pages:empty {
+  display: none;
+}
+.ws-empty-doc {
+  margin: 0;
+  padding: 1.6rem 1rem;
+  border: 2px dashed var(--line);
+  border-radius: 14px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.ws-page {
+  position: relative;
+  padding: 0.35rem 0.35rem 0.25rem;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ws-page:hover {
+  background: var(--surface2);
+}
+.ws-page.sel {
+  background: var(--primary-soft);
+}
+.ws-page.sel .ws-paper {
+  outline: 2px solid var(--primary);
+}
+.ws-page:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 1px;
+}
+.ws-page.dragging {
+  opacity: 0.35;
+}
+.ws-sheet {
+  aspect-ratio: 210 / 297;
+  display: grid;
+  place-items: center;
+}
+/* Papier in der Form der Seite, eingepasst in die Kachel; Seiten sind auch im Dunkelmodus weiß */
+.ws-paper {
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.18),
+    0 0 0 1px rgb(14 21 48 / 0.06);
+}
+.ws-paper.wide {
+  width: 100%;
+}
+.ws-paper.tall {
+  height: 100%;
+}
+.ws-paper canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ws-paper .err {
+  padding: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--err-ink);
+  text-align: center;
+}
+/* Die Meldung steht auf weißem Papier: im Dunkelmodus die Farbe des Hellmodus */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ws-paper .err {
+    color: #bc3c22;
+  }
+}
+:root[data-theme='dark'] .ws-paper .err {
+  color: #bc3c22;
+}
+.ws-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+/* Marke der Quelle: Kategoriefarben als Unterscheidung, Text in den -ink-Tönen (plan.md A6) */
+.ws-src {
+  font-weight: 700;
+  font-size: 0.7rem;
+  border-radius: 6px;
+  padding: 0.05rem 0.4rem;
+}
+.ws-src.c0 {
+  background: var(--pdf-soft);
+  color: var(--pdf-ink);
+}
+.ws-src.c1 {
+  background: var(--sepa-soft);
+  color: var(--sepa-ink);
+}
+.ws-src.c2 {
+  background: var(--img-soft);
+  color: var(--img-ink);
+}
+.ws-src.c3 {
+  background: var(--util-soft);
+  color: var(--util-ink);
+}
+.ws-src.c4 {
+  background: var(--tab-soft);
+  color: var(--tab-ink);
+}
+.ws-src.blank {
+  background: var(--surface2);
+  color: var(--muted);
+}
+.ws-check {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-ink);
+  display: none;
+  place-items: center;
+}
+.ws-page.sel .ws-check {
+  display: grid;
+}
+.ws-status {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.ws-status:empty {
+  display: none;
+}
+.ws-note {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.8rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  background: var(--surface2);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.ws-note svg {
+  flex: none;
+  margin-top: 0.1rem;
+}
+@media (max-width: 900px) {
+  .ws-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ws-side {
+    position: static;
+  }
+}

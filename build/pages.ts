@@ -97,6 +97,35 @@ export const PAGES: readonly PageDef[] = [
     nav: 'werkzeuge',
   },
   {
+    // plan-phase3.md, Titel, Beschreibung und Kurztext: Entwurf zur Freigabe bei Anhaltepunkt B
+    file: 'pdf-werkstatt/index.html',
+    url: '/pdf-werkstatt/',
+    title: 'PDF-Werkstatt – mehrere PDFs bearbeiten und neu zusammenstellen | Lokalwerk',
+    description:
+      'PDFs und Bilder nebeneinander öffnen, Seiten zwischen Dokumenten verschieben, drehen und löschen. Kostenlos im Browser, ohne Upload deiner Dateien.',
+    index: true,
+    nav: 'werkzeuge',
+    tool: {
+      id: 'pdf-werkstatt',
+      name: 'PDF-Werkstatt',
+      short: 'Mehrere PDFs und Bilder nebeneinander bearbeiten und neu zusammenstellen.',
+      category: 'pdf',
+      icon: 'i-workshop',
+      keywords: [
+        'pdf editor',
+        'pdf bearbeiten',
+        'seiten verschieben',
+        'seiten kopieren',
+        'mehrere pdfs',
+        'organisieren',
+        'zusammenstellen',
+        'umsortieren',
+        'leere seite',
+      ],
+      related: ['pdf-zusammenfuegen', 'pdf-seiten-bearbeiten', 'pdf-teilen'],
+    },
+  },
+  {
     file: 'pdf-zusammenfuegen/index.html',
     url: '/pdf-zusammenfuegen/',
     title: 'PDF zusammenfügen – kostenlos und ohne Upload | Lokalwerk',

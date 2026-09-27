@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
-import { degrees, PDFDict, PDFDocument, PDFName, StandardFonts } from 'pdf-lib';
+import { inflateSync } from 'node:zlib';
+import { degrees, PDFDict, PDFDocument, PDFName, PDFRawStream, StandardFonts } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
 import {
   assemblePdfs,
@@ -44,6 +45,22 @@ async function pageTexts(bytes: Uint8Array): Promise<string[]> {
   }
   await doc.loadingTask.destroy();
   return texts;
+}
+
+/** Inhalt einer Seite als Text (entpackt), für Lage und Größe gezeichneter Bilder */
+async function contentOf(bytes: Uint8Array, page: number): Promise<string> {
+  const doc = await PDFDocument.load(bytes);
+  const contents = doc.getPage(page).node.Contents();
+  const streams =
+    contents && 'asArray' in contents ? contents.asArray() : contents ? [contents] : [];
+  return streams
+    .map((s) => {
+      const stream = doc.context.lookup(s);
+      if (!(stream instanceof PDFRawStream)) return '';
+      const raw = stream.getContents();
+      return new TextDecoder('latin1').decode(raw[0] === 0x78 ? inflateSync(raw) : raw);
+    })
+    .join('\n');
 }
 
 async function pageInfo(bytes: Uint8Array) {
@@ -221,6 +238,80 @@ describe('assemblePdfs', () => {
       expect(viewport.height - y).toBeCloseTo((10 * 72) / 25.4, 0);
     }
     await doc.loadingTask.destroy();
+  });
+
+  it('setzt Stempel so, wie die Seite am Ende zu sehen ist, auch nach zusätzlicher Drehung', async () => {
+    const sources = new Map<string, AssembleSource>([
+      ['a', { kind: 'pdf', bytes: await labelledPdf('A', 2, [90]) }],
+    ]);
+    const stamp = { text: 'KOPIE', placement: 'top', color: 'red', opacity: 1 } as const;
+    // Seite 1: eigene Drehung 90 plus 90 in der Werkstatt; Seite 2: nur 270 in der Werkstatt
+    const [out] = await assemblePdfs(
+      [
+        {
+          name: 'x.pdf',
+          pages: [
+            { ...src('a', 0, 90), stamp },
+            { ...src('a', 1, 270), stamp },
+          ],
+        },
+      ],
+      sources,
+    );
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const doc = await pdfjs.getDocument({ data: out?.bytes.slice(), verbosity: 0 }).promise;
+    for (const n of [1, 2]) {
+      const page = await doc.getPage(n);
+      const viewport = page.getViewport({ scale: 1 });
+      const item = (await page.getTextContent()).items.find((i) => 'str' in i && i.str === 'KOPIE');
+      if (!item || !('transform' in item)) throw new Error(`Stempel auf Seite ${n} fehlt`);
+      const transform = item.transform as number[];
+      const [x = 0, y = 0] = viewport.convertToViewportPoint(
+        transform[4] ?? 0,
+        transform[5] ?? 0,
+      ) as number[];
+      // Oben, 12 mm unter dem sichtbaren Rand (Grundlinie plus Versalhöhe), mittig
+      expect(y, `Seite ${n}`).toBeLessThan(80);
+      expect(Math.abs(x + (item as { width: number }).width / 2 - viewport.width / 2)).toBeLessThan(
+        15,
+      );
+    }
+    await doc.loadingTask.destroy();
+  });
+
+  it('setzt Unterschriften vor der zusätzlichen Drehung, also am Inhalt; gleiches Bild nur einmal', async () => {
+    const sources = new Map<string, AssembleSource>([
+      ['a', { kind: 'pdf', bytes: await labelledPdf('A', 2) }],
+    ]);
+    const signature = { id: 'g1', png: PNG_1X1, rect: { x: 0.1, y: 0.1, w: 0.2, h: 0.05 } };
+    const [out] = await assemblePdfs(
+      [
+        {
+          name: 'x.pdf',
+          pages: [
+            { ...src('a', 0, 90), signatures: [signature] },
+            {
+              ...src('a', 1),
+              signatures: [signature, { ...signature, rect: { x: 0.5, y: 0.5, w: 0.1, h: 0.1 } }],
+            },
+          ],
+        },
+      ],
+      sources,
+    );
+    const bytes = out?.bytes ?? new Uint8Array();
+    expect((await pageInfo(bytes))[0]?.rotate).toBe(90);
+    // Seite 1 (300 × 400 pt): Lage aus dem Rechteck ohne die Drehung um 90 Grad
+    const first = await contentOf(bytes, 0);
+    expect(first).toContain(`1 0 0 1 30 ${400 * (1 - 0.1 - 0.05)} cm`);
+    expect(first).toContain('60 0 0 20 0 0 cm');
+    const doc = await PDFDocument.load(bytes);
+    const images = doc.context
+      .enumerateIndirectObjects()
+      .flatMap(([, obj]) => ('dict' in obj ? [(obj as { dict: PDFDict }).dict] : []))
+      .filter((dict) => dict.get(PDFName.of('Subtype')) === PDFName.of('Image'));
+    // PNG mit Transparenz: Bild plus SMask, trotz drei Unterschriften nur einmal
+    expect(images).toHaveLength(2);
   });
 
   it('schreibt keine Metadaten, auch nicht die der Quellen', async () => {

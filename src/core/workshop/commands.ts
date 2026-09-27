@@ -9,6 +9,7 @@
  * Die Namen der Befehle (`label`) erscheinen in Ansagen und im Menü („Rückgängig: Drehen“).
  */
 
+import { fitRect, turnRect, type NormRect } from '../geometry/norm-rect.ts';
 import { samePageNumbers, type PageNumberOptions } from '../pdf/page-numbers.ts';
 import { normalizeRotation } from '../pdf/stamp-geometry.ts';
 import {
@@ -21,12 +22,15 @@ import {
   type IdSource,
   type PageBox,
   type PageKey,
+  type PageOp,
   type PagePick,
   type PageRef,
   type PageTemplate,
+  type SignatureImage,
   type Source,
   type SourceId,
   type SourceLayouts,
+  type StampLook,
   type WorkshopState,
 } from './model.ts';
 
@@ -290,6 +294,97 @@ export function setPageNumbers(id: DocId, options: PageNumberOptions | null): Co
       const { ops: _old, ...rest } = doc;
       const next: Doc = ops.length > 0 ? { ...rest, ops } : rest;
       return { state: withDocs(state, replaceDoc(state.docs, next)) };
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Seiten-Operationen (Stufe 2.2): Stempel und Unterschrift
+
+function withOps(page: PageRef, ops: readonly PageOp[]): PageRef {
+  const { ops: _old, ...rest } = page;
+  return ops.length > 0 ? { ...rest, ops } : rest;
+}
+
+function sameStamp(a: StampLook, b: StampLook): boolean {
+  return (
+    a.text === b.text &&
+    a.placement === b.placement &&
+    a.color === b.color &&
+    a.opacity === b.opacity
+  );
+}
+
+/**
+ * Stempel auf die Seiten setzen oder mit `null` entfernen. Je Seite gibt es höchstens einen
+ * Stempel; ein neuer ersetzt den alten. Seiten, die schon genau diesen Stempel tragen, bleiben.
+ */
+export function setStamp(keys: Iterable<PageKey>, stamp: StampLook | null): Command {
+  return {
+    label: stamp ? 'Stempel' : 'Stempel entfernen',
+    apply(state) {
+      return {
+        state: mapPages(state, keys, (page) => {
+          const current = page.ops?.find((op) => op.type === 'stamp');
+          if (stamp === null ? !current : current && sameStamp(current.stamp, stamp)) return page;
+          const others = (page.ops ?? []).filter((op) => op.type !== 'stamp');
+          return withOps(
+            page,
+            stamp ? [...others, { type: 'stamp', stamp: { ...stamp } }] : others,
+          );
+        }),
+      };
+    },
+  };
+}
+
+/**
+ * Unterschrift umrechnen: vom Rechteck, wie die Seite gerade angezeigt wird, auf die Seite ohne
+ * die zusätzliche Drehung der Werkstatt (am Inhalt verankert, model.ts PageOp).
+ */
+export function unturnedRect(rect: NormRect, rotate: number): NormRect {
+  let r = fitRect(rect);
+  for (let turn = ((rotate % 360) + 360) % 360; turn > 0; turn -= 90) r = turnRect(r, -90);
+  return r;
+}
+
+/** Umgekehrt: Rechteck einer Unterschrift, wie die Seite mit ihrer Drehung angezeigt wird */
+export function turnedRect(rect: NormRect, rotate: number): NormRect {
+  let r = rect;
+  for (let turn = ((rotate % 360) + 360) % 360; turn > 0; turn -= 90) r = turnRect(r, 90);
+  return r;
+}
+
+/**
+ * Unterschriften einer Seite festlegen: `rects` so, wie die Seite gerade angezeigt wird (mit
+ * ihrer Drehung). Ersetzt alle Unterschriften der Seite; alle bekommen das Bild `image`.
+ * Leere Liste entfernt sie.
+ */
+export function setSignatures(
+  key: PageKey,
+  image: SignatureImage | null,
+  rects: readonly NormRect[],
+): Command {
+  return {
+    label: rects.length > 0 ? 'Unterschrift' : 'Unterschrift entfernen',
+    apply(state) {
+      return {
+        state: mapPages(state, [key], (page) => {
+          const before = (page.ops ?? []).filter((op) => op.type === 'signature');
+          if (rects.length === 0 && before.length === 0) return page;
+          if (rects.length > 0 && !image) return page;
+          const others = (page.ops ?? []).filter((op) => op.type !== 'signature');
+          const signatures: PageOp[] =
+            image === null
+              ? []
+              : rects.map((rect) => ({
+                  type: 'signature',
+                  image,
+                  rect: unturnedRect(rect, page.rotate),
+                }));
+          return withOps(page, [...others, ...signatures]);
+        }),
+      };
     },
   };
 }

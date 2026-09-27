@@ -4,6 +4,7 @@ import {
   pageIndices,
   parsePageRanges,
   rangeLabel,
+  rangesFromPages,
   singlePages,
 } from '../../../src/core/pdf/page-ranges.ts';
 
@@ -95,5 +96,27 @@ describe('Aufteilungen', () => {
     expect(pageIndices({ from: 3, to: 5 })).toEqual([2, 3, 4]);
     expect(rangeLabel({ from: 3, to: 5 })).toBe('3-5');
     expect(rangeLabel({ from: 4, to: 4 })).toBe('4');
+  });
+});
+
+describe('rangesFromPages', () => {
+  it('fasst Seiten zu Bereichen zusammen, sortiert und ohne doppelte', () => {
+    expect(rangesFromPages([5, 1, 2, 3, 2]).map(rangeLabel)).toEqual(['1-3', '5']);
+    expect(rangesFromPages([7])).toEqual([{ from: 7, to: 7 }]);
+    expect(rangesFromPages([])).toEqual([]);
+    expect(rangesFromPages([0, -1, 1.5, 4])).toEqual([{ from: 4, to: 4 }]);
+  });
+
+  it('ergibt eine Angabe, die parsePageRanges wieder liest', () => {
+    const text = rangesFromPages([2, 3, 4, 8, 10, 11]).map(rangeLabel).join(', ');
+    expect(text).toBe('2-4, 8, 10-11');
+    expect(parsePageRanges(text, 11)).toEqual({
+      ok: true,
+      ranges: [
+        { from: 2, to: 4 },
+        { from: 8, to: 8 },
+        { from: 10, to: 11 },
+      ],
+    });
   });
 });

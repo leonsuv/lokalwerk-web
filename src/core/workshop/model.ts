@@ -8,7 +8,9 @@
  */
 
 import { A4 } from '../pdf/image-layout.ts';
+import type { NormRect } from '../geometry/norm-rect.ts';
 import type { PageNumberOptions } from '../pdf/page-numbers.ts';
+import type { StampOptions } from '../pdf/stamp.ts';
 import { normalizeRotation, visibleSize, type PageRotation } from '../pdf/stamp-geometry.ts';
 
 export type SourceId = string;
@@ -46,10 +48,48 @@ export interface Source {
   facts: SourceFacts;
 }
 
+/** Aussehen eines Stempels; auf welche Seiten, bestimmt, welche Seiten ihn tragen */
+export type StampLook = Omit<StampOptions, 'pages'>;
+
+/** Bild einer Unterschrift (PNG ohne Metadaten, aus src/ui/signature-pad.ts) */
+export interface SignatureImage {
+  /** Kennung, damit dasselbe Bild beim Export nur einmal eingebettet wird */
+  id: string;
+  png: Uint8Array;
+  width: number;
+  height: number;
+}
+
+/**
+ * Operation auf einer Seite, erst beim Export angewendet (plan-phase3.md 7.2, Schritt 2.2).
+ * Sie gehört zur Seite und wandert mit, wenn die Seite verschoben, kopiert oder dupliziert wird.
+ * - Stempel: höchstens einer je Seite, gesetzt so, wie die Seite am Ende zu sehen ist.
+ * - Unterschrift: `rect` in Anteilen der Seite ohne die zusätzliche Drehung der Werkstatt, also
+ *   am Inhalt verankert; wird die Seite danach gedreht, dreht sich die Unterschrift mit.
+ */
+export type PageOp =
+  | { type: 'stamp'; stamp: StampLook }
+  | { type: 'signature'; image: SignatureImage; rect: NormRect };
+
 /** Eine Seite im Dokument. `rotate` ist die zusätzliche Drehung im Uhrzeigersinn. */
 export type PageRef =
-  | { key: PageKey; kind: 'source'; source: SourceId; index: number; rotate: Rotation }
-  | { key: PageKey; kind: 'blank'; box: PageBox; rotate: Rotation };
+  | {
+      key: PageKey;
+      kind: 'source';
+      source: SourceId;
+      index: number;
+      rotate: Rotation;
+      ops?: readonly PageOp[];
+    }
+  | { key: PageKey; kind: 'blank'; box: PageBox; rotate: Rotation; ops?: readonly PageOp[] };
+
+export function stampOf(page: PageRef): StampLook | null {
+  return page.ops?.find((op) => op.type === 'stamp')?.stamp ?? null;
+}
+
+export function signaturesOf(page: PageRef): Extract<PageOp, { type: 'signature' }>[] {
+  return (page.ops ?? []).filter((op) => op.type === 'signature');
+}
 
 /**
  * Seite einer Quelle mit zusätzlicher Drehung, ab 0 gezählt. Damit übergibt „PDF-Seiten
@@ -110,7 +150,7 @@ export const EMPTY_STATE: WorkshopState = { docs: [], sources: new Map() };
  * ID nach Rückgängig nicht für etwas anderes wiederverwendet wird (die Oberfläche hängt DOM
  * und Vorschaubilder an Schlüssel).
  */
-export type IdSource = (prefix: 'd' | 'p' | 's') => string;
+export type IdSource = (prefix: 'd' | 'p' | 's' | 'g') => string;
 
 export function counterIds(): IdSource {
   let n = 0;
@@ -198,7 +238,12 @@ export function unchangedSource(state: WorkshopState, doc: Doc): Source | null {
   const source = state.sources.get(first.source);
   if (source?.kind !== 'pdf' || source.pages.length !== doc.pages.length) return null;
   const same = doc.pages.every(
-    (p, i) => p.kind === 'source' && p.source === source.id && p.index === i && p.rotate === 0,
+    (p, i) =>
+      p.kind === 'source' &&
+      p.source === source.id &&
+      p.index === i &&
+      p.rotate === 0 &&
+      !p.ops?.length,
   );
   return same ? source : null;
 }

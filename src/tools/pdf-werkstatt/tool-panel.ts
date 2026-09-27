@@ -5,11 +5,19 @@
  * geht zurück an das Element, das das Werkzeug geöffnet hat.
  */
 
-import { setPageNumbers } from '../../core/workshop/commands.ts';
-import { findDoc, pageNumbersOf, type Doc, type DocId } from '../../core/workshop/model.ts';
+import { pageIndices, rangesFromPages } from '../../core/pdf/page-ranges.ts';
+import { setPageNumbers, setStamp } from '../../core/workshop/commands.ts';
+import {
+  findDoc,
+  pageNumbersOf,
+  stampOf,
+  type Doc,
+  type DocId,
+} from '../../core/workshop/model.ts';
 import { $ } from '../../ui/dom.ts';
 import type { MountTool, ToolHost } from '../../ui/tool-host.ts';
 import { mountPageNumbers } from '../pdf-seitenzahlen/embed.ts';
+import { stampTool } from '../pdf-stempel/embed.ts';
 import type { WorkshopStore } from './store.ts';
 import * as t from './texts.ts';
 
@@ -31,6 +39,8 @@ export class ToolPanel {
     private readonly store: WorkshopStore,
     private readonly announce: (message: string) => void,
     private readonly focusDoc: (doc: DocId) => void,
+    /** Zeichenvorrat der Stempelschrift aus dem Werkstatt-Worker */
+    private readonly charset: Promise<ReadonlySet<number>>,
   ) {
     this.section.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
@@ -52,6 +62,50 @@ export class ToolPanel {
       if (this.store.state === before) return;
       this.announce(result ? t.pageNumbersSet(name) : t.pageNumbersRemoved(name));
     });
+  }
+
+  /**
+   * Stempel für Seiten des Dokuments. Das Feld „Seiten“ ist mit den ausgewählten Seiten dieses
+   * Dokuments vorbelegt, sonst leer (alle Seiten).
+   */
+  stamp(doc: DocId, returnFocus: HTMLElement | null): void {
+    const target = findDoc(this.store.state, doc);
+    if (!target) return;
+    const selected = this.store.selection.keys;
+    const pages = rangesFromPages(
+      target.pages.flatMap((p, i) => (selected.has(p.key) ? [i + 1] : [])),
+    );
+    const existing = target.pages.map(stampOf).find((s) => s !== null) ?? null;
+    this.show(
+      doc,
+      returnFocus,
+      t.STAMP_TITLE,
+      stampTool({ charset: this.charset, pages }),
+      () => (existing ? { look: existing, ranges: [] } : null),
+      (result) => {
+        const current = findDoc(this.store.state, doc);
+        if (!current) return;
+        if (result === null) {
+          const before = this.store.state;
+          this.store.run(
+            setStamp(
+              current.pages.map((p) => p.key),
+              null,
+            ),
+          );
+          if (this.store.state !== before) this.announce(t.stampRemoved(current.name));
+          return;
+        }
+        const indices =
+          result.ranges.length === 0
+            ? current.pages.map((_, i) => i)
+            : [...new Set(result.ranges.flatMap(pageIndices))];
+        const keys = indices.flatMap((i) => current.pages[i]?.key ?? []);
+        const before = this.store.state;
+        this.store.run(setStamp(keys, result.look));
+        if (this.store.state !== before) this.announce(t.stampSet(keys.length, current.name));
+      },
+    );
   }
 
   /** Nach jeder Änderung: Dokumentzeile aktuell halten, schließen, wenn das Dokument weg ist */

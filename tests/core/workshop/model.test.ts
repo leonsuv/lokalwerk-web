@@ -8,6 +8,8 @@ import {
   movePages,
   rotatePages,
   setPageNumbers,
+  setSignatures,
+  setStamp,
   shiftPages,
 } from '../../../src/core/workshop/commands.ts';
 import {
@@ -205,6 +207,32 @@ describe('Seitenzahlen im Export (Stufe 2.1)', () => {
     expect(lossFacts(b.state, [id]).form).toBe(false);
     b.run(setPageNumbers(id, numbers));
     expect(lossFacts(b.state, [id]).form).toBe(true);
+  });
+});
+
+describe('Seiten-Operationen im Export (Stufe 2.2)', () => {
+  const stamp = { text: 'KOPIE', placement: 'top', color: 'red', opacity: 0.5 } as const;
+  const image = { id: 'g7', png: new Uint8Array([9]), width: 3, height: 1 };
+
+  it('nimmt Stempel und Unterschriften je Seite mit; unverändert ist das Dokument dann nicht', () => {
+    const b = bench(pdfSource('a', 2));
+    const id = b.state.docs[0]?.id ?? '';
+    const [first, second] = keysOf(b.state, 0, 0, 1);
+    b.run(setStamp([first ?? ''], stamp));
+    expect(unchangedSource(b.state, b.state.docs[0] ?? { id: '', name: '', pages: [] })).toBeNull();
+    b.run(setSignatures(second ?? '', image, [{ x: 0.1, y: 0.2, w: 0.3, h: 0.1 }]));
+    expect(exportPlan(b.state, [id])[0]?.pages).toEqual([
+      { kind: 'source', source: 'a', index: 0, rotate: 0, stamp },
+      {
+        kind: 'source',
+        source: 'a',
+        index: 1,
+        rotate: 0,
+        signatures: [{ id: 'g7', png: image.png, rect: { x: 0.1, y: 0.2, w: 0.3, h: 0.1 } }],
+      },
+    ]);
+    // Auch „Auswahl als neue PDF“ behält die Operationen der Seiten
+    expect(selectionPlan(b.state, [first ?? ''], 'Auswahl')?.pages[0]).toMatchObject({ stamp });
   });
 });
 

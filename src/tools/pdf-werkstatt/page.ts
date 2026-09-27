@@ -91,7 +91,11 @@ function announce(message: string): void {
 }
 
 // Eingebettete Werkzeuge (Stufe 2) in der rechten Spalte
-const toolPanel = new ToolPanel(store, announce, (doc) => board.column(doc)?.menu.focus());
+const charset = client
+  .request<number[]>({ type: 'charset' })
+  .then((codes): ReadonlySet<number> => new Set(codes));
+charset.catch(() => undefined);
+const toolPanel = new ToolPanel(store, announce, (doc) => board.column(doc)?.menu.focus(), charset);
 
 function announceSelection(): void {
   const { pages, docs } = selectionSummary(store.state, store.selection);
@@ -199,6 +203,7 @@ const mobile = setupMobile({
       disabled: !mobileDocWithPages(),
       separator: true,
     },
+    { id: 'stamp', label: t.STAMP_ITEM, disabled: !mobileDocWithPages() },
   ],
   runMore: (id) => {
     const choices: Record<string, () => void> = {
@@ -212,6 +217,10 @@ const mobile = setupMobile({
       'page-numbers': () => {
         const doc = mobileDocWithPages();
         if (doc) toolPanel.pageNumbers(doc, $('#ws-actions [data-m="more"]'));
+      },
+      stamp: () => {
+        const doc = mobileDocWithPages();
+        if (doc) toolPanel.stamp(doc, $('#ws-actions [data-m="more"]'));
       },
     };
     choices[id]?.();
@@ -390,7 +399,10 @@ function openToolsMenu(button: HTMLElement): void {
   const doc = currentDoc(store.state, store.selection);
   const rect = button.getBoundingClientRect();
   menu.show(
-    [{ id: 'page-numbers', label: t.PAGE_NUMBERS_ITEM, disabled: !doc }],
+    [
+      { id: 'page-numbers', label: t.PAGE_NUMBERS_ITEM, disabled: !doc },
+      { id: 'stamp', label: t.STAMP_ITEM, disabled: !doc },
+    ],
     { x: rect.left, y: rect.bottom + 4 },
     {
       label: t.TOOLS_MENU,
@@ -398,6 +410,7 @@ function openToolsMenu(button: HTMLElement): void {
       opener: button,
       onChoose: (id) => {
         if (id === 'page-numbers' && doc) toolPanel.pageNumbers(doc.id, button);
+        if (id === 'stamp' && doc) toolPanel.stamp(doc.id, button);
       },
     },
   );
@@ -585,6 +598,7 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
         label: t.PAGE_NUMBERS_ITEM,
         disabled: current.pages.length === 0,
       },
+      { id: 'stamp', label: t.STAMP_ITEM, disabled: current.pages.length === 0 },
       { id: 'duplicate-doc', label: 'Dokument duplizieren', separator: true },
       {
         id: 'merge-next',
@@ -612,6 +626,7 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
           },
           save: () => void exporter.doc(doc),
           'page-numbers': () => toolPanel.pageNumbers(doc, opener),
+          stamp: () => toolPanel.stamp(doc, opener),
           'merge-next': () => nextDoc && actions.merge([doc, nextDoc.id]),
           'duplicate-doc': () => actions.duplicateDoc(doc),
           'close-doc': () => actions.closeDoc(doc),

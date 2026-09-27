@@ -10,22 +10,35 @@
  * Drehung: /Rotate der Seite in Schritten von 90 Grad im Uhrzeigersinn (ISO 32000-2, 7.7.3.3);
  * die zusätzliche Drehung wird zur vorhandenen addiert.
  *
+ * Seiten-Operationen (plan-phase3.md 7.2, Schritt 2.2): Unterschriften werden vor der
+ * zusätzlichen Drehung gesetzt, also am Inhalt verankert; Stempel danach, so wie die Seite am
+ * Ende zu sehen ist.
+ *
  * Dokument-Operationen (plan-phase3.md 7.2) werden zuletzt angewendet, auf die fertige
  * Seitenfolge: Seitenzahlen zählen die Seiten des Ergebnisses in ihrer Endreihenfolge.
  */
 
-import { degrees, PDFDocument, type PDFImage, type PDFPage } from 'pdf-lib';
+import { degrees, PDFDocument, type PDFFont, type PDFImage, type PDFPage } from 'pdf-lib';
+import type { NormRect } from '../geometry/norm-rect.ts';
 import { imagePagePlacement, type PageImage } from './image-layout.ts';
 import { loadPdf, PdfError, toPdfError } from './merge.ts';
 import type { PageNumberOptions } from './page-numbers.ts';
+import { drawPlacedImage } from './place-image.ts';
 import { normalizeRotation } from './stamp-geometry.ts';
-import { drawPageNumbers } from './stamp.ts';
+import { drawPageNumbers, drawStamp, stampFont, type StampOptions } from './stamp.ts';
+
+/** Seiten-Operationen: erst beim Export angewendet */
+export interface AssemblePageOps {
+  stamp?: Omit<StampOptions, 'pages'>;
+  /** PNG je Unterschrift; gleiche `id` = gleiches Bild, nur einmal eingebettet */
+  signatures?: readonly { id: string; png: Uint8Array; rect: NormRect }[];
+}
 
 export type AssemblePage =
   /** Seite einer Quelle, `index` ab 0; Bilder haben nur Seite 0 */
-  | { kind: 'source'; source: string; index: number; rotate: number }
+  | ({ kind: 'source'; source: string; index: number; rotate: number } & AssemblePageOps)
   /** Leerseite, Größe in pt */
-  | { kind: 'blank'; width: number; height: number; rotate: number };
+  | ({ kind: 'blank'; width: number; height: number; rotate: number } & AssemblePageOps);
 
 export interface AssembleDoc {
   /** Dateiname des Ergebnisses */
@@ -141,6 +154,8 @@ async function assembleOne(
     }
 
     const images = new Map<string, PDFImage>();
+    const signatures = new Map<string, PDFImage>();
+    let font: PDFFont | null = null;
     for (const [position, p] of doc.pages.entries()) {
       let page: PDFPage;
       if (p.kind === 'blank') {
@@ -172,8 +187,20 @@ async function assembleOne(
           throw new RangeError(`Seite ${p.index + 1} von ${p.source} fehlt`);
         }
       }
+      for (const signature of p.signatures ?? []) {
+        let image = signatures.get(signature.id);
+        if (!image) {
+          image = await out.embedPng(signature.png);
+          signatures.set(signature.id, image);
+        }
+        drawPlacedImage(page, image, signature.rect);
+      }
       if (p.rotate % 360 !== 0) {
         page.setRotation(degrees(normalizeRotation(page.getRotation().angle + p.rotate)));
+      }
+      if (p.stamp) {
+        font ??= await stampFont(out);
+        drawStamp(page, font, p.stamp);
       }
     }
     if (doc.numbers) await drawPageNumbers(out, doc.numbers);

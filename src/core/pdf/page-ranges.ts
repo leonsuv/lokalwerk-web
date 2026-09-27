@@ -74,3 +74,17 @@ export function pageIndices(range: PageRange): number[] {
 export function rangeLabel(range: PageRange): string {
   return range.from === range.to ? String(range.from) : `${range.from}-${range.to}`;
 }
+
+/** Seitennummern (ab 1) als möglichst wenige Bereiche, z. B. [5, 1, 2, 3] → 1-3, 5 */
+export function rangesFromPages(pages: Iterable<number>): PageRange[] {
+  const sorted = [...new Set(pages)]
+    .filter((n) => Number.isInteger(n) && n >= 1)
+    .sort((a, b) => a - b);
+  const ranges: PageRange[] = [];
+  for (const n of sorted) {
+    const last = ranges.at(-1);
+    if (last && last.to === n - 1) last.to = n;
+    else ranges.push({ from: n, to: n });
+  }
+  return ranges;
+}

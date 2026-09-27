@@ -4,7 +4,7 @@
  * erhalten; digitale Signaturen werden ungültig (isSigned erkennt sie vorher).
  */
 
-import { degrees } from 'pdf-lib';
+import { degrees, type PDFImage, type PDFPage } from 'pdf-lib';
 import type { NormRect } from '../geometry/norm-rect.ts';
 import { loadPdf, toPdfError } from './merge.ts';
 import {
@@ -55,21 +55,25 @@ export async function placeImage(
   const doc = await loadPdf(bytes);
   try {
     const image = await doc.embedPng(png);
-    for (const { page, rect } of placements) {
-      const target = doc.getPage(page - 1);
-      const crop = target.getCropBox();
-      const rotation = normalizeRotation(target.getRotation().angle);
-      const p = placeOnPage(crop, rotation, rect);
-      target.drawImage(image, {
-        x: p.x,
-        y: p.y,
-        width: p.width,
-        height: p.height,
-        rotate: degrees(p.rotate),
-      });
-    }
+    for (const { page, rect } of placements) drawPlacedImage(doc.getPage(page - 1), image, rect);
     return await doc.save();
   } catch (error) {
     throw toPdfError(error);
   }
+}
+
+/**
+ * Setzt das Bild in das Rechteck auf der Seite, wie sie mit ihrer eigenen Drehung zu sehen ist.
+ * Genutzt vom Werkzeug und beim Export der Werkstatt (assemble.ts, vor der zusätzlichen Drehung).
+ */
+export function drawPlacedImage(page: PDFPage, image: PDFImage, rect: NormRect): void {
+  const rotation = normalizeRotation(page.getRotation().angle);
+  const p = placeOnPage(page.getCropBox(), rotation, rect);
+  page.drawImage(image, {
+    x: p.x,
+    y: p.y,
+    width: p.width,
+    height: p.height,
+    rotate: degrees(p.rotate),
+  });
 }

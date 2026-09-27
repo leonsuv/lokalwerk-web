@@ -110,10 +110,21 @@ function hasJavaScriptAction(doc: PDFDocument, action: PDFObject | undefined): b
 
 /** Wie oft die Datei nachträglich gespeichert wurde, ohne sie neu zu schreiben. */
 export function countEarlierVersions(bytes: Uint8Array): number {
-  const text = new TextDecoder('latin1').decode(bytes);
-  const eofs = text.match(/%%EOF/g)?.length ?? 0;
+  // Direkt in den Bytes suchen statt die ganze Datei in Text umzuwandeln: Bei Scans mit vielen
+  // MB spart das beim Laden in die Werkstatt spürbar Zeit und Speicher.
+  const EOF = [0x25, 0x25, 0x45, 0x4f, 0x46]; // „%%EOF“
+  let eofs = 0;
+  for (let i = bytes.indexOf(0x25); i !== -1 && i <= bytes.length - EOF.length;) {
+    if (EOF.every((b, k) => bytes[i + k] === b)) {
+      eofs++;
+      i = bytes.indexOf(0x25, i + EOF.length);
+    } else {
+      i = bytes.indexOf(0x25, i + 1);
+    }
+  }
   // Linearisierte PDFs („schnelle Webanzeige“) haben am Anfang einen zweiten Abschluss.
-  const linearized = /\/Linearized\b/.test(text.slice(0, 2048)) ? 1 : 0;
+  const head = new TextDecoder('latin1').decode(bytes.subarray(0, 2048));
+  const linearized = /\/Linearized\b/.test(head) ? 1 : 0;
   return Math.max(0, eofs - 1 - linearized);
 }
 

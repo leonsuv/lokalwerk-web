@@ -65,7 +65,18 @@ Erledigt am 26.09.2026: Texte aller Pakete freigegeben (außer dem Kasten zu Fri
 
 Befunde bitte mit Gerät, Browser-Version und Schritt melden, gern mit Bildschirmfoto.
 
-**Summe Leon, vor dem Start: etwa 10½ bis 11 Stunden** (V1 2¼ bis 2¾ h, V2 3½ h, V3 ½ h, V4 2 h, V5 2¼ h), dazu Wartezeit auf Registrar und Rechtsprüfung.
+**V6 PDF-Werkstatt, Gerätetests vor dem Start.** Nummern wie in `plan-phase3.md` Abschnitt 19, damit Befunde zuzuordnen sind.
+
+| # | Was prüfen | Geräte | Schätzung |
+|---|---|---|---|
+| B3 | Handy-Ansicht der Werkstatt: Auswahlmodus, „Nach vorne/Nach hinten“, „Verschieben nach …“, große Vorschau, Speichern (Dokument und ZIP) | iPhone mit Safari, Android mit Chrome | 30 min |
+| B5 | Werkstatt am Computer: Ziehen mit der Maus, Tastatur (R, D, M, Entf, Strg/Cmd+X/C/V, Alt+Pfeil), Dialoge, Speichern; Vorschaubilder mit dem Legacy-Build von pdf.js | Firefox, Safari, Edge | 45 min |
+| C1 | Unterschrift in der Werkstatt mit Finger und Stift zeichnen und im Dialog platzieren | Handy, Tablet mit Stift | 15 min |
+| C2 | Bereiche schwärzen mit dem Finger im Dialog der Werkstatt; „Abbrechen“ und „Übernehmen“ bleiben unten sichtbar | Handy, Tablet | 15 min |
+| C4 | Speichern mit Umlauten im Dateinamen („Vertrag (geschwärzt).pdf“, „Für Anwalt.pdf“): Name bleibt erhalten | Safari, Firefox, Edge, iPhone | 15 min |
+| C6 | `npm run perf:werkstatt` auf dem Mac, Ausgabe an mich (Ziel „100 Seiten verschieben“ unter 50 ms, Abschnitt 19) | Mac | 15 min |
+
+**Summe Leon, vor dem Start: etwa 12¾ bis 13¼ Stunden** (V1 2¼ bis 2¾ h, V2 3½ h, V3 ½ h, V4 2 h, V5 2¼ h, V6 2¼ h), dazu Wartezeit auf Registrar und Rechtsprüfung.
 
 ### Aufgaben für Claude nach deiner Zuarbeit
 
@@ -114,7 +125,18 @@ Befunde bitte mit Gerät, Browser-Version und Schritt melden, gern mit Bildschir
 
 **N5 „GiroCode“** im DPMAregister prüfen (E2); nur nötig, wenn das Wort verwendet werden soll. 15 min.
 
-**Summe Leon, erste Wochen: etwa 7¼ bis 7¾ Stunden** (N1 4¾ h, N2 bis N5 2½ bis 3 h).
+**N6 PDF-Werkstatt, weitere Gerätetests.** Nummern wie in `plan-phase3.md` Abschnitt 19.
+
+| # | Was prüfen | Geräte | Schätzung |
+|---|---|---|---|
+| B1 | NVDA: R, D, M, Entf in einer Spalte im Fokusmodus der Liste; Ansagen der Live-Region; Kontextmenü mit Umschalt+F10. Kollidiert eine Taste, bitte melden (W5) | Windows mit NVDA | 30 min |
+| B2 | Dieselben Punkte mit VoiceOver und TalkBack | macOS, iOS, Android | 45 min |
+| B4 | Tablet: Ziehen von Seiten nach 300 ms Halten, Scrollen ohne Halten | Tablet | 15 min |
+| B6 | Speicher bei großen Scans (mehrere hundert Seiten) auf einem älteren iPhone: keine leeren Vorschaubilder, kein Neuladen der Seite | älteres iPhone | 20 min |
+| C3 | Screenreader nach dem Schwärzen: Ansage samt Hinweis auf nicht geschwärzte Seiten; Dialog vor dem Speichern mit Fokus auf „Abbrechen“ | NVDA, VoiceOver | 15 min |
+| C5 | Schwärzen eines großen Dokuments (50 Seiten und mehr, 200 dpi) auf dem Handy: Fortschritt, kein Absturz | iPhone, Android | 20 min |
+
+**Summe Leon, erste Wochen: etwa 9½ bis 10 Stunden** (N1 4¾ h, N2 bis N5 2½ bis 3 h, N6 2¼ h).
 
 ### Aufgaben für Claude
 

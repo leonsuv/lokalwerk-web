@@ -35,6 +35,13 @@ describe('Texte der PDF-Werkstatt', () => {
     expect(exportDone(['a.pdf', 'b.pdf', 'c.pdf'], 2, true)).toBe(
       'Fertig: 3 Dokumente sind als ZIP gespeichert. 2 davon waren unverändert und sind die Originaldatei.',
     );
+    // Versteckte Angaben entfernt (Schritt 2.4, freigegeben mit Änderung)
+    expect(exportDone(['a.pdf'], 0, false, true)).toBe(
+      'Fertig: a.pdf ist gespeichert. Die Datei enthält keine versteckten Angaben mehr.',
+    );
+    expect(exportDone(['a.pdf', 'b.pdf'], 0, true, true)).toBe(
+      'Fertig: 2 Dokumente sind als ZIP gespeichert. Die Dateien enthalten keine versteckten Angaben mehr.',
+    );
   });
 
   it('Beschriftungen, Auswahl und Leerseite', () => {

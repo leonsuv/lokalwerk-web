@@ -4,6 +4,7 @@
  */
 
 import { toolById } from '../../build/pages.ts';
+import type { WorkshopHandover } from '../core/workshop/export-plan.ts';
 import type { PagePick } from '../core/workshop/model.ts';
 import { switchToTool, type ToolLoader } from './tool-switch.ts';
 
@@ -11,12 +12,15 @@ import { switchToTool, type ToolLoader } from './tool-switch.ts';
  * Nur die Werkstatt, nicht die Liste aller Werkzeuge der Startseite (src/tools/home/loaders.ts).
  * `layouts` gibt je Datei die Seitenfolge mit, in der die Werkstatt sie zeigt.
  */
-function workshopLoader(layouts?: ReadonlyMap<File, readonly PagePick[]>): ToolLoader {
+function workshopLoader(
+  layouts?: ReadonlyMap<File, readonly PagePick[]>,
+  handover?: WorkshopHandover,
+): ToolLoader {
   return {
     markup: async () => (await import('../tools/pdf-werkstatt/main.html?raw')).default,
     open: async () => {
       const { openFiles } = await import('../tools/pdf-werkstatt/page.ts');
-      return (files) => openFiles(files, layouts);
+      return (files) => openFiles(files, layouts, handover);
     },
   };
 }
@@ -24,7 +28,8 @@ function workshopLoader(layouts?: ReadonlyMap<File, readonly PagePick[]>): ToolL
 export async function openInWorkshop(
   files: File[],
   layouts?: ReadonlyMap<File, readonly PagePick[]>,
+  handover?: WorkshopHandover,
 ): Promise<boolean> {
   const page = toolById('pdf-werkstatt');
-  return page ? switchToTool(page, workshopLoader(layouts), files) : false;
+  return page ? switchToTool(page, workshopLoader(layouts, handover), files) : false;
 }

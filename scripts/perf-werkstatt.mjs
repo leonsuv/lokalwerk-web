@@ -116,15 +116,13 @@ const SCAN_SCRIPT = `(async () => {
 async function applyOps(send, p, now, longTasks) {
   /** @type {Row[]} */
   const rows = [];
-  /** Werkzeug über „Werkzeuge“ für das Dokument der ersten Seite von Spalte `col` öffnen */
+  /** Werkzeug über die Werkzeugleiste für das Dokument der ersten Seite von Dokument `col` öffnen */
   const openTool = async (/** @type {number} */ col, /** @type {string} */ label) => {
     await p.evaluate(
-      `document.querySelectorAll('.ws-col')[${col}].querySelector('.ws-page').click()`,
+      `document.querySelectorAll('.ws-sec')[${col}].querySelector('.ws-page').click()`,
     );
-    await p.evaluate(`document.querySelector('[data-cmd="tools"]').click()`);
-    await p.waitFor(`!document.querySelector('#ws-menu').hidden`);
     await p.evaluate(
-      `[...document.querySelectorAll('#ws-menu [role=menuitem]')].find((b) => b.textContent.startsWith(${JSON.stringify(label)})).click()`,
+      `[...document.querySelectorAll('#ws-toolbar button')].find((b) => (b.getAttribute('aria-label') ?? '').startsWith(${JSON.stringify(label)})).click()`,
     );
     await p.waitFor(`!document.querySelector('#ws-tool').hidden`);
     await wait(300);
@@ -196,7 +194,7 @@ async function applyOps(send, p, now, longTasks) {
   await p.evaluate(`document.querySelector('#ws-sign-add').click()`);
   await p.evaluate(`document.querySelector('#ws-sign-ok').click()`);
   await wait(300);
-  await p.evaluate(`document.querySelectorAll('.ws-col')[2].querySelector('.ws-page').focus()`);
+  await p.evaluate(`document.querySelectorAll('.ws-sec')[2].querySelector('.ws-page').focus()`);
   for (let i = 0; i < 19; i++) await key('d');
   await wait(1000);
   const signed = /** @type {number} */ (
@@ -327,11 +325,11 @@ async function measure(send, files, ops = false) {
   let maxCanvases = 0;
   for (let d = 0; d < DOCS; d++) {
     await p.evaluate(
-      `document.querySelectorAll('.ws-col')[${d}].scrollIntoView({ inline: 'nearest', block: 'nearest' })`,
+      `document.querySelectorAll('.ws-sec')[${d}].scrollIntoView({ inline: 'nearest', block: 'nearest' })`,
     );
     const box = /** @type {[number, number]} */ (
       await p.evaluate(
-        `(() => { const r = document.querySelectorAll('.ws-col-body')[${d}].getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; })()`,
+        `(() => { const r = document.querySelector('#ws-scroller').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; })()`,
       )
     );
     for (let i = 0; i < 40; i++) {
@@ -365,25 +363,23 @@ async function measure(send, files, ops = false) {
   });
 
   // 3. Ziehen: 20 Seiten aus Spalte 1 in Spalte 2
-  await p.evaluate(
-    `(() => { const b = document.querySelectorAll('.ws-col-body'); for (const x of b) x.scrollTop = 0; document.querySelector('.ws-board').scrollLeft = 0; })()`,
-  );
+  await p.evaluate(`(() => { document.querySelector('#ws-scroller').scrollTop = 0; })()`);
   await wait(500);
   await p.evaluate(
-    `(() => { const t = document.querySelectorAll('.ws-col')[0].querySelectorAll('.ws-page'); t[0].click(); t[19].dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true })); })()`,
+    `(() => { const t = document.querySelectorAll('.ws-sec')[0].querySelectorAll('.ws-page'); t[0].click(); t[19].dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true })); })()`,
   );
   // Umschalt-Klick legt den Fokus auf Seite 20 und scrollt dorthin: wieder nach oben
-  await p.evaluate(`document.querySelectorAll('.ws-col-body')[0].scrollTop = 0`);
+  await p.evaluate(`document.querySelector('#ws-scroller').scrollTop = 0`);
   await wait(300);
   const dragStart = await now();
   const from = /** @type {[number, number]} */ (
     await p.evaluate(
-      `(() => { const t = document.querySelectorAll('.ws-col')[0].querySelectorAll('.ws-page')[1]; t.scrollIntoView({ block: 'center', inline: 'nearest' }); const r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; })()`,
+      `(() => { const t = document.querySelectorAll('.ws-sec')[0].querySelectorAll('.ws-page')[1]; t.scrollIntoView({ block: 'center', inline: 'nearest' }); const r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; })()`,
     )
   );
   const to = /** @type {[number, number]} */ (
     await p.evaluate(
-      `(() => { const r = document.querySelectorAll('.ws-col')[1].querySelectorAll('.ws-page')[2].getBoundingClientRect(); return [r.left + 10, r.top + r.height / 2, innerHeight]; })()`,
+      `(() => { const r = document.querySelectorAll('.ws-sec')[1].querySelectorAll('.ws-page')[2].getBoundingClientRect(); return [r.left + 10, r.top + r.height / 2, innerHeight]; })()`,
     )
   );
   await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: from[0], y: from[1] });
@@ -417,7 +413,7 @@ async function measure(send, files, ops = false) {
   });
   await wait(500);
   const moved = /** @type {number} */ (
-    await p.evaluate(`document.querySelectorAll('.ws-col')[1].querySelectorAll('.ws-page').length`)
+    await p.evaluate(`document.querySelectorAll('.ws-sec')[1].querySelectorAll('.ws-page').length`)
   );
   const dragLong = await longTasks(dragStart, await now());
   rows.push({
@@ -429,7 +425,7 @@ async function measure(send, files, ops = false) {
 
   // 4. 100 Seiten verschieben („Verschieben nach …“) bis zur Anzeige (zwei Bilder später)
   await p.evaluate(
-    `(() => { const t = document.querySelectorAll('.ws-col')[2].querySelectorAll('.ws-page'); t[0].click(); t[0].focus(); t[99].dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true })); })()`,
+    `(() => { const t = document.querySelectorAll('.ws-sec')[2].querySelectorAll('.ws-page'); t[0].click(); t[0].focus(); t[99].dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true })); })()`,
   );
   await send('Input.dispatchKeyEvent', {
     type: 'keyDown',
@@ -454,7 +450,7 @@ async function measure(send, files, ops = false) {
     )
   );
   const last = /** @type {number} */ (
-    await p.evaluate(`document.querySelectorAll('.ws-col')[4].querySelectorAll('.ws-page').length`)
+    await p.evaluate(`document.querySelectorAll('.ws-sec')[4].querySelectorAll('.ws-page').length`)
   );
   rows.push({
     name: '100 Seiten verschieben bis zur Anzeige',

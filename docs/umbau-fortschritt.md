@@ -46,7 +46,7 @@ nach unten abarbeiten, nach jedem Commit den Status hier aktualisieren.
 | 11 | Schere als Werkzeug, Kontextmenüs überall | fertig |
 | 12 | Zusammenführen-Dialog mit Reihenfolge, Tastenkürzel-Übersicht aus der Befehlsliste | fertig |
 | 13 | Handy-Ansicht (vereinfacht, alles erreichbar) | offen |
-| 14 | Texte sammeln (texte-pdf-werkstatt.md), Erklärtext anpassen | offen |
+| 14 | Texte sammeln (texte-pdf-werkstatt.md), Erklärtext anpassen | fertig |
 | 15 | Screenshots- und Leistungsskript an die neue Oberfläche anpassen, README-Screenshots | offen |
 | 16 | Browser-Prüfung am Ende (Konsole, Netzwerk, CSP, hell/dunkel, 1280 px, Handy) | offen |
 | 17 | npm run check, CI, Merge nach main, Abschlussbericht | offen |

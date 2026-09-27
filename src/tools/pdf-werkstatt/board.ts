@@ -250,7 +250,7 @@ export class Board {
       const page = doc.pages[i];
       if (!page) continue;
       const kind = page.kind === 'source' ? state.sources.get(page.source)?.kind : undefined;
-      this.thumbs.show(tile.paper, page, column.body, kind ?? 'pdf');
+      this.thumbs.show(tile.paper, page, column.body, kind ?? 'pdf', visiblePageSize(state, page));
     }
   }
 

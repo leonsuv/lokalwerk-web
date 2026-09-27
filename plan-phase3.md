@@ -477,7 +477,7 @@ Vorher erledigt (Entscheidungen zur pdf.js-Kompatibilität vom 27.09.2026): Lega
 | D4 | Stempel auf gedrehten Seiten | Position und Ausrichtung beziehen sich auf die fertige Seite, wie sie gelesen wird; dreht man die Seite nach dem Stempeln, bleibt „oben“ oben |
 | D5 | Unterschrift auf gedrehten Seiten | bleibt am Inhalt der Seite und dreht mit (siehe oben) |
 | D6 | Unterschrift auf mehrere Seiten | eine Seite je Durchgang; mehrere Stellen auf dieser Seite möglich, alle mit demselben Bild. Ein neues Bild ersetzt alle Unterschriften der Seite. |
-| D7 | Anzeige | Vorschaubilder und große Vorschau zeigen Stempel und Unterschrift nicht, nur die Symbole unter dem Vorschaubild (wie C6 bei den Seitenzahlen) |
+| D7 | Anzeige | Vorschaubilder und große Vorschau zeigen Stempel und Unterschriften so, wie sie gespeichert werden (geändert am 27.09.2026 nach Rückmeldung von Leon: vorher nur Symbole, das wirkte, als fehle der Stempel). Die Symbole unter dem Vorschaubild bleiben. Seitenzahlen zeigt die Vorschau weiterhin nicht (C6). |
 | D8 | „Auswahl als neue PDF“ | Stempel und Unterschriften kommen mit, weil sie zur Seite gehören (anders als Seitenzahlen, C3) |
 | D9 | Formulare, Lesezeichen, Signaturen | Eine Seite mit Operation macht das Dokument neu zusammengesetzt, verliert diese also (Hinweis vor dem Export, wie C4) |
 | D10 | Reihenfolge beim Zeichnen | Unterschrift, dann Stempel, dann Seitenzahlen; überlappen sie, liegt der Stempel oben |
@@ -488,6 +488,11 @@ Vorher erledigt (Entscheidungen zur pdf.js-Kompatibilität vom 27.09.2026): Lega
 - Unterschrift: eine Seite je Durchgang statt einer Mehrfachauswahl (D6). Für viele Seiten müsste der Dialog blättern können; das wäre eine eigene Freigabe.
 - Wie in 2.1 werden nur die Einstellungen eingebettet, nicht die ganzen Werkzeugseiten (W8).
 - Die Symbole unter dem Vorschaubild haben keinen sichtbaren Text und keinen Hinweis beim Darüberfahren; Screenreader bekommen die Information über die Seitenbeschriftung.
+
+### Nachtrag nach der Freigabe (27.09.2026)
+
+- **Unterschriftsbild nur einmal im Speicher:** Test `tests/core/workshop/signature-memory.test.ts`. 200 Befehle (Duplizieren, Kopieren, interne Ablage, Dokument duplizieren, Teilen, Zusammenführen, Auswahl kopieren, Drehen, Verschieben), dann 40 × Rückgängig und 15 × Wiederholen. Über 1.000 Seiten mit Unterschrift in 101 Zuständen und in der Ablage verweisen auf dasselbe Bildobjekt; von Verlauf und Ablage aus ist genau ein Byte-Puffer erreichbar. Gegenprobe: Kopiert man die Bytes beim Kopieren einer Seite, schlägt der Test fehl. Eine gemeinsame Quelle ist daher nicht nötig. Außerhalb des Zustands entstehen nur kurzlebige oder kleine Kopien: die Anzeige im Dialog (blob:-Adresse, beim Schließen freigegeben), das dekodierte Bild für die Vorschau (einmal je Bild, WeakMap) und die Kopie an den Worker beim Speichern (einmal je Bild, auch bei vielen Seiten).
+- **Vorschau zeigt Stempel und Unterschriften** (D7 geändert): `core/workshop/overlay.ts` berechnet sie in Ansichtskoordinaten mit derselben Rechnung wie der Export (`stampInView` in `core/pdf/stamp-layout.ts`, von `drawStamp` genutzt; `edgeInView`/`centeredInView` aus `stamp-geometry.ts`); `overlay-canvas.ts` zeichnet sie über Vorschaubild, große Vorschau und die Seite im Unterschrift-Dialog (dort ohne die Unterschriften, die als verschiebbare Rahmen erscheinen). Schrift der Vorschau: Helvetica oder Arial (Systemschrift gleicher Maße), keine nachgeladene Schrift.
 
 ### Offen, Prüfung durch Leon
 

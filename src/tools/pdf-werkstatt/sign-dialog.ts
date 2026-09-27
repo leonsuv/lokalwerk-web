@@ -112,6 +112,8 @@ export class SignDialog {
         this.files,
         this.pdfjs,
         cssWidth * (globalThis.devicePixelRatio || 1),
+        // Die Unterschriften der Seite stehen hier als verschiebbare Rahmen, nicht im Bild
+        { signatures: false },
       );
       canvas.style.width = `${cssWidth}px`;
       canvas.setAttribute('aria-hidden', 'true');

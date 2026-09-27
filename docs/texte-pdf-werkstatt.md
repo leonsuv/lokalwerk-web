@@ -183,7 +183,7 @@ Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundorte: `src/tools/pdf-werkstatt/
 | Menü im Spaltenkopf | „Stempel …“ nach „Seitenzahlen …“ |
 | Kontextmenü einer Seite | „Unterschrift …“ nach „Als neues Dokument“, vor „Löschen“, mit Trennlinie |
 | Handy, „Mehr“ | „Stempel …“ und „Unterschrift …“ am Ende; „Unterschrift …“ nur mit genau einer ausgewählten Seite |
-| Vorschaubild | kleine Symbole (Stempel, Unterschrift) in der Zeile unter dem Bild, rechts neben der Seitennummer, ohne Text; Screenreader lesen sie in der Seitenbeschriftung mit (unten) |
+| Vorschaubild | zeigt Stempel und Unterschriften wie gespeichert; dazu kleine Symbole (Stempel, Unterschrift) in der Zeile unter dem Bild, rechts neben der Seitennummer, ohne Text; Screenreader lesen sie in der Seitenbeschriftung mit (unten) |
 
 **Stempel, Bereich in der rechten Spalte**
 

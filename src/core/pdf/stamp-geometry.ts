@@ -79,9 +79,38 @@ export interface Placement {
   rotate: number;
 }
 
+/** Punkt auf der sichtbaren Seite (Ursprung unten links, in Punkt) */
+export interface ViewPoint {
+  vx: number;
+  vy: number;
+}
+
 /**
- * Einzeiliger Text an einem Rand der sichtbaren Seite. `margin` ist der Abstand vom Rand zur
- * Grundlinie (unten) bzw. zur Oberkante der Großbuchstaben (oben), in Punkt.
+ * Anfang der Grundlinie eines einzeiligen Texts an einem Rand der sichtbaren Seite
+ * (`width` × `height`). `margin` ist der Abstand vom Rand zur Grundlinie (unten) bzw. zur
+ * Oberkante der Großbuchstaben (oben), in Punkt.
+ */
+export function edgeInView(
+  width: number,
+  height: number,
+  anchor: Anchor,
+  textWidth: number,
+  capHeight: number,
+  margin: number,
+): ViewPoint {
+  const [vertical, horizontal] = anchor.split('-') as ['top' | 'bottom', string];
+  const vx =
+    horizontal === 'left'
+      ? margin
+      : horizontal === 'right'
+        ? width - margin - textWidth
+        : (width - textWidth) / 2;
+  const vy = vertical === 'bottom' ? margin : height - margin - capHeight;
+  return { vx, vy };
+}
+
+/**
+ * Einzeiliger Text an einem Rand der sichtbaren Seite, im Benutzerraum (siehe edgeInView).
  */
 export function placeAtEdge(
   box: Box,
@@ -92,22 +121,33 @@ export function placeAtEdge(
   margin: number,
 ): Placement {
   const { width, height } = visibleSize(box, rotation);
-  const [vertical, horizontal] = anchor.split('-') as ['top' | 'bottom', string];
-  const vx =
-    horizontal === 'left'
-      ? margin
-      : horizontal === 'right'
-        ? width - margin - textWidth
-        : (width - textWidth) / 2;
-  const vy = vertical === 'bottom' ? margin : height - margin - capHeight;
+  const { vx, vy } = edgeInView(width, height, anchor, textWidth, capHeight, margin);
   const point = toUserSpace(box, rotation, vx, vy);
   return { ...point, rotate: rotation };
 }
 
 /**
- * Text mittig auf der sichtbaren Seite, um `angle` Grad gedreht (gegen den Uhrzeigersinn, wie
- * gelesen). Die Mitte der Zeile (halbe Breite, halbe Versalhöhe) liegt in der Seitenmitte.
+ * Anfang der Grundlinie eines Texts mittig auf der sichtbaren Seite, um `angle` Grad gedreht
+ * (gegen den Uhrzeigersinn, wie gelesen). Die Mitte der Zeile (halbe Breite, halbe
+ * Versalhöhe) liegt in der Seitenmitte.
  */
+export function centeredInView(
+  width: number,
+  height: number,
+  angle: number,
+  textWidth: number,
+  capHeight: number,
+): ViewPoint {
+  const rad = (angle * Math.PI) / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  // Vom Mittelpunkt der Zeile zurück zum Anfang der Grundlinie, gedreht
+  const dx = textWidth / 2;
+  const dy = capHeight / 2;
+  return { vx: width / 2 - (dx * cos - dy * sin), vy: height / 2 - (dx * sin + dy * cos) };
+}
+
+/** Text mittig auf der sichtbaren Seite, im Benutzerraum (siehe centeredInView) */
 export function placeCentered(
   box: Box,
   rotation: PageRotation,
@@ -116,14 +156,7 @@ export function placeCentered(
   capHeight: number,
 ): Placement {
   const { width, height } = visibleSize(box, rotation);
-  const rad = (angle * Math.PI) / 180;
-  const cos = Math.cos(rad);
-  const sin = Math.sin(rad);
-  // Vom Mittelpunkt der Zeile zurück zum Anfang der Grundlinie, gedreht
-  const dx = textWidth / 2;
-  const dy = capHeight / 2;
-  const vx = width / 2 - (dx * cos - dy * sin);
-  const vy = height / 2 - (dx * sin + dy * cos);
+  const { vx, vy } = centeredInView(width, height, angle, textWidth, capHeight);
   const point = toUserSpace(box, rotation, vx, vy);
   return { ...point, rotate: (angle + rotation) % 360 };
 }

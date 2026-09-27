@@ -1,17 +1,40 @@
 /**
  * Eine Seite der Werkstatt in ein Canvas zeichnen, so wie sie angezeigt wird (mit Drehung):
- * PDF-Seite über pdf.js, Bildseite, Leerseite. Gemeinsam für die große Vorschau (preview.ts)
- * und das Platzieren einer Unterschrift (sign-dialog.ts). Wirft, wenn es nicht geht.
+ * PDF-Seite über pdf.js, Bildseite, Leerseite, darüber Stempel und Unterschriften
+ * (overlay-canvas.ts). Gemeinsam für die große Vorschau (preview.ts) und das Platzieren einer
+ * Unterschrift (sign-dialog.ts). Wirft, wenn es nicht geht.
  */
 
+import type { OverlayOptions } from '../../core/workshop/overlay.ts';
 import { visiblePageSize, type PageRef, type WorkshopState } from '../../core/workshop/model.ts';
 import { decodeImage, drawImagePage } from './image-pages.ts';
+import { drawOverlay } from './overlay-canvas.ts';
 import type { SourceFiles } from './sources.ts';
 
 type PdfJs = typeof import('../../ui/pdfjs/pdfjs.ts');
 
 /** `pixels`: Breite in Gerätepixeln */
 export async function drawWorkshopPage(
+  state: WorkshopState,
+  page: PageRef,
+  files: SourceFiles,
+  pdfjs: Promise<PdfJs>,
+  pixels: number,
+  overlay: OverlayOptions = {},
+): Promise<HTMLCanvasElement> {
+  const size = visiblePageSize(state, page);
+  const canvas = await drawBase(state, page, files, pdfjs, pixels);
+  try {
+    await drawOverlay(canvas, page, size, overlay);
+  } catch (error) {
+    canvas.width = 0;
+    canvas.height = 0;
+    throw error;
+  }
+  return canvas;
+}
+
+async function drawBase(
   state: WorkshopState,
   page: PageRef,
   files: SourceFiles,

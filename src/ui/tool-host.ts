@@ -6,7 +6,8 @@
  *
  * Das Ergebnis ist je Werkzeug verschieden: Seitenzahlen liefern eine Einstellung, die erst
  * beim Export angewendet wird (Dokument-Operation). Werkzeuge, die Seiten neu erzeugen
- * („Einbacken“, Schritt 2.3), bekommen dafür später die PDF-Bytes des Dokuments als Eingabe.
+ * („Einbacken“, Schritt 2.3), bekommen von der Werkstatt Funktionen zum Rastern oder Ausfüllen
+ * (die Bytes bleiben im Worker der Werkstatt) und liefern die neue Quelle als Ergebnis.
  */
 
 export interface ToolTarget {

@@ -35,6 +35,15 @@ export interface SourceFacts {
 
 export const NO_FACTS: SourceFacts = { form: false, xfa: false, outline: false, signed: false };
 
+/**
+ * Herkunft einer Quelle, die die Werkstatt selbst erzeugt hat („Einbacken“, Stufe 2.3):
+ * geschwärzt (Seiten gerastert) oder Formular ausgefüllt, jeweils aus den Quellen `from`.
+ */
+export interface SourceOrigin {
+  kind: 'redacted' | 'filled';
+  from: readonly SourceId[];
+}
+
 /** Eine geladene Datei. Die Bytes liegen nur im Worker und bei pdf.js, nicht im Zustand. */
 export interface Source {
   id: SourceId;
@@ -46,6 +55,8 @@ export interface Source {
   /** Je Seite: Größe und eigene Drehung der Seite in der Datei. Bilder: eine Seite. */
   pages: readonly { box: PageBox; rotate: Rotation }[];
   facts: SourceFacts;
+  /** Nur bei Quellen aus „Einbacken“ */
+  origin?: SourceOrigin;
 }
 
 /** Aussehen eines Stempels; auf welche Seiten, bestimmt, welche Seiten ihn tragen */
@@ -263,4 +274,58 @@ export function docNameFromFile(fileName: string): string {
   return (
     fileName.replace(/\.(pdf|jpe?g|png|webp|gif|bmp|heic|heif|tiff?)$/i, '').trim() || fileName
   );
+}
+
+/** Seiten eines Dokuments, die aus einer geschwärzten Datei stammen, aber nicht geschwärzt sind */
+export interface UnredactedPages {
+  doc: Doc;
+  keys: PageKey[];
+}
+
+/**
+ * Seiten, die auf eine Quelle verweisen, aus der im Arbeitsbereich schon eine geschwärzte
+ * Fassung erzeugt wurde (Stufe 2.3), z. B. weil sie vor dem Schwärzen kopiert wurden. Gezählt
+ * werden nur Quellen, deren geschwärzte Fassung noch im Arbeitsbereich ist. `docs` schränkt
+ * auf diese Dokumente ein, `keys` auf diese Seiten (Export der Auswahl).
+ */
+export function unredactedPages(
+  state: WorkshopState,
+  docs: readonly Doc[] = state.docs,
+  keys?: ReadonlySet<PageKey>,
+): UnredactedPages[] {
+  const redacted = new Set<SourceId>();
+  for (const source of state.sources.values()) {
+    if (source.origin?.kind === 'redacted') for (const id of source.origin.from) redacted.add(id);
+  }
+  if (redacted.size === 0) return [];
+  const found: UnredactedPages[] = [];
+  for (const doc of docs) {
+    const hits = doc.pages.filter(
+      (p) => p.kind === 'source' && redacted.has(p.source) && (!keys || keys.has(p.key)),
+    );
+    if (hits.length > 0) found.push({ doc, keys: hits.map((p) => p.key) });
+  }
+  return found;
+}
+
+/**
+ * Quelle mit Formular für „Formular ausfüllen“ (Stufe 2.3): die der Seite `prefer`, wenn sie im
+ * Dokument liegt und ein Formular hat, sonst die erste Formularquelle des Dokuments.
+ */
+export function formSourceOf(
+  state: WorkshopState,
+  doc: Doc,
+  prefer?: PageKey | null,
+): Source | null {
+  const hasForm = (page: PageRef | undefined): Source | null => {
+    const source = page?.kind === 'source' ? state.sources.get(page.source) : undefined;
+    return source?.kind === 'pdf' && (source.facts.form || source.facts.xfa) ? source : null;
+  };
+  const preferred = hasForm(doc.pages.find((p) => p.key === prefer));
+  if (preferred) return preferred;
+  for (const page of doc.pages) {
+    const source = hasForm(page);
+    if (source) return source;
+  }
+  return null;
 }

@@ -1,51 +1,49 @@
 /**
- * Tastatur der PDF-Werkstatt (plan-phase3.md 6.2, freigegeben mit W5: D statt
- * Strg/Cmd+Umschalt+D, M statt Alt+Pfeil links/rechts). Seitenkürzel gelten nur mit dem Fokus
- * in einer Spalte, nie in Eingabefeldern. Einzelbuchstaben nur ohne Strg/Cmd/Alt, damit
- * Browser-Kürzel frei bleiben.
+ * Tastatur der PDF-Werkstatt (Umbau zum Editor):
+ * - Im Raster bewegen die Pfeiltasten den Fokus so, wie die Seiten stehen (auch über
+ *   Dokumentgrenzen), Umschalt erweitert die Auswahl, Leertaste wählt an oder ab, Pos1/Ende
+ *   springen im Dokument, Eingabe öffnet die Seite groß, Kontextmenütaste oder Umschalt+F10 das
+ *   Menü der Seite.
+ * - Alle anderen Kürzel stehen in der Befehlsliste (ui-commands.ts) und gelten im ganzen
+ *   Programm, nie in Eingabefeldern und nie, solange ein Menü oder Dialog offen ist.
  */
 
-import { indexPages, type DocId, type PageKey } from '../../core/workshop/model.ts';
+import { verticalNeighbour } from '../../core/workshop/layout.ts';
+import { indexPages, type PageKey } from '../../core/workshop/model.ts';
 import { moveFocus, selectRange, toggle } from '../../core/workshop/selection.ts';
-import type { Actions } from './actions.ts';
+import { keyOf } from './shortcuts.ts';
 import type { WorkshopStore } from './store.ts';
+import type { Cmd } from './ui-commands.ts';
 
-export interface KeyboardContext {
+export interface GridKeyContext {
   store: WorkshopStore;
-  actions: Actions;
-  /** Fokus auf eine Seite legen und ins Bild scrollen */
+  tiles(): HTMLElement[];
   focusPage(key: PageKey): void;
-  /** Spalten je Zeile im Raster des Dokuments (2 am Desktop, 3 auf dem Handy) */
-  columnsOf(doc: DocId): number;
   openContextMenu(key: PageKey, anchor: HTMLElement): void;
-  openPreview(key: PageKey): void;
+  openSingle(key: PageKey): void;
   announceSelection(): void;
 }
 
-const isMod = (e: KeyboardEvent) => e.ctrlKey || e.metaKey;
-const typing = (el: EventTarget | null) =>
+export const typing = (el: EventTarget | null): boolean =>
   el instanceof HTMLElement && (el.matches('input, textarea, select') || el.isContentEditable);
 
-/** Tasten auf einer Seite oder einer leeren Spalte */
-export function handleBoardKey(event: KeyboardEvent, ctx: KeyboardContext): void {
-  if (typing(event.target)) return;
-  const target = event.target as HTMLElement;
-  const tile = target.closest<HTMLElement>('.ws-page');
-  const docId = target.closest<HTMLElement>('[data-doc]')?.dataset.doc;
-  const { store, actions } = ctx;
+/** Tasten auf einer Seite des Rasters; true, wenn behandelt */
+export function handleGridKey(event: KeyboardEvent, ctx: GridKeyContext): boolean {
+  if (typing(event.target) || event.altKey) return false;
+  const tile = (event.target as HTMLElement).closest<HTMLElement>('.ws-page');
   const key = tile?.dataset.key;
-  const at = key ? indexPages(store.state).get(key) : undefined;
-  const lower = event.key.length === 1 ? event.key.toLowerCase() : event.key;
-  let handled = true;
-
+  if (!tile || !key) return false;
+  const { store } = ctx;
+  const mod = event.ctrlKey || event.metaKey;
   const go = (next: PageKey | undefined) => {
-    if (!next || !key) return;
+    if (!next) return;
     if (event.shiftKey) {
       store.select(
         selectRange(
           store.state,
           { ...store.selection, anchor: store.selection.anchor ?? key },
           next,
+          mod,
         ),
       );
       ctx.announceSelection();
@@ -54,97 +52,76 @@ export function handleBoardKey(event: KeyboardEvent, ctx: KeyboardContext): void
     }
     ctx.focusPage(next);
   };
-
-  if (
-    at &&
-    event.altKey &&
-    !isMod(event) &&
-    (event.key === 'ArrowUp' || event.key === 'ArrowDown')
-  ) {
-    actions.shift(event.key === 'ArrowUp' ? -1 : 1);
-  } else if (
-    at &&
-    isMod(event) &&
-    !event.altKey &&
-    (event.key === 'ArrowLeft' || event.key === 'ArrowRight')
-  ) {
-    // Ins Nachbardokument, an dieselbe Stelle oder die letzte Seite
-    const docs = store.state.docs;
-    const step = event.key === 'ArrowRight' ? 1 : -1;
-    for (let i = at.docIndex + step; i >= 0 && i < docs.length; i += step) {
-      const pages = docs[i]?.pages ?? [];
-      const next = pages[Math.min(at.pageIndex, pages.length - 1)];
-      if (next) {
-        go(next.key);
-        break;
-      }
+  const tiles = ctx.tiles();
+  const i = tiles.indexOf(tile);
+  switch (event.key) {
+    case 'ArrowLeft':
+    case 'ArrowRight': {
+      if (mod) return false;
+      go(tiles[i + (event.key === 'ArrowRight' ? 1 : -1)]?.dataset.key);
+      break;
     }
-  } else if (at && !event.altKey && !isMod(event) && event.key.startsWith('Arrow')) {
-    const columns = ctx.columnsOf(at.doc.id);
-    const delta =
-      { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -columns, ArrowDown: columns }[event.key] ?? 0;
-    go(at.doc.pages[at.pageIndex + delta]?.key);
-  } else if (at && (event.key === 'Home' || event.key === 'End') && !event.altKey) {
-    const pages = at.doc.pages;
-    go((event.key === 'Home' ? pages[0] : pages[pages.length - 1])?.key);
-  } else if (key && event.key === ' ' && !isMod(event)) {
-    store.select(toggle(store.selection, key));
-    ctx.announceSelection();
-  } else if (isMod(event) && !event.altKey && lower === 'a' && docId) {
-    actions.selectAll(docId);
-  } else if (event.key === 'Escape') {
-    if (store.selection.keys.size === 0) handled = false;
-    else actions.clearSelection();
-  } else if (isMod(event) && !event.altKey && !event.shiftKey && lower === 'x') {
-    actions.cut();
-  } else if (isMod(event) && !event.altKey && !event.shiftKey && lower === 'c') {
-    actions.copy();
-  } else if (isMod(event) && !event.altKey && !event.shiftKey && lower === 'v' && docId) {
-    actions.paste(docId);
-  } else if (!isMod(event) && !event.altKey && lower === 'r' && key) {
-    actions.rotate(event.shiftKey ? -90 : 90);
-  } else if (!isMod(event) && !event.altKey && !event.shiftKey && lower === 'd' && key) {
-    actions.duplicate();
-  } else if (!isMod(event) && !event.altKey && !event.shiftKey && lower === 'm' && key) {
-    actions.moveDialog();
-  } else if (key && !isMod(event) && (event.key === 'Delete' || event.key === 'Backspace')) {
-    actions.remove();
-  } else if (key && event.key === 'Enter' && !isMod(event)) {
-    ctx.openPreview(key);
-  } else if (docId && event.key === 'F2') {
-    actions.renameDoc(docId);
-  } else if (
-    tile &&
-    key &&
-    (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10'))
-  ) {
-    ctx.openContextMenu(key, tile);
-  } else {
-    handled = false;
-  }
-  if (handled) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-}
-
-/**
- * Tasten im ganzen Werkstatt-Bereich (Werkzeugleiste, Spalten, rechte Spalte): Rückgängig,
- * Wiederholen, Übersicht der Kürzel. Nicht in Eingabefeldern, dort gilt das Rückgängig des
- * Browsers für den Text.
- */
-export function handleAreaKey(event: KeyboardEvent, actions: Actions): void {
-  if (typing(event.target) || event.defaultPrevented) return;
-  const lower = event.key.toLowerCase();
-  if (isMod(event) && !event.altKey && lower === 'z') {
-    if (event.shiftKey) actions.redo();
-    else actions.undo();
-  } else if (event.ctrlKey && !event.metaKey && !event.altKey && lower === 'y') {
-    actions.redo();
-  } else if (event.key === '?' && !isMod(event) && !event.altKey) {
-    actions.shortcuts();
-  } else {
-    return;
+    case 'ArrowUp':
+    case 'ArrowDown': {
+      if (mod) return false;
+      const boxes = tiles.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+      });
+      const n = verticalNeighbour(boxes, i, event.key === 'ArrowDown' ? 1 : -1);
+      go(n === null ? undefined : tiles[n]?.dataset.key);
+      break;
+    }
+    case 'Home':
+    case 'End': {
+      const at = indexPages(store.state).get(key);
+      const pages = at?.doc.pages ?? [];
+      go((event.key === 'Home' ? pages[0] : pages[pages.length - 1])?.key);
+      break;
+    }
+    case ' ':
+      if (mod) return false;
+      store.select(toggle(store.selection, key));
+      ctx.announceSelection();
+      break;
+    case 'Enter':
+      if (mod) return false;
+      ctx.openSingle(key);
+      break;
+    case 'ContextMenu':
+      ctx.openContextMenu(key, tile);
+      break;
+    case 'F10':
+      if (!event.shiftKey) return false;
+      ctx.openContextMenu(key, tile);
+      break;
+    default:
+      return false;
   }
   event.preventDefault();
+  event.stopPropagation();
+  return true;
+}
+
+/** Tastenkürzel aus der Befehlsliste; true, wenn ein Befehl lief */
+export function handleShortcut(event: KeyboardEvent, cmds: Map<string, Cmd>): boolean {
+  if (typing(event.target) || event.defaultPrevented || event.isComposing) return false;
+  if ((event.target as HTMLElement).closest('dialog, .ws-menu')) return false;
+  // Tasten, die Knöpfe und Menüs selbst brauchen, nur mit Strg/Cmd oder Alt
+  const onControl = (event.target as HTMLElement).closest('button, [role="menuitem"], a, summary');
+  const k = keyOf(event);
+  if (onControl && (k === 'enter' || k === 'space')) return false;
+  for (const cmd of cmds.values()) {
+    if (!cmd.keys?.includes(k)) continue;
+    if (cmd.enabled && !cmd.enabled()) {
+      // Das Kürzel gehört uns, auch wenn gerade nichts zu tun ist (kein Browser-Speichern usw.)
+      if (k.startsWith('mod+')) event.preventDefault();
+      return true;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    cmd.run();
+    return true;
+  }
+  return false;
 }

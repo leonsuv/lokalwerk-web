@@ -10,6 +10,9 @@ import {
   canUndo,
   createHistory,
   execute,
+  jumpTo,
+  timeline,
+  type TimelineEntry,
   redo,
   liveSources,
   redoLabel,
@@ -107,6 +110,18 @@ export class WorkshopStore {
     const label = redoLabel(this.history);
     if (label === null) return;
     this.step(redo(this.history), { kind: 'redo', label });
+  }
+
+  /** Schritte für das Verlauf-Bedienfeld */
+  get timeline(): TimelineEntry[] {
+    return timeline(this.history);
+  }
+
+  /** Zu einem Schritt im Verlauf springen */
+  jump(index: number): void {
+    const next = jumpTo(this.history, index);
+    if (next === this.history) return;
+    this.step(next, { kind: 'undo', label: next.present.label });
   }
 
   select(selection: Selection): void {

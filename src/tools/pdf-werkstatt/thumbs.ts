@@ -8,6 +8,7 @@
 
 import { pageNumberFor } from '../../core/pdf/page-numbers.ts';
 import type { PageBox, PageOp, PageRef } from '../../core/workshop/model.ts';
+import { renderBucket } from '../../core/workshop/layout.ts';
 import type { PageNumberPlace } from '../../core/workshop/overlay.ts';
 import { LazyRenderer } from '../../ui/lazy-render.ts';
 import { drawImagePage } from './image-pages.ts';
@@ -90,9 +91,11 @@ export class Thumbs {
     kind: 'pdf' | 'image',
     view: PageBox,
     numbers: PageNumberPlace | null = null,
+    /** Breite der Kachel in CSS-Pixeln (Zoom); gezeichnet wird in Stufen (renderBucket) */
+    cssWidth = 120,
   ): void {
-    const pixels = () =>
-      (paper.getBoundingClientRect().width || 120) * (globalThis.devicePixelRatio || 1);
+    const bucket = renderBucket(cssWidth * (globalThis.devicePixelRatio || 1));
+    const pixels = () => bucket;
     const withOverlay = async (canvas: HTMLCanvasElement) => {
       try {
         await drawOverlay(canvas, page, view, { numbers });
@@ -103,10 +106,10 @@ export class Thumbs {
       }
       return canvas;
     };
-    const ops = opsToken(page.ops) + numbersToken(numbers);
+    const ops = `${opsToken(page.ops)}${numbersToken(numbers)}@${bucket}`;
     if (page.kind === 'blank') {
       // Leerseite ohne Operation: das weiße Papier der Kachel genügt
-      if (!ops) this.forget(paper);
+      if (!page.ops?.length && !numbersToken(numbers)) this.forget(paper);
       else
         this.observe(paper, `blank:${page.rotate}${ops}`, root, () =>
           withOverlay(blankCanvas(view, pixels())),

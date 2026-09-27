@@ -76,7 +76,18 @@ Befunde bitte mit Gerät, Browser-Version und Schritt melden, gern mit Bildschir
 | C4 | Speichern mit Umlauten im Dateinamen („Vertrag (geschwärzt).pdf“, „Für Anwalt.pdf“): Name bleibt erhalten | Safari, Firefox, Edge, iPhone | 15 min |
 | C6 | `npm run perf:werkstatt` auf dem Mac, Ausgabe an mich (Ziel „100 Seiten verschieben“ unter 50 ms, Abschnitt 19) | Mac | 15 min |
 
-**Summe Leon, vor dem Start: etwa 12¾ bis 13¼ Stunden** (V1 2¼ bis 2¾ h, V2 3½ h, V3 ½ h, V4 2 h, V5 2¼ h, V6 2¼ h), dazu Wartezeit auf Registrar und Rechtsprüfung.
+**V7 PDF-Werkstatt als Editor (Umbau vom 27.09.2026), Gerätetests vor dem Start.** Entscheidungen: `docs/umbau-entscheidungen.md`.
+
+| # | Was prüfen | Geräte | Schätzung |
+|---|---|---|---|
+| E1 | Menüleiste mit der Maus und nur mit der Tastatur (F10, Pfeile, Untermenüs, Esc); Kürzel aus der Übersicht („?“), besonders Strg/Cmd+S, Strg/Cmd+O, Strg/Cmd+Plus/Minus, Umschalt+N | Chrome und Safari auf dem Mac, Edge und Firefox unter Windows | 25 min |
+| E2 | Ziehen: Seiten weichen aus, Stapel mit Zähler, Ablegen in anderem Dokument, auf der Dokumentliste, unter den Dokumenten (neues Dokument), Alt kopiert; Dokument auf Dokument (zusammenführen) und zwischen zwei (umordnen) | Maus und Touchpad, Firefox und Safari | 20 min |
+| E3 | Auswahlrechteck, Trennlinien per Klick, „An Trennlinien teilen“, „Trennlinien alle … Seiten“, Schere; Verlauf anklicken | Chrome, Safari | 15 min |
+| E4 | Zoom mit Strg+Mausrad und Zwei-Finger-Geste auf dem Touchpad, Schieberegler; Vorschaubilder werden scharf | Mac mit Touchpad, Windows mit Maus | 10 min |
+| E5 | Screenreader: Menüleiste, Kontextmenü (Umschalt+F10), Ansagen beim Ziehen, Verlauf, Eigenschaften | VoiceOver mit Safari, NVDA mit Firefox | 30 min |
+| E6 | Tablet quer und hoch (901 bis 1280 px): Leisten, Ziehen nach 300 ms Halten; Handy: „Mehr“ zeigt alle Menüs | iPad, Android-Tablet, iPhone | 20 min |
+
+**Summe Leon, vor dem Start: etwa 14½ bis 15 Stunden** (V1 2¼ bis 2¾ h, V2 3½ h, V3 ½ h, V4 2 h, V5 2¼ h, V6 2¼ h, V7 2 h), dazu Wartezeit auf Registrar und Rechtsprüfung.
 
 ### Aufgaben für Claude nach deiner Zuarbeit
 

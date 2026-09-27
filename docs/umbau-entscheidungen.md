@@ -1,0 +1,27 @@
+# PDF-Werkstatt: Entscheidungen beim Umbau zum Editor
+
+Leon hat für den Umbau (27.09.2026) freie Hand gegeben: Wo sonst eine Rückfrage käme, wird hier
+entschieden und mit einem Satz begründet. Fortschritt: `docs/umbau-fortschritt.md`.
+
+| Nr. | Entscheidung | Begründung |
+|---|---|---|
+| U1 | Keine neue Abhängigkeit; Menüs, Ziehen, Animationen und Tooltips sind selbst gebaut. | Alles davon lässt sich mit Pointer Events, CSS-Übergängen und dem vorhandenen Menü-Muster in wenigen hundert Zeilen lösen. |
+| U2 | Trennlinien gehören zum Dokument und zum Verlauf (Rückgängig nimmt sie zurück); die Linie hängt an der Seite danach. | So bleibt sie an der richtigen Stelle, wenn davor Seiten eingefügt oder gelöscht werden, und verschwindet von selbst, wenn ihre Seite das Dokument verlässt oder an den Anfang rückt. |
+| U3 | „An Trennlinien teilen“ lässt den ersten Teil als ursprüngliches Dokument stehen; die weiteren Teile heißen „Name (Teil 2)“, „Name (Teil 3)“ … und stehen direkt dahinter. | Wie das bisherige Teilen an einer Stelle; Seitenzahlen gelten wie dort für jeden Teil. |
+| U4 | Zusammenführen in eigener Reihenfolge (Dialog, Ziehen einer Dokumentkarte) ist ein neuer Befehl `joinDocs`; das bisherige `mergeDocs` (Reihenfolge der Liste) bleibt. | Bestehende Abläufe und Tests bleiben unverändert; Ziel ist immer das erste Dokument der gewählten Reihenfolge, es behält Namen und Platz. |
+| U5 | Das Verlauf-Bedienfeld springt mit `jumpTo` in einem Zug zu einem Schritt; danach geht Wiederholen wie gewohnt. | Kein neuer Speicherbedarf, der Verlauf enthält die Zustände schon. |
+| U6 | Die Mitte zeigt alle Dokumente untereinander als Abschnitte (einklappbar), nicht nur das aktive. | So bleibt das Kernversprechen der Werkstatt, mehrere Dokumente gleichzeitig zu sehen und Seiten direkt zwischen ihnen zu ziehen; die Liste links springt zum Abschnitt. |
+| U7 | Die große Vorschau als eigenes Fenster entfällt; an ihre Stelle tritt die Ansicht „Einzelseite“ in der Arbeitsfläche. | Eine Ansicht statt zwei, mit Menüs, Werkzeugleiste und Eigenschaften daneben wie in Acrobat. |
+| U8 | Alle Befehle stehen einmal in `ui-commands.ts`; Menüleiste, Werkzeugleiste, Kontextmenüs, Tastatur und die Übersicht der Tastenkürzel werden daraus gebaut. | Dieselbe Aktion heißt überall gleich (AGENTS.md Abschnitt 7) und kein Kürzel fehlt in der Übersicht. |
+| U9 | Einzelbuchstaben als Kürzel wie in Adobe-Programmen: V Auswahl, S Schere, T Trennlinie, E in neues Dokument, G/Umschalt+G Ansicht; Strg+O, Strg+S, Strg+Umschalt+S, Strg+G, Strg+I, Strg+Plus/Minus/0. Strg+N, Strg+W und Strg+T bleiben dem Browser. | Diese drei lassen sich in Browsern nicht zuverlässig abfangen; Neues Dokument liegt deshalb auf Umschalt+N. |
+| U10 | Tastenkürzel gelten im ganzen Programm, außer in Eingabefeldern, Menüs und Dialogen; F10 führt in die Menüleiste, Umschalt+F10 öffnet das Kontextmenü. | Wie unter Windows gewohnt; ohne Maus ist jede Aktion über Menüleiste, Kontextmenü oder Kürzel erreichbar. |
+| U11 | Der Zoom ist stufenlos von 50 bis 400 % (Schieberegler, Strg+Mausrad, Strg+Plus/Minus); Vorschaubilder werden erst neu gezeichnet, wenn die Kachel um die Hälfte größer wird. | Scharfe Bilder ohne ständiges Neuzeichnen beim Zoomen. |
+| U12 | Beim Ziehen klappen die gezogenen Seiten zusammen und ein Platzhalter zeigt die Zielstelle; die Seiten gleiten mit FLIP-Animationen (160 ms), bei prefers-reduced-motion ohne Bewegung. | Das ist die übliche Rückmeldung in Programmen; FLIP braucht keine Bibliothek. |
+| U13 | Ein Dokument aus der Liste auf ein anderes gezogen wird ans Ende des Ziels angehängt; auf den oberen oder unteren Rand gezogen ordnet es die Liste um. | Zusammenführen und Umordnen mit derselben Geste, unterschieden durch die Stelle; die Markierung zeigt, was passiert. |
+| U14 | Seiten, die auf die Fläche unter den Dokumenten gezogen werden, bilden ein neues Dokument; Verweilen über einem Dokument der Liste springt dorthin. | Beides wie in Dateimanagern; so geht jedes Ziel ohne Umwege. |
+| U15 | Die Schere schneidet mit einem Klick: linke Hälfte einer Seite vor ihr, rechte Hälfte nach ihr, im Zwischenraum genau dort. Esc oder V beendet sie. | Ein Klick, eine Wirkung, und die Linie zeigt vorher, wo geschnitten wird. |
+| U16 | „In neues Dokument“ verschiebt jetzt (E); die bisherige Kopie heißt „Als Kopie in neues Dokument“. | Das erwartet man in einem Editor; die Kopie bleibt erreichbar. |
+| U17 | Zusätzliche Befehle ohne neue Fachregeln: Reihenfolge umkehren, um 180 Grad drehen, Danach einfügen, gerade/ungerade Seiten, Seitenbereich auswählen, Auswahl umkehren, Gehe zu Seite, Dokumente einklappen, Dokument nach oben/unten, Leisten ein- und ausblenden. | Übliche Funktionen eines Seiten-Editors; jede ist ein Menüeintrag. |
+| U18 | Auf dem Handy bleibt die vereinfachte Ansicht (ein Dokument, untere Leiste, kein Ziehen); die Menüleiste ist dort ebenfalls da, „Mehr“ zeigt alle Menüs. | Damit ist auf kleinen Bildschirmen jede Aktion erreichbar, ohne die Bedienung zu überladen. |
+| U19 | „Trennlinien alle … Seiten“ setzt die Linien nur (ein Schritt im Verlauf); geteilt wird erst mit „An Trennlinien teilen“. | So sieht man vorher, wie die Teile aussehen, und kann einzelne Linien noch verschieben oder entfernen. |
+| U20 | „Querformat hochkant drehen“ dreht nur die ausgewählten Seiten, die gerade breiter als hoch sind, um 90 Grad nach rechts. | Häufiger Fall bei Scans; die Richtung lässt sich danach mit einem Klick ändern. |

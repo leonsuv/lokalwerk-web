@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { deletePages } from '../../../src/core/workshop/commands.ts';
 import {
+  bandSelection,
   EMPTY_SELECTION,
+  invertSelection,
   moveFocus,
   pruneSelection,
   selectDoc,
+  selectEverything,
   selectionSummary,
   selectKeys,
   selectOnly,
@@ -65,5 +68,30 @@ describe('Auswahl', () => {
     expect(pruned.anchor).toBeNull();
     expect(pruneSelection(b.state, s)).toBe(s);
     expect(selectionSummary(after, pruned)).toEqual({ pages: 1, docs: 1 });
+  });
+});
+
+describe('Auswahlrechteck, alles auswählen, umkehren', () => {
+  it('ersetzt, ergänzt oder schaltet um', () => {
+    const base = selectKeys(['p1', 'p2']);
+    expect([...bandSelection(base, ['p2', 'p3'], 'replace').keys]).toEqual(['p2', 'p3']);
+    expect([...bandSelection(base, ['p2', 'p3'], 'add').keys].sort()).toEqual(['p1', 'p2', 'p3']);
+    expect([...bandSelection(base, ['p2', 'p3'], 'toggle').keys].sort()).toEqual(['p1', 'p3']);
+    const empty = bandSelection(base, [], 'replace');
+    expect(empty.keys.size).toBe(0);
+    expect(empty.focus).toBeNull();
+    expect(bandSelection(base, [], 'add').focus).toBe('p1');
+  });
+
+  it('wählt alles aus und kehrt die Auswahl im Dokument oder überall um', () => {
+    const b = bench(pdfSource('a', 3), pdfSource('b', 2));
+    expect(selectEverything(b.state, null).keys.size).toBe(5);
+    const [a1, a2, a3] = keysOf(b.state, 0, 0, 1, 2);
+    const [b1, b2] = keysOf(b.state, 1, 0, 1);
+    const sel = selectKeys([a1 ?? '', b1 ?? '']);
+    const inDoc = invertSelection(b.state, sel, b.state.docs[0]?.id ?? '');
+    expect([...inDoc.keys].sort()).toEqual([a2, a3, b1].sort());
+    const everywhere = invertSelection(b.state, sel, null);
+    expect([...everywhere.keys].sort()).toEqual([a2, a3, b2].sort());
   });
 });

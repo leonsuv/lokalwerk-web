@@ -307,3 +307,217 @@ Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026** mit einer Änderung (M
 
 **Übergabe aus „PDF-Metadaten entfernen“** (M6, Leon 27.09.2026): Die Einstellung steht dann auf „Entfernen“, bei allen anderen Übergaben auf „Behalten“. Keine neuen Texte.
 
+
+## 14. Umbau, zur Durchsicht
+
+Neue Texte aus dem Umbau zum Editor (27.09.2026, docs/umbau-fortschritt.md), von Claude nach
+AGENTS.md Abschnitt 7 geschrieben, noch nicht freigegeben. Stehen in `src/tools/pdf-werkstatt/texts.ts`
+(Abschnitt „Umbau zum Editor“). Bisher freigegebene Texte sind unverändert, mit einer Ausnahme:
+Der Erklärtext unter der Werkstatt („So funktioniert es“, erster Absatz) ist neu geschrieben, weil
+die Spalten weggefallen sind:
+
+> Die Werkstatt arbeitet wie ein Programm auf deinem Rechner: oben Menüs und Werkzeugleiste, links deine Dokumente und die Seiten des aktiven Dokuments, in der Mitte alle Seiten als Raster oder eine Seite groß, rechts die Eigenschaften der Auswahl und der Verlauf. Öffne eine oder mehrere PDFs oder Bilder; jede Datei wird ein eigenes Dokument. Seiten wählst du mit Klick, Umschalt, Strg oder einem aufgezogenen Rahmen aus und ziehst sie an eine andere Stelle, in ein anderes Dokument oder auf ein Dokument in der Liste. Zwischen zwei Seiten setzt du mit einem Klick eine Trennlinie; „An Trennlinien teilen“ macht daraus in einem Schritt mehrere Dokumente, die Schere teilt sofort. Ein Dokument, das du auf ein anderes ziehst, wird mit ihm zusammengeführt. Ein Rechtsklick zeigt überall, was an dieser Stelle möglich ist, und jede Aktion hat einen Menüeintrag und meist ein Tastenkürzel. Jeder Schritt lässt sich rückgängig machen, auch mehrere auf einmal über den Verlauf. Am Ende speicherst du ein Dokument, deine Auswahl oder alle Dokumente als ZIP. Deine Originaldateien bleiben unverändert. Über „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern gesetzt und passen zur dann gültigen Reihenfolge. Stempel und Unterschriften gehören zur Seite und wandern mit, wenn du sie verschiebst; gesetzt werden sie beim Speichern. Schwärzen und Formular ausfüllen erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum Bild, sodass nichts vom Original übrig bleibt. 
+
+### Menüleiste
+
+- „Datei“
+- „Bearbeiten“
+- „Seite“
+- „Dokument“
+- „Werkzeuge“
+- „Ansicht“
+- „Hilfe“
+
+### Befehle (Menüs, Werkzeugleiste, Kontextmenüs)
+
+- „Dateien öffnen …“
+- „Neues Dokument“
+- „Dateien anhängen …“
+- „Dokument“
+- „Auswahl als neue PDF speichern“
+- „Alle als ZIP speichern“
+- „Behalten“
+- „Entfernen“
+- „Dokument schließen“
+- „Rückgängig“
+- „Wiederholen“
+- „Ausschneiden“
+- „Kopieren“
+- „Einfügen“
+- „Davor einfügen“
+- „Danach einfügen“
+- „Hier einfügen“
+- „Am Anfang einfügen“
+- „Am Ende einfügen“
+- „Duplizieren“
+- „Löschen“
+- „Alle Seiten des Dokuments auswählen“
+- „Alle Seiten aller Dokumente auswählen“
+- „Auswahl aufheben“
+- „Auswahl umkehren“
+- „Seiten auswählen“
+- „Ungerade Seiten“
+- „Gerade Seiten“
+- „Seitenbereich …“
+- „Auswahl“
+- „Gehe zu Seite …“
+- „Drehen“
+- „Rechts drehen“
+- „Links drehen“
+- „Um 180 Grad drehen“
+- „Eine Stelle nach vorne“
+- „Eine Stelle nach hinten“
+- „Reihenfolge umkehren“
+- „Verschieben nach …“
+- „Zu Dokument verschieben“
+- „In Dokument kopieren“
+- „In neues Dokument“
+- „Als Kopie in neues Dokument“
+- „Leere Seite einfügen“
+- „Leere Seite davor“
+- „Leere Seite danach“
+- „Leere Seite hier“
+- „Wie die Nachbarseite“
+- „Trennlinie setzen oder entfernen“
+- „Trennlinie davor setzen“
+- „Trennlinie davor entfernen“
+- „Dokument hier teilen“
+- „An Trennlinien teilen“
+- „Alle Trennlinien entfernen“
+- „Seite groß zeigen“
+- „Umbenennen“
+- „Dokument duplizieren“
+- „Dokumente zusammenführen …“
+- „Zusammenführen mit“
+- „Mehrere, mit Reihenfolge …“
+- „Dokument nach oben“
+- „Dokument nach unten“
+- „Seiten einklappen“
+- „Seiten ausklappen“
+- „Alle Dokumente einklappen“
+- „Alle Dokumente ausklappen“
+- „Auswahlwerkzeug“
+- „Schere“
+- „Seitenraster“
+- „Einzelseite“
+- „Vergrößern“
+- „Verkleinern“
+- „Zoom 100 %“
+- „Einpassen“
+- „Dokumente und Seiten links“
+- „Eigenschaften und Verlauf rechts“
+- „Tastenkürzel“
+- „So funktioniert die Werkstatt“
+
+### Eigenschaften rechts
+
+- „Auswahl“
+- „Ausgewählt“
+- „Keine Seite ausgewählt. Klick auf eine Seite, zieh einen Rahmen auf oder drück Strg+A.“
+- „Seite“
+- „Stelle“
+- „Herkunft“
+- „Leere Seite“
+- „Größe“
+- „Gedreht“
+- „Beim Speichern“
+- „Stempel“
+- „Trennlinie davor“
+- „ja“
+- „nein“
+- „Dokument“
+- „Noch kein Dokument. Öffne PDFs oder Bilder.“
+- „Name“
+- „Seiten“
+- „Aus“
+- „Trennlinien“
+- „Speichern“
+- „Werkzeug“
+- „Klick wählt eine Seite, Umschalt einen Bereich, Strg einzelne dazu. Ein Klick in den Zwischenraum zweier Seiten setzt eine Trennlinie.“
+- „Klick auf eine Seite teilt das Dokument davor (linke Hälfte) oder danach (rechte Hälfte), sofort. Esc beendet die Schere.“
+
+### Meldungen, Beschriftungen und Ansagen (mit Beispielwerten)
+
+- Rückgängig im Menü: „Rückgängig: Drehen“
+- Wiederholen im Menü: „Wiederholen: Drehen“
+- Dokument im Untermenü: „Vertrag (7 Seiten)“
+- Leere Fläche: „Am Ende von Vertrag einfügen“
+- Menünamen: „Seite / Zwischenraum / Arbeitsfläche“
+- Einklappen: „Seiten von Vertrag einklappen“
+- Ausklappen: „Seiten von Vertrag ausklappen“
+- Ansage: „Vertrag eingeklappt“
+- Ansage: „Vertrag ausgeklappt“
+- Knopf im Kopf des Dokuments: „3 Teile“
+- Dessen Beschriftung: „Vertrag an den Trennlinien in 3 Dokumente teilen“
+- Menüeintrag: „An Trennlinien teilen (3 Teile)“
+- Trennlinie im Raster: „Neues Dokument ab Seite 4“
+- Knopf an der Linie: „Trennlinie entfernen“
+- Zwischenraum (Tooltip): „Trennlinie setzen“
+- Seite mit Linie (Screenreader): „Seite 4 von 7, aus Vertrag.pdf Seite 4, Trennlinie davor“
+- Leere Seite (Marke): „leer“
+- Name eines Teils: „Vertrag (Teil 2)“
+- Ansage: „Trennlinie vor Seite 4 gesetzt“
+- Ansage: „3 Trennlinien gesetzt“
+- Ansage: „Trennlinie entfernt“
+- Hinweis: „Vor der ersten Seite gibt es keine Trennlinie.“
+- Hinweis: „Das Dokument hat keine Trennlinien. Klick zwischen zwei Seiten, um eine zu setzen.“
+- Ansage: „Vertrag in 3 Dokumente geteilt“
+- Ansage: „Trennlinien von Vertrag entfernt“
+- Hinweis Schere: „Am Anfang oder Ende eines Dokuments gibt es nichts zu teilen.“
+- Ansage: „2 Seiten um 180 Grad gedreht“
+- Ansage: „Reihenfolge von 4 Seiten umgekehrt“
+- Hinweis: „Wähle mindestens zwei Seiten eines Dokuments.“
+- Ansage: „2 Seiten nach Dokument 4 verschoben“
+- Ansage: „Vertrag steht jetzt an Stelle 2 von 3“
+- Leiste links: „Seiten“
+- Leiste links: „Seiten von Vertrag“
+- Miniatur (Screenreader): „Seite 3 von 7, ausgewählt“
+- Dokument in der Liste: „7 Seiten, 2 ausgewählt“
+- Kennzeichen: „Seitenzahlen, geschwärzt“
+- Dokument in der Liste (Screenreader): „Vertrag, 7 Seiten, Seitenzahlen“
+- Ziehen, Ansage: „3 Seiten aufgenommen. Zum Ablegen loslassen, Esc bricht ab, Alt kopiert.“
+- Ziehen, Ansage: „Rechnung aufgenommen. Zwischen zwei Dokumente ziehen ordnet um, auf ein Dokument führt zusammen.“
+- Ziehen, Ansage: „Ziel: mit Vertrag zusammenführen“
+- Ziehen, Ansage: „Ziel: an Stelle 2 der Liste“
+- Ablagefläche: „Hier ablegen für ein neues Dokument“
+- Eigenschaften: „3 von 7 in Vertrag“
+- Eigenschaften: „Vertrag.pdf, Seite 3“
+- Eigenschaften: „21,0 × 29,7 cm“
+- Eigenschaften: „90 Grad“
+- Eigenschaften: „2 Unterschriften“
+- Eigenschaften: „3 Dateien“
+- Verlauf, erster Eintrag: „Beginn“
+- Verlauf: „Ältere Schritte sind nicht mehr gespeichert (höchstens 100).“
+- Verlauf (Screenreader): „Drehen, aktueller Stand“
+- Verlauf (Screenreader): „Drehen, zurückgenommen“
+- Statusleiste: „13 Seiten in 3 Dokumenten“
+- Statusleiste: „Keine Dokumente geöffnet“
+- Statusleiste: „Nicht gespeichert“
+- Statusleiste: „Gespeichert“
+- Statusleiste: „1,2 GB geöffnet“
+- Zoom: „125 %“
+- Zoom (Screenreader): „Zoom 125 %, auf 100 % zurücksetzen“
+- Ansage: „Einzelseite. Pfeiltasten blättern, Esc zeigt wieder alle Seiten.“
+- Ansage: „Seitenraster“
+- Ansage: „Schere: Klick vor oder nach einer Seite teilt das Dokument. Esc beendet die Schere.“
+- Ansage: „Auswahlwerkzeug“
+- Dialog: „Gehe zu Seite“
+- Dialog: „Vertrag, 7 Seiten“
+- Feld: „Seite“
+- Knopf: „Zur Seite“
+- Dialog: „Seiten auswählen“
+- Feld: „Seiten, z. B. 1-3, 7, 10-12“
+- Knopf: „Auswählen“
+- Fehler: „Gib Seiten von 1 bis 7 ein, einzeln mit Komma getrennt oder als Bereich mit Bindestrich.“
+- Zusammenführen, Pfeil: „Vertrag nach oben“
+- Zusammenführen, Pfeil: „Vertrag nach unten“
+- Ansage: „Vertrag an Stelle 2“
+- Tastenkürzel, Untertitel: „Gelten überall in der Werkstatt, außer beim Schreiben in einem Eingabefeld. Alle Befehle stehen auch in den Menüs.“
+- Tastenkürzel, Abschnitt: „Im Seitenraster“
+- Tastenkürzel im Raster: Pfeiltasten: „Zur nächsten Seite, auch ins nächste Dokument“
+- Tastenkürzel im Raster: Umschalt+Pfeiltasten: „Auswahl erweitern“
+- Tastenkürzel im Raster: Leertaste: „Seite auswählen oder abwählen“
+- Tastenkürzel im Raster: Pos1 / Ende: „Erste oder letzte Seite des Dokuments“
+- Tastenkürzel im Raster: Eingabe: „Seite groß zeigen“
+- Tastenkürzel im Raster: Umschalt+F10: „Menü der Seite“
+- Tastenkürzel im Raster: F10: „Menüleiste“

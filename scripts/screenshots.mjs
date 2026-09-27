@@ -286,15 +286,21 @@ function shots(/** @type {InputFiles} */ files) {
       prepare: async (p) => {
         await p.setFiles('#ws-input', files.workshop);
         await p.waitFor(`document.querySelectorAll('.ws-page').length === 10`, 30000);
-        // Bereich über zwei Dokumente: Seite 3 im Mietvertrag bis Seite 2 der Anlagen
-        await p.click('.ws-col:nth-of-type(1) .ws-page:nth-child(3)');
-        await p.click('.ws-col:nth-of-type(2) .ws-page:nth-child(2)', { shift: true });
+        // Trennlinie vor Seite 4 des Mietvertrags (Klick in den Zwischenraum)
+        await p.evaluate(`(() => {
+          const tile = document.querySelectorAll('.ws-sec:nth-of-type(1) .ws-page')[3];
+          tile.querySelector('.ws-gap').click(); })()`);
+        await p.waitFor(`document.querySelector('.ws-cutline')`);
+        // Bereich über zwei Dokumente: Seite 2 im Mietvertrag bis Seite 2 der Anlagen
+        await p.click('.ws-sec:nth-of-type(1) .ws-page:nth-of-type(2)');
+        await p.click('.ws-sec:nth-of-type(2) .ws-page:nth-of-type(2)', { shift: true });
         await p.waitFor(
-          `document.querySelector('#ws-selected').textContent.includes('2 Dokumenten')`,
+          `document.querySelector('#ws-st-selection').textContent.includes('2 Dokumenten')`,
         );
+        await p.evaluate(`document.querySelector('#ws-scroller').scrollTo(0, 0)`);
         // Alle sichtbaren Vorschaubilder gezeichnet
         await p.waitFor(
-          `[...document.querySelectorAll('.ws-page')].filter((t) => t.getBoundingClientRect().top < innerHeight).every((t) => t.querySelector('canvas'))`,
+          `[...document.querySelectorAll('.ws-page, .ws-rail-item')].filter((t) => { const r = t.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }).every((t) => t.querySelector('canvas'))`,
           30000,
         );
         await p.evaluate(`document.activeElement?.blur()`);

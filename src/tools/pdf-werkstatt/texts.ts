@@ -335,3 +335,273 @@ export const metadataKeptNote = (names: readonly string[]): string =>
   names.length === 1
     ? `${names[0] ?? ''} enthält versteckte Angaben wie Autor, Programm oder Datum. Sie bleiben beim Speichern erhalten.`
     : `${names.length} Dokumente enthalten versteckte Angaben wie Autor, Programm oder Datum: ${names.join(', ')}. Sie bleiben beim Speichern erhalten.`;
+
+// ---------------------------------------------------------------------------------------------
+// Umbau zum Editor (27.09.2026), zur Durchsicht: docs/texte-pdf-werkstatt.md, Abschnitt
+// „Umbau, zur Durchsicht“
+
+/** Menüleiste */
+export const M = {
+  file: 'Datei',
+  edit: 'Bearbeiten',
+  page: 'Seite',
+  doc: 'Dokument',
+  tools: 'Werkzeuge',
+  view: 'Ansicht',
+  help: 'Hilfe',
+} as const;
+
+/** Namen der Befehle in Menüs, Werkzeugleiste und Kontextmenüs */
+export const C = {
+  open: 'Dateien öffnen …',
+  newDoc: 'Neues Dokument',
+  newDocEntry: 'Neues Dokument',
+  append: 'Dateien anhängen …',
+  docFallback: 'Dokument',
+  saveSelection: 'Auswahl als neue PDF speichern',
+  saveAll: 'Alle als ZIP speichern',
+  metaKeep: 'Behalten',
+  metaStrip: 'Entfernen',
+  closeDoc: 'Dokument schließen',
+  undo: 'Rückgängig',
+  redo: 'Wiederholen',
+  cut: 'Ausschneiden',
+  copy: 'Kopieren',
+  paste: 'Einfügen',
+  pasteBefore: 'Davor einfügen',
+  pasteAfter: 'Danach einfügen',
+  pasteHere: 'Hier einfügen',
+  pasteStart: 'Am Anfang einfügen',
+  pasteEnd: 'Am Ende einfügen',
+  duplicate: 'Duplizieren',
+  delete: 'Löschen',
+  selectAll: 'Alle Seiten des Dokuments auswählen',
+  selectEverything: 'Alle Seiten aller Dokumente auswählen',
+  selectNone: 'Auswahl aufheben',
+  invert: 'Auswahl umkehren',
+  selectMore: 'Seiten auswählen',
+  selectOdd: 'Ungerade Seiten',
+  selectEven: 'Gerade Seiten',
+  selectRange: 'Seitenbereich …',
+  selectGroup: 'Auswahl',
+  goTo: 'Gehe zu Seite …',
+  rotate: 'Drehen',
+  rotateRight: 'Rechts drehen',
+  rotateLeft: 'Links drehen',
+  rotate180: 'Um 180 Grad drehen',
+  shiftUp: 'Eine Stelle nach vorne',
+  shiftDown: 'Eine Stelle nach hinten',
+  reverse: 'Reihenfolge umkehren',
+  move: 'Verschieben nach …',
+  moveToDoc: 'Zu Dokument verschieben',
+  copyToDoc: 'In Dokument kopieren',
+  extract: 'In neues Dokument',
+  extractCopy: 'Als Kopie in neues Dokument',
+  blankMenu: 'Leere Seite einfügen',
+  blankBefore: 'Leere Seite davor',
+  blankAfter: 'Leere Seite danach',
+  blankHere: 'Leere Seite hier',
+  blankNeighbour: 'Wie die Nachbarseite',
+  cutToggle: 'Trennlinie setzen oder entfernen',
+  cutSetHere: 'Trennlinie davor setzen',
+  cutRemoveHere: 'Trennlinie davor entfernen',
+  splitHere: 'Dokument hier teilen',
+  splitCuts: 'An Trennlinien teilen',
+  cutsEvery: 'Trennlinien alle … Seiten',
+  portrait: 'Querformat hochkant drehen',
+  clearCuts: 'Alle Trennlinien entfernen',
+  openSingle: 'Seite groß zeigen',
+  rename: 'Umbenennen',
+  duplicateDoc: 'Dokument duplizieren',
+  merge: 'Dokumente zusammenführen …',
+  mergeWith: 'Zusammenführen mit',
+  mergeDialog: 'Mehrere, mit Reihenfolge …',
+  docUp: 'Dokument nach oben',
+  docDown: 'Dokument nach unten',
+  fold: 'Seiten einklappen',
+  unfold: 'Seiten ausklappen',
+  foldAll: 'Alle Dokumente einklappen',
+  unfoldAll: 'Alle Dokumente ausklappen',
+  toolSelect: 'Auswahlwerkzeug',
+  toolScissors: 'Schere',
+  viewGrid: 'Seitenraster',
+  viewSingle: 'Einzelseite',
+  zoomIn: 'Vergrößern',
+  zoomOut: 'Verkleinern',
+  zoomReset: 'Zoom 100 %',
+  zoomFit: 'Einpassen',
+  panelLeft: 'Dokumente und Seiten links',
+  panelRight: 'Eigenschaften und Verlauf rechts',
+  shortcuts: 'Tastenkürzel',
+  guide: 'So funktioniert die Werkstatt',
+} as const;
+
+/** Eigenschaften rechts */
+export const P = {
+  selection: 'Auswahl',
+  selected: 'Ausgewählt',
+  noSelection: `Keine Seite ausgewählt. Klick auf eine Seite, zieh einen Rahmen auf oder drück ${combo('mod', 'A')}.`,
+  page: 'Seite',
+  position: 'Stelle',
+  source: 'Herkunft',
+  blank: 'Leere Seite',
+  size: 'Größe',
+  rotation: 'Gedreht',
+  ops: 'Beim Speichern',
+  stamp: 'Stempel',
+  cut: 'Trennlinie davor',
+  yes: 'ja',
+  no: 'nein',
+  doc: 'Dokument',
+  noDoc: 'Noch kein Dokument. Öffne PDFs oder Bilder.',
+  name: 'Name',
+  pages: 'Seiten',
+  files: 'Aus',
+  cuts: 'Trennlinien',
+  save: 'Speichern',
+  tool: 'Werkzeug',
+  selectHint:
+    'Klick wählt eine Seite, Umschalt einen Bereich, Strg einzelne dazu. Ein Klick in den Zwischenraum zweier Seiten setzt eine Trennlinie.',
+  scissorsHint:
+    'Klick auf eine Seite teilt das Dokument davor (linke Hälfte) oder danach (rechte Hälfte), sofort. Esc beendet die Schere.',
+} as const;
+
+export const undoItem = (label: string): string => `Rückgängig: ${label}`;
+export const redoItem = (label: string): string => `Wiederholen: ${label}`;
+export const docWithCount = (name: string, count: number): string => `${name} (${pages(count)})`;
+export const pasteEndOf = (name: string): string => `Am Ende von ${name} einfügen`;
+export const PAGE_MENU = 'Seite';
+export const GAP_MENU = 'Zwischenraum';
+export const EMPTY_MENU = 'Arbeitsfläche';
+
+// Raster
+export const foldDoc = (name: string): string => `Seiten von ${name} einklappen`;
+export const unfoldDoc = (name: string): string => `Seiten von ${name} ausklappen`;
+export const folded = (name: string): string => `${name} eingeklappt`;
+export const unfolded = (name: string): string => `${name} ausgeklappt`;
+export const partsLabel = (n: number): string => `${n} Teile`;
+export const splitAtCutsLabel = (name: string, parts: number): string =>
+  `${name} an den Trennlinien in ${parts} Dokumente teilen`;
+export const splitAtCutsItem = (parts: number): string => `An Trennlinien teilen (${parts} Teile)`;
+export const cutlineLabel = (page: number): string => `Neues Dokument ab Seite ${page}`;
+export const CUT_REMOVE = 'Trennlinie entfernen';
+export const GAP_TITLE = 'Trennlinie setzen';
+export const CUT_BEFORE_SUFFIX = ', Trennlinie davor';
+export const BLANK_BADGE = 'leer';
+
+// Trennlinien, Schere, Teilen
+export const partNameN = (name: string, n: number): string => `${name} (Teil ${n})`;
+export const cutSet = (count: number, index: number): string =>
+  count === 1 ? `Trennlinie vor Seite ${index + 1} gesetzt` : `${count} Trennlinien gesetzt`;
+export const cutRemoved = (count: number): string =>
+  count === 1 ? 'Trennlinie entfernt' : `${count} Trennlinien entfernt`;
+export const CUT_FIRST_PAGE = 'Vor der ersten Seite gibt es keine Trennlinie.';
+export const NO_CUTS =
+  'Das Dokument hat keine Trennlinien. Klick zwischen zwei Seiten, um eine zu setzen.';
+export const splitAtCutsDone = (name: string, parts: number): string =>
+  `${name} in ${parts} Dokumente geteilt`;
+export const cutsCleared = (name: string): string => `Trennlinien von ${name} entfernt`;
+export const SPLIT_EDGE = 'Am Anfang oder Ende eines Dokuments gibt es nichts zu teilen.';
+
+// Weitere Seitenbefehle
+export const rotatedHalf = (n: number): string => `${pages(n)} um 180 Grad gedreht`;
+export const reversed = (n: number): string => `Reihenfolge von ${pages(n)} umgekehrt`;
+export const REVERSE_NEEDS_TWO = 'Wähle mindestens zwei Seiten eines Dokuments.';
+export const movedToNew = (n: number, name: string): string =>
+  `${pages(n)} nach ${name} verschoben`;
+export const docMoved = (name: string, position: number, count: number): string =>
+  `${name} steht jetzt an Stelle ${position} von ${count}`;
+
+// Linke Leiste
+export const RAIL_TITLE = 'Seiten';
+export const railTitle = (name: string): string => `Seiten von ${name}`;
+export const railLabel = (n: number, count: number, selected: boolean): string =>
+  `Seite ${n} von ${count}${selected ? ', ausgewählt' : ''}`;
+export const docMetaSelected = (count: number, selected: number): string =>
+  `${pages(count)}, ${selected} ausgewählt`;
+export const FLAG_NUMBERS = 'Seitenzahlen';
+export const FLAG_REDACTED = 'geschwärzt';
+export const docItemLabel = (name: string, count: number, flags: readonly string[]): string =>
+  [name, pages(count), ...flags].join(', ');
+
+// Ziehen
+export const dragStart = (n: number): string =>
+  `${pages(n)} aufgenommen. Zum Ablegen loslassen, Esc bricht ab, Alt kopiert.`;
+export const dragDocStart = (name: string): string =>
+  `${name} aufgenommen. Zwischen zwei Dokumente ziehen ordnet um, auf ein Dokument führt zusammen.`;
+export const dragMerge = (name: string): string => `Ziel: mit ${name} zusammenführen`;
+export const dragOrder = (position: number): string => `Ziel: an Stelle ${position} der Liste`;
+export const DROP_NEW_DOC = 'Hier ablegen für ein neues Dokument';
+
+// Eigenschaften und Verlauf
+export const pageOfDoc = (n: number, count: number, name: string): string =>
+  `${n} von ${count} in ${name}`;
+export const sourcePage = (name: string, page: number): string => `${name}, Seite ${page}`;
+export const sizeLabel = (w: string, h: string): string => `${w} × ${h} cm`;
+export const degrees = (d: number): string => (d === 0 ? 'nein' : `${d} Grad`);
+export const signaturesCount = (n: number): string =>
+  n === 1 ? '1 Unterschrift' : `${n} Unterschriften`;
+export const filesCount = (n: number): string => `${n} Dateien`;
+export const HISTORY_START = 'Beginn';
+export const HISTORY_TRUNCATED = 'Ältere Schritte sind nicht mehr gespeichert (höchstens 100).';
+export const historyStepLabel = (label: string, current: boolean, undone: boolean): string =>
+  `${label}${current ? ', aktueller Stand' : undone ? ', zurückgenommen' : ''}`;
+
+// Statusleiste
+export const statusPages = (count: number, docs: number): string =>
+  `${pages(count)} in ${docs === 1 ? '1 Dokument' : `${docs} Dokumenten`}`;
+export const STATUS_EMPTY = 'Keine Dokumente geöffnet';
+export const STATUS_DIRTY = 'Nicht gespeichert';
+export const STATUS_SAVED = 'Gespeichert';
+export const memoryShort = (size: string): string => `${size} geöffnet`;
+export const zoomValue = (zoom: number): string => `${zoom} %`;
+export const zoomResetLabel = (zoom: number): string => `Zoom ${zoom} %, auf 100 % zurücksetzen`;
+
+// Ansicht und Werkzeuge
+export const VIEW_SINGLE_ON = 'Einzelseite. Pfeiltasten blättern, Esc zeigt wieder alle Seiten.';
+export const VIEW_GRID_ON = 'Seitenraster';
+export const TOOL_SCISSORS_ON =
+  'Schere: Klick vor oder nach einer Seite teilt das Dokument. Esc beendet die Schere.';
+export const TOOL_SELECT_ON = 'Auswahlwerkzeug';
+
+// Dialoge
+export const GOTO_TITLE = 'Gehe zu Seite';
+export const gotoSub = (name: string, count: number): string => `${name}, ${pages(count)}`;
+export const GOTO_LABEL = 'Seite';
+export const GOTO_OK = 'Zur Seite';
+export const RANGE_TITLE = 'Seiten auswählen';
+export const RANGE_LABEL = 'Seiten, z. B. 1-3, 7, 10-12';
+export const RANGE_OK = 'Auswählen';
+export const rangeError = (count: number): string =>
+  `Gib Seiten von 1 bis ${count} ein, einzeln mit Komma getrennt oder als Bereich mit Bindestrich.`;
+export const orderUp = (name: string): string => `${name} nach oben`;
+export const orderDown = (name: string): string => `${name} nach unten`;
+export const mergeOrderMoved = (name: string, position: number): string =>
+  `${name} an Stelle ${position}`;
+export const SHORTCUTS_SUB =
+  'Gelten überall in der Werkstatt, außer beim Schreiben in einem Eingabefeld. Alle Befehle stehen auch in den Menüs.';
+export const GRID_KEYS_TITLE = 'Im Seitenraster';
+export const GRID_KEYS: readonly (readonly [string, string])[] = [
+  ['Pfeiltasten', 'Zur nächsten Seite, auch ins nächste Dokument'],
+  [combo('shift', 'Pfeiltasten'), 'Auswahl erweitern'],
+  ['Leertaste', 'Seite auswählen oder abwählen'],
+  ['Pos1 / Ende', 'Erste oder letzte Seite des Dokuments'],
+  ['Eingabe', 'Seite groß zeigen'],
+  [combo('shift', 'F10'), 'Menü der Seite'],
+  ['F10', 'Menüleiste'],
+];
+
+// Teilen nach Seitenzahl, Querformat hochkant
+export const CUTS_EVERY_TITLE = 'Trennlinien alle … Seiten';
+export const CUTS_EVERY_LABEL = 'Seiten je Teil';
+export const CUTS_EVERY_OK = 'Trennlinien setzen';
+export const cutsEverySub = (name: string, count: number): string =>
+  `${name}, ${pages(count)}. Vorhandene Trennlinien werden ersetzt; geteilt wird erst mit „An Trennlinien teilen“.`;
+export const cutsEveryError = (count: number): string =>
+  `Gib eine Zahl von 1 bis ${Math.max(1, count - 1)} ein.`;
+export const cutsEveryDone = (parts: number, name: string): string =>
+  `Trennlinien gesetzt: ${name} ergibt ${parts} Teile. Mit „An Trennlinien teilen“ entstehen die Dokumente.`;
+export const CUTS_EVERY_NONE =
+  'Das Dokument ist nicht länger als ein Teil. Es wurde keine Trennlinie gesetzt.';
+export const portraitDone = (n: number): string => `${pages(n)} im Querformat hochkant gedreht`;
+export const PORTRAIT_NONE = 'Keine der Seiten steht im Querformat.';

@@ -25,7 +25,7 @@ The promise is backed by mechanisms that fail the build or block the browser, no
 
 ## Tools
 
-**PDF workshop:** the main tool. Several PDFs and images open side by side, one column per document. Pages can be selected across documents (click, Shift and Ctrl/Cmd like a file manager), moved and copied between documents by dragging or with the keyboard, rotated, duplicated and deleted; blank pages can be inserted, documents split and merged. Every step can be undone. Documents are only lists of page references, so the loaded files are never changed; real PDFs are assembled in a Web Worker on export (one document, the selection, or all documents as ZIP). An unchanged document is saved as the original file. Page numbers, stamps and signatures are drawn on export, so they follow the final page order and travel with their pages, and the previews show them as they will be saved. Redaction rasterises the whole document, so nothing of the original remains in its export, and the workshop warns about unredacted copies of the same file elsewhere in the workspace. Forms can be filled, and hidden metadata can be removed on export. Every PDF tool below offers to continue in the workshop without reloading, with the file kept in memory.
+**PDF workshop:** the main tool, laid out like a desktop editor: a menu bar with every action and its shortcut, a grouped toolbar with tooltips, documents and page thumbnails on the left, all pages as a zoomable grid (or one page large) in the middle, properties and a clickable history on the right, and a status bar. Several PDFs and images open as documents. Pages can be selected across documents (click, Shift and Ctrl/Cmd like a file manager, or a drawn selection rectangle), moved and copied between documents by dragging (pages make room, a stack shows the count) or with the keyboard, rotated, duplicated and deleted; split lines set between pages split a document into several in one step, a scissors tool splits immediately, and a document dragged onto another merges them. Right-click menus exist everywhere, rotated, duplicated and deleted; blank pages can be inserted, documents split and merged. Every step can be undone. Documents are only lists of page references, so the loaded files are never changed; real PDFs are assembled in a Web Worker on export (one document, the selection, or all documents as ZIP). An unchanged document is saved as the original file. Page numbers, stamps and signatures are drawn on export, so they follow the final page order and travel with their pages, and the previews show them as they will be saved. Redaction rasterises the whole document, so nothing of the original remains in its export, and the workshop warns about unredacted copies of the same file elsewhere in the workspace. Forms can be filled, and hidden metadata can be removed on export. Every PDF tool below offers to continue in the workshop without reloading, with the file kept in memory.
 
 **PDF (12 more):** merge PDFs · split PDF · edit PDF pages (rotate, reorder, delete) · PDF to images · redact PDF (pages are rasterised, nothing of the original remains) · insert signature (as an image; not an electronic signature) · fill PDF forms · page numbers · stamp and watermark · remove PDF metadata · images to PDF · scan a document (camera via the file picker, four-corner perspective correction)
 
@@ -43,10 +43,10 @@ All screenshots show the German interface with example data from the project. Th
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/pdf-werkstatt-dunkel.png">
-  <img src="docs/screenshots/pdf-werkstatt-hell.png" alt="PDF workshop with three documents side by side (a tenancy agreement with 5 pages, attachments with 3 pages including a landscape page, an invoice with 2 pages); pages 3 to 5 of the agreement and pages 1 and 2 of the attachments are selected, and the overview on the right reads &quot;5 Seiten aus 2 Dokumenten&quot; (5 pages from 2 documents)" width="1280">
+  <img src="docs/screenshots/pdf-werkstatt-hell.png" alt="PDF workshop as an editor: menu bar and toolbar at the top, on the left the document list (tenancy agreement, attachments, invoice) and page thumbnails, in the middle the agreement with a dashed split line before page 4 and the attachments below, pages 2 to 5 of the agreement and pages 1 and 2 of the attachments selected; on the right the properties (&quot;6 Seiten aus 2 Dokumenten&quot;, 6 pages from 2 documents) and the history, at the bottom the status bar with the zoom slider" width="1280">
 </picture>
 
-The PDF workshop: each document is a column, and a Shift-click range runs across document boundaries, here from page 3 of the agreement to page 2 of the attachments. The coloured badges (A, B, C) show which file each page comes from, so mixed documents stay readable.
+The PDF workshop: documents are listed on the left and shown one below the other in the middle; a Shift-click range runs across document boundaries, here from page 2 of the agreement to page 2 of the attachments. The dashed line before page 4 is a split line: "An Trennlinien teilen" turns the agreement into two documents. The coloured badges (A, B, C) show which file each page comes from, so mixed documents stay readable.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/werkzeuge-suche-dunkel.png">
@@ -117,7 +117,7 @@ vendor/        SheetJS archive with checksum
 
 ## Quality
 
-- **Tests:** 1,242 tests in 91 files (Vitest). Every module in `src/core/` has unit tests.
+- **Tests:** 1,264 tests in 93 files (Vitest). Every module in `src/core/` has unit tests.
 - **Against official specifications:**
   - SEPA pain.001 files are validated against the German banking industry's XSD (`pain.001.001.09_GBIC_5.xsd`) with xmllint, and the text rules of the DFÜ Agreement, Annex 3 are tested separately. The schema and example files may not be redistributed, so they are kept locally in `.local-specs/`.
   - SHA-1 and SHA-256 against the NIST CAVP test vectors ([`tests/fixtures/nist/`](tests/fixtures/nist/)).
@@ -145,7 +145,7 @@ npm run screenshots  # rebuild and regenerate docs/screenshots/ (needs Google Ch
 npm run compat:pdfjs # rebuild and check pdf.js in simulated older browsers (needs Google Chrome)
 ```
 
-Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 1,229 tests run and the tests that depend on those files are skipped with a clear notice. The GitHub Actions workflow runs `npm run check` the same way.
+Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 1,251 tests run and the tests that depend on those files are skipped with a clear notice. The GitHub Actions workflow runs `npm run check` the same way.
 
 ## Status
 

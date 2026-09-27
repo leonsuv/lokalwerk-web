@@ -108,3 +108,47 @@ export function selectionSummary(
   }
   return { pages, docs: docs.size };
 }
+
+/** Alle Seiten aller Dokumente */
+export function selectEverything(state: WorkshopState, focus: PageKey | null): Selection {
+  const keys = [...allPages(state)].map((l) => l.page.key);
+  return { keys: new Set(keys), anchor: keys[0] ?? null, focus: focus ?? keys[0] ?? null };
+}
+
+/** Auswahl umkehren, in einem Dokument oder mit `doc` null in allen */
+export function invertSelection(
+  state: WorkshopState,
+  selection: Selection,
+  doc: DocId | null,
+): Selection {
+  const keys = new Set<PageKey>();
+  for (const { doc: d, page } of allPages(state)) {
+    const inScope = doc === null || d.id === doc;
+    if (inScope ? !selection.keys.has(page.key) : selection.keys.has(page.key)) keys.add(page.key);
+  }
+  const first = [...keys][0] ?? null;
+  return { keys, anchor: first, focus: selection.focus ?? first };
+}
+
+/**
+ * Auswahlrechteck: `band` sind die Seiten im Rechteck, in Lesereihenfolge. Ohne Taste ersetzt es
+ * die Auswahl, mit Umschalt kommt es dazu, mit Strg/Cmd schaltet es die Seiten um (wie im
+ * Dateimanager). `base` ist die Auswahl beim Beginn des Aufziehens.
+ */
+export function bandSelection(
+  base: Selection,
+  band: readonly PageKey[],
+  mode: 'replace' | 'add' | 'toggle',
+): Selection {
+  const keys = new Set(mode === 'replace' ? [] : base.keys);
+  for (const key of band) {
+    if (mode === 'toggle' && base.keys.has(key)) keys.delete(key);
+    else keys.add(key);
+  }
+  const first = band[0] ?? null;
+  return {
+    keys,
+    anchor: first ?? base.anchor,
+    focus: first ?? (mode === 'replace' ? null : base.focus),
+  };
+}

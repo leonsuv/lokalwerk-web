@@ -45,8 +45,8 @@ nach unten abarbeiten, nach jedem Commit den Status hier aktualisieren.
 | 10 | Auswahlrechteck, Ziehen mit Platzhalter, Stapel, Ziehen auf Dokumentliste, Dokumente ziehen (umordnen, zusammenführen) | fertig |
 | 11 | Schere als Werkzeug, Kontextmenüs überall | fertig |
 | 12 | Zusammenführen-Dialog mit Reihenfolge, Tastenkürzel-Übersicht aus der Befehlsliste | fertig |
-| 13 | Handy-Ansicht (vereinfacht, alles erreichbar) | offen |
+| 13 | Handy-Ansicht (vereinfacht, alles erreichbar) | fertig |
 | 14 | Texte sammeln (texte-pdf-werkstatt.md), Erklärtext anpassen | fertig |
 | 15 | Screenshots- und Leistungsskript an die neue Oberfläche anpassen, README-Screenshots | fertig |
-| 16 | Browser-Prüfung am Ende (Konsole, Netzwerk, CSP, hell/dunkel, 1280 px, Handy) | offen |
-| 17 | npm run check, CI, Merge nach main, Abschlussbericht | offen |
+| 16 | Browser-Prüfung am Ende (Konsole, Netzwerk, CSP, hell/dunkel, 1280 px, Handy) | fertig |
+| 17 | npm run check, CI, Merge nach main, Abschlussbericht | in Arbeit |

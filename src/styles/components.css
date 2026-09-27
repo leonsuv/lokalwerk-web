@@ -1702,6 +1702,13 @@ select[multiple] {
 .ws-page.sel .ws-check {
   display: grid;
 }
+/* Lange Werte („3 Seiten aus 2 Dokumenten“) rechtsbündig umbrechen, mit Abstand zur Bezeichnung */
+.ws-side .stat-row {
+  gap: 1rem;
+}
+.ws-side .stat-row b {
+  text-align: right;
+}
 .ws-status {
   margin: 0.8rem 0 0;
   color: var(--muted);

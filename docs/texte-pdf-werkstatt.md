@@ -1,0 +1,144 @@
+# Texte der PDF-Werkstatt zur Freigabe
+
+Stand: 27.09.2026, Anhaltepunkt B (plan-phase3.md). **Entwurf, noch nicht freigegeben.** Alle sichtbaren Texte und Ansagen der Werkstatt, dazu der Knopf in den Einzelwerkzeugen und ein Vorschlag für die Erklärtexte der Einzelwerkzeuge.
+
+Fundorte: Register `build/pages.ts`, Seite `src/tools/pdf-werkstatt/main.html`, Meldungen und Ansagen `src/tools/pdf-werkstatt/texts.ts`, Menüs `src/tools/pdf-werkstatt/page.ts` und `mobile.ts`, Befehlsnamen `src/core/workshop/commands.ts`, Knopf `src/ui/workshop-link.ts`.
+
+Tastenbezeichnungen passen sich dem System an: Windows und Linux „Strg“, „Umschalt“, „Alt“ (z. B. „Strg+V“), Mac „⌘“, „⇧“, „⌥“ (z. B. „⌘V“). Unten steht die Windows-Schreibweise.
+
+## 1. Register (Suchmaschinen, Karten)
+
+| Feld | Text |
+|---|---|
+| Titel | PDF-Werkstatt – mehrere PDFs bearbeiten und neu zusammenstellen \| Lokalwerk |
+| Meta-Beschreibung (147 Zeichen) | PDFs und Bilder nebeneinander öffnen, Seiten zwischen Dokumenten verschieben, drehen und löschen. Kostenlos im Browser, ohne Upload deiner Dateien. |
+| Name | PDF-Werkstatt |
+| Kurztext (Karte) | Mehrere PDFs und Bilder nebeneinander bearbeiten und neu zusammenstellen. |
+| Suchwörter | pdf editor, pdf bearbeiten, seiten verschieben, seiten kopieren, mehrere pdfs, organisieren, zusammenstellen, umsortieren, leere seite |
+
+## 2. Seite
+
+**Kopf:** PDF-Werkstatt. „PDFs nebeneinander öffnen, Seiten zwischen Dokumenten verschieben, drehen, löschen und neu zusammenstellen.“
+
+**Ablagefläche (ohne Dokumente):** „PDFs oder Bilder hinzufügen“ / „Auswählen oder hierher ziehen, auch mehrere“
+
+**Werkzeugleiste:** Hinzufügen · Neues Dokument · Links (Name: „Links drehen“) · Rechts („Rechts drehen“) · Duplizieren · Leere Seite · Löschen · Teilen · Zusammenführen · Rückgängig (nur Symbol) · Wiederholen (nur Symbol) · Vorschau · Tastenkürzel (nur Symbol, Hinweis „Tastenkürzel (?)“)
+
+**Rechte Spalte:** Übersicht · Dokumente · Seiten gesamt · Ausgewählt („3 Seiten aus 2 Dokumenten“) · „Vertrag als PDF speichern“ (Name des Dokuments mit dem Fokus) · „Auswahl als neue PDF“ · „Alle als ZIP speichern“
+
+**Erklärtext**
+
+> **So funktioniert es**
+> Füge eine oder mehrere PDFs hinzu. Jede Datei erscheint als eigenes Dokument in einer Spalte, jede Seite als kleines Bild. Du kannst Seiten auswählen, drehen, löschen, kopieren und zwischen den Dokumenten verschieben, leere Seiten einfügen, Dokumente teilen und zusammenführen. Jeder Schritt lässt sich rückgängig machen. Am Ende speicherst du ein Dokument, deine Auswahl oder alle Dokumente als ZIP. Deine Originaldateien bleiben unverändert.
+>
+> **Gut zu wissen**
+> Wie beim Zusammenfügen werden nur die Seiten übernommen: Formularfelder, Lesezeichen und digitale Signaturen sind in neu zusammengesetzten Dateien nicht mehr enthalten, ebenso Angaben wie Autor oder Titel. Die Werkstatt zeigt vor dem Speichern, welche Datei das betrifft. Ein Dokument, an dem du nichts geändert hast, wird als Originaldatei gespeichert. Verschlüsselte PDFs lassen sich nicht öffnen.
+>
+> **Deine Dateien bleiben auf deinem Gerät**
+> Die PDFs werden direkt in deinem Browser angezeigt und bearbeitet, nicht hochgeladen. Nach dem Laden der Seite funktioniert die Werkstatt auch ohne Internetverbindung.
+
+Frage dazu: Der erste Satz nennt nur PDFs, die Werkstatt öffnet auch Bilder. Vorschlag: „Füge eine oder mehrere PDFs oder Bilder hinzu.“ und im Kopf „PDFs und Bilder nebeneinander öffnen, …“ (wie im Entwurf).
+
+## 3. Vorgabenamen (von dir ausdrücklich zur Freigabe erbeten)
+
+| Wo | Name |
+|---|---|
+| Neues Dokument | „Dokument 3“ (Zahl = Anzahl der Dokumente + 1) |
+| Dokument duplizieren | „Vertrag (Kopie)“ |
+| Teilen | „Vertrag (Teil 2)“ |
+| Als neues Dokument (Kontextmenü) | „Dokument 4“ |
+| Auswahl als neue PDF | Datei „Auswahl.pdf“ |
+| Alle als ZIP | Datei „pdf-werkstatt.zip“ (W11) |
+| Dokument aus Datei | Dateiname ohne Endung (.pdf, .jpg, .png …) |
+
+## 4. Befehlsnamen (Ansage „Rückgängig: …“, „Wiederholen: …“)
+
+Hinzufügen · Neues Dokument · Umbenennen · Dokument schließen · Dokument duplizieren · Teilen · Zusammenführen · Verschieben · Kopieren · Nach vorne · Nach hinten · Drehen · Löschen · Ausschneiden · Duplizieren · Leere Seite einfügen · In neues Dokument · Einfügen
+
+## 5. Menüs
+
+**Kontextmenü einer Seite:** Große Vorschau (Eingabe) · Rechts drehen (R) · Links drehen (Umschalt+R) · Duplizieren (D) · Verschieben nach … (M) · Ausschneiden (Strg+X) · Kopieren (Strg+C) · Davor einfügen (Strg+V) · Leere Seite danach … · Dokument hier teilen · Als neues Dokument · Löschen (Entf)
+
+**Menü im Spaltenkopf** („Menü für Vertrag“): Umbenennen (F2) · Alle Seiten auswählen (Strg+A) · Am Anfang einfügen · Dateien anhängen … · Als PDF speichern · Dokument duplizieren · Mit dem nächsten zusammenführen · Dokument schließen
+
+**Leere Seite:** „Wie die Nachbarseite (21,0 × 29,7 cm)“ · DIN A4 hoch · DIN A4 quer (W14)
+
+**Handy, „Mehr“:** Rückgängig · Wiederholen · Duplizieren · Als neues Dokument · Leere Seite am Ende · Neues Dokument · Dokumente zusammenführen …
+
+## 6. Dialoge
+
+**Verschieben nach …:** Untertitel „2 Seiten“ bzw. „3 Seiten aus 2 Dokumenten“ · Dokument · Position: Am Anfang / Am Ende / Nach Seite [Zahl] · Abbrechen · Verschieben. Fehler: „Gib eine Seite von 1 bis 6 ein.“ bzw. „Das Dokument hat noch keine Seiten. Wähle „Am Anfang“ oder „Am Ende“.“
+
+**Dokumente zusammenführen:** „Die angekreuzten Dokumente werden in der Reihenfolge der Spalten an das erste angehängt.“ · Dokumente · Abbrechen · Zusammenführen. Fehler: „Wähle mindestens zwei Dokumente.“
+
+**Tastenkürzel:** Untertitel „Gelten, wenn eine Seite oder ein Dokument den Fokus hat.“
+
+| Taste | Text |
+|---|---|
+| Pfeiltasten | Zur nächsten Seite |
+| Strg+Pfeil links/rechts | Ins Nachbardokument |
+| Leertaste | Seite auswählen oder abwählen |
+| Umschalt+Pfeiltasten | Auswahl erweitern |
+| Strg+A | Alle Seiten des Dokuments auswählen |
+| Esc | Auswahl aufheben |
+| R / Umschalt+R | Nach rechts / links drehen |
+| D | Duplizieren |
+| M | Verschieben nach … |
+| Alt+Pfeil hoch / Alt+Pfeil runter | Eine Stelle nach vorne / hinten |
+| Entf | Löschen |
+| Strg+X, Strg+C, Strg+V | Ausschneiden, kopieren, vor der Seite einfügen |
+| Strg+Z / Strg+Umschalt+Z | Rückgängig / Wiederholen |
+| Eingabe | Große Vorschau (darin Pfeiltasten und R) |
+| F2 | Dokument umbenennen |
+| Umschalt+F10 | Menü der Seite |
+| ? | Diese Übersicht |
+
+**Große Vorschau:** Titel „Vertrag: Seite 2 von 6“ · Schließen · Vorherige · Rechts drehen · Nächste · auf dem Handy zusätzlich Nach vorne · Nach hinten
+
+## 7. Meldungen
+
+| Anlass | Text |
+|---|---|
+| Laden | „Datei wird geöffnet …“ / „Dateien werden geöffnet: 2 von 5 …“ |
+| Falsche Dateiart | „Tabelle.xlsx wurde nicht übernommen: Die Werkstatt öffnet PDFs und Bilder.“ (mehrere: „3 Dateien wurden …“) |
+| Fehler je Datei | „Vertrag.pdf: “ + Fehlertext; Fehlertexte wie in „PDF-Seiten bearbeiten“ und „Bilder zu PDF“, außer: „Zu wenig Arbeitsspeicher für diese Datei. Schließe andere Dokumente oder lade die Seite neu.“, „Die Werkstatt konnte nicht starten. Lade die Seite neu.“, „Das Bild konnte nicht neu gespeichert werden. Verkleinere es und füge es erneut hinzu.“, „Im neu gespeicherten Bild wurden noch Metadaten gefunden. Das Bild wird deshalb nicht übernommen.“ |
+| Leere Spalte | „Noch keine Seiten. Verschiebe Seiten hierher oder füge sie mit Strg+V ein.“ |
+| Vorschau fehlt | „Keine Vorschau möglich“ |
+| Speicherhinweis ab 1 GB (W6) | „Die geöffneten Dateien sind zusammen 1,2 GB groß. Bei so viel Daten kann der Arbeitsspeicher des Browsers knapp werden; schließe Dokumente, die du nicht mehr brauchst.“ |
+| Hinweis vor dem Export | „Anlagen.pdf enthält Formularfelder und Lesezeichen. Diese Angaben sind in neu zusammengesetzten PDFs nicht mehr enthalten, wie beim Zusammenfügen.“ (auch „eine digitale Signatur“; ab vier Dateien „Weitere 2 Dateien ebenso.“) |
+| Speichern läuft | „Wird gespeichert: 120 von 500 Seiten …“ |
+| Fertig | „Fertig: Vertrag.pdf ist gespeichert.“ / „Fertig: 3 Dokumente sind als ZIP gespeichert.“ |
+| Fertig, unverändert (W12) | „… Es war unverändert: Gespeichert ist die Originaldatei.“ / im ZIP „… 2 davon waren unverändert und sind die Originaldatei.“ |
+| Verlassen mit Änderungen | Warnung des Browsers (der eigene Text „Die Werkstatt hat Änderungen, die noch nicht gespeichert sind.“ wird von aktuellen Browsern nicht angezeigt) |
+| Handy | „Tippen öffnet die Vorschau. Für mehrere Seiten auf „Auswählen“ tippen.“ / im Auswahlmodus „2 Seiten ausgewählt“ bzw. „Tippe auf Seiten, um sie auszuwählen.“ |
+
+## 8. Ansagen für Screenreader (unsichtbar, plan-phase3.md 6.4)
+
+Beschriftung einer Seite: „Seite 3 von 12, aus Anlagen.pdf Seite 1, gedreht um 90 Grad“, Bildseite „…, aus Wiese.jpg“, Leerseite „…, leere Seite“. Liste: „Seiten von Vertrag“. Namensfeld: „Name des Dokuments“.
+
+| Anlass | Ansage |
+|---|---|
+| Laden | „2 Dokumente mit zusammen 12 Seiten hinzugefügt“ / „1 Dokument mit 6 Seiten hinzugefügt“ / „3 Seiten in Vertrag eingefügt“ |
+| Auswahl | „3 Seiten ausgewählt“ / „3 Seiten aus 2 Dokumenten ausgewählt“ / „Auswahl aufgehoben“ |
+| Verschieben, Kopieren | „2 Seiten nach Vertrag an Position 4 verschoben“ / „… kopiert“ / „Die Seiten stehen schon an dieser Stelle.“ |
+| Nach vorne/hinten | „2 Seiten nach vorne verschoben“ / „… nach hinten verschoben“ |
+| Drehen, Löschen, Duplizieren | „2 Seiten nach rechts gedreht“ / „2 Seiten gelöscht“ / „2 Seiten dupliziert“ |
+| Ablage | „2 Seiten ausgeschnitten. Mit Strg+V vor einer Seite einfügen.“ / „2 Seiten kopiert. Mit Strg+V vor einer Seite einfügen.“ / „2 Seiten in Vertrag an Position 3 eingefügt“ / „Nichts zum Einfügen. Schneide Seiten zuerst mit Strg+X aus oder kopiere sie mit Strg+C.“ |
+| Verlauf | „Rückgängig: Drehen“ / „Wiederholen: Drehen“ / „Nichts zum Rückgängigmachen“ / „Nichts zum Wiederholen“ / „Ältere Schritte lassen sich nicht mehr rückgängig machen: Die Werkstatt merkt sich die letzten 100.“ |
+| Dokumente | „Neues Dokument Dokument 3 angelegt“ / „Vertrag (Kopie) angelegt“ / „Vertrag geschlossen“ / „Dokument umbenannt in Mietvertrag“ / „Vertrag vor Seite 5 geteilt“ / „3 Dokumente zu Vertrag zusammengeführt“ |
+| Leere Seite | „Leere Seite in Vertrag an Position 3 eingefügt“ |
+| Teilen am Anfang | „Vor der ersten Seite lässt sich nicht teilen. Wähle die Seite, mit der das neue Dokument beginnen soll.“ |
+| Ohne Seite | „Wähle zuerst eine Seite aus.“ |
+| Ziehen | „Ziel: vor Seite 5 von Vertrag“ / „Ziel: Ende von Vertrag“ / „Kein Ziel. Zum Ablegen über ein Dokument ziehen.“ / „Ziehen abgebrochen“ |
+
+Frage dazu: „Neues Dokument Dokument 3 angelegt“ liest sich doppelt. Vorschlag: „Dokument 3 angelegt“.
+
+## 9. Einzelwerkzeuge
+
+**Knopf** (erscheint nach dem Laden einer Datei, in 12 Werkzeugen): „In der PDF-Werkstatt weiterbearbeiten“. Fehler, wenn die Werkstatt nicht geladen werden kann (z. B. offline vor dem ersten Laden): „Die PDF-Werkstatt konnte nicht geladen werden. Prüfe die Verbindung und lade die Seite neu.“
+
+**Vorschlag für die Erklärtexte der Einzelwerkzeuge** (plan-phase3.md 5.2; noch nicht eingebaut, weil die Erklärtexte freigegeben sind): ein Satz am Ende von „So funktioniert es“, in allen 12 Werkzeugen gleich:
+
+> Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der [PDF-Werkstatt](/pdf-werkstatt/).
+
+„PDF-Seiten bearbeiten“: Der Knopf übergibt die geladene Originaldatei; Drehungen und Reihenfolge aus dem Werkzeug werden nicht mitgenommen. Vorschlag für den Satz dort zusätzlich: „Deine Änderungen hier werden dabei nicht übernommen.“ Alternativ übernehme ich sie in die Werkstatt (Aufwand S).

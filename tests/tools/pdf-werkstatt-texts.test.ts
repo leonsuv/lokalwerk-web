@@ -17,7 +17,7 @@ const facts = (form = false, outline = false, signed = false) => ({
 describe('Texte der PDF-Werkstatt', () => {
   it('Hinweis vor dem Export nennt je Datei, was verloren geht', () => {
     expect(lossNote([{ name: 'a.pdf', facts: facts(true, true) }])).toBe(
-      'a.pdf enthält Formularfelder und Lesezeichen. Beim Speichern als neu zusammengesetzte PDF sind sie nicht mehr enthalten, wie beim Zusammenfügen.',
+      'a.pdf enthält Formularfelder und Lesezeichen. Diese Angaben sind in neu zusammengesetzten PDFs nicht mehr enthalten, wie beim Zusammenfügen.',
     );
     expect(lossNote([{ name: 'b.pdf', facts: facts(true, true, true) }])).toContain(
       'Formularfelder, Lesezeichen und eine digitale Signatur',

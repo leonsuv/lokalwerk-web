@@ -132,7 +132,7 @@ export const moveSubtitle = (n: number, docs: number): string =>
   docs > 1 ? `${pages(n)} aus ${docs} Dokumenten` : pages(n);
 export const AFTER_PAGE_INVALID = (max: number): string =>
   max === 0
-    ? 'Das Dokument hat noch keine Seiten. Wähle „Anfang“ oder „Ende“.'
+    ? 'Das Dokument hat noch keine Seiten. Wähle „Am Anfang“ oder „Am Ende“.'
     : `Gib eine Seite von 1 bis ${max} ein.`;
 
 export const EMPTY_DOC = `Noch keine Seiten. Verschiebe Seiten hierher oder füge sie mit ${combo('mod', 'V')} ein.`;
@@ -207,7 +207,7 @@ export function lossNote(
     return `${name} enthält ${list}.`;
   });
   const more = entries.length > 3 ? ` Weitere ${entries.length - 3} Dateien ebenso.` : '';
-  return `${parts.join(' ')}${more} Beim Speichern als neu zusammengesetzte PDF sind sie nicht mehr enthalten, wie beim Zusammenfügen.`;
+  return `${parts.join(' ')}${more} Diese Angaben sind in neu zusammengesetzten PDFs nicht mehr enthalten, wie beim Zusammenfügen.`;
 }
 
 // Handy-Ansicht (plan-phase3.md 5.4)

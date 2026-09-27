@@ -363,3 +363,43 @@ Tests: Die bestehenden Tests der Werkzeuge bleiben; neu Tests für Operationen i
 12. **Unverändertes Dokument:** Originaldatei ausgeben (Formulare, Lesezeichen, Signaturen bleiben erhalten), oder immer neu zusammensetzen (einheitlich, aber verlustreich)?
 13. **Stufe 2 „Einbacken“:** einverstanden, dass Schwärzen und Formular das betroffene Dokument neu erzeugen und Rückgängig dafür mehr Speicher braucht?
 14. **Leerseite:** Größe wie die Nachbarseite als Vorgabe, DIN A4 als Alternative; Querformat anbieten?
+
+## 15. Stand bei Anhaltepunkt B (27.09.2026)
+
+Stufe 1 umgesetzt in den Schritten 1.1 bis 1.8, je ein Commit mit Browser-Prüfung (Konsole, Netzwerk, CSP). Texte zur Freigabe: `docs/texte-pdf-werkstatt.md`.
+
+### Messwerte (`npm run perf:werkstatt`, Chrome headless auf dem Mac des Betreibers, 1440 × 900, doppelte Pixeldichte)
+
+| Messung | Text-PDFs (0,4 MB) | Scans, ein JPEG je Seite (183 MB) | Ziel |
+|---|---|---|---|
+| Erste Vorschaubilder sichtbar | 116 ms | 731 ms | unter 1 s |
+| Alle sichtbaren Vorschaubilder | 1,1 s | 1,8 s | – |
+| Lange Aufgaben beim Scrollen durch alle 500 Seiten | keine | keine | keine über 100 ms |
+| Gezeichnete Vorschaubilder höchstens | 200 | 200 | höchstens 200 |
+| Lange Aufgaben beim Ziehen von 20 Seiten | keine | keine | keine über 100 ms |
+| 100 Seiten verschieben bis zur Anzeige | 27 ms | 32 ms | unter 50 ms |
+| Export 500 Seiten als neue PDF | 0,3 s | 0,8 s | – |
+| JS-Speicher der Seite am Ende | 5 MB | 187 MB | – |
+
+Befehle mit 5.000 Seiten (Unit-Test): alle unter 1 ms.
+
+### Nicht hier prüfbar, Prüfung durch Leon
+
+| # | Prüfung | Warum nicht hier |
+|---|---|---|
+| B1 | NVDA (Windows): R, D, M, Entf in einer Spalte im Fokusmodus der Liste; Ansagen der Live-Region; Kontextmenü mit Umschalt+F10 | kein Windows, kein NVDA auf diesem Rechner (W5: bei Kollision melden, nicht still ändern) |
+| B2 | VoiceOver (macOS, iOS) und TalkBack: dieselben Punkte | nur automatisiert im Headless-Browser geprüft |
+| B3 | Echtes Handy (iOS Safari, Android Chrome): Handy-Ansicht, Auswahlmodus, Verschieben nach …, große Vorschau, Speichern | nur mit Geräte-Emulation geprüft |
+| B4 | Tablet: Ziehen nach 300 ms Halten, Scrollen ohne Halten | Touch nur emuliert |
+| B5 | Firefox, Safari und Edge am Computer: Ziehen, Tastatur, Dialoge (natives dialog), Export | nur Chrome vorhanden (Safari nicht fernsteuerbar ohne neue Werkzeuge) |
+| B6 | Speicher auf älteren iPhones mit großen Scans (Canvas-Grenze) | kein Gerät |
+
+### Abweichungen vom Plan
+
+- Datenmodell ohne `ops` und `docOps` (Stufe 2, freigegeben).
+- „Verschieben nach …“ steht nicht in der Werkzeugleiste des Desktops (Platz), sondern auf M, im Kontextmenü und in der Handy-Leiste.
+- Menü „Werkzeuge“ (Stufe 2) fehlt in Stufe 1, statt ausgegrauter Einträge.
+- Bilder werden beim Hinzufügen neu kodiert (wie in „Bilder zu PDF“) und im Worker gehalten; PDFs hält der Worker nur als `File` und liest sie beim Export erneut (weniger Speicher als im Plan, Abschnitt 3).
+- `LazyRenderer` gibt Bilder erst über der Grenze von 200 frei, die am längsten nicht gesehenen zuerst, statt schon beim Verlassen des Sichtbereichs (weniger Neuzeichnen, Grenze bleibt).
+- Lizenzprüfung (`build/shipped-packages.ts`): Pakete eines nachgeladenen anderen Werkzeugs zählen bei diesem, nicht beim aufrufenden (nötig für den Knopf zur Werkstatt).
+- Tests für Browser-Module (`tests/ui/`) mit eigener `tsconfig.dom-tests.json`, damit die DOM-Typen nicht in die Node-Skripte geraten.

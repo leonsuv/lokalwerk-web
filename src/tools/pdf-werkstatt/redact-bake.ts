@@ -7,7 +7,7 @@
  *
  * Gerastert wird das ganze Dokument, auch Seiten ohne Bereich: So enthält der Export dieses
  * Dokuments garantiert nichts aus dem Original (Text, Schriften, Metadaten, Formularfelder).
- * Stempel und Unterschriften bleiben Seiten-Operationen und kommen beim Speichern darüber.
+ * Stempel, Unterschriften und Seitenzahlen bleiben Operationen und kommen beim Speichern darüber.
  */
 
 import { rasterSize } from '../../core/pdf/raster.ts';
@@ -81,6 +81,8 @@ export async function redactDoc(
     const target = rasterSize(size.width, size.height, dpi);
     const canvas = await drawWorkshopPage(state, base(page), deps.files, deps.pdfjs, target.width, {
       background: '#ffffff',
+      // Seitenzahlen sind eine Dokument-Operation und kommen beim Speichern darüber
+      numbers: null,
     });
     try {
       const ctx = canvas.getContext('2d');

@@ -242,7 +242,7 @@ export const pageNumbersRemoved = (name: string): string => `Seitenzahlen von ${
 export const PAGE_NUMBERS_BADGE = 'Mit Seitenzahlen';
 export const pageNumbersEdit = (name: string): string => `Seitenzahlen von ${name} bearbeiten`;
 
-// Stufe 2.2: Stempel und Unterschrift als Seiten-Operationen, Entwurf zur Freigabe
+// Stufe 2.2: Stempel und Unterschrift als Seiten-Operationen, freigegeben von Leon am 27.09.2026
 export const STAMP_ITEM = 'Stempel …';
 export const STAMP_TITLE = 'Stempel';
 export const stampSet = (count: number, name: string): string =>
@@ -266,7 +266,7 @@ export const signSet = (n: number, name: string): string =>
 export const signRemoved = (n: number, name: string): string =>
   `Unterschriften von Seite ${n} von ${name} entfernt`;
 
-// Stufe 2.3: Schwärzen und Formular ausfüllen („Einbacken“), Entwurf zur Freigabe
+// Stufe 2.3: Schwärzen und Formular ausfüllen („Einbacken“), freigegeben von Leon am 27.09.2026
 export const REDACT_ITEM = 'Schwärzen …';
 /** Name der neuen Quelle, z. B. in der Seitenbeschriftung „aus Vertrag (geschwärzt).pdf Seite 2“ */
 export const redactedName = (doc: string): string => `${doc} (geschwärzt).pdf`;
@@ -301,7 +301,7 @@ export const UNREDACTED_SAVE = 'Trotzdem speichern';
 
 export const FORM_ITEM = 'Formular ausfüllen …';
 export const FORM_TITLE = 'Formular ausfüllen';
-export const formDoc = (file: string, doc: string): string => `Formular aus ${file} in ${doc}`;
+export const formDoc = (file: string, doc: string): string => `Für ${doc}, Formular aus ${file}`;
 export const FORM_LOADING = 'Formular wird gelesen …';
 export const formHint = (file: string): string =>
   `Die ausgefüllten Seiten ersetzen in diesem Dokument die Seiten aus ${file}.`;

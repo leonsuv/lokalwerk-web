@@ -141,6 +141,11 @@ export interface Doc {
   pages: readonly PageRef[];
   /** Dokument-Operationen; fehlt, wenn es keine gibt. Höchstens eine je Art. */
   ops?: readonly DocOp[];
+  /**
+   * Geschwärzt (Stufe 2.3) und seitdem nicht umbenannt: gespeichert wird es als
+   * „<Name> (geschwärzt).pdf“ (export-plan.ts), solange alle Seiten geschwärzt sind.
+   */
+  redacted?: true;
 }
 
 /** Seitenzahlen des Dokuments, falls gesetzt */

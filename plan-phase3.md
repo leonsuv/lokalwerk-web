@@ -432,7 +432,7 @@ Vorher erledigt (Freigabe B): Texte der Stufe 1 mit den fünf Änderungen eingeb
 | C3 | „Auswahl als neue PDF“ | ohne Seitenzahlen (neues Dokument) |
 | C4 | Formulare, Lesezeichen, Signaturen | Ein Dokument mit Seitenzahlen wird immer neu zusammengesetzt, verliert diese also (Hinweis vor dem Export erscheint). Das Einzelwerkzeug behält sie, weil es die Originaldatei bemalt. |
 | C5 | „Ab Seite“ hinter der letzten Seite (nach Löschen von Seiten) | Beim Speichern bekommt keine Seite eine Zahl; beim nächsten Öffnen zeigt das Werkzeug die Fehlermeldung. Alternative: Hinweis vor dem Export. |
-| C6 | Anzeige | Vorschaubilder und große Vorschau zeigen die Zahlen nicht; sichtbar ist das nur am Knopf im Spaltenkopf. |
+| C6 | Anzeige | Geändert am 27.09.2026 (Leon): Vorschaubilder und große Vorschau zeigen die Seitenzahlen so, wie sie gespeichert werden, mit derselben Rechnung (`pageNumberFor`, `pageNumberInView` in `core/pdf/page-numbers.ts`). Der Knopf im Spaltenkopf bleibt. |
 
 ### Gefunden, nicht behoben (Entscheidung nötig)
 
@@ -477,7 +477,7 @@ Vorher erledigt (Entscheidungen zur pdf.js-Kompatibilität vom 27.09.2026): Lega
 | D4 | Stempel auf gedrehten Seiten | Position und Ausrichtung beziehen sich auf die fertige Seite, wie sie gelesen wird; dreht man die Seite nach dem Stempeln, bleibt „oben“ oben |
 | D5 | Unterschrift auf gedrehten Seiten | bleibt am Inhalt der Seite und dreht mit (siehe oben) |
 | D6 | Unterschrift auf mehrere Seiten | eine Seite je Durchgang; mehrere Stellen auf dieser Seite möglich, alle mit demselben Bild. Ein neues Bild ersetzt alle Unterschriften der Seite. |
-| D7 | Anzeige | Vorschaubilder und große Vorschau zeigen Stempel und Unterschriften so, wie sie gespeichert werden (geändert am 27.09.2026 nach Rückmeldung von Leon: vorher nur Symbole, das wirkte, als fehle der Stempel). Die Symbole unter dem Vorschaubild bleiben. Seitenzahlen zeigt die Vorschau weiterhin nicht (C6). |
+| D7 | Anzeige | Vorschaubilder und große Vorschau zeigen Stempel und Unterschriften so, wie sie gespeichert werden (geändert am 27.09.2026 nach Rückmeldung von Leon: vorher nur Symbole, das wirkte, als fehle der Stempel). Die Symbole unter dem Vorschaubild bleiben. Seit Freigabe 2.3 zeigt die Vorschau auch die Seitenzahlen (C6 geändert). |
 | D8 | „Auswahl als neue PDF“ | Stempel und Unterschriften kommen mit, weil sie zur Seite gehören (anders als Seitenzahlen, C3) |
 | D9 | Formulare, Lesezeichen, Signaturen | Eine Seite mit Operation macht das Dokument neu zusammengesetzt, verliert diese also (Hinweis vor dem Export, wie C4) |
 | D10 | Reihenfolge beim Zeichnen | Unterschrift, dann Stempel, dann Seitenzahlen; überlappen sie, liegt der Stempel oben |
@@ -502,7 +502,7 @@ Vorher erledigt (Entscheidungen zur pdf.js-Kompatibilität vom 27.09.2026): Lega
 
 Nach der Freigabe: Schritt 2.3 (Schwärzen und Formular als „Einbacken“).
 
-## 18. Stand bei Anhaltepunkt C, Schritt 2.3 (27.09.2026, zur Freigabe)
+## 18. Stand bei Anhaltepunkt C, Schritt 2.3 (27.09.2026, freigegeben von Leon am 27.09.2026; E1–E9 bestätigt, Texte freigegeben)
 
 Vorher erledigt (Freigabe 2.2): D1–D10 bestätigt; Test, dass das Unterschriftsbild nur einmal im Speicher liegt (Abschnitt 17, Nachtrag); nach Leons Rückmeldung zeigt die Vorschau Stempel und Unterschriften (D7 geändert).
 
@@ -532,7 +532,7 @@ Vorher erledigt (Freigabe 2.2): D1–D10 bestätigt; Test, dass das Unterschrift
   - Keine Konsolen- oder CSP-Meldungen, keine fremden Anfragen.
 - `npm run check`: 1.219 Tests grün (13 übersprungen, lokale Spezifikationsdateien).
 
-### Von mir entschieden, zur Bestätigung
+### Von mir entschieden, von Leon am 27.09.2026 bestätigt
 
 | Nr. | Frage | Umsetzung |
 |---|---|---|
@@ -543,7 +543,7 @@ Vorher erledigt (Freigabe 2.2): D1–D10 bestätigt; Test, dass das Unterschrift
 | E5 | Nachfrage vor dem Speichern | Dialog mit „Trotzdem speichern“, Fokus auf „Abbrechen“; bei Dokument, Auswahl und ZIP |
 | E6 | Rückgängig nach dem Schwärzen | stellt das ungeschwärzte Dokument wieder her (Verlauf wie immer); der Export zeigt dann wieder das Original, ohne besondere Warnung |
 | E7 | Formular: welche Quelle | die Formular-PDF der Seite mit dem Fokus, sonst die erste im Dokument; ersetzt werden nur die Seiten dieses Dokuments, andere Dokumente behalten die alte Quelle |
-| E8 | Namen der neuen Quellen | „Vertrag (geschwärzt).pdf“, „Antrag (ausgefüllt).pdf“ (Seitenbeschriftung, Hinweise); der gespeicherte Dateiname kommt weiter vom Dokumentnamen |
+| E8 | Namen der neuen Quellen | „Vertrag (geschwärzt).pdf“, „Antrag (ausgefüllt).pdf“ (Seitenbeschriftung, Hinweise). Nach der Freigabe (Leon): Auch der gespeicherte Dateiname eines geschwärzten Dokuments ist „<Name> (geschwärzt).pdf“, im ZIP ebenso, bis das Dokument umbenannt wird (`Doc.redacted`, `docFileName`; nur solange alle Seiten geschwärzt sind). |
 | E9 | Farbe des Hinweises | Fehlerfarbe (`--err-soft`/`--err-ink`, vorhandene Tokens wie bei `.badge.err`), neuer Baustein `.ws-warn` |
 
 ### Abweichungen vom Plan

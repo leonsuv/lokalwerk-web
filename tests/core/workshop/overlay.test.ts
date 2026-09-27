@@ -4,6 +4,7 @@ import { CAP_HEIGHT, MM, stampInView } from '../../../src/core/pdf/stamp-layout.
 import { toUserSpace, toVisible } from '../../../src/core/pdf/stamp-geometry.ts';
 import type { PageRef, SignatureImage } from '../../../src/core/workshop/model.ts';
 import { hasOverlay, pageOverlay } from '../../../src/core/workshop/overlay.ts';
+import type { PageNumberOptions } from '../../../src/core/pdf/page-numbers.ts';
 
 /** Feste Zeichenbreite: 0,5 × Schriftgröße je Zeichen */
 const width = (text: string, size: number) => text.length * size * 0.5;
@@ -111,5 +112,36 @@ describe('pageOverlay (Vorschau von Stempel und Unterschrift)', () => {
     expect(pageOverlay(p, A4, width).map((i) => i.kind)).toEqual(['image', 'text']);
     expect(pageOverlay(p, A4, width, { signatures: false }).map((i) => i.kind)).toEqual(['text']);
     expect(hasOverlay(p)).toBe(true);
+  });
+
+  it('Seitenzahl: Text und Lage wie beim Speichern, zuletzt gezeichnet, vor „Ab Seite“ keine', () => {
+    const options: PageNumberOptions = {
+      format: 'seite-n-von-m',
+      anchor: 'bottom-right',
+      fromPage: 2,
+      startAt: 1,
+      fontSize: 10,
+      marginMm: 10,
+    };
+    const p = page({
+      ops: [
+        { type: 'stamp', stamp: { text: 'KOPIE', placement: 'top', color: 'red', opacity: 1 } },
+      ],
+    });
+    // Deckblatt (Seite 1) ohne Zahl
+    expect(
+      pageOverlay(p, A4, width, { numbers: { options, index: 0, count: 4 } }).map((i) => i.kind),
+    ).toEqual(['text']);
+    const items = pageOverlay(p, A4, width, { numbers: { options, index: 2, count: 4 } });
+    const last = items.at(-1);
+    if (last?.kind !== 'text') throw new Error('Seitenzahl fehlt');
+    expect(last.text).toBe('Seite 2 von 3');
+    expect(last.bold).toBe(false);
+    expect(items[0]?.kind === 'text' && items[0].bold).toBe(true);
+    // Rechts unten: Ende des Texts 10 mm vom rechten Rand, Grundlinie 10 mm über dem unteren
+    expect(last.vx + width('Seite 2 von 3', 10)).toBeCloseTo(A4.width - 10 * MM);
+    expect(last.vy).toBeCloseTo(10 * MM);
+    expect(last.rgb).toEqual([0, 0, 0]);
+    expect(hasOverlay(page(), { numbers: { options, index: 0, count: 1 } })).toBe(true);
   });
 });

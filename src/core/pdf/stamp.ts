@@ -23,10 +23,10 @@ import {
 import { loadPdf, toPdfError } from './merge.ts';
 export { unsupportedChars } from './winansi.ts';
 import { pageIndices, type PageRange } from './page-ranges.ts';
-import { pageNumberText, type PageNumberOptions } from './page-numbers.ts';
+import { pageNumberFor, pageNumberInView, type PageNumberOptions } from './page-numbers.ts';
 export { pageNumberText, type NumberFormat, type PageNumberOptions } from './page-numbers.ts';
-import { normalizeRotation, placeAtEdge, toUserSpace, visibleSize } from './stamp-geometry.ts';
-import { CAP_HEIGHT, MM, stampInView, type StampLookOptions } from './stamp-layout.ts';
+import { normalizeRotation, toUserSpace, visibleSize } from './stamp-geometry.ts';
+import { stampInView, type StampLookOptions } from './stamp-layout.ts';
 export { diagonalFontSize, type StampColor, type StampPlacement } from './stamp-layout.ts';
 
 /** Zeichenvorrat von Helvetica (WinAnsi), aus der in pdf-lib eingebauten Schrift gelesen */
@@ -95,27 +95,22 @@ export async function addPageNumbers(
 export async function drawPageNumbers(doc: PDFDocument, options: PageNumberOptions): Promise<void> {
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const pages = doc.getPages();
-  const first = Math.max(1, Math.floor(options.fromPage));
-  const last = options.startAt + (pages.length - first);
   pages.forEach((page, index) => {
-    if (index + 1 < first) return;
-    const text = pageNumberText(options.format, options.startAt + index + 1 - first, last);
+    const text = pageNumberFor(options, index, pages.length);
+    if (text === null) return;
     const size = options.fontSize;
-    const place = placeAtEdge(
-      page.getCropBox(),
-      normalizeRotation(page.getRotation().angle),
-      options.anchor,
-      font.widthOfTextAtSize(text, size),
-      size * CAP_HEIGHT,
-      options.marginMm * MM,
-    );
+    const box = page.getCropBox();
+    const rotation = normalizeRotation(page.getRotation().angle);
+    const { width, height } = visibleSize(box, rotation);
+    const at = pageNumberInView(width, height, options, font.widthOfTextAtSize(text, size));
+    const place = toUserSpace(box, rotation, at.vx, at.vy);
     page.drawText(text, {
       x: place.x,
       y: place.y,
       size,
       font,
       color: rgb(0, 0, 0),
-      rotate: degrees(place.rotate),
+      rotate: degrees(rotation),
     });
   });
 }

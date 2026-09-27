@@ -1,12 +1,14 @@
 /**
  * Eine Seite der Werkstatt in ein Canvas zeichnen, so wie sie angezeigt wird (mit Drehung):
- * PDF-Seite über pdf.js, Bildseite, Leerseite, darüber Stempel und Unterschriften
- * (overlay-canvas.ts). Gemeinsam für die große Vorschau (preview.ts) und das Platzieren einer
+ * PDF-Seite über pdf.js, Bildseite, Leerseite, darüber Stempel, Unterschriften und die
+ * Seitenzahl des Dokuments (overlay-canvas.ts). Gemeinsam für die große Vorschau (preview.ts) und das Platzieren einer
  * Unterschrift (sign-dialog.ts). Wirft, wenn es nicht geht.
  */
 
-import type { OverlayOptions } from '../../core/workshop/overlay.ts';
+import type { OverlayOptions, PageNumberPlace } from '../../core/workshop/overlay.ts';
 import {
+  indexPages,
+  pageNumbersOf,
   visiblePageSize,
   type PageBox,
   type PageRef,
@@ -55,13 +57,23 @@ export async function drawWorkshopPage(
   const size = visiblePageSize(state, page);
   const canvas = await drawBase(state, page, files, pdfjs, pixels, options.background);
   try {
-    await drawOverlay(canvas, page, size, options);
+    await drawOverlay(canvas, page, size, {
+      ...options,
+      numbers: options.numbers === undefined ? numbersFor(state, page) : options.numbers,
+    });
   } catch (error) {
     canvas.width = 0;
     canvas.height = 0;
     throw error;
   }
   return canvas;
+}
+
+/** Seitenzahl der Seite, wenn ihr Dokument welche hat */
+export function numbersFor(state: WorkshopState, page: PageRef): PageNumberPlace | null {
+  const at = indexPages(state).get(page.key);
+  const options = at ? pageNumbersOf(at.doc) : null;
+  return at && options ? { options, index: at.pageIndex, count: at.doc.pages.length } : null;
 }
 
 async function drawBase(

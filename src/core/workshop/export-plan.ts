@@ -32,6 +32,24 @@ export function pdfFileName(name: string): string {
   return `${clean}.pdf`;
 }
 
+/** Zusatz im Dateinamen geschwärzter Dokumente (Text freigegeben von Leon am 27.09.2026) */
+export const REDACTED_SUFFIX = ' (geschwärzt)';
+
+/**
+ * Dateiname beim Speichern: Name + .pdf; ein geschwärztes Dokument, das seitdem nicht umbenannt
+ * wurde, als „<Name> (geschwärzt).pdf“, solange alle seine Seiten geschwärzt oder leer sind.
+ */
+export function docFileName(state: WorkshopState, doc: Doc): string {
+  const redacted =
+    doc.redacted === true &&
+    doc.pages.every(
+      (p) => p.kind === 'blank' || state.sources.get(p.source)?.origin?.kind === 'redacted',
+    );
+  return pdfFileName(
+    redacted ? `${pdfFileName(doc.name).slice(0, -4)}${REDACTED_SUFFIX}` : doc.name,
+  );
+}
+
 /** Seitengröße einer Bildquelle, gleich wie beim Export (DIN A4 nach Ausrichtung, 1 cm Rand) */
 export function imagePageBox(imageWidth: number, imageHeight: number): PageBox {
   const { pageWidth, pageHeight } = imagePagePlacement(imageWidth, imageHeight);
@@ -72,8 +90,8 @@ function planDoc(state: WorkshopState, doc: Doc, name: string): AssembleDoc {
 export function exportPlan(state: WorkshopState, docIds: Iterable<DocId>): AssembleDoc[] {
   const wanted = new Set(docIds);
   const docs = state.docs.filter((d) => wanted.has(d.id) && d.pages.length > 0);
-  const names = uniqueNames(docs.map((d) => pdfFileName(d.name)));
-  return docs.map((doc, i) => planDoc(state, doc, names[i] ?? pdfFileName(doc.name)));
+  const names = uniqueNames(docs.map((d) => docFileName(state, d)));
+  return docs.map((doc, i) => planDoc(state, doc, names[i] ?? docFileName(state, doc)));
 }
 
 /** „Auswahl als neue PDF“: ausgewählte Seiten in der Reihenfolge der Spalten */

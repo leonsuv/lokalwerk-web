@@ -235,7 +235,9 @@ export function renameDoc(id: DocId, name: string): Command {
       const doc = findDoc(state, id);
       const clean = name.trim();
       if (!doc || clean === '' || clean === doc.name) return unchanged(state);
-      return { state: withDocs(state, replaceDoc(state.docs, { ...doc, name: clean })) };
+      // Selbst umbenannt: kein Zusatz „(geschwärzt)“ mehr im Dateinamen
+      const { redacted: _redacted, ...rest } = doc;
+      return { state: withDocs(state, replaceDoc(state.docs, { ...rest, name: clean })) };
     },
   };
 }
@@ -268,6 +270,7 @@ export function duplicateDoc(id: DocId, name: string): Command {
         pages: doc.pages.map((p) => withKey(template(p), ids('p'))),
       };
       if (doc.ops) copy.ops = doc.ops;
+      if (doc.redacted) copy.redacted = true;
       const docs = [...state.docs.slice(0, at + 1), copy, ...state.docs.slice(at + 1)];
       return { state: withDocs(state, docs), doc: copy.id };
     },
@@ -459,7 +462,9 @@ export function bakePages(
         };
         return ops?.length ? { ...ref, ops } : ref;
       });
-      const docs = replaceDoc(state.docs, { ...doc, pages: next });
+      const baked: Doc = { ...doc, pages: next };
+      if (source.origin?.kind === 'redacted') baked.redacted = true;
+      const docs = replaceDoc(state.docs, baked);
       return { state: withDocs(state, docs, addToSources(state.sources, [source])) };
     },
   };
@@ -479,6 +484,7 @@ export function splitDoc(id: DocId, index: number, name: string): Command {
       const head: Doc = { ...doc, pages: doc.pages.slice(0, index) };
       const tail: Doc = { id: ids('d'), name, pages: doc.pages.slice(index) };
       if (doc.ops) tail.ops = doc.ops;
+      if (doc.redacted) tail.redacted = true;
       const docs = [...state.docs.slice(0, at), head, tail, ...state.docs.slice(at + 1)];
       return { state: withDocs(state, docs), doc: tail.id };
     },

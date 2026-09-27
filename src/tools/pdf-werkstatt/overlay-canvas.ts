@@ -1,14 +1,16 @@
 /**
- * Stempel und Unterschriften über eine gerenderte Seite zeichnen (core/workshop/overlay.ts),
- * damit Vorschaubilder und große Vorschau zeigen, was beim Speichern entsteht.
+ * Stempel, Unterschriften und Seitenzahlen über eine gerenderte Seite zeichnen
+ * (core/workshop/overlay.ts), damit Vorschaubilder und große Vorschau zeigen, was beim Speichern
+ * entsteht.
  *
- * Schrift: Der Export setzt Helvetica fett (PDF-Standardschrift). Hier zeichnet der Browser mit
+ * Schrift: Der Export setzt Helvetica (Seitenzahlen) und Helvetica fett (Stempel), beides
+ * PDF-Standardschriften. Hier zeichnet der Browser mit
  * einer vorhandenen Systemschrift gleicher Maße (Helvetica, Arial oder Liberation Sans), keine
  * nachgeladene Schrift (AGENTS.md Regel 2). Gemessen wird mit derselben Schrift, daher passen
  * Größe und Lage auch dann, wenn keine davon vorhanden ist.
  */
 
-import { pageOverlay, type OverlayOptions } from '../../core/workshop/overlay.ts';
+import { hasOverlay, pageOverlay, type OverlayOptions } from '../../core/workshop/overlay.ts';
 import type { PageBox, PageRef, SignatureImage } from '../../core/workshop/model.ts';
 
 const FONT = 'Helvetica, Arial, "Liberation Sans", sans-serif';
@@ -35,12 +37,12 @@ export async function drawOverlay(
   view: PageBox,
   options: OverlayOptions = {},
 ): Promise<void> {
-  if (!page.ops?.length) return;
+  if (!hasOverlay(page, options)) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  const measure = (text: string, size: number) => {
+  const measure = (text: string, size: number, bold: boolean) => {
     // Bei 100 px messen und umrechnen: genauer als bei kleinen Größen
-    ctx.font = `bold 100px ${FONT}`;
+    ctx.font = `${bold ? 'bold ' : ''}100px ${FONT}`;
     return (ctx.measureText(text).width * size) / 100;
   };
   const items = pageOverlay(page, view, measure, options);
@@ -66,7 +68,7 @@ export async function drawOverlay(
       const [r, g, b] = item.rgb.map((c) => Math.round(c * 255));
       ctx.globalAlpha = item.opacity;
       ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-      ctx.font = `bold ${item.size * sx}px ${FONT}`;
+      ctx.font = `${item.bold ? 'bold ' : ''}${item.size * sx}px ${FONT}`;
       ctx.textBaseline = 'alphabetic';
       // Ansicht: Ursprung unten links, Winkel gegen den Uhrzeigersinn; Canvas umgekehrt
       ctx.translate(item.vx * sx, canvas.height - item.vy * sy);

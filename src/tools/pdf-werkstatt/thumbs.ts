@@ -2,10 +2,13 @@
  * Vorschaubilder der PDF-Werkstatt (plan-phase3.md Abschnitt 3 und 8): nur sichtbare Seiten,
  * eine nach der anderen, höchstens THUMB_LIMIT gleichzeitig; nicht sichtbare werden darüber
  * hinaus freigegeben (Canvas auf 0 × 0) und beim Zurückscrollen neu gezeichnet. Stempel und
- * Unterschriften sind eingezeichnet (overlay-canvas.ts), so wie sie gespeichert werden.
+ * Unterschriften und Seitenzahlen sind eingezeichnet (overlay-canvas.ts), so wie sie
+ * gespeichert werden.
  */
 
+import { pageNumberFor } from '../../core/pdf/page-numbers.ts';
 import type { PageBox, PageOp, PageRef } from '../../core/workshop/model.ts';
+import type { PageNumberPlace } from '../../core/workshop/overlay.ts';
 import { LazyRenderer } from '../../ui/lazy-render.ts';
 import { drawImagePage } from './image-pages.ts';
 import { drawOverlay } from './overlay-canvas.ts';
@@ -18,17 +21,27 @@ type PdfJs = typeof import('../../ui/pdfjs/pdfjs.ts');
 export const THUMB_LIMIT = 200;
 
 /** Kennung je Liste von Seiten-Operationen: Die Listen sind unveränderlich, neue Liste = neue Kennung */
-const opsIds = new WeakMap<readonly PageOp[], number>();
-let nextOpsId = 0;
+const objectIds = new WeakMap<object, number>();
+let nextObjectId = 0;
+
+function idOf(value: object): number {
+  let id = objectIds.get(value);
+  if (id === undefined) {
+    id = ++nextObjectId;
+    objectIds.set(value, id);
+  }
+  return id;
+}
 
 function opsToken(ops: readonly PageOp[] | undefined): string {
-  if (!ops?.length) return '';
-  let id = opsIds.get(ops);
-  if (id === undefined) {
-    id = ++nextOpsId;
-    opsIds.set(ops, id);
-  }
-  return `:o${id}`;
+  return ops?.length ? `:o${idOf(ops)}` : '';
+}
+
+/** Neu zeichnen nur, wenn sich Einstellung oder Text der Seitenzahl ändern */
+function numbersToken(numbers: PageNumberPlace | null): string {
+  if (!numbers) return '';
+  const text = pageNumberFor(numbers.options, numbers.index, numbers.count);
+  return text === null ? '' : `:n${idOf(numbers.options)}:${text}`;
 }
 
 function blankCanvas(view: PageBox, width: number): HTMLCanvasElement {
@@ -68,7 +81,7 @@ export class Thumbs {
 
   /**
    * Vorschau für die Seite auf dem Papier; `root` ist die scrollende Spalte, `view` die Größe
-   * der angezeigten Seite in Punkt.
+   * der angezeigten Seite in Punkt, `numbers` die Seitenzahl, wenn das Dokument welche hat.
    */
   show(
     paper: HTMLElement,
@@ -76,12 +89,13 @@ export class Thumbs {
     root: Element,
     kind: 'pdf' | 'image',
     view: PageBox,
+    numbers: PageNumberPlace | null = null,
   ): void {
     const pixels = () =>
       (paper.getBoundingClientRect().width || 120) * (globalThis.devicePixelRatio || 1);
     const withOverlay = async (canvas: HTMLCanvasElement) => {
       try {
-        await drawOverlay(canvas, page, view);
+        await drawOverlay(canvas, page, view, { numbers });
       } catch (error) {
         canvas.width = 0;
         canvas.height = 0;
@@ -89,7 +103,7 @@ export class Thumbs {
       }
       return canvas;
     };
-    const ops = opsToken(page.ops);
+    const ops = opsToken(page.ops) + numbersToken(numbers);
     if (page.kind === 'blank') {
       // Leerseite ohne Operation: das weiße Papier der Kachel genügt
       if (!ops) this.forget(paper);

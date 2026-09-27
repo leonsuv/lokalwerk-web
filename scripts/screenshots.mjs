@@ -12,22 +12,22 @@
  * echten Kontodaten (IBANs aus docs/beispiel-ibans.md), keine lokalen Pfade in den Bildern.
  */
 
-import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import {
+  findChrome,
+  pageApi,
+  startChrome,
+  startPreview,
+  wait,
+  waitForHttp,
+} from './lib/chrome.mjs';
 
 /**
- * @typedef {(method: string, params?: Record<string, unknown>) => Promise<unknown>} Send
- * @typedef {{
- *   evaluate: (expression: string) => Promise<unknown>,
- *   waitFor: (expression: string, ms?: number) => Promise<void>,
- *   setFiles: (selector: string, files: string[]) => Promise<void>,
- *   setValue: (selector: string, value: string) => Promise<void>,
- *   drag: (selector: string, from: [number, number], to: [number, number]) => Promise<void>,
- * }} PageApi
+ * @typedef {import('./lib/chrome.mjs').PageApi} PageApi
  * @typedef {{ width: number, height: number, mobile: boolean }} View
  * @typedef {{
  *   name: string,
@@ -46,19 +46,11 @@ const PORT = 4193;
 const BASE = `http://localhost:${PORT}`;
 const FIXED_NOW = '2026-09-28T10:00:00+02:00';
 
-const CHROME =
-  process.env['CHROME'] ??
-  [
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/chromium',
-  ].find((p) => existsSync(p));
-if (!CHROME) throw new Error('Google Chrome nicht gefunden. Pfad in CHROME angeben.');
+const CHROME = findChrome();
 if (!existsSync(join(root, 'dist', 'index.html'))) {
   throw new Error('Kein Build gefunden. Erst `npm run build` (oder `npm run screenshots`).');
 }
 
-const wait = (/** @type {number} */ ms) => new Promise((r) => setTimeout(r, ms));
 const work = mkdtempSync(join(tmpdir(), 'lokalwerk-screenshots-'));
 
 // ---------------------------------------------------------------- Eingabedateien
@@ -174,149 +166,6 @@ const LANDSCAPE_SCRIPT = `(async () => {
   }
   return out;
 })()`;
-
-// ---------------------------------------------------------------- Server und Browser
-
-function startPreview() {
-  const vite = join(root, 'node_modules', '.bin', 'vite');
-  return spawn(vite, ['preview', '--port', String(PORT), '--strictPort'], {
-    cwd: root,
-    stdio: 'ignore',
-  });
-}
-
-async function waitForHttp(/** @type {string} */ url, ms = 20000) {
-  for (let t = 0; t < ms; t += 250) {
-    try {
-      if ((await fetch(url)).ok) return;
-    } catch {
-      // noch nicht bereit
-    }
-    await wait(250);
-  }
-  throw new Error(`${url} antwortet nicht`);
-}
-
-async function startChrome(/** @type {string} */ chromePath) {
-  const port = 9400 + Math.floor(Math.random() * 400);
-  const proc = spawn(
-    chromePath,
-    [
-      '--headless=new',
-      '--disable-gpu',
-      '--hide-scrollbars',
-      '--no-first-run',
-      '--no-default-browser-check',
-      '--force-color-profile=srgb',
-      '--font-render-hinting=none',
-      '--lang=de-DE',
-      `--remote-debugging-port=${port}`,
-      `--user-data-dir=${join(work, 'chrome')}`,
-      'about:blank',
-    ],
-    { stdio: 'ignore' },
-  );
-  /** @type {string | undefined} */
-  let wsUrl;
-  for (let t = 0; t < 15000 && !wsUrl; t += 200) {
-    try {
-      const list = /** @type {{ type: string, webSocketDebuggerUrl?: string }[]} */ (
-        await (await fetch(`http://127.0.0.1:${port}/json`)).json()
-      );
-      wsUrl = list.find((x) => x.type === 'page')?.webSocketDebuggerUrl;
-    } catch {
-      await wait(200);
-    }
-  }
-  if (!wsUrl) throw new Error('Chrome startet nicht');
-  const ws = new WebSocket(wsUrl);
-  await new Promise((r) => ws.addEventListener('open', r));
-  let id = 0;
-  /** @type {Map<number, (m: { error?: { message: string }, result?: unknown }) => void>} */
-  const pending = new Map();
-  ws.addEventListener('message', (e) => {
-    const raw = /** @type {unknown} */ (JSON.parse(String(e.data)));
-    const m = /** @type {{ id?: number, error?: { message: string }, result?: unknown }} */ (raw);
-    const done = m.id === undefined ? undefined : pending.get(m.id);
-    if (m.id !== undefined && done) {
-      pending.delete(m.id);
-      done(m);
-    }
-  });
-  /** @type {Send} */
-  const send = (method, params = {}) =>
-    new Promise((resolve, reject) => {
-      const i = ++id;
-      pending.set(i, (m) =>
-        m.error ? reject(new Error(`${method}: ${m.error.message}`)) : resolve(m.result),
-      );
-      ws.send(JSON.stringify({ id: i, method, params }));
-    });
-  return { proc, ws, send };
-}
-
-// ---------------------------------------------------------------- Schritte
-
-/** @returns {PageApi} */
-function pageApi(/** @type {Send} */ send) {
-  /** @param {string} expression */
-  const evaluate = async (expression) => {
-    const r = /** @type {{ result: { value?: unknown }, exceptionDetails?: { text: string } }} */ (
-      await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true })
-    );
-    if (r.exceptionDetails) throw new Error(`Fehler in der Seite: ${r.exceptionDetails.text}`);
-    return r.result.value;
-  };
-  /** @param {string} expression */
-  const waitFor = async (expression, ms = 15000) => {
-    for (let t = 0; t < ms; t += 100) {
-      if (await evaluate(`!!(${expression})`)) return;
-      await wait(100);
-    }
-    throw new Error(`Zeitüberschreitung: ${expression}`);
-  };
-  /** @param {string} selector */
-  const nodeId = async (selector) => {
-    const doc = /** @type {{ root: { nodeId: number } }} */ (
-      await send('DOM.getDocument', { depth: -1 })
-    );
-    const found = /** @type {{ nodeId: number }} */ (
-      await send('DOM.querySelector', { nodeId: doc.root.nodeId, selector })
-    );
-    if (!found.nodeId) throw new Error(`Nicht gefunden: ${selector}`);
-    return found.nodeId;
-  };
-  return {
-    evaluate,
-    waitFor,
-    async setFiles(selector, files) {
-      await send('DOM.setFileInputFiles', { nodeId: await nodeId(selector), files });
-    },
-    async setValue(selector, value) {
-      await evaluate(`(() => { const e = document.querySelector(${JSON.stringify(selector)});
-        e.value = ${JSON.stringify(value)};
-        e.dispatchEvent(new Event('input', { bubbles: true }));
-        e.dispatchEvent(new Event('change', { bubbles: true })); })()`);
-    },
-    /** Ziehen mit der Maus, Koordinaten als Anteile des Elements */
-    async drag(selector, [x1, y1], [x2, y2]) {
-      const box = /** @type {[number, number, number, number]} */ (
-        await evaluate(`(() => { const r = document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();
-          return [r.left, r.top, r.width, r.height]; })()`)
-      );
-      const [l, t, w, h] = box;
-      const a = { x: l + x1 * w, y: t + y1 * h };
-      const b = { x: l + x2 * w, y: t + y2 * h };
-      const mouse = { button: 'left', clickCount: 1 };
-      await send('Input.dispatchMouseEvent', { type: 'mousePressed', ...a, ...mouse, buttons: 1 });
-      for (const f of [0.33, 0.66, 1]) {
-        const at = { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
-        await send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...at, ...mouse, buttons: 1 });
-      }
-      await send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...b, ...mouse, buttons: 0 });
-    },
-  };
-}
 
 // ---------------------------------------------------------------- Aufnahmen
 
@@ -437,12 +286,12 @@ function shots(/** @type {InputFiles} */ files) {
 
 // ---------------------------------------------------------------- Ablauf
 
-const preview = startPreview();
+const preview = startPreview(root, PORT);
 /** @type {Awaited<ReturnType<typeof startChrome>> | undefined} */
 let chrome;
 try {
   await waitForHttp(`${BASE}/`);
-  chrome = await startChrome(CHROME);
+  chrome = await startChrome(CHROME, join(work, 'chrome'));
   const { send } = chrome;
   await send('Page.enable');
   await send('DOM.enable');

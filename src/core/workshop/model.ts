@@ -31,9 +31,20 @@ export interface SourceFacts {
   xfa: boolean;
   outline: boolean;
   signed: boolean;
+  /** Versteckte Angaben im Dokument (Info, XMP, frühere Speicherstände), Schritt 2.4 */
+  metadata: boolean;
+  /** Eigene Metadaten einzelner Seiten; wandern beim Neuzusammensetzen mit */
+  pageMetadata: boolean;
 }
 
-export const NO_FACTS: SourceFacts = { form: false, xfa: false, outline: false, signed: false };
+export const NO_FACTS: SourceFacts = {
+  form: false,
+  xfa: false,
+  outline: false,
+  signed: false,
+  metadata: false,
+  pageMetadata: false,
+};
 
 /**
  * Herkunft einer Quelle, die die Werkstatt selbst erzeugt hat („Einbacken“, Stufe 2.3):

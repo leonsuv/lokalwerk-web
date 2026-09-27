@@ -75,11 +75,32 @@ function toAssemblePage(page: PageRef): AssemblePage {
   return base;
 }
 
-function planDoc(state: WorkshopState, doc: Doc, name: string): AssembleDoc {
-  const original = unchangedSource(state, doc);
+/** Einstellungen beim Speichern (Schritt 2.4) */
+export interface ExportOptions {
+  /**
+   * Versteckte Angaben entfernen: Jedes Dokument wird neu zusammengesetzt (auch ein
+   * unverändertes, dessen Originaldatei Angaben und frühere Speicherstände enthalten kann),
+   * die Seiten ohne eigene Metadaten.
+   */
+  strip?: boolean;
+}
+
+/** Wird das Dokument als Originaldatei ausgegeben (W12)? Nicht, wenn Angaben entfernt werden. */
+function originalOf(state: WorkshopState, doc: Doc, options: ExportOptions) {
+  return options.strip ? null : unchangedSource(state, doc);
+}
+
+function planDoc(
+  state: WorkshopState,
+  doc: Doc,
+  name: string,
+  options: ExportOptions,
+): AssembleDoc {
+  const original = originalOf(state, doc, options);
   const plan: AssembleDoc = { name, pages: doc.pages.map(toAssemblePage) };
   const numbers = pageNumbersOf(doc);
   if (numbers) plan.numbers = numbers;
+  if (options.strip) plan.strip = true;
   return original ? { ...plan, original: original.id } : plan;
 }
 
@@ -87,11 +108,15 @@ function planDoc(state: WorkshopState, doc: Doc, name: string): AssembleDoc {
  * Dokumente in der Reihenfolge der Spalten. Gleiche Dateinamen werden mit „(2)“, „(3)“ usw.
  * unterschieden (W11). Leere Dokumente werden übersprungen.
  */
-export function exportPlan(state: WorkshopState, docIds: Iterable<DocId>): AssembleDoc[] {
+export function exportPlan(
+  state: WorkshopState,
+  docIds: Iterable<DocId>,
+  options: ExportOptions = {},
+): AssembleDoc[] {
   const wanted = new Set(docIds);
   const docs = state.docs.filter((d) => wanted.has(d.id) && d.pages.length > 0);
   const names = uniqueNames(docs.map((d) => docFileName(state, d)));
-  return docs.map((doc, i) => planDoc(state, doc, names[i] ?? docFileName(state, doc)));
+  return docs.map((doc, i) => planDoc(state, doc, names[i] ?? docFileName(state, doc), options));
 }
 
 /** „Auswahl als neue PDF“: ausgewählte Seiten in der Reihenfolge der Spalten */
@@ -99,21 +124,26 @@ export function selectionPlan(
   state: WorkshopState,
   keys: Iterable<PageKey>,
   name: string,
+  options: ExportOptions = {},
 ): AssembleDoc | null {
   const pages = inPageOrder(state, keys);
   if (pages.length === 0) return null;
-  return planDoc(state, { id: '', name, pages }, pdfFileName(name));
+  return planDoc(state, { id: '', name, pages }, pdfFileName(name), options);
 }
 
 /**
  * Was beim Neuzusammensetzen verloren geht, zusammengefasst über die Quellen der Dokumente
  * (Hinweise vor dem Export). Unverändert ausgegebene Dokumente behalten alles und zählen nicht.
  */
-export function lossFacts(state: WorkshopState, docIds: Iterable<DocId>): SourceFacts {
-  const facts: SourceFacts = { form: false, xfa: false, outline: false, signed: false };
+export function lossFacts(
+  state: WorkshopState,
+  docIds: Iterable<DocId>,
+  options: ExportOptions = {},
+): Pick<SourceFacts, 'form' | 'xfa' | 'outline' | 'signed'> {
+  const facts = { form: false, xfa: false, outline: false, signed: false };
   const wanted = new Set(docIds);
   for (const doc of state.docs) {
-    if (!wanted.has(doc.id) || unchangedSource(state, doc)) continue;
+    if (!wanted.has(doc.id) || originalOf(state, doc, options)) continue;
     for (const page of doc.pages) {
       const source = page.kind === 'source' ? state.sources.get(page.source) : undefined;
       if (!source) continue;
@@ -124,4 +154,25 @@ export function lossFacts(state: WorkshopState, docIds: Iterable<DocId>): Source
     }
   }
   return facts;
+}
+
+/**
+ * Dokumente, deren gespeicherte Datei versteckte Angaben behält (Hinweis, Schritt 2.4): als
+ * Originaldatei ausgegeben mit Angaben im Dokument oder auf Seiten, neu zusammengesetzt mit
+ * Seiten, die eigene Metadaten haben. Mit „Versteckte Angaben entfernen“ keines.
+ */
+export function metadataKept(
+  state: WorkshopState,
+  docs: readonly Doc[],
+  options: ExportOptions = {},
+): Doc[] {
+  if (options.strip) return [];
+  return docs.filter((doc) => {
+    if (doc.pages.length === 0) return false;
+    const original = originalOf(state, doc, options);
+    if (original) return original.facts.metadata || original.facts.pageMetadata;
+    return doc.pages.some(
+      (p) => p.kind === 'source' && state.sources.get(p.source)?.facts.pageMetadata === true,
+    );
+  });
 }

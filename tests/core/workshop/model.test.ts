@@ -16,6 +16,7 @@ import {
   exportPlan,
   imagePageBox,
   lossFacts,
+  metadataKept,
   pdfFileName,
   selectionPlan,
 } from '../../../src/core/workshop/export-plan.ts';
@@ -26,6 +27,7 @@ import {
   counterIds,
   docNameFromFile,
   EMPTY_STATE,
+  NO_FACTS,
   picksFromPlan,
   totalSourceSize,
   unchangedSource,
@@ -293,7 +295,7 @@ describe('exportPlan', () => {
   it('Hinweise nur für Quellen, deren Dokument neu zusammengesetzt wird', () => {
     const form: Source = {
       ...pdfSource('f', 2),
-      facts: { form: true, xfa: false, outline: true, signed: false },
+      facts: { ...NO_FACTS, form: true, outline: true },
     };
     const b = bench(form, pdfSource('s', 1));
     const [f, s] = b.state.docs.map((d) => d.id);
@@ -311,5 +313,44 @@ describe('exportPlan', () => {
       signed: false,
     });
     expect(totalSourceSize(b.state.sources.values())).toBe(3000);
+  });
+});
+
+describe('Versteckte Angaben beim Speichern (Schritt 2.4)', () => {
+  const withInfo: Source = { ...pdfSource('m', 2), facts: { ...NO_FACTS, metadata: true } };
+  const withPageInfo: Source = { ...pdfSource('p', 1), facts: { ...NO_FACTS, pageMetadata: true } };
+  const formSource: Source = { ...pdfSource('f', 1), facts: { ...NO_FACTS, form: true } };
+
+  it('Entfernen: kein Dokument als Originaldatei, alle mit strip', () => {
+    const b = bench(withInfo, pdfSource('s', 1));
+    const ids = b.state.docs.map((d) => d.id);
+    expect(exportPlan(b.state, ids).map((d) => d.original)).toEqual(['m', 's']);
+    const stripped = exportPlan(b.state, ids, { strip: true });
+    expect(stripped.map((d) => [d.original, d.strip])).toEqual([
+      [undefined, true],
+      [undefined, true],
+    ]);
+    expect(
+      selectionPlan(b.state, keysOf(b.state, 0, 0, 1), 'x', { strip: true })?.original,
+    ).toBeUndefined();
+  });
+
+  it('Verlust-Hinweis zählt beim Entfernen auch unveränderte Dokumente', () => {
+    const b = bench(formSource);
+    const ids = b.state.docs.map((d) => d.id);
+    expect(lossFacts(b.state, ids).form).toBe(false);
+    expect(lossFacts(b.state, ids, { strip: true }).form).toBe(true);
+  });
+
+  it('Hinweis: welche Dokumente Angaben behalten', () => {
+    const b = bench(withInfo, withPageInfo, pdfSource('s', 1));
+    const names = (options = {}) => metadataKept(b.state, b.state.docs, options).map((d) => d.name);
+    // Unverändert: Originaldatei mit Angaben im Dokument oder auf Seiten
+    expect(names()).toEqual(['m', 'p']);
+    expect(names({ strip: true })).toEqual([]);
+    // Neu zusammengesetzt: Angaben des Dokuments fallen weg, die der Seiten nicht
+    b.run(rotatePages(keysOf(b.state, 0, 0), 90));
+    b.run(rotatePages(keysOf(b.state, 1, 0), 90));
+    expect(names()).toEqual(['p']);
   });
 });

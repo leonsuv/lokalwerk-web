@@ -6,7 +6,7 @@
  */
 
 import { isImage, isPdf } from '../../core/files/classify.ts';
-import { imagePageBox } from '../../core/workshop/export-plan.ts';
+import { imagePageBox, metadataKept } from '../../core/workshop/export-plan.ts';
 import { addSources, renameDoc } from '../../core/workshop/commands.ts';
 import {
   allPages,
@@ -340,7 +340,18 @@ function render(): void {
   $<HTMLButtonElement>('#ws-export-doc').disabled = exporter.busy || !doc;
   $<HTMLButtonElement>('#ws-export-sel').disabled = exporter.busy || summary.pages === 0;
   $<HTMLButtonElement>('#ws-export-zip').disabled = exporter.busy || pageCount === 0;
-  const loss = lossSources(state, state.docs);
+  for (const b of metaButtons) {
+    b.setAttribute(
+      'aria-pressed',
+      String((b.dataset.meta === 'strip') === !!exporter.options.strip),
+    );
+  }
+  const kept = metadataKept(state, state.docs, exporter.options);
+  $('#ws-meta-kept').hidden = kept.length === 0;
+  if (kept.length > 0) {
+    $('#ws-meta-kept-text').textContent = t.metadataKeptNote(kept.map((d) => d.name));
+  }
+  const loss = lossSources(state, state.docs, exporter.options);
   $('#ws-loss').hidden = loss.length === 0;
   if (loss.length > 0) $('#ws-loss-text').textContent = t.lossNote(loss);
   renderUnredacted();
@@ -508,6 +519,18 @@ function openBlankMenu(anchor: HTMLElement, returnFocus: HTMLElement, opener?: H
       onChoose: (id) => actions.insertBlank(id as 'neighbour' | 'a4' | 'a4-landscape'),
     },
   );
+}
+
+// Versteckte Angaben beim Speichern (Stufe 2.4): nur für diese Sitzung, nicht gespeichert
+$('#ws-meta-label').textContent = t.METADATA_LABEL;
+$('#ws-meta-hint').textContent = t.METADATA_HINT;
+const metaButtons = [...document.querySelectorAll<HTMLButtonElement>('button[data-meta]')];
+for (const b of metaButtons) {
+  b.textContent = b.dataset.meta === 'strip' ? t.METADATA_STRIP : t.METADATA_KEEP;
+  b.addEventListener('click', () => {
+    exporter.options = { strip: b.dataset.meta === 'strip' };
+    render();
+  });
 }
 
 // ---------------------------------------------------------------------------------------------

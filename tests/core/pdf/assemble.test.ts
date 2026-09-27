@@ -405,3 +405,31 @@ describe('assemblePdfs', () => {
     ).rejects.toThrow(RangeError);
   });
 });
+
+describe('assemblePdfs: versteckte Angaben entfernen (Werkstatt, Schritt 2.4)', () => {
+  it('ohne Metadaten der Seiten, geprüft wie im Werkzeug „PDF-Metadaten entfernen“', async () => {
+    const { inspectPdf } = await import('../../../src/core/pdf/metadata.ts');
+    const doc = await PDFDocument.create({ updateMetadata: false });
+    doc.setAuthor('Autorin Geheim');
+    const page = doc.addPage([200, 200]);
+    page.node.set(PDFName.of('PieceInfo'), doc.context.obj({ App: { Private: 'x' } }));
+    page.node.set(PDFName.of('LastModified'), doc.context.obj('D:20260101'));
+    const bytes = await doc.save();
+    const sources = new Map([['a', { kind: 'pdf' as const, bytes }]]);
+    const page0 = { kind: 'source' as const, source: 'a', index: 0, rotate: 0 as const };
+    const [kept] = await assemblePdfs([{ name: 'k.pdf', pages: [page0] }], sources);
+    const [clean] = await assemblePdfs([{ name: 'c.pdf', pages: [page0], strip: true }], sources);
+    const before = await inspectPdf(kept?.bytes ?? new Uint8Array());
+    expect(before.pagesWithMetadata).toBe(1);
+    // Angaben des Dokuments fallen beim Neuzusammensetzen ohnehin weg
+    expect(before.info).toEqual([]);
+    const after = await inspectPdf(clean?.bytes ?? new Uint8Array());
+    expect(after).toMatchObject({
+      info: [],
+      xmpBytes: null,
+      attachments: 0,
+      pagesWithMetadata: 0,
+      earlierVersions: 0,
+    });
+  });
+});

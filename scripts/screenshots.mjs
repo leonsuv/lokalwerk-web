@@ -37,7 +37,7 @@ import {
  *   prepare: (p: PageApi) => Promise<unknown>,
  * }} Shot
  * @typedef {[[number, number], [number, number]]} Box Rahmen als Anteile der Seite: oben links, unten rechts
- * @typedef {{ pdf: string, redact: Box[], csv: string, photos: string[] }} InputFiles
+ * @typedef {{ pdf: string, redact: Box[], csv: string, photos: string[], workshop: string[] }} InputFiles
  */
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -107,6 +107,105 @@ async function makeSamplePdf() {
   const file = join(work, 'protokoll-beispiel.pdf');
   writeFileSync(file, await doc.save());
   return { file, redact: targets };
+}
+
+/**
+ * Drei Beispiel-PDFs für die PDF-Werkstatt: Vertrag, Anlagen (mit einer Querformat-Seite) und
+ * Rechnung. Nur erfundene Beispieltexte; in den Vorschaubildern sollen Überschriften, Absätze
+ * und Tabellen erkennbar sein.
+ * @returns {Promise<string[]>}
+ */
+async function makeWorkshopPdfs() {
+  const ink = rgb(0.1, 0.12, 0.2);
+  const grey = rgb(0.55, 0.58, 0.66);
+  const accent = rgb(0.23, 0.33, 0.88);
+  const text =
+    'Die Vertragsparteien vereinbaren die folgenden Bedingungen. Änderungen bedürfen der Textform. ' +
+    'Die Laufzeit beginnt mit dem Tag der Unterzeichnung und verlängert sich jeweils um ein Jahr.';
+  /**
+   * @param {string} name
+   * @param {{ title: string, size?: [number, number], table?: boolean }[]} pages
+   */
+  const make = async (name, pages) => {
+    const doc = await PDFDocument.create({ updateMetadata: false });
+    const font = await doc.embedFont(StandardFonts.Helvetica);
+    const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+    for (const spec of pages) {
+      const page = doc.addPage(spec.size ?? [595.28, 841.89]);
+      const { width, height } = page.getSize();
+      let y = height - 80;
+      page.drawRectangle({ x: 60, y: y + 30, width: 60, height: 6, color: accent });
+      page.drawText(spec.title, { x: 60, y, size: 26, font: bold, color: ink });
+      y -= 50;
+      if (spec.table) {
+        for (let r = 0; r < 9; r++) {
+          const rowY = y - r * 34;
+          page.drawRectangle({
+            x: 60,
+            y: rowY - 10,
+            width: width - 120,
+            height: 30,
+            color: r === 0 ? rgb(0.87, 0.89, 0.95) : r % 2 ? rgb(0.96, 0.97, 0.99) : rgb(1, 1, 1),
+          });
+          const cells =
+            r === 0 ? ['Posten', 'Menge', 'Betrag'] : [`Posten ${r}`, `${r * 2}`, `${r * 45},00 €`];
+          cells.forEach((c, i) =>
+            page.drawText(c, {
+              x: 72 + i * ((width - 140) / 3),
+              y: rowY,
+              size: 13,
+              font: r === 0 ? bold : font,
+              color: ink,
+            }),
+          );
+        }
+        y -= 9 * 34 + 30;
+      }
+      while (y > 110) {
+        const words = text.split(' ');
+        let lineText = '';
+        for (const word of words) {
+          const next = lineText ? `${lineText} ${word}` : word;
+          if (font.widthOfTextAtSize(next, 12) > width - 120) {
+            page.drawText(lineText, { x: 60, y, size: 12, font, color: ink });
+            y -= 18;
+            lineText = word;
+            if (y <= 110) break;
+          } else lineText = next;
+        }
+        if (y > 110) page.drawText(lineText, { x: 60, y, size: 12, font, color: ink });
+        y -= 34;
+      }
+      page.drawText(`Seite ${doc.getPageCount()}`, {
+        x: width - 110,
+        y: 50,
+        size: 10,
+        font,
+        color: grey,
+      });
+    }
+    const file = join(work, name);
+    writeFileSync(file, await doc.save());
+    return file;
+  };
+  return [
+    await make('Mietvertrag.pdf', [
+      { title: 'Mietvertrag' },
+      { title: '§ 3 Miete' },
+      { title: '§ 4 Nebenkosten', table: true },
+      { title: '§ 5 Kaution' },
+      { title: 'Unterschriften' },
+    ]),
+    await make('Anlagen.pdf', [
+      { title: 'Anlage 1: Grundriss', size: [841.89, 595.28] },
+      { title: 'Anlage 2: Inventar', table: true },
+      { title: 'Anlage 3: Hausordnung' },
+    ]),
+    await make('Rechnung.pdf', [
+      { title: 'Rechnung 2026-117', table: true },
+      { title: 'Zahlungsbedingungen' },
+    ]),
+  ];
 }
 
 /** Überweisungsliste aus den Beispieldaten des Projekts, dazu eine Zeile mit Akzenten */
@@ -179,6 +278,29 @@ const LIGHT = /** @type {const} */ (['hell']);
 /** @returns {Shot[]} */
 function shots(/** @type {InputFiles} */ files) {
   return [
+    {
+      name: 'pdf-werkstatt',
+      url: '/pdf-werkstatt/',
+      view: { ...DESKTOP, height: 900 },
+      themes: BOTH,
+      prepare: async (p) => {
+        await p.setFiles('#ws-input', files.workshop);
+        await p.waitFor(`document.querySelectorAll('.ws-page').length === 10`, 30000);
+        // Bereich über zwei Dokumente: Seite 3 im Mietvertrag bis Seite 2 der Anlagen
+        await p.click('.ws-col:nth-of-type(1) .ws-page:nth-child(3)');
+        await p.click('.ws-col:nth-of-type(2) .ws-page:nth-child(2)', { shift: true });
+        await p.waitFor(
+          `document.querySelector('#ws-selected').textContent.includes('2 Dokumenten')`,
+        );
+        // Alle sichtbaren Vorschaubilder gezeichnet
+        await p.waitFor(
+          `[...document.querySelectorAll('.ws-page')].filter((t) => t.getBoundingClientRect().top < innerHeight).every((t) => t.querySelector('canvas'))`,
+          30000,
+        );
+        await p.evaluate(`document.activeElement?.blur()`);
+        await wait(500);
+      },
+    },
     {
       name: 'startseite',
       url: '/',
@@ -303,6 +425,14 @@ try {
       FixedDate.UTC = Real.UTC; FixedDate.parse = Real.parse; globalThis.Date = FixedDate; })();`,
   });
   await send('Emulation.setTimezoneOverride', { timezoneId: 'Europe/Berlin' });
+  // Die Werkstatt wird mit ungesicherter Arbeit verlassen: Warnung beim Seitenwechsel bestätigen
+  chrome.ws.addEventListener('message', (event) => {
+    const raw = /** @type {unknown} */ (JSON.parse(String(event.data)));
+    const message = /** @type {{ method?: string }} */ (raw);
+    if (message.method === 'Page.javascriptDialogOpening') {
+      void send('Page.handleJavaScriptDialog', { accept: true });
+    }
+  });
 
   const p = pageApi(send);
   const photos = /** @type {string[]} */ (await p.evaluate(LANDSCAPE_SCRIPT));
@@ -312,6 +442,7 @@ try {
     pdf: sample.file,
     redact: sample.redact,
     csv: makeTransferCsv(),
+    workshop: await makeWorkshopPdfs(),
     photos: photos.map((b64, i) => {
       const file = join(work, `landschaft-${i + 1}.jpg`);
       writeFileSync(file, Buffer.from(b64, 'base64'));

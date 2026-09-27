@@ -170,3 +170,52 @@ Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026**, einschließlich des S
 | Verlauf | „Rückgängig: Seitenzahlen“ / „Rückgängig: Seitenzahlen entfernen“ (ebenso „Wiederholen: …“) |
 
 **Erklärtext der Werkstatt**, Satz am Ende von „So funktioniert es“ (freigegeben, eingebaut): „Über „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern gesetzt und passen zur dann gültigen Reihenfolge.“
+
+## 11. Stufe 2, Schritt 2.2: Stempel und Unterschrift in der Werkstatt
+
+Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.2“), `src/tools/pdf-werkstatt/main.html` (Dialog `#ws-sign`), `src/tools/pdf-stempel/embed.ts`, `src/tools/pdf-unterschreiben/embed.ts`, Befehlsnamen `src/core/workshop/commands.ts`. Felder, Hinweise und Fehlermeldungen aus „PDF stempeln“ und „PDF unterschreiben“ sind unverändert übernommen (freigegeben).
+
+**Wo es erscheint**
+
+| Ort | Text |
+|---|---|
+| Menü „Werkzeuge“ | „Stempel …“ (Dokument mit dem Fokus), „Unterschrift …“ (Seite mit dem Fokus, sonst die erste ausgewählte Seite) |
+| Menü im Spaltenkopf | „Stempel …“ nach „Seitenzahlen …“ |
+| Kontextmenü einer Seite | „Unterschrift …“ nach „Als neues Dokument“, vor „Löschen“, mit Trennlinie |
+| Handy, „Mehr“ | „Stempel …“ und „Unterschrift …“ am Ende; „Unterschrift …“ nur mit genau einer ausgewählten Seite |
+| Vorschaubild | kleine Symbole (Stempel, Unterschrift) in der Zeile unter dem Bild, rechts neben der Seitennummer, ohne Text; Screenreader lesen sie in der Seitenbeschriftung mit (unten) |
+
+**Stempel, Bereich in der rechten Spalte**
+
+- Überschrift „Stempel“, darunter „Für Vertrag, 5 Seiten“ (wie bei den Seitenzahlen)
+- Felder und Fehlermeldungen aus „PDF stempeln“. Das Feld „Seiten“ ist mit den ausgewählten Seiten des Dokuments vorbelegt (z. B. „2-4, 7“), sonst leer (alle Seiten).
+- Neu: Hinweis „Der Stempel gehört zu den Seiten und wandert mit, wenn du sie verschiebst. Gesetzt wird er beim Speichern.“
+- Knöpfe „Stempel übernehmen“ · „Stempel entfernen“ (nur, wenn eine Seite des Dokuments einen hat) · „Abbrechen“ (auch Esc)
+
+**Unterschrift, Bereich in der rechten Spalte**
+
+- Überschrift „Unterschrift“, darunter „Für Seite 3 von Vertrag“
+- Zeichenfläche, Bild-Auswahl, Farbe, „Weißen Hintergrund entfernen“ und der rechtliche Hinweis aus „PDF unterschreiben“
+- Neu: Hinweis „Die Unterschrift gehört zur Seite und wandert mit, wenn du sie verschiebst oder drehst. Gesetzt wird sie beim Speichern.“
+- Neu: Meldung, wenn noch keine Unterschrift erstellt ist: „Erstell zuerst deine Unterschrift: zeichnen oder ein Bild auswählen.“
+- Knöpfe „Auf Seite 3 setzen …“ (öffnet den Dialog) · „Unterschriften von Seite 3 entfernen“ (nur, wenn die Seite welche hat) · „Abbrechen“ (auch Esc)
+
+**Unterschrift, Dialog zum Platzieren**
+
+- Überschrift „Unterschrift auf Seite 3 von Vertrag“
+- Hinweis „Setz die Unterschrift auf die Seite und zieh sie an die richtige Stelle, am Eck änderst du die Größe. Mit der Tastatur: Pfeiltasten verschieben, Umschalt und Pfeiltasten ändern die Größe, Entf entfernt sie.“ (aus „PDF unterschreiben“, dort freigegeben)
+- Knöpfe „Unterschrift auf diese Seite setzen“ · „Abbrechen“ · „Übernehmen“
+- Name eines platzierten Rechtecks für Screenreader: „Unterschrift 1 auf Seite 3 von Vertrag“
+
+**Ansagen, Seitenbeschriftung und Befehlsnamen**
+
+| Anlass | Text |
+|---|---|
+| Stempel übernommen | „Stempel für 5 Seiten von Vertrag übernommen. Er wird beim Speichern gesetzt.“ (eine Seite: „für 1 Seite“) |
+| Stempel entfernt | „Stempel von Vertrag entfernt“ |
+| Unterschrift übernommen | „Unterschrift auf Seite 3 von Vertrag übernommen. Sie wird beim Speichern gesetzt.“ |
+| Unterschriften entfernt | „Unterschriften von Seite 3 von Vertrag entfernt“ |
+| Seitenbeschriftung (Screenreader) | wie bisher, am Ende „, mit Stempel“, „, mit Unterschrift“ bzw. „, mit 2 Unterschriften“ |
+| Verlauf | „Rückgängig: Stempel“ / „Rückgängig: Stempel entfernen“ / „Rückgängig: Unterschrift“ / „Rückgängig: Unterschrift entfernen“ (ebenso „Wiederholen: …“) |
+
+**Vorschlag für den Erklärtext der Werkstatt** (noch nicht eingebaut), Satz nach dem Satz zu den Seitenzahlen: „Stempel und Unterschriften gehören zur Seite und wandern mit, wenn du sie verschiebst; gesetzt werden sie beim Speichern.“

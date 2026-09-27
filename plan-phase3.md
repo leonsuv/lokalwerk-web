@@ -444,3 +444,55 @@ Vorher erledigt (Freigabe B): Texte der Stufe 1 mit den fünf Änderungen eingeb
 - `Doc.ops` ist optional statt Pflichtfeld (Dokumente ohne Operation bleiben wie in Stufe 1).
 
 Nach der Freigabe: Vorrang hat die pdf.js-Kompatibilität (Abschnitt „Gefunden, nicht behoben“), vor Schritt 2.2. Untersuchung: `docs/pdfjs-kompatibilitaet.md`. Die README-Screenshots werden danach alle in einer einheitlichen Umgebung neu erzeugt.
+
+## 17. Stand bei Anhaltepunkt C, Schritt 2.2 (27.09.2026, zur Freigabe)
+
+Vorher erledigt (Entscheidungen zur pdf.js-Kompatibilität vom 27.09.2026): Legacy-Build von pdfjs-dist auf allen Seiten mit pdf.js, core-js 3.50.0 auf der Lizenzseite (Build-Prüfung verlangt Eintrag und Version), zwei tote Adressen nur für Bundle-Teile mit pdf.js, Ausnahme `Function('return this')` in `docs/pdfjs-kompatibilitaet.md`; Prüfung beim Laden mit den freigegebenen Texten in allen sechs Werkzeugen mit pdf.js, „Die Datei ist beschädigt …“ erscheint auf zu alten Browsern nicht mehr (Test); `npm run compat:pdfjs` (nicht Teil von `check`, Pflicht bei jedem pdfjs-dist-Update laut AGENTS.md); README „Browser support“; alle README-Screenshots in einer Umgebung neu erzeugt (Chromium 141, Linux). Der Punkt „Gefunden, nicht behoben“ aus Abschnitt 16 ist damit erledigt.
+
+### Umgesetzt in 2.2
+
+- **Seiten-Operationen:** `PageRef.ops` (optional) mit `{ type: 'stamp', stamp }` und `{ type: 'signature', image, rect, turn }`. Befehle `setStamp(keys, look | null)` („Stempel“ / „Stempel entfernen“) und `setSignatures(key, image | null, rects)` („Unterschrift“ / „Unterschrift entfernen“), rückgängig machbar, gleiche Einstellung ohne neuen Schritt. Die Operationen gehören zur Seite und wandern beim Verschieben, Kopieren, Duplizieren, Einfügen, Teilen und Zusammenführen mit.
+- **Export (`assemble.ts`):** je Seite zuerst die Unterschriften (vor der zusätzlichen Drehung), dann die Drehung, dann der Stempel (so, wie die Seite am Ende zu sehen ist), zuletzt die Seitenzahlen des Dokuments. Dasselbe Unterschriftsbild wird je Datei nur einmal eingebettet. Zeichnen über `drawStamp` (aus `stamp.ts` herausgelöst) und `drawPlacedImage` (`place-image.ts`, mit Drehung als Parameter), also dieselbe Platzierung wie in den Einzelwerkzeugen.
+- **Unterschrift und Drehung:** Das Rechteck wird so gespeichert, wie die Seite beim Setzen angezeigt wird, dazu die Drehung von damals (`turn`). Beim Export steht die Unterschrift aufrecht in dieser Ansicht; wird die Seite danach gedreht, dreht sie mit dem Inhalt (wie ein Aufkleber). Beim erneuten Öffnen zeigt der Dialog sie an der passenden Stelle der jetzt gedrehten Seite (`turnedRect`).
+- **Stempel einbettbar:** Einstellungen in `pdf-stempel/main.html` unter `#stamp-settings`, `settings.ts` von Werkzeugseite und `embed.ts` gemeinsam genutzt. Die Zeichenprüfung nutzt den Zeichenvorrat der Standardschrift aus dem Werkstatt-Worker (Anfrage `charset`), damit die Werkstatt-Seite pdf-lib nicht lädt.
+- **Unterschrift einbettbar:** Zeichenfläche, Bild, Farbe und Weiß-Entfernung aus `pdf-unterschreiben/page.ts` nach `creator.ts` ausgelagert, von der Werkzeugseite und `embed.ts` genutzt. Platziert wird in einem Dialog der Werkstatt (`sign-dialog.ts`) mit dem `RectEditor` aus dem Einzelwerkzeug; die ganze Seite wird in das Fenster eingepasst (mindestens 360 px breit, auf sehr niedrigen Fenstern scrollt die Fläche); das Seitenbild zeichnet `page-canvas.ts` (aus `preview.ts` herausgelöst). `EmbeddedTool` bekommt ein optionales `dispose()` (Zeichenfläche und Bild-Adressen freigeben).
+- **Werkstatt:** Einträge im Menü „Werkzeuge“, im Spaltenmenü (Stempel), im Kontextmenü der Seite (Unterschrift) und im Handy-Menü „Mehr“; Symbole unter dem Vorschaubild; Seitenbeschriftung für Screenreader mit „mit Stempel“ / „mit Unterschrift“. Texte zur Freigabe: `docs/texte-pdf-werkstatt.md` Abschnitt 11.
+
+### Tests
+
+- Befehle: Stempel setzen, ersetzen, entfernen je Seite; Unterschrift mit Rechteck in der Ansicht und Drehung von damals; Operationen wandern mit (verschieben, kopieren, duplizieren, einfügen).
+- Exportplan: Stempel und Unterschriften je Seite im Plan; eine Seite mit Operation macht das Dokument „verändert“ (Hinweise zu Formularen, Lesezeichen, Signaturen erscheinen).
+- Export mit pdf.js zurückgelesen: Stempel „oben“ steht auch nach zusätzlicher Drehung (eigene /Rotate plus Werkstatt, nur Werkstatt) oben mittig auf der fertigen Seite; Unterschrift auf einer Seite mit eigener /Rotate und zusätzlicher Drehung steht aufrecht und an der Stelle, an der sie gesetzt wurde (Transformationsmatrix aus der Operatorliste); gleiches Bild nur einmal eingebettet. Beide Tests schlagen fehl, wenn man die Reihenfolge bzw. die Drehung im Code vertauscht (geprüft).
+- `rangesFromPages` (Vorbelegung des Felds „Seiten“), Texte der Seitenbeschriftung.
+- Browser (Chromium 141, 1280 px hell und dunkel, 390 px): Stempel über Menü und Auswahl, Zeichenprüfung, Seiten umsortieren, Stempel wandert mit, Entfernen, Rückgängig; Unterschrift zeichnen, im Dialog auf einer gedrehten Seite platzieren, Übernehmen, Marken, Export (aufrecht, richtige Stelle, ein Bild), erneutes Öffnen und Verschieben; Dialog auf 390 px ohne waagrechtes Scrollen; Einzelwerkzeuge „PDF stempeln“ und „PDF unterschreiben“ unverändert (Prüfung, Platzieren, Speichern, Wechsel auf Bild leert die Platzierungen). Keine Konsolen- oder CSP-Meldungen, keine fremden Anfragen.
+- `npm run check`: 1.204 Tests grün (13 übersprungen, lokale Spezifikationsdateien).
+
+### Von mir entschieden, zur Bestätigung
+
+| Nr. | Frage | Umsetzung |
+|---|---|---|
+| D1 | Wie viele Stempel je Seite | einer; ein neuer Stempel ersetzt den alten auf den gewählten Seiten |
+| D2 | Welche Seiten „Stempel entfernen“ betrifft | alle Seiten des Dokuments |
+| D3 | Vorbelegung beim Öffnen | Aussehen von der ersten gestempelten Seite des Dokuments; Feld „Seiten“ aus der Auswahl in diesem Dokument, sonst leer (alle) |
+| D4 | Stempel auf gedrehten Seiten | Position und Ausrichtung beziehen sich auf die fertige Seite, wie sie gelesen wird; dreht man die Seite nach dem Stempeln, bleibt „oben“ oben |
+| D5 | Unterschrift auf gedrehten Seiten | bleibt am Inhalt der Seite und dreht mit (siehe oben) |
+| D6 | Unterschrift auf mehrere Seiten | eine Seite je Durchgang; mehrere Stellen auf dieser Seite möglich, alle mit demselben Bild. Ein neues Bild ersetzt alle Unterschriften der Seite. |
+| D7 | Anzeige | Vorschaubilder und große Vorschau zeigen Stempel und Unterschrift nicht, nur die Symbole unter dem Vorschaubild (wie C6 bei den Seitenzahlen) |
+| D8 | „Auswahl als neue PDF“ | Stempel und Unterschriften kommen mit, weil sie zur Seite gehören (anders als Seitenzahlen, C3) |
+| D9 | Formulare, Lesezeichen, Signaturen | Eine Seite mit Operation macht das Dokument neu zusammengesetzt, verliert diese also (Hinweis vor dem Export, wie C4) |
+| D10 | Reihenfolge beim Zeichnen | Unterschrift, dann Stempel, dann Seitenzahlen; überlappen sie, liegt der Stempel oben |
+
+### Abweichungen vom Plan
+
+- Das Unterschriftsbild (PNG) liegt direkt in der Operation statt als eigene Quelle in `state.sources`. Kopien und der Verlauf teilen sich dieselben Bytes (keine Kopie); freigegeben werden sie, sobald kein Zustand mehr darauf verweist. Eine eigene Quelle lohnt sich erst, wenn Bilder über Seiten hinweg verwaltet werden sollen.
+- Unterschrift: eine Seite je Durchgang statt einer Mehrfachauswahl (D6). Für viele Seiten müsste der Dialog blättern können; das wäre eine eigene Freigabe.
+- Wie in 2.1 werden nur die Einstellungen eingebettet, nicht die ganzen Werkzeugseiten (W8).
+- Die Symbole unter dem Vorschaubild haben keinen sichtbaren Text und keinen Hinweis beim Darüberfahren; Screenreader bekommen die Information über die Seitenbeschriftung.
+
+### Offen, Prüfung durch Leon
+
+- Texte in `docs/texte-pdf-werkstatt.md` Abschnitt 11 und der vorgeschlagene Satz für den Erklärtext.
+- Entscheidungen D1–D10.
+- Gerätetests: Safari und Firefox (Browser support im README), NVDA für R, D, M (B1); neu dazu: Zeichnen der Unterschrift mit Finger und Stift auf dem Handy in der Werkstatt.
+
+Nach der Freigabe: Schritt 2.3 (Schwärzen und Formular als „Einbacken“).

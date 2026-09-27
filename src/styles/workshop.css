@@ -228,6 +228,9 @@
   gap: 0.5rem;
   padding: 0.55rem 0.8rem 0.35rem;
 }
+.ws-history .ws-panel-head {
+  padding: 0.35rem 0.5rem 0.25rem 0.85rem;
+}
 .ws-panel-head h2 {
   margin: 0;
   font-size: 0.74rem;
@@ -954,7 +957,7 @@ html.ws-banding * {
   font-size: 0.85rem;
 }
 
-/* Eigenschaften */
+/* Eigenschaften: Abschnitte mit gleichem Kopf, Angaben als Liste, Knöpfe in Reihen */
 .ws-props {
   display: flex;
   flex-direction: column;
@@ -964,86 +967,165 @@ html.ws-banding * {
 }
 .ws-prop {
   border-bottom: 1px solid var(--line);
-  padding: 0 0.8rem 0.7rem;
-}
-.ws-prop summary {
-  list-style: none;
-  cursor: pointer;
-  padding: 0.6rem 0 0.4rem;
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-.ws-prop summary::-webkit-details-marker {
-  display: none;
-}
-.ws-prop summary::before {
-  content: '';
-  width: 0.4rem;
-  height: 0.4rem;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(45deg) translateY(-2px);
-  transition: transform 0.12s;
-}
-.ws-prop:not([open]) summary::before {
-  transform: rotate(-45deg);
+  padding: 0 0.85rem 0.85rem;
 }
 .ws-prop:not([open]) {
   padding-bottom: 0;
 }
-.ws-prop summary:focus-visible {
+.ws-prop > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.4rem;
+  margin: 0 -0.85rem;
+  padding: 0 0.85rem;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ws-prop > summary::-webkit-details-marker {
+  display: none;
+}
+.ws-prop > summary:hover {
+  background: var(--surface2);
+}
+.ws-prop > summary:focus-visible {
   outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline-offset: -2px;
 }
-.ws-prop .stat-row {
-  gap: 1rem;
-  padding: 0.28rem 0;
-  font-size: 0.84rem;
+.ws-prop > summary::after {
+  content: '';
+  flex: none;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-left: 0.2rem;
+  border-right: 1.8px solid var(--muted);
+  border-bottom: 1.8px solid var(--muted);
+  transform: rotate(45deg) translate(-1px, -1px);
+  transition: transform 0.12s;
 }
-.ws-prop .stat-row b {
+.ws-prop:not([open]) > summary::after {
+  transform: rotate(-45deg);
+}
+.ws-prop-title {
+  margin-right: auto;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.ws-prop-meta {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ws-prop[open] > summary {
+  margin-bottom: 0.25rem;
+}
+/* Angaben: Bezeichnung links, Wert rechts */
+.ws-kv {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.3rem 0.8rem;
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+}
+.ws-kv dt {
+  color: var(--muted);
+}
+.ws-kv dd {
+  margin: 0;
   text-align: right;
   font-weight: 600;
   overflow-wrap: anywhere;
 }
-.ws-prop .hint {
-  margin: 0.2rem 0 0.3rem;
-  font-size: 0.8rem;
-}
-.ws-prop-actions {
+/* Symbolknöpfe in einer Reihe, wie in der Werkzeugleiste */
+.ws-prop-icons {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-top: 0.5rem;
+  gap: 0.15rem;
+  margin: 0 0 0.6rem -0.3rem;
 }
-.ws-prop-actions .btn.sm {
-  padding: 0.35rem 0.55rem;
+.ws-prop-icons:last-child {
+  margin-bottom: 0;
+}
+/* Textknöpfe gleich breit im Raster */
+.ws-prop-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+.ws-prop-buttons .span {
+  grid-column: 1 / -1;
+}
+.ws-prop .btn.sm {
+  padding: 0.4rem 0.5rem;
   font-size: 0.8rem;
+  font-weight: 600;
   border-radius: 8px;
+  min-width: 0;
 }
 .ws-prop .btn.wide {
-  padding: 0.55rem 0.8rem;
-  font-size: 0.88rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
+  border-radius: 9px;
+}
+.ws-prop .btn.wide + .btn.wide {
+  margin-top: 0.4rem;
+}
+.ws-prop-hint {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+.ws-prop-field {
+  margin-top: 0.8rem;
+}
+.ws-prop-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.ws-prop .seg {
+  gap: 0.2rem;
+  padding: 0.2rem;
+  border-radius: 9px;
 }
 .ws-prop .seg button {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.4rem;
+  border-radius: 7px;
+}
+.ws-panel-tools {
+  display: flex;
+  gap: 0.1rem;
+}
+.ws-panel-tools .ws-tb {
+  height: 1.6rem;
+  min-width: 1.6rem;
+  padding: 0;
 }
 .ws-note {
   display: flex;
-  gap: 0.5rem;
-  margin: 0.7rem 0 0;
-  padding: 0.55rem 0.7rem;
-  border-radius: 10px;
+  gap: 0.45rem;
+  margin: 0.6rem 0 0;
+  padding: 0.5rem 0.6rem;
+  border-radius: 9px;
   background: var(--surface2);
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
 }
 .ws-note svg {
   flex: none;
+  width: 15px;
+  height: 15px;
   margin-top: 0.1rem;
 }
 .ws-warn {
@@ -1613,4 +1695,9 @@ html.ws-banding * {
 .ws-app input,
 .ws-app select {
   box-sizing: border-box;
+}
+.ws-history .ws-panel-head h2 {
+  font-size: 0.82rem;
+  color: var(--ink);
+  letter-spacing: 0;
 }

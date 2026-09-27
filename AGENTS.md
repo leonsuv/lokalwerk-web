@@ -73,10 +73,12 @@ Bereits freigegeben:
 | Bibliothek | Zweck | Lizenz | Hinweis |
 |---|---|---|---|
 | pdf-lib | PDFs erstellen und zusammenfügen | MIT | |
-| pdf.js (pdfjs-dist) | PDFs darstellen und rendern | Apache-2.0 | Worker lokal ausliefern |
+| pdf.js (pdfjs-dist) | PDFs darstellen und rendern | Apache-2.0 | Worker lokal ausliefern; Legacy-Build mit core-js (MIT), siehe unten |
 | SheetJS Community Edition | Excel/CSV lesen | Apache-2.0 | Aktuelle Version direkt von SheetJS beziehen, nicht die veraltete npm-Version |
 | exifr | Metadaten lesen | MIT | |
 | tesseract.js | Texterkennung (Pro) | Apache-2.0 | Sprachdaten lokal ausliefern, nicht vom CDN |
+
+**pdf.js-Updates:** Ausgeliefert wird der Legacy-Build von pdfjs-dist (freigegeben am 27.09.2026, `docs/pdfjs-kompatibilitaet.md`). Bei jedem Update von pdfjs-dist `npm run compat:pdfjs` laufen lassen und das Ergebnis im Bericht nennen. Ändert sich die mitgelieferte core-js-Version, bricht der Build ab, bis Lizenztext und Version in `build/licenses.ts` angepasst sind.
 
 Grundsätzlich gilt: Was sich in unter 150 Zeilen sauber selbst schreiben lässt (IBAN-Prüfung, XML-Erzeugung, CSV-Trennzeichen erkennen), wird selbst geschrieben statt als Abhängigkeit geholt.
 

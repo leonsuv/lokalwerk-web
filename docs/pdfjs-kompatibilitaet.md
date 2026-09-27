@@ -167,3 +167,12 @@ Umsetzung: `openPdf` wirft dann `PdfOpenError('unsupported')` statt `'damaged'`,
 | Kacheln ohne Bild | bleibt „Keine Vorschau möglich“ |
 
 Die Meldung nennt keine Versionsnummern, weil die sich mit jedem pdf.js-Update ändern können. Datenschutzerklärung und AGB sind nicht betroffen.
+
+## 6. Umsetzung (27.09.2026)
+
+- `src/ui/pdfjs/pdfjs.ts` und `pdfjs.worker.ts` laden `pdfjs-dist/legacy/build/…`. In Chromium 141 zeichnen damit alle Werkzeuge ohne weitere Ergänzung.
+- Lizenzseite: core-js 3.50.0 (MIT, Urheber, voller Lizenztext aus dem npm-Paket, `build/third-party/core-js-LICENSE.txt`). `build/pdfjs.ts` bricht den Build ab, wenn core-js in einer anderen Version im Bundle steckt; `verifyLicensesListed` verlangt den Eintrag, sobald pdf.js ausgeliefert wird.
+- check-dist: Fundstellen auf den Legacy-Build umgestellt, Gruppe P4 (zwei core-js-Adressen) in `scripts/allowed-urls-pdfjs.mjs` und `docs/pdfjs-adressen.md`.
+- Prüfung beim Laden: `src/ui/pdfjs/support.ts` (`loadPdfjs`, `missingPdfjsApis`, `pdfErrorCode`), Hinweis `src/ui/pdfjs/unsupported-note.ts` in allen sechs Werkzeugen. `openPdf` meldet einen zu alten Browser zusätzlich als `unsupported`, nie als `damaged`. Tests: `tests/ui/pdfjs-support.test.ts`.
+- `npm run compat:pdfjs` (`scripts/pdfjs-compat.mjs`): Chrome/Edge 125, Safari 18.0 und Firefox 128 zeichnen alle Seiten gleich wie der unveränderte Browser; unter der Grenze (ohne `Promise.withResolvers`) zeigen alle sechs Werkzeuge den Hinweis und nie „beschädigt“. Ergebnis am 27.09.2026 in Chromium 141: alle Umgebungen wie erwartet.
+- README: Abschnitt „Browser support“.

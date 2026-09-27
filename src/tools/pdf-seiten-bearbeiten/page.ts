@@ -15,6 +15,8 @@ import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { LazyRenderer } from '../../ui/lazy-render.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import type { PDFDocumentProxy } from '../../ui/pdfjs/pdfjs.ts';
+import { loadPdfjs, PdfjsUnsupportedError } from '../../ui/pdfjs/support.ts';
+import { unsupportedNote } from '../../ui/pdfjs/unsupported-note.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { workshopLink } from '../../ui/workshop-link.ts';
@@ -43,7 +45,15 @@ const messageFor = (error: unknown): string =>
 // Beides sofort laden: pdf-lib im Worker, pdf.js samt eigenem Worker (plan.md N4, offline).
 const worker = new Worker(new URL('./organize.worker.ts', import.meta.url), { type: 'module' });
 const client = createWorkerClient<OrganizeRequest>(worker);
-const pdfjs = import('../../ui/pdfjs/pdfjs.ts');
+const pdfjs = loadPdfjs();
+// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis oben, Speichern geht trotzdem
+const showUnsupported = unsupportedNote('preview');
+let unsupported = false;
+pdfjs.catch((error: unknown) => {
+  if (!(error instanceof PdfjsUnsupportedError)) return;
+  unsupported = true;
+  render();
+});
 
 /** Kantenlänge der Vorschau in CSS-Pixeln */
 const THUMB = 150;
@@ -171,10 +181,10 @@ function updateEntry(entry: PageEntry, index: number): void {
 
 function scheduleThumb(entry: PageEntry): void {
   lazy.observe(entry.li, async () => {
-    const { pageSize, renderPageAt } = await pdfjs;
-    if (!doc) return;
     const rotate = entry.rotate;
     try {
+      const { pageSize, renderPageAt } = await pdfjs;
+      if (!doc) throw new Error('Keine Vorschau');
       const size = await pageSize(doc, entry.source, rotate);
       const scale =
         (THUMB * (globalThis.devicePixelRatio || 1)) / Math.max(size.width, size.height);
@@ -196,6 +206,7 @@ function render(): void {
     toWorkshop([current.file], new Map([[current.file, picksFromPlan(entries)]]));
   } else toWorkshop(null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
+  showUnsupported({ unsupported, fileLoaded: current?.state === 'ok' });
   $('#org-empty').hidden = current !== null;
   const ok = current?.state === 'ok';
   grid.hidden = !ok;

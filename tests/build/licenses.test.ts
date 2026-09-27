@@ -1,7 +1,13 @@
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { collectLicenses, renderLicenses, REQUIRED_DATA_LICENSES } from '../../build/licenses.ts';
+import {
+  collectLicenses,
+  CORE_JS_LICENSE_FILE,
+  CORE_JS_VERSION,
+  renderLicenses,
+  REQUIRED_DATA_LICENSES,
+} from '../../build/licenses.ts';
 import {
   packageFromModuleId,
   setShippedForTest,
@@ -122,13 +128,35 @@ describe('Lizenzen der Dekoder in pdf.js (Leon, 25.09.2026)', () => {
       'LICENSE_PDFJS_OPENJPEG',
       'LICENSE_JBIG2',
       'LICENSE_PDFJS_JBIG2',
+      'core-js-LICENSE.txt',
     ]);
-    for (const d of data) {
+    for (const d of data.filter((x) => x.file.includes('/wasm/'))) {
       expect(d.text, d.file).toBe(wasm(d.file.split('/').pop() ?? '').trim());
       expect(d.source, d.file).toMatch(/aus dem npm-Paket pdfjs-dist, unverändert/);
     }
     expect(data[0]?.text).toContain('Universite catholique de Louvain');
     expect(data[2]?.text).toContain('The PDFium Authors');
+  });
+
+  it('nennt core-js aus dem Legacy-Build mit MIT, Urhebern und vollem Lizenztext', () => {
+    const coreJs = data.find((d) => d.file === CORE_JS_LICENSE_FILE);
+    expect(coreJs?.spdx).toBe('MIT');
+    expect(coreJs?.subject).toBe(`core-js ${CORE_JS_VERSION}`);
+    expect(coreJs?.text).toMatch(/^Copyright \(c\) 2013–2025 Denis Pushkarev \(zloirock\.ru\)\n/);
+    expect(coreJs?.text).toContain('CoreJS Company (core-js.io)');
+    expect(coreJs?.text).toContain(
+      'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND',
+    );
+    // Dieselbe Version und derselbe Urheber wie im ausgelieferten Legacy-Build
+    const legacy = readFileSync(
+      new URL('../../node_modules/pdfjs-dist/legacy/build/pdf.mjs', import.meta.url),
+      'utf8',
+    );
+    expect(legacy).toContain(`version: '${CORE_JS_VERSION}'`);
+    expect(legacy).toContain(
+      'Denis Pushkarev (zloirock.ru), 2025–2026 CoreJS Company (core-js.io)',
+    );
+    expect(renderLicenses(entries)).toContain(`core-js ${CORE_JS_VERSION}: MIT License (MIT)`);
   });
 
   it('der Build verlangt jede davon, sobald pdf.js ausgeliefert wird', () => {

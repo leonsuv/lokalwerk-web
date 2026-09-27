@@ -14,6 +14,13 @@ import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { LazyRenderer } from '../../ui/lazy-render.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import type { PDFDocumentProxy } from '../../ui/pdfjs/pdfjs.ts';
+import {
+  loadPdfjs,
+  pdfErrorCode,
+  PdfjsUnsupportedError,
+  UNSUPPORTED_TOOL,
+} from '../../ui/pdfjs/support.ts';
+import { unsupportedNote } from '../../ui/pdfjs/unsupported-note.ts';
 import { showToast } from '../../ui/toast.ts';
 import { workshopLink } from '../../ui/workshop-link.ts';
 import { zipBlobs } from '../../ui/zip.ts';
@@ -22,6 +29,7 @@ import { zipBlobs } from '../../ui/zip.ts';
 const toWorkshop = workshopLink();
 
 const MESSAGES: Record<string, string> = {
+  unsupported: UNSUPPORTED_TOOL,
   empty: 'Die Datei ist leer.',
   encrypted:
     'Die PDF ist verschlüsselt (Passwort- oder Kopierschutz). Entferne den Schutz und füge sie erneut hinzu.',
@@ -34,7 +42,15 @@ const FAILED =
   'Die Bilder konnten nicht erzeugt werden. Wähle eine geringere Auflösung oder weniger Seiten auf einmal.';
 
 // pdf.js samt Worker sofort laden (plan.md N4, offline).
-const pdfjs = import('../../ui/pdfjs/pdfjs.ts');
+const pdfjs = loadPdfjs();
+// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis oben statt „beschädigt“
+const showUnsupported = unsupportedNote('tool');
+let unsupported = false;
+pdfjs.catch((error: unknown) => {
+  if (!(error instanceof PdfjsUnsupportedError)) return;
+  unsupported = true;
+  render();
+});
 
 const THUMB = 130;
 const TYPES = { jpeg: { mime: 'image/jpeg', ext: 'jpg' }, png: { mime: 'image/png', ext: 'png' } };
@@ -120,6 +136,7 @@ function selection(): { pages: number[] } | { error: string } {
 function render(): void {
   toWorkshop(current?.state === 'ok' ? [current.file] : null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
+  showUnsupported({ unsupported });
   $('#img-empty').hidden = current !== null;
   const ok = current?.state === 'ok' ? current : null;
   grid.hidden = !ok;
@@ -202,7 +219,6 @@ async function open(file: File): Promise<void> {
   await closeCurrent();
   current = { state: 'checking', file };
   render();
-  const { openPdf, pageSize, PdfOpenError } = await pdfjs;
   let bytes: Uint8Array;
   try {
     bytes = new Uint8Array(await file.arrayBuffer());
@@ -213,6 +229,7 @@ async function open(file: File): Promise<void> {
     return;
   }
   try {
+    const { openPdf, pageSize, PdfOpenError } = await pdfjs;
     const doc = await openPdf(bytes);
     // Wie die anderen PDF-Werkzeuge: keine Dateien mit Kopier- oder Rechteschutz umwandeln.
     if ((await doc.getPermissions()) !== null) {
@@ -234,7 +251,8 @@ async function open(file: File): Promise<void> {
     showThumbnails(doc, doc.numPages);
   } catch (error) {
     if (token !== openToken) return;
-    const code = error instanceof PdfOpenError ? error.code : 'damaged';
+    // Unlesbar gab es hier nur beim Einlesen der Datei (oben), nicht beim Öffnen
+    const code = pdfErrorCode(error) === 'unreadable' ? 'damaged' : pdfErrorCode(error);
     current = { state: 'error', file, error: MESSAGES[code] ?? MESSAGES['damaged'] ?? '' };
   }
   render();

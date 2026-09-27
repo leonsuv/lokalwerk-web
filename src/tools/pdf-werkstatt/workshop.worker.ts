@@ -11,12 +11,15 @@
 
 import { assemblePdfs, type AssembleDoc, type AssembleSource } from '../../core/pdf/assemble.ts';
 import type { PageImage } from '../../core/pdf/from-images.ts';
+import { standardFontCharset } from '../../core/pdf/stamp.ts';
 import { inspectForWorkshop, type WorkshopPdfInfo } from '../../core/pdf/workshop-inspect.ts';
 import { prepareImage } from '../../ui/image-prepare.ts';
 import { serveRequests, WorkerError } from '../../ui/worker-protocol.ts';
 
 export type WorkshopRequest =
   | { type: 'canvas' }
+  /** Zeichenvorrat der Stempelschrift, für die Prüfung des Stempeltexts (E8a) */
+  | { type: 'charset' }
   | { type: 'add-pdf'; id: string; file: File }
   /** Bild: im Worker neu kodieren (`file`) oder schon auf der Seite vorbereitet (`image`) */
   | { type: 'add-image'; id: string; file: File; jpeg: boolean }
@@ -86,6 +89,8 @@ serveRequests<WorkshopRequest>(async (request, progress) => {
   switch (request.type) {
     case 'canvas':
       return { result: typeof OffscreenCanvas !== 'undefined' };
+    case 'charset':
+      return { result: await standardFontCharset() };
     case 'add-image': {
       // Neu kodiert ohne Metadaten der Kamera, wie in „Bilder zu PDF“ (Qualität „original“)
       const image =

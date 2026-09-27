@@ -31,6 +31,8 @@ export interface ToolHost<Result> {
 export interface EmbeddedTool {
   /** Fokus auf das erste Bedienelement */
   focus(): void;
+  /** Beim Schließen: z. B. blob:-Adressen freigeben */
+  dispose?(): void;
 }
 
 export type MountTool<Result> = (host: ToolHost<Result>) => EmbeddedTool;

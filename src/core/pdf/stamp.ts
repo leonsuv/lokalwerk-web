@@ -12,6 +12,8 @@ import {
   degrees,
   PDFDict,
   PDFDocument,
+  type PDFFont,
+  type PDFPage,
   PDFName,
   PDFNumber,
   PDFSignature,
@@ -157,47 +159,63 @@ export function diagonalFontSize(diagonal: number, widthAtOnePoint: number): num
 
 export async function addStamp(bytes: Uint8Array, options: StampOptions): Promise<Uint8Array> {
   const doc = await loadPdf(bytes);
-  const font = await doc.embedFont(StandardFonts.HelveticaBold);
+  const font = await stampFont(doc);
   const pages = doc.getPages();
   const chosen = new Set(
     options.pages.length === 0 ? pages.map((_, i) => i) : options.pages.flatMap(pageIndices),
   );
-  const [r, g, b] = COLORS[options.color];
   pages.forEach((page, index) => {
-    if (!chosen.has(index)) return;
-    const box = page.getCropBox();
-    const rotation = normalizeRotation(page.getRotation().angle);
-    let size = 28;
-    let place;
-    if (options.placement === 'diagonal') {
-      const { width, height } = visibleSize(box, rotation);
-      size = diagonalFontSize(Math.hypot(width, height), font.widthOfTextAtSize(options.text, 1));
-      place = placeCentered(
-        box,
-        rotation,
-        diagonalAngle(box, rotation),
-        font.widthOfTextAtSize(options.text, size),
-        size * CAP_HEIGHT,
-      );
-    } else {
-      place = placeAtEdge(
-        box,
-        rotation,
-        options.placement === 'top' ? 'top-center' : 'bottom-center',
-        font.widthOfTextAtSize(options.text, size),
-        size * CAP_HEIGHT,
-        12 * MM,
-      );
-    }
-    page.drawText(options.text, {
-      x: place.x,
-      y: place.y,
-      size,
-      font,
-      color: rgb(r, g, b),
-      opacity: Math.min(1, Math.max(0.05, options.opacity)),
-      rotate: degrees(place.rotate),
-    });
+    if (chosen.has(index)) drawStamp(page, font, options);
   });
   return save(doc);
+}
+
+/** Schrift des Stempels (Helvetica fett); einmal je Dokument einbetten */
+export function stampFont(doc: PDFDocument): Promise<PDFFont> {
+  return doc.embedFont(StandardFonts.HelveticaBold);
+}
+
+/**
+ * Setzt den Stempel auf die Seite, so wie der Leser sie sieht (eigene Drehung berücksichtigt).
+ * Genutzt vom Werkzeug und beim Export der Werkstatt (assemble.ts).
+ */
+export function drawStamp(
+  page: PDFPage,
+  font: PDFFont,
+  options: Omit<StampOptions, 'pages'>,
+): void {
+  const [r, g, b] = COLORS[options.color];
+  const box = page.getCropBox();
+  const rotation = normalizeRotation(page.getRotation().angle);
+  let size = 28;
+  let place;
+  if (options.placement === 'diagonal') {
+    const { width, height } = visibleSize(box, rotation);
+    size = diagonalFontSize(Math.hypot(width, height), font.widthOfTextAtSize(options.text, 1));
+    place = placeCentered(
+      box,
+      rotation,
+      diagonalAngle(box, rotation),
+      font.widthOfTextAtSize(options.text, size),
+      size * CAP_HEIGHT,
+    );
+  } else {
+    place = placeAtEdge(
+      box,
+      rotation,
+      options.placement === 'top' ? 'top-center' : 'bottom-center',
+      font.widthOfTextAtSize(options.text, size),
+      size * CAP_HEIGHT,
+      12 * MM,
+    );
+  }
+  page.drawText(options.text, {
+    x: place.x,
+    y: place.y,
+    size,
+    font,
+    color: rgb(r, g, b),
+    opacity: Math.min(1, Math.max(0.05, options.opacity)),
+    rotate: degrees(place.rotate),
+  });
 }

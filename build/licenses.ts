@@ -61,8 +61,13 @@ const PDFJS_DECODERS =
  * Der Build verlangt jede davon, sobald das Paket ausgeliefert wird (build/shipped-packages.ts).
  * APAFML: docs/adobe-afm.md (Quellen, Abgleich, Prüfung der Metriken).
  * pdfjs-dist: Dekoder für JPEG 2000 (OpenJPEG) und JBIG2/CCITT (PDFium), Texte wörtlich aus dem
- * Paket (Leon, 25.09.2026).
+ * Paket (Leon, 25.09.2026). core-js im Legacy-Build von pdf.js (Leon, 27.09.2026,
+ * docs/pdfjs-kompatibilitaet.md); build/pdfjs.ts prüft, dass die Version im Build CORE_JS_VERSION ist.
  */
+/** Version von core-js im Legacy-Build von pdfjs-dist; Lizenztext in build/third-party/ */
+export const CORE_JS_VERSION = '3.50.0';
+export const CORE_JS_LICENSE_FILE = 'build/third-party/core-js-LICENSE.txt';
+
 export const REQUIRED_DATA_LICENSES: Record<string, ReadonlyArray<Omit<DataLicense, 'text'>>> = {
   'pdfjs-dist': [
     {
@@ -98,6 +103,17 @@ export const REQUIRED_DATA_LICENSES: Record<string, ReadonlyArray<Omit<DataLicen
       subject: 'Anbindung des JBIG2-Dekoders an pdf.js',
       note: 'Der von Mozilla geschriebene Teil, der den PDFium-Dekoder mit pdf.js verbindet.',
       source: 'Datei wasm/LICENSE_PDFJS_JBIG2 aus dem npm-Paket pdfjs-dist, unverändert.',
+    },
+    {
+      file: CORE_JS_LICENSE_FILE,
+      spdx: 'MIT',
+      name: 'MIT License',
+      subject: `core-js ${CORE_JS_VERSION}`,
+      note:
+        'Der Legacy-Build von pdf.js enthält Teile von core-js, die in älteren Browsern fehlende ' +
+        'JavaScript-Funktionen ergänzen. Urheber: Denis Pushkarev (zloirock.ru), 2013–2025, und ' +
+        'CoreJS Company (core-js.io), 2025–2026. Unverändert, so wie pdf.js sie mitliefert.',
+      source: `Datei LICENSE aus dem npm-Paket core-js ${CORE_JS_VERSION}, unverändert.`,
     },
   ],
   '@pdf-lib/standard-fonts': [

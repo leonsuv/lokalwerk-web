@@ -1739,6 +1739,29 @@ select[multiple] {
 .ws-col-numbers {
   color: var(--c);
 }
+/* Unterschrift auf eine Seite setzen (Stufe 2.2): breiter als die anderen Dialoge */
+.ws-dialog.ws-sign {
+  width: min(48rem, calc(100vw - 2rem));
+}
+.ws-sign-stage {
+  max-height: calc(100vh - 16rem);
+  overflow: auto;
+  padding: 0.2rem 0.2rem 0.8rem;
+}
+.ws-sign-stage .page-view .err {
+  padding: 2rem;
+}
+/* Marken für Stempel und Unterschrift auf einer Seite (Stufe 2.2) */
+.ws-ops {
+  display: inline-flex;
+  gap: 0.15rem;
+  margin-left: auto;
+  margin-right: 0.3rem;
+  color: var(--c);
+}
+.ws-ops:empty {
+  display: none;
+}
 /* Eingebettetes Werkzeug (Stufe 2) in der rechten Spalte */
 .ws-tool {
   scroll-margin-top: 5rem;

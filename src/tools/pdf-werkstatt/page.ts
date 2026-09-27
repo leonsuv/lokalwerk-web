@@ -29,6 +29,8 @@ import {
 import { $ } from '../../ui/dom.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { prepareImage } from '../../ui/image-prepare.ts';
+import { loadPdfjs, PdfjsUnsupportedError } from '../../ui/pdfjs/support.ts';
+import { unsupportedNote } from '../../ui/pdfjs/unsupported-note.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { createActions } from './actions.ts';
@@ -44,13 +46,22 @@ import { SourceFiles } from './sources.ts';
 import { WorkshopStore } from './store.ts';
 import * as t from './texts.ts';
 import { Thumbs } from './thumbs.ts';
+import { SignDialog } from './sign-dialog.ts';
 import { ToolPanel } from './tool-panel.ts';
 import type { AddImageResult, AddPdfResult, WorkshopRequest } from './workshop.worker.ts';
 
 // Beides sofort laden: pdf-lib im Worker, pdf.js samt eigenem Worker (plan.md N4, offline).
 const worker = new Worker(new URL('./workshop.worker.ts', import.meta.url), { type: 'module' });
 const client = createWorkerClient<WorkshopRequest>(worker);
-const pdfjs = import('../../ui/pdfjs/pdfjs.ts');
+const pdfjs = loadPdfjs();
+// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis über den Spalten, Speichern geht
+const showUnsupported = unsupportedNote('preview', document.querySelector('.ws-main'));
+let unsupported = false;
+pdfjs.catch((error: unknown) => {
+  if (!(error instanceof PdfjsUnsupportedError)) return;
+  unsupported = true;
+  render();
+});
 
 const messageFor = (error: unknown): string =>
   (error instanceof WorkerError ? t.ERRORS[error.code] : undefined) ?? t.FALLBACK_ERROR;
@@ -81,7 +92,27 @@ function announce(message: string): void {
 }
 
 // Eingebettete Werkzeuge (Stufe 2) in der rechten Spalte
-const toolPanel = new ToolPanel(store, announce, (doc) => board.column(doc)?.menu.focus());
+const charset = client
+  .request<number[]>({ type: 'charset' })
+  .then((codes): ReadonlySet<number> => new Set(codes));
+charset.catch(() => undefined);
+const toolPanel = new ToolPanel(
+  store,
+  announce,
+  (doc) => board.column(doc)?.menu.focus(),
+  charset,
+  new SignDialog(store, files, pdfjs),
+  store.ids,
+  showToast,
+);
+
+/** Seite für „Unterschrift …“: die Seite mit dem Fokus, sonst die erste ausgewählte */
+function signatureTarget(): string | null {
+  const { focus, keys } = store.selection;
+  const index = indexPages(store.state);
+  if (focus && index.has(focus)) return focus;
+  return [...keys].find((k) => index.has(k)) ?? null;
+}
 
 function announceSelection(): void {
   const { pages, docs } = selectionSummary(store.state, store.selection);
@@ -189,6 +220,8 @@ const mobile = setupMobile({
       disabled: !mobileDocWithPages(),
       separator: true,
     },
+    { id: 'stamp', label: t.STAMP_ITEM, disabled: !mobileDocWithPages() },
+    { id: 'signature', label: t.SIGN_ITEM, disabled: store.selection.keys.size !== 1 },
   ],
   runMore: (id) => {
     const choices: Record<string, () => void> = {
@@ -202,6 +235,15 @@ const mobile = setupMobile({
       'page-numbers': () => {
         const doc = mobileDocWithPages();
         if (doc) toolPanel.pageNumbers(doc, $('#ws-actions [data-m="more"]'));
+      },
+      stamp: () => {
+        const doc = mobileDocWithPages();
+        if (doc) toolPanel.stamp(doc, $('#ws-actions [data-m="more"]'));
+      },
+      // Handy: genau eine ausgewählte Seite
+      signature: () => {
+        const [page] = [...store.selection.keys];
+        if (page) toolPanel.signature(page, $('#ws-actions [data-m="more"]'));
       },
     };
     choices[id]?.();
@@ -228,6 +270,7 @@ function render(): void {
 
   const hasDocs = state.docs.length > 0;
   $('#ws-drop').hidden = hasDocs;
+  showUnsupported({ unsupported, fileLoaded: hasDocs });
   const pageCount = state.docs.reduce((n, d) => n + d.pages.length, 0);
   $('#ws-docs').textContent = hasDocs ? String(state.docs.length) : '–';
   $('#ws-pages').textContent = hasDocs ? String(pageCount) : '–';
@@ -379,7 +422,11 @@ function openToolsMenu(button: HTMLElement): void {
   const doc = currentDoc(store.state, store.selection);
   const rect = button.getBoundingClientRect();
   menu.show(
-    [{ id: 'page-numbers', label: t.PAGE_NUMBERS_ITEM, disabled: !doc }],
+    [
+      { id: 'page-numbers', label: t.PAGE_NUMBERS_ITEM, disabled: !doc },
+      { id: 'stamp', label: t.STAMP_ITEM, disabled: !doc },
+      { id: 'signature', label: t.SIGN_ITEM, disabled: signatureTarget() === null },
+    ],
     { x: rect.left, y: rect.bottom + 4 },
     {
       label: t.TOOLS_MENU,
@@ -387,6 +434,9 @@ function openToolsMenu(button: HTMLElement): void {
       opener: button,
       onChoose: (id) => {
         if (id === 'page-numbers' && doc) toolPanel.pageNumbers(doc.id, button);
+        if (id === 'stamp' && doc) toolPanel.stamp(doc.id, button);
+        const page = signatureTarget();
+        if (id === 'signature' && page) toolPanel.signature(page, button);
       },
     },
   );
@@ -517,6 +567,7 @@ function pageMenuItems(): MenuItem[] {
     { id: 'blank', label: 'Leere Seite danach …', separator: true },
     { id: 'split', label: 'Dokument hier teilen', disabled: !focus || focus.pageIndex === 0 },
     { id: 'extract', label: 'Als neues Dokument' },
+    { id: 'signature', label: t.SIGN_ITEM, separator: true },
     { id: 'delete', label: 'Löschen', shortcut: 'Entf', keys: 'Delete', separator: true },
   ];
 }
@@ -539,6 +590,10 @@ function openPageMenu(at: { x: number; y: number }, returnFocus: HTMLElement): v
         copy: actions.copy,
         paste: () => actions.paste(),
         delete: actions.remove,
+        signature: () => {
+          const page = signatureTarget();
+          if (page) toolPanel.signature(page, returnFocus);
+        },
       };
       choices[id]?.();
     },
@@ -574,6 +629,7 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
         label: t.PAGE_NUMBERS_ITEM,
         disabled: current.pages.length === 0,
       },
+      { id: 'stamp', label: t.STAMP_ITEM, disabled: current.pages.length === 0 },
       { id: 'duplicate-doc', label: 'Dokument duplizieren', separator: true },
       {
         id: 'merge-next',
@@ -601,6 +657,7 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
           },
           save: () => void exporter.doc(doc),
           'page-numbers': () => toolPanel.pageNumbers(doc, opener),
+          stamp: () => toolPanel.stamp(doc, opener),
           'merge-next': () => nextDoc && actions.merge([doc, nextDoc.id]),
           'duplicate-doc': () => actions.duplicateDoc(doc),
           'close-doc': () => actions.closeDoc(doc),

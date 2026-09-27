@@ -5,9 +5,7 @@
 
 import { isPdf } from '../../core/files/classify.ts';
 import { formatBytes } from '../../core/format/bytes.ts';
-import { parsePageRanges, type PageRange } from '../../core/pdf/page-ranges.ts';
-import type { StampColor, StampOptions, StampPlacement } from '../../core/pdf/stamp.ts';
-import { unsupportedChars } from '../../core/pdf/winansi.ts';
+import type { StampOptions } from '../../core/pdf/stamp.ts';
 import { $ } from '../../ui/dom.ts';
 import { saveBlob } from '../../ui/download.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
@@ -15,6 +13,7 @@ import { countLocalBytes } from '../../ui/local-counter.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { workshopLink } from '../../ui/workshop-link.ts';
+import { stampSettings } from './settings.ts';
 import type { PdfFacts, StampRequest } from './stamp.worker.ts';
 
 // Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
@@ -42,9 +41,6 @@ const worker = new Worker(new URL('./stamp.worker.ts', import.meta.url), { type:
 const client = createWorkerClient<StampRequest>(worker);
 
 const fileList = $<HTMLUListElement>('#stamp-file');
-const textInput = $<HTMLInputElement>('#stamp-text');
-const pagesInput = $<HTMLInputElement>('#stamp-pages');
-const opacity = $<HTMLInputElement>('#stamp-opacity');
 const saveButton = $<HTMLButtonElement>('#stamp-save');
 const saveLabel = $('#stamp-save-label');
 const clearButton = $<HTMLButtonElement>('#stamp-clear');
@@ -58,38 +54,8 @@ let current: Current | null = null;
 let busy = false;
 let charset: Set<number> | null = null;
 
-const quoted = (chars: string[]) => chars.map((c) => `„${c}“`).join(', ');
-
-function textError(): string {
-  const text = textInput.value;
-  if (text.trim() === '') return 'Gib den Text für den Stempel ein.';
-  if (!charset) return '';
-  const missing = unsupportedChars(text, charset);
-  if (missing.length === 0) return '';
-  return `Diese Zeichen kann die PDF-Schrift nicht darstellen: ${quoted(missing)}. Ersetze sie, zum Beispiel Ł durch L.`;
-}
-
-function pagesResult(): { ranges: PageRange[] } | { error: string } {
-  if (current?.state !== 'ok' || pagesInput.value.trim() === '') return { ranges: [] };
-  const parsed = parsePageRanges(pagesInput.value, current.facts.pages);
-  if (parsed.ok) return { ranges: parsed.ranges };
-  const e = parsed.error;
-  const pages = current.facts.pages;
-  switch (e.code) {
-    case 'syntax':
-      return {
-        error: `„${e.part}“ ist keine Seitenangabe. Schreib Seiten wie 5 oder Bereiche wie 1-3.`,
-      };
-    case 'out-of-range':
-      return {
-        error: `„${e.part}“ gibt es nicht: Die PDF hat ${pages} ${pages === 1 ? 'Seite' : 'Seiten'}.`,
-      };
-    case 'reversed':
-      return { error: `Bei „${e.part}“ muss die erste Seite vor der letzten stehen.` };
-    default:
-      return { ranges: [] };
-  }
-}
+const settings = stampSettings(document, () => render());
+const pageCount = (): number => (current?.state === 'ok' ? current.facts.pages : 0);
 
 function fileRow(entry: Current): HTMLLIElement {
   const li = document.createElement('li');
@@ -123,16 +89,9 @@ function render(): void {
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
   $('#stamp-empty').hidden = current !== null;
   $('#stamp-signed').hidden = !(current?.state === 'ok' && current.facts.signed);
-  $('#stamp-opacity-val').textContent = opacity.value;
-  const tError = textError();
-  $('#stamp-text-error').textContent = tError;
-  textInput.setAttribute('aria-invalid', String(tError !== ''));
-  const pages = pagesResult();
-  const pError = 'error' in pages ? pages.error : '';
-  $('#stamp-pages-error').textContent = pError;
-  pagesInput.setAttribute('aria-invalid', String(pError !== ''));
-  saveButton.disabled =
-    busy || current?.state !== 'ok' || charset === null || tError !== '' || pError !== '';
+  // Ohne geladene PDF wird die Seitenangabe nicht geprüft (wie bisher)
+  const valid = settings.validate(current?.state === 'ok' ? pageCount() : null, charset);
+  saveButton.disabled = busy || current?.state !== 'ok' || charset === null || !valid;
   clearButton.disabled = busy || current === null;
 }
 
@@ -161,16 +120,11 @@ export function openFiles(files: File[]): void {
 }
 
 async function save(): Promise<void> {
-  const pages = pagesResult();
-  if (current?.state !== 'ok' || 'error' in pages || textError() !== '') return;
+  if (current?.state !== 'ok') return;
+  const pages = settings.pagesResult(pageCount());
+  if ('error' in pages || settings.textError(charset) !== '') return;
   const { file } = current;
-  const options: StampOptions = {
-    text: textInput.value.trim(),
-    placement: $<HTMLSelectElement>('#stamp-placement').value as StampPlacement,
-    color: $<HTMLSelectElement>('#stamp-color').value as StampColor,
-    opacity: Number(opacity.value) / 100,
-    pages: pages.ranges,
-  };
+  const options: StampOptions = { ...settings.look(), pages: pages.ranges };
   busy = true;
   saveLabel.textContent = 'Wird gestempelt …';
   render();
@@ -200,7 +154,6 @@ clearButton.addEventListener('click', () => {
   render();
   $<HTMLInputElement>('#stamp-input').focus();
 });
-for (const el of [textInput, pagesInput, opacity]) el.addEventListener('input', render);
 
 client.request<number[]>({ type: 'charset' }).then(
   (codes) => {

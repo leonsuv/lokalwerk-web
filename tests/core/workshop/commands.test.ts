@@ -15,15 +15,23 @@ import {
   renameDoc,
   rotatePages,
   setPageNumbers,
+  setSignatures,
+  setStamp,
   shiftPages,
   splitDoc,
   toClipboard,
+  turnedRect,
   type Command,
 } from '../../../src/core/workshop/commands.ts';
+import type { NormRect } from '../../../src/core/geometry/norm-rect.ts';
 import type { PageNumberOptions } from '../../../src/core/pdf/page-numbers.ts';
 import {
   allPages,
   pageNumbersOf,
+  signaturesOf,
+  stampOf,
+  type SignatureImage,
+  type StampLook,
   type PageKey,
   type WorkshopState,
 } from '../../../src/core/workshop/model.ts';
@@ -415,5 +423,92 @@ describe('setPageNumbers (Dokument-Operation, Stufe 2.1)', () => {
       ['Teil 2', 'seite-n-von-m'],
       ['Kopie', 'seite-n-von-m'],
     ]);
+  });
+});
+
+describe('Seiten-Operationen: Stempel und Unterschrift (Stufe 2.2)', () => {
+  const stamp: StampLook = { text: 'ENTWURF', placement: 'diagonal', color: 'gray', opacity: 0.3 };
+  const image: SignatureImage = {
+    id: 'g1',
+    png: new Uint8Array([1, 2, 3]),
+    width: 300,
+    height: 100,
+  };
+
+  it('setzt, ersetzt und entfernt einen Stempel je Seite', () => {
+    const b = bench(pdfSource('a', 3));
+    const keys = keysOf(b.state, 0, 0, 2);
+    const set = setStamp(keys, stamp);
+    expect(set.label).toBe('Stempel');
+    b.run(set);
+    expect(b.state.docs[0]?.pages.map((p) => stampOf(p)?.text ?? null)).toEqual([
+      'ENTWURF',
+      null,
+      'ENTWURF',
+    ]);
+    // Gleicher Stempel: kein neuer Schritt; anderer ersetzt, nicht zusätzlich
+    expect(setStamp(keys, { ...stamp }).apply(b.state, b.ids).state).toBe(b.state);
+    b.run(setStamp(keys.slice(0, 1), { ...stamp, text: 'KOPIE' }));
+    expect(b.state.docs[0]?.pages[0]?.ops).toHaveLength(1);
+    expect(stampOf(b.state.docs[0]?.pages[0] ?? ({} as never))?.text).toBe('KOPIE');
+    const remove = setStamp(keys, null);
+    expect(remove.label).toBe('Stempel entfernen');
+    b.run(remove);
+    expect(b.state.docs[0]?.pages.every((p) => !('ops' in p))).toBe(true);
+    expect(remove.apply(b.state, b.ids).state).toBe(b.state);
+  });
+
+  it('Unterschrift: Rechteck so, wie die Seite angezeigt wird, mit der Drehung von damals', () => {
+    const shown = { x: 0.1, y: 0.2, w: 0.3, h: 0.05 };
+    const close = (a: NormRect, e: NormRect) => {
+      for (const k of ['x', 'y', 'w', 'h'] as const) expect(a[k], k).toBeCloseTo(e[k], 10);
+    };
+    // Weiter gedreht: viermal eine Vierteldrehung ergibt wieder dasselbe Rechteck
+    close(turnedRect(shown, 90), { x: 0.75, y: 0.1, w: 0.05, h: 0.3 });
+    close(turnedRect(turnedRect(shown, 90), 270), shown);
+    close(turnedRect(shown, -90), turnedRect(shown, 270));
+    expect(turnedRect(shown, 0)).toBe(shown);
+
+    const b = bench(pdfSource('a', 2));
+    b.run(rotatePages(keysOf(b.state, 0, 1), 90));
+    const key = keysOf(b.state, 0, 1)[0] ?? '';
+    const second = { x: 0.5, y: 0.5, w: 0.2, h: 0.1 };
+    b.run(setSignatures(key, image, [shown, second]));
+    const page = b.state.docs[0]?.pages[1];
+    const sigs = page ? signaturesOf(page) : [];
+    expect(sigs.map((s) => [s.rect, s.turn])).toEqual([
+      [shown, 90],
+      [second, 90],
+    ]);
+    expect(sigs.every((s) => s.image === image)).toBe(true);
+    // Weiter gedreht: gespeichert bleibt die Lage von damals, sie dreht sich mit dem Inhalt
+    b.run(rotatePages([key], 90));
+    const turned = b.state.docs[0]?.pages[1];
+    expect(turned ? signaturesOf(turned).map((s) => [s.rect, s.turn]) : []).toEqual([
+      [shown, 90],
+      [second, 90],
+    ]);
+    // Leere Liste entfernt; Stempel bleibt dabei
+    b.run(setStamp([key], stamp));
+    b.run(setSignatures(key, null, []));
+    const cleared = b.state.docs[0]?.pages[1];
+    expect(cleared && signaturesOf(cleared)).toEqual([]);
+    expect(cleared && stampOf(cleared)?.text).toBe('ENTWURF');
+  });
+
+  it('Operationen wandern mit der Seite: verschieben, kopieren, duplizieren, einfügen', () => {
+    const b = bench(pdfSource('a', 2), pdfSource('b', 1));
+    const [first] = keysOf(b.state, 0, 0);
+    b.run(setStamp([first ?? ''], stamp));
+    b.run(setSignatures(first ?? '', image, [{ x: 0.1, y: 0.1, w: 0.2, h: 0.1 }]));
+    const target = b.state.docs[1]?.id ?? '';
+    b.run(copyPages([first ?? ''], target, 0));
+    b.run(duplicatePages([first ?? '']));
+    b.run(movePages([first ?? ''], target, 1));
+    const clip = toClipboard(b.state, [first ?? '']);
+    b.run(pastePages(clip, target, 0));
+    const withOps = [...allPages(b.state)].filter(({ page }) => stampOf(page) !== null);
+    expect(withOps).toHaveLength(4);
+    for (const { page } of withOps) expect(signaturesOf(page)).toHaveLength(1);
   });
 });

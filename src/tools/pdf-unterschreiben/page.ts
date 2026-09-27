@@ -8,22 +8,31 @@ import { isPdf } from '../../core/files/classify.ts';
 import { formatBytes } from '../../core/format/bytes.ts';
 import type { NormRect } from '../../core/geometry/norm-rect.ts';
 import type { PdfFacts } from '../../core/pdf/stamp.ts';
-import { $, $$ } from '../../ui/dom.ts';
+import { $ } from '../../ui/dom.ts';
 import { saveBlob } from '../../ui/download.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import type { PDFDocumentProxy } from '../../ui/pdfjs/pdfjs.ts';
+import {
+  loadPdfjs,
+  pdfErrorCode,
+  PdfjsUnsupportedError,
+  UNSUPPORTED_TOOL,
+} from '../../ui/pdfjs/support.ts';
+import { unsupportedNote } from '../../ui/pdfjs/unsupported-note.ts';
 import { RectEditor } from '../../ui/rect-editor.ts';
-import { SignaturePad, signatureFromFile, type SignatureImage } from '../../ui/signature-pad.ts';
+import type { SignatureImage } from '../../ui/signature-pad.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { workshopLink } from '../../ui/workshop-link.ts';
+import { signatureCreator } from './creator.ts';
 import type { SignRequest } from './sign.worker.ts';
 
 // Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
 const toWorkshop = workshopLink();
 
 const MESSAGES: Record<string, string> = {
+  unsupported: UNSUPPORTED_TOOL,
   empty: 'Die Datei ist leer.',
   encrypted:
     'Die PDF ist verschlüsselt (Passwort- oder Kopierschutz). Entferne den Schutz und füge sie erneut hinzu.',
@@ -43,7 +52,15 @@ const messageFor = (error: unknown): string =>
 // pdf-lib im Worker und pdf.js sofort laden (plan.md N4, offline).
 const worker = new Worker(new URL('./sign.worker.ts', import.meta.url), { type: 'module' });
 const client = createWorkerClient<SignRequest>(worker);
-const pdfjs = import('../../ui/pdfjs/pdfjs.ts');
+const pdfjs = loadPdfjs();
+// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis oben statt „beschädigt“
+const showUnsupported = unsupportedNote('tool');
+let unsupported = false;
+pdfjs.catch((error: unknown) => {
+  if (!(error instanceof PdfjsUnsupportedError)) return;
+  unsupported = true;
+  render();
+});
 
 const VIEW_MAX = 720;
 
@@ -57,19 +74,13 @@ const view = $<HTMLDivElement>('#sig-view');
 const saveButton = $<HTMLButtonElement>('#sig-save');
 const saveLabel = $('#sig-save-label');
 const idleLabel = saveLabel.textContent ?? '';
-const sourceButtons = $$<HTMLButtonElement>('button[data-source]');
-const colorButtons = $$<HTMLButtonElement>('button[data-color]');
-const whiteButtons = $$<HTMLButtonElement>('button[data-white]');
 
 let current: Current | null = null;
 let page = 1;
 let busy = false;
 let openToken = 0;
 let renderToken = 0;
-let source: 'draw' | 'image' = 'draw';
-let removeWhite = true;
 let signature: SignatureImage | null = null;
-let chosenImage: SignatureImage | null = null;
 const placements = new Map<number, NormRect[]>();
 
 const editor = new RectEditor({
@@ -92,24 +103,21 @@ const editor = new RectEditor({
   },
 });
 
-const pad = new SignaturePad($<HTMLCanvasElement>('#sig-pad'), () => {
-  void updateSignature();
-});
-
-/** Unterschrift aus der gewählten Quelle neu erzeugen und in allen Platzierungen zeigen */
-async function updateSignature(): Promise<void> {
-  const next = source === 'draw' ? (pad.isEmpty ? null : await pad.toImage()) : chosenImage;
-  if (signature && signature !== chosenImage && signature !== next)
-    URL.revokeObjectURL(signature.url);
-  signature = next;
-  if (!signature) {
-    placements.clear();
-    editor.set([]);
-  } else {
-    await fitAspect();
-  }
-  render();
-}
+// Unterschrift erstellen (creator.ts, gemeinsam mit der PDF-Werkstatt)
+const creator = signatureCreator(
+  document,
+  (next) => {
+    signature = next;
+    if (!signature) {
+      placements.clear();
+      editor.set([]);
+      render();
+    } else {
+      void fitAspect().then(render);
+    }
+  },
+  showToast,
+);
 
 /** Nach einer neuen Unterschrift die Höhe aller Platzierungen an ihr Seitenverhältnis anpassen */
 async function fitAspect(): Promise<void> {
@@ -163,20 +171,13 @@ function allPlacements(): { page: number; rect: NormRect }[] {
 function render(): void {
   toWorkshop(current?.state === 'ok' ? [current.file] : null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
+  showUnsupported({ unsupported });
   $('#sig-empty').hidden = current !== null;
   const ok = current?.state === 'ok' ? current : null;
   $('#sig-editor').hidden = !ok;
   $('#sig-signed').hidden = !ok?.facts.signed;
   if (ok) $('#sig-page-label').textContent = `Seite ${page} von ${ok.facts.pages}`;
-  for (const b of sourceButtons)
-    b.setAttribute('aria-pressed', String(b.dataset.source === source));
-  for (const b of colorButtons)
-    b.setAttribute('aria-pressed', String(b.dataset.color === pad.color));
-  for (const b of whiteButtons) {
-    b.setAttribute('aria-pressed', String((b.dataset.white === 'remove') === removeWhite));
-  }
-  $('#sig-draw-panel').hidden = source !== 'draw';
-  $('#sig-image-panel').hidden = source !== 'image';
+  creator.render();
   const count = allPlacements().length;
   $('#sig-ready').textContent = signature ? 'ja' : 'nein';
   $('#sig-count').textContent = ok ? String(new Set(allPlacements().map((p) => p.page)).size) : '–';
@@ -236,8 +237,10 @@ async function open(file: File): Promise<void> {
     }
     current = { state: 'ok', file, doc, facts };
     await showPage(1);
-  } catch {
-    if (token === openToken) current = { state: 'error', file, error: MESSAGES['damaged'] ?? '' };
+  } catch (error) {
+    // Wie bisher „beschädigt“, außer der Browser ist zu alt für pdf.js
+    const code = pdfErrorCode(error) === 'unsupported' ? 'unsupported' : 'damaged';
+    if (token === openToken) current = { state: 'error', file, error: MESSAGES[code] ?? '' };
   }
   render();
 }
@@ -281,43 +284,6 @@ async function save(): Promise<void> {
   }
 }
 
-for (const b of sourceButtons) {
-  b.addEventListener('click', () => {
-    source = b.dataset.source === 'image' ? 'image' : 'draw';
-    void updateSignature();
-  });
-}
-for (const b of colorButtons) {
-  b.addEventListener('click', () => {
-    pad.color = b.dataset.color ?? pad.color;
-    render();
-  });
-}
-for (const b of whiteButtons) {
-  b.addEventListener('click', () => {
-    removeWhite = b.dataset.white === 'remove';
-    render();
-  });
-}
-$('#sig-pad-clear').addEventListener('click', () => pad.clear());
-$<HTMLInputElement>('#sig-image').addEventListener('change', (event) => {
-  const input = event.target as HTMLInputElement;
-  const [file] = [...(input.files ?? [])];
-  input.value = '';
-  if (!file) return;
-  signatureFromFile(file, removeWhite).then(
-    (image) => {
-      if (!image) {
-        showToast('Auf dem Bild ist keine Unterschrift zu erkennen. Wähle ein anderes Bild.');
-        return;
-      }
-      if (chosenImage) URL.revokeObjectURL(chosenImage.url);
-      chosenImage = image;
-      void updateSignature();
-    },
-    () => showToast('Das Bild konnte nicht gelesen werden. Wähle ein PNG- oder JPEG-Bild.'),
-  );
-});
 $('#sig-prev').addEventListener('click', () => void showPage(page - 1));
 $('#sig-next').addEventListener('click', () => void showPage(page + 1));
 $('#sig-place').addEventListener('click', () => {

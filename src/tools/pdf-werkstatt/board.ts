@@ -6,6 +6,8 @@
 
 import {
   pageNumbersOf,
+  signaturesOf,
+  stampOf,
   visiblePageSize,
   type Doc,
   type DocId,
@@ -58,6 +60,8 @@ interface Tile {
   paper: HTMLElement;
   num: HTMLElement;
   badge: HTMLElement;
+  /** Marken für Stempel und Unterschrift */
+  ops: HTMLElement;
 }
 
 export interface Column {
@@ -266,14 +270,16 @@ export class Board {
     const num = document.createElement('span');
     const badge = document.createElement('span');
     badge.className = 'ws-src';
-    meta.append(num, badge);
+    const ops = document.createElement('span');
+    ops.className = 'ws-ops';
+    meta.append(num, ops, badge);
     const check = document.createElement('span');
     check.className = 'ws-check';
     // Festes Markup ohne Nutzerdaten; der HTML-Parser setzt den SVG-Namensraum selbst.
     check.innerHTML =
       '<svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg>';
     el.append(sheet, meta, check);
-    const tile = { el, sheet, paper, num, badge };
+    const tile = { el, sheet, paper, num, badge, ops };
     this.tiles.set(key, tile);
     return tile;
   }
@@ -305,8 +311,25 @@ export class Board {
             ? { name: source.name, page: source.kind === 'image' ? null : page.index + 1 }
             : null,
         rotate: page.rotate,
+        stamp: stampOf(page) !== null,
+        signatures: signaturesOf(page).length,
       }),
     );
+    // Sichtbare Marken für Seiten-Operationen (die Vorschaubilder zeigen sie nicht)
+    const marks =
+      `${stampOf(page) ? 'stamp' : ''} ${signaturesOf(page).length ? 'sign' : ''}`.trim();
+    if (tile.ops.dataset.marks !== marks) {
+      tile.ops.dataset.marks = marks;
+      // Festes Markup ohne Nutzerdaten; der HTML-Parser setzt den SVG-Namensraum selbst.
+      tile.ops.innerHTML = marks
+        .split(' ')
+        .filter(Boolean)
+        .map(
+          (m) =>
+            `<svg width="14" height="14"><use href="#i-${m === 'stamp' ? 'stamp' : 'sign'}" /></svg>`,
+        )
+        .join('');
+    }
     text(tile.num, String(index + 1));
     if (page.kind === 'source') {
       const badge = this.badges.get(page.source);

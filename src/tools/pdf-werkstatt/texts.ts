@@ -52,6 +52,9 @@ export interface PageDescription {
   /** Dateiname und Seite der Quelle, oder null für eine leere Seite */
   source: { name: string; page: number | null } | null;
   rotate: number;
+  /** Seiten-Operationen (Stufe 2.2) */
+  stamp?: boolean;
+  signatures?: number;
 }
 
 /** Beschriftung einer Seite für Screenreader (plan-phase3.md 6.4) */
@@ -62,7 +65,18 @@ export function pageLabel(d: PageDescription): string {
       : `aus ${d.source.name} Seite ${d.source.page}`
     : 'leere Seite';
   const turned = d.rotate ? `, gedreht um ${d.rotate} Grad` : '';
-  return `Seite ${d.position} von ${d.count}, ${from}${turned}`;
+  const ops = [
+    d.stamp ? 'mit Stempel' : '',
+    d.signatures === 1
+      ? 'mit Unterschrift'
+      : d.signatures
+        ? `mit ${d.signatures} Unterschriften`
+        : '',
+  ]
+    .filter(Boolean)
+    .map((o) => `, ${o}`)
+    .join('');
+  return `Seite ${d.position} von ${d.count}, ${from}${turned}${ops}`;
 }
 
 export const docPagesLabel = (name: string): string => `Seiten von ${name}`;
@@ -227,3 +241,27 @@ export const pageNumbersSet = (name: string): string =>
 export const pageNumbersRemoved = (name: string): string => `Seitenzahlen von ${name} entfernt`;
 export const PAGE_NUMBERS_BADGE = 'Mit Seitenzahlen';
 export const pageNumbersEdit = (name: string): string => `Seitenzahlen von ${name} bearbeiten`;
+
+// Stufe 2.2: Stempel und Unterschrift als Seiten-Operationen, Entwurf zur Freigabe
+export const STAMP_ITEM = 'Stempel …';
+export const STAMP_TITLE = 'Stempel';
+export const stampSet = (count: number, name: string): string =>
+  `Stempel für ${pages(count)} von ${name} übernommen. Er wird beim Speichern gesetzt.`;
+export const stampRemoved = (name: string): string => `Stempel von ${name} entfernt`;
+export const SIGN_ITEM = 'Unterschrift …';
+export const SIGN_TITLE = 'Unterschrift';
+export const pageOf = (n: number, name: string): string => `Seite ${n} von ${name}`;
+export const signDoc = (n: number, name: string): string => `Für Seite ${n} von ${name}`;
+export const signPlace = (n: number): string => `Auf Seite ${n} setzen …`;
+export const signRemove = (n: number): string => `Unterschriften von Seite ${n} entfernen`;
+export const SIGN_NEEDED = 'Erstell zuerst deine Unterschrift: zeichnen oder ein Bild auswählen.';
+export const SIGN_HINT =
+  'Die Unterschrift gehört zur Seite und wandert mit, wenn du sie verschiebst oder drehst. Gesetzt wird sie beim Speichern.';
+export const signDialogTitle = (n: number, name: string): string =>
+  `Unterschrift auf Seite ${n} von ${name}`;
+export const signatureRectLabel = (i: number, page: string): string =>
+  `Unterschrift ${i} auf ${page}`;
+export const signSet = (n: number, name: string): string =>
+  `Unterschrift auf Seite ${n} von ${name} übernommen. Sie wird beim Speichern gesetzt.`;
+export const signRemoved = (n: number, name: string): string =>
+  `Unterschriften von Seite ${n} von ${name} entfernt`;

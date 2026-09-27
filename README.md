@@ -91,6 +91,10 @@ Contrast checker: #5A6380 on white reaches 5.94:1, which passes WCAG 2.2 level A
 
 On a phone (390 px): the home page, and the working-days calculator for Bavaria, which offers regional holidays as explicit additions.
 
+## Browser support
+
+The tools that show or render PDFs (PDF workshop, edit PDF pages, PDF to images, redact PDF, insert signature, fill PDF forms) use the legacy build of pdf.js and support what pdf.js names for it: Chrome and Edge 125 or later, Firefox ESR, Safari 18 or later. Older browsers get a clear message instead of a broken preview. `npm run compat:pdfjs` checks this by removing the APIs that older browsers lack; Safari and Firefox are still to be tested on real devices. The other tools are built for Vite's default target (Chrome and Edge 111, Firefox 114, Safari 16.4).
+
 ## Architecture
 
 - **Build:** Vite, TypeScript in strict mode, no UI framework. Static output for Cloudflare Pages; one HTML page per tool with its own title, description and explanatory text.
@@ -113,7 +117,7 @@ vendor/        SheetJS archive with checksum
 
 ## Quality
 
-- **Tests:** 1,195 tests in 86 files (Vitest). Every module in `src/core/` has unit tests.
+- **Tests:** 1,208 tests in 87 files (Vitest). Every module in `src/core/` has unit tests.
 - **Against official specifications:**
   - SEPA pain.001 files are validated against the German banking industry's XSD (`pain.001.001.09_GBIC_5.xsd`) with xmllint, and the text rules of the DFÜ Agreement, Annex 3 are tested separately. The schema and example files may not be redistributed, so they are kept locally in `.local-specs/`.
   - SHA-1 and SHA-256 against the NIST CAVP test vectors ([`tests/fixtures/nist/`](tests/fixtures/nist/)).
@@ -138,9 +142,10 @@ npm run check     # ESLint, Prettier, tests, type check, build, build checks
 npm run build     # production build into dist/
 npm run preview   # serve dist/ with the production security headers
 npm run screenshots  # rebuild and regenerate docs/screenshots/ (needs Google Chrome)
+npm run compat:pdfjs # rebuild and check pdf.js in simulated older browsers (needs Google Chrome)
 ```
 
-Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 1,182 tests run and the tests that depend on those files are skipped with a clear notice. The GitHub Actions workflow runs `npm run check` the same way.
+Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 1,195 tests run and the tests that depend on those files are skipped with a clear notice. The GitHub Actions workflow runs `npm run check` the same way.
 
 ## Status
 

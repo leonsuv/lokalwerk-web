@@ -10,6 +10,8 @@ import { uniqueNames } from '../zip/write.ts';
 import {
   inPageOrder,
   pageNumbersOf,
+  signaturesOf,
+  stampOf,
   unchangedSource,
   type Doc,
   type DocId,
@@ -37,9 +39,22 @@ export function imagePageBox(imageWidth: number, imageHeight: number): PageBox {
 }
 
 function toAssemblePage(page: PageRef): AssemblePage {
-  return page.kind === 'source'
-    ? { kind: 'source', source: page.source, index: page.index, rotate: page.rotate }
-    : { kind: 'blank', width: page.box.width, height: page.box.height, rotate: page.rotate };
+  const base: AssemblePage =
+    page.kind === 'source'
+      ? { kind: 'source', source: page.source, index: page.index, rotate: page.rotate }
+      : { kind: 'blank', width: page.box.width, height: page.box.height, rotate: page.rotate };
+  const stamp = stampOf(page);
+  if (stamp) base.stamp = stamp;
+  const signatures = signaturesOf(page);
+  if (signatures.length > 0) {
+    base.signatures = signatures.map((s) => ({
+      id: s.image.id,
+      png: s.image.png,
+      rect: s.rect,
+      turn: s.turn,
+    }));
+  }
+  return base;
 }
 
 function planDoc(state: WorkshopState, doc: Doc, name: string): AssembleDoc {

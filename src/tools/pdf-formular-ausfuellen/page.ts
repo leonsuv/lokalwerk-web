@@ -13,6 +13,8 @@ import { saveBlob } from '../../ui/download.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import type { PDFDocumentProxy } from '../../ui/pdfjs/pdfjs.ts';
+import { loadPdfjs, PdfjsUnsupportedError } from '../../ui/pdfjs/support.ts';
+import { unsupportedNote } from '../../ui/pdfjs/unsupported-note.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { workshopLink } from '../../ui/workshop-link.ts';
@@ -44,7 +46,15 @@ const messageFor = (error: unknown): string =>
 // pdf-lib im Worker und pdf.js sofort laden (plan.md N4, offline).
 const worker = new Worker(new URL('./form.worker.ts', import.meta.url), { type: 'module' });
 const client = createWorkerClient<FormRequest>(worker);
-const pdfjs = import('../../ui/pdfjs/pdfjs.ts');
+const pdfjs = loadPdfjs();
+// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis oben, Ausfüllen geht trotzdem
+const showUnsupported = unsupportedNote('preview');
+let unsupported = false;
+pdfjs.catch((error: unknown) => {
+  if (!(error instanceof PdfjsUnsupportedError)) return;
+  unsupported = true;
+  render();
+});
 
 type Current =
   | { state: 'checking'; file: File }
@@ -246,6 +256,7 @@ function checkChars(): boolean {
 function render(): void {
   toWorkshop(current?.state === 'ok' ? [current.file] : null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
+  showUnsupported({ unsupported, fileLoaded: current?.state === 'ok' });
   $('#form-empty').hidden = current !== null;
   const ok = current?.state === 'ok' ? current : null;
   $('#form-signed').hidden = !ok?.info.signed;

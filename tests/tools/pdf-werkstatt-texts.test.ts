@@ -5,6 +5,7 @@ import {
   lossNote,
   pageLabel,
   selected,
+  stampSet,
 } from '../../src/tools/pdf-werkstatt/texts.ts';
 
 const facts = (form = false, outline = false, signed = false) => ({
@@ -46,5 +47,23 @@ describe('Texte der PDF-Werkstatt', () => {
     expect(selected(3, 2)).toBe('3 Seiten aus 2 Dokumenten ausgewählt');
     expect(selected(0, 0)).toBe('Auswahl aufgehoben');
     expect(blankLikeNeighbour(595.28, 841.89)).toBe('Wie die Nachbarseite (21,0 × 29,7 cm)');
+  });
+});
+
+describe('Stufe 2.2: Seiten mit Stempel und Unterschrift', () => {
+  it('nennt Stempel und Unterschriften in der Beschriftung der Seite', () => {
+    const base = { position: 2, count: 5, source: { name: 'a.pdf', page: 4 }, rotate: 0 };
+    expect(pageLabel({ ...base, stamp: true })).toBe(
+      'Seite 2 von 5, aus a.pdf Seite 4, mit Stempel',
+    );
+    expect(pageLabel({ ...base, rotate: 90, stamp: true, signatures: 2 })).toBe(
+      'Seite 2 von 5, aus a.pdf Seite 4, gedreht um 90 Grad, mit Stempel, mit 2 Unterschriften',
+    );
+    expect(pageLabel({ ...base, signatures: 1 })).toBe(
+      'Seite 2 von 5, aus a.pdf Seite 4, mit Unterschrift',
+    );
+    expect(stampSet(3, 'Vertrag')).toBe(
+      'Stempel für 3 Seiten von Vertrag übernommen. Er wird beim Speichern gesetzt.',
+    );
   });
 });

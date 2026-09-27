@@ -227,6 +227,28 @@
   <p class="visually-hidden" id="ws-live" aria-live="polite"></p>
   <div class="ws-menu" id="ws-menu" hidden></div>
 
+  <!-- Unterschrift auf eine Seite setzen (Stufe 2.2, sign-dialog.ts) -->
+  <dialog class="ws-dialog ws-sign" id="ws-sign" aria-labelledby="ws-sign-title">
+    <h2 id="ws-sign-title"></h2>
+    <p class="hint" id="ws-sign-keys">
+      Setz die Unterschrift auf die Seite und zieh sie an die richtige Stelle, am Eck änderst du die
+      Größe. Mit der Tastatur: Pfeiltasten verschieben, Umschalt und Pfeiltasten ändern die Größe,
+      Entf entfernt sie.
+    </p>
+    <button type="button" class="btn ghost sm mt-s" id="ws-sign-add">
+      Unterschrift auf diese Seite setzen
+    </button>
+    <div class="ws-sign-stage" id="ws-sign-stage">
+      <div class="page-view" id="ws-sign-view">
+        <div class="rect-layer sign no-draw" id="ws-sign-layer"></div>
+      </div>
+    </div>
+    <div class="ws-dialog-actions">
+      <button type="button" class="btn ghost" id="ws-sign-cancel">Abbrechen</button>
+      <button type="button" class="btn" id="ws-sign-ok">Übernehmen</button>
+    </div>
+  </dialog>
+
   <dialog class="ws-dialog" id="ws-move" aria-labelledby="ws-move-title">
     <form method="dialog">
       <h2 id="ws-move-title">Verschieben nach …</h2>

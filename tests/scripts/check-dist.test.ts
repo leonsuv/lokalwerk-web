@@ -190,13 +190,26 @@ describe('Tote Adressen in Bibliotheken (plan.md N3)', () => {
 
   const pdfjsEntries = ALLOWED_LIBRARY_URLS.filter((e) => e.package === 'pdfjs-dist');
 
-  it('enthält für pdf.js 17 Namensräume und 2 einzeln freigegebene tote Adressen', () => {
-    expect(pdfjsEntries).toHaveLength(19);
+  it('enthält für pdf.js 17 Namensräume und 4 einzeln freigegebene tote Adressen', () => {
+    expect(pdfjsEntries).toHaveLength(21);
     expect(pdfjsEntries.filter((e) => e.category === 'xml-namespace')).toHaveLength(17);
     expect(pdfjsEntries.filter((e) => e.category === 'dead-address').map((e) => e.url)).toEqual([
       'http://example.com',
       'https://foo.bar',
+      'https://github.com/zloirock/core-js/blob/v3.50.0/LICENSE',
+      'https://github.com/zloirock/core-js',
     ]);
+  });
+
+  it('Fundstellen im Legacy-Build, den die Seiten laden (docs/pdfjs-kompatibilitaet.md)', () => {
+    for (const entry of pdfjsEntries) {
+      expect(entry.source, entry.url).toMatch(/^node_modules\/pdfjs-dist\/legacy\/build\//);
+    }
+    const imports = ['pdfjs.ts', 'pdfjs.worker.ts'].map((f) =>
+      readFileSync(new URL(`../../src/ui/pdfjs/${f}`, import.meta.url), 'utf8'),
+    );
+    for (const text of imports)
+      expect(text).toMatch(/'pdfjs-dist\/legacy\/build\/pdf(\.worker)?\.mjs'/);
   });
 
   it('jede pdf.js-Adresse steht wirklich an der angegebenen Fundstelle', () => {

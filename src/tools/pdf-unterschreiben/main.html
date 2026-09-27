@@ -55,49 +55,52 @@
     </div>
     <div class="card side">
       <h2>Unterschrift</h2>
-      <div class="field">
-        <span class="lbl" id="sig-source-label">So erstellen</span>
-        <div class="seg" role="group" aria-labelledby="sig-source-label">
-          <button type="button" data-source="draw" aria-pressed="true">Zeichnen</button>
-          <button type="button" data-source="image" aria-pressed="false">Bild auswählen</button>
-        </div>
-      </div>
-      <div id="sig-draw-panel">
-        <canvas class="sig-pad" id="sig-pad" aria-describedby="sig-pad-hint"></canvas>
-        <p class="hint" id="sig-pad-hint">
-          Zeichne mit Maus, Stift oder Finger. Ohne Maus wählst du stattdessen ein Bild deiner
-          Unterschrift aus.
-        </p>
-        <div class="field mt-m">
-          <span class="lbl" id="sig-color-label">Farbe</span>
-          <div class="seg" role="group" aria-labelledby="sig-color-label">
-            <button type="button" data-color="#10204a" aria-pressed="true">Blau</button>
-            <button type="button" data-color="#000000" aria-pressed="false">Schwarz</button>
+      <!-- Erstellen: auch in der PDF-Werkstatt eingebettet (creator.ts, embed.ts) -->
+      <div id="sig-settings">
+        <div class="field">
+          <span class="lbl" id="sig-source-label">So erstellen</span>
+          <div class="seg" role="group" aria-labelledby="sig-source-label">
+            <button type="button" data-source="draw" aria-pressed="true">Zeichnen</button>
+            <button type="button" data-source="image" aria-pressed="false">Bild auswählen</button>
           </div>
         </div>
-        <button type="button" class="btn ghost sm mt-s" id="sig-pad-clear">Fläche leeren</button>
-      </div>
-      <div id="sig-image-panel" hidden>
-        <label class="btn ghost sm file-btn"
-          ><input
-            type="file"
-            class="visually-hidden"
-            id="sig-image"
-            accept="image/png,image/jpeg,.png,.jpg,.jpeg"
-          />Bild der Unterschrift wählen</label
-        >
-        <div class="field mt-m">
-          <span class="lbl" id="sig-white-label">Weißer Hintergrund</span>
-          <div class="seg" role="group" aria-labelledby="sig-white-label">
-            <button type="button" data-white="remove" aria-pressed="true">Entfernen</button>
-            <button type="button" data-white="keep" aria-pressed="false">Behalten</button>
+        <div id="sig-draw-panel">
+          <canvas class="sig-pad" id="sig-pad" aria-describedby="sig-pad-hint"></canvas>
+          <p class="hint" id="sig-pad-hint">
+            Zeichne mit Maus, Stift oder Finger. Ohne Maus wählst du stattdessen ein Bild deiner
+            Unterschrift aus.
+          </p>
+          <div class="field mt-m">
+            <span class="lbl" id="sig-color-label">Farbe</span>
+            <div class="seg" role="group" aria-labelledby="sig-color-label">
+              <button type="button" data-color="#10204a" aria-pressed="true">Blau</button>
+              <button type="button" data-color="#000000" aria-pressed="false">Schwarz</button>
+            </div>
           </div>
-          <p class="hint">Für Fotos oder Scans einer Unterschrift auf weißem Papier.</p>
+          <button type="button" class="btn ghost sm mt-s" id="sig-pad-clear">Fläche leeren</button>
+        </div>
+        <div id="sig-image-panel" hidden>
+          <label class="btn ghost sm file-btn"
+            ><input
+              type="file"
+              class="visually-hidden"
+              id="sig-image"
+              accept="image/png,image/jpeg,.png,.jpg,.jpeg"
+            />Bild der Unterschrift wählen</label
+          >
+          <div class="field mt-m">
+            <span class="lbl" id="sig-white-label">Weißer Hintergrund</span>
+            <div class="seg" role="group" aria-labelledby="sig-white-label">
+              <button type="button" data-white="remove" aria-pressed="true">Entfernen</button>
+              <button type="button" data-white="keep" aria-pressed="false">Behalten</button>
+            </div>
+            <p class="hint">Für Fotos oder Scans einer Unterschrift auf weißem Papier.</p>
+          </div>
         </div>
       </div>
       <div class="stat-row mt-m"><span>Unterschrift bereit</span><b id="sig-ready">nein</b></div>
       <div class="stat-row"><span>Auf Seiten gesetzt</span><b id="sig-count">–</b></div>
-      <div class="note mt-m">
+      <div class="note mt-m" id="sig-legal">
         <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
         <span
           >Das ist ein Bild deiner Unterschrift, keine digitale Signatur: Die Datei wird nicht

@@ -223,6 +223,135 @@ describe('assemblePdfs', () => {
     await doc.loadingTask.destroy();
   });
 
+  it('setzt Stempel so, wie die Seite am Ende zu sehen ist, auch nach zusätzlicher Drehung', async () => {
+    const sources = new Map<string, AssembleSource>([
+      ['a', { kind: 'pdf', bytes: await labelledPdf('A', 2, [90]) }],
+    ]);
+    const stamp = { text: 'KOPIE', placement: 'top', color: 'red', opacity: 1 } as const;
+    // Seite 1: eigene Drehung 90 plus 90 in der Werkstatt; Seite 2: nur 270 in der Werkstatt
+    const [out] = await assemblePdfs(
+      [
+        {
+          name: 'x.pdf',
+          pages: [
+            { ...src('a', 0, 90), stamp },
+            { ...src('a', 1, 270), stamp },
+          ],
+        },
+      ],
+      sources,
+    );
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const doc = await pdfjs.getDocument({ data: out?.bytes.slice(), verbosity: 0 }).promise;
+    for (const n of [1, 2]) {
+      const page = await doc.getPage(n);
+      const viewport = page.getViewport({ scale: 1 });
+      const item = (await page.getTextContent()).items.find((i) => 'str' in i && i.str === 'KOPIE');
+      if (!item || !('transform' in item)) throw new Error(`Stempel auf Seite ${n} fehlt`);
+      const transform = item.transform as number[];
+      const [x = 0, y = 0] = viewport.convertToViewportPoint(
+        transform[4] ?? 0,
+        transform[5] ?? 0,
+      ) as number[];
+      // Oben, 12 mm unter dem sichtbaren Rand (Grundlinie plus Versalhöhe), mittig
+      expect(y, `Seite ${n}`).toBeLessThan(80);
+      expect(Math.abs(x + (item as { width: number }).width / 2 - viewport.width / 2)).toBeLessThan(
+        15,
+      );
+    }
+    await doc.loadingTask.destroy();
+  });
+
+  it('setzt Unterschriften aufrecht in der Ansicht, in der sie gesetzt wurden; gleiches Bild nur einmal', async () => {
+    const sources = new Map<string, AssembleSource>([
+      ['a', { kind: 'pdf', bytes: await labelledPdf('A', 2) }],
+    ]);
+    const rect = { x: 0.1, y: 0.1, w: 0.2, h: 0.05 };
+    const signature = { id: 'g1', png: PNG_1X1, rect, turn: 0 };
+    const [out] = await assemblePdfs(
+      [
+        {
+          name: 'x.pdf',
+          pages: [
+            // Gesetzt, als die Seite um 90 Grad gedreht angezeigt wurde; so ist sie auch jetzt
+            { ...src('a', 0, 90), signatures: [{ ...signature, turn: 90 }] },
+            // Ohne Drehung gesetzt, danach um 90 Grad gedreht: dreht sich mit dem Inhalt
+            {
+              ...src('a', 1, 90),
+              signatures: [signature, { ...signature, rect: { x: 0.5, y: 0.5, w: 0.1, h: 0.1 } }],
+            },
+          ],
+        },
+      ],
+      sources,
+    );
+    const bytes = out?.bytes ?? new Uint8Array();
+    expect((await pageInfo(bytes)).map((p) => p.rotate)).toEqual([90, 90]);
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const doc = await pdfjs.getDocument({ data: bytes.slice(), verbosity: 0 }).promise;
+    /** Lage des Bilds in der Ansicht (Einheitsquadrat durch die Matrix), in Anteilen der Seite */
+    const shown = async (n: number) => {
+      const page = await doc.getPage(n);
+      const viewport = page.getViewport({ scale: 1 });
+      const ops = await page.getOperatorList();
+      const stack: number[][] = [];
+      let m = [1, 0, 0, 1, 0, 0];
+      const mul = (a: number[], b: number[]) => [
+        a[0]! * b[0]! + a[2]! * b[1]!,
+        a[1]! * b[0]! + a[3]! * b[1]!,
+        a[0]! * b[2]! + a[2]! * b[3]!,
+        a[1]! * b[2]! + a[3]! * b[3]!,
+        a[0]! * b[4]! + a[2]! * b[5]! + a[4]!,
+        a[1]! * b[4]! + a[3]! * b[5]! + a[5]!,
+      ];
+      const boxes: { x: number; y: number; w: number; h: number; upright: boolean }[] = [];
+      for (const [i, fn] of ops.fnArray.entries()) {
+        const args = ops.argsArray[i] as unknown[];
+        if (fn === pdfjs.OPS.save) stack.push(m);
+        else if (fn === pdfjs.OPS.restore) m = stack.pop() ?? m;
+        else if (fn === pdfjs.OPS.transform) m = mul(m, args as number[]);
+        else if (fn === pdfjs.OPS.paintImageXObject) {
+          const v = mul(viewport.transform, m);
+          const pts = [
+            [0, 0],
+            [1, 0],
+            [0, 1],
+            [1, 1],
+          ].map(([x, y]) => [v[0]! * x! + v[2]! * y! + v[4]!, v[1]! * x! + v[3]! * y! + v[5]!]);
+          const xs = pts.map((p) => p[0]!);
+          const ys = pts.map((p) => p[1]!);
+          boxes.push({
+            x: Math.min(...xs) / viewport.width,
+            y: Math.min(...ys) / viewport.height,
+            w: (Math.max(...xs) - Math.min(...xs)) / viewport.width,
+            h: (Math.max(...ys) - Math.min(...ys)) / viewport.height,
+            // Aufrecht: Bild-x läuft nach rechts, Bild-y nach oben (Canvas: y nach unten)
+            upright: v[0]! > 0 && v[3]! < 0,
+          });
+        }
+      }
+      return boxes;
+    };
+    const [first] = await shown(1);
+    expect(first?.upright).toBe(true);
+    for (const k of ['x', 'y', 'w', 'h'] as const) expect(first?.[k], k).toBeCloseTo(rect[k], 5);
+    const second = await shown(2);
+    expect(second).toHaveLength(2);
+    // Mit dem Inhalt gedreht: nicht mehr aufrecht, Lage wie das gedrehte Rechteck
+    expect(second[0]?.upright).toBe(false);
+    const turned = { x: 1 - rect.y - rect.h, y: rect.x, w: rect.h, h: rect.w };
+    for (const k of ['x', 'y', 'w', 'h'] as const)
+      expect(second[0]?.[k], k).toBeCloseTo(turned[k], 5);
+    await doc.loadingTask.destroy();
+    const pdf = await PDFDocument.load(bytes);
+    const images = pdf.context
+      .enumerateIndirectObjects()
+      .flatMap(([, obj]) => ('dict' in obj ? [(obj as { dict: PDFDict }).dict] : []))
+      .filter((dict) => dict.get(PDFName.of('Subtype')) === PDFName.of('Image'));
+    // PNG mit Transparenz: Bild plus SMask, trotz drei Unterschriften nur einmal
+    expect(images).toHaveLength(2);
+  });
+
   it('schreibt keine Metadaten, auch nicht die der Quellen', async () => {
     const [out] = await assemblePdfs(
       [{ name: 'a.pdf', pages: [src('a', 0)] }],

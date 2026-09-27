@@ -32,52 +32,55 @@
     </div>
     <div class="card side">
       <h2>Stempel</h2>
-      <div class="field">
-        <label class="lbl" for="stamp-text">Text</label>
-        <input
-          type="text"
-          id="stamp-text"
-          value="ENTWURF"
-          maxlength="60"
-          autocomplete="off"
-          aria-describedby="stamp-text-error"
-        />
-        <p class="hint err" id="stamp-text-error"></p>
-      </div>
-      <div class="field">
-        <label class="lbl" for="stamp-placement">Position</label>
-        <select id="stamp-placement">
-          <option value="diagonal" selected>Quer über die Seite</option>
-          <option value="top">Oben</option>
-          <option value="bottom">Unten</option>
-        </select>
-      </div>
-      <div class="field">
-        <label class="lbl" for="stamp-color">Farbe</label>
-        <select id="stamp-color">
-          <option value="gray" selected>Grau</option>
-          <option value="red">Rot</option>
-          <option value="blue">Blau</option>
-        </select>
-      </div>
-      <div class="field">
-        <label class="lbl" for="stamp-opacity"
-          >Deckkraft: <span id="stamp-opacity-val">30</span>&nbsp;%</label
-        >
-        <input type="range" id="stamp-opacity" min="10" max="100" step="5" value="30" />
-      </div>
-      <div class="field">
-        <label class="lbl" for="stamp-pages">Seiten <span class="opt">(leer: alle)</span></label>
-        <input
-          type="text"
-          id="stamp-pages"
-          inputmode="numeric"
-          autocomplete="off"
-          spellcheck="false"
-          aria-describedby="stamp-pages-hint stamp-pages-error"
-        />
-        <p class="hint" id="stamp-pages-hint">Zum Beispiel 1-3, 5 oder 2-.</p>
-        <p class="hint err" id="stamp-pages-error"></p>
+      <!-- Einstellungen: auch in der PDF-Werkstatt eingebettet (settings.ts, embed.ts) -->
+      <div id="stamp-settings">
+        <div class="field">
+          <label class="lbl" for="stamp-text">Text</label>
+          <input
+            type="text"
+            id="stamp-text"
+            value="ENTWURF"
+            maxlength="60"
+            autocomplete="off"
+            aria-describedby="stamp-text-error"
+          />
+          <p class="hint err" id="stamp-text-error"></p>
+        </div>
+        <div class="field">
+          <label class="lbl" for="stamp-placement">Position</label>
+          <select id="stamp-placement">
+            <option value="diagonal" selected>Quer über die Seite</option>
+            <option value="top">Oben</option>
+            <option value="bottom">Unten</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="lbl" for="stamp-color">Farbe</label>
+          <select id="stamp-color">
+            <option value="gray" selected>Grau</option>
+            <option value="red">Rot</option>
+            <option value="blue">Blau</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="lbl" for="stamp-opacity"
+            >Deckkraft: <span id="stamp-opacity-val">30</span>&nbsp;%</label
+          >
+          <input type="range" id="stamp-opacity" min="10" max="100" step="5" value="30" />
+        </div>
+        <div class="field">
+          <label class="lbl" for="stamp-pages">Seiten <span class="opt">(leer: alle)</span></label>
+          <input
+            type="text"
+            id="stamp-pages"
+            inputmode="numeric"
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="stamp-pages-hint stamp-pages-error"
+          />
+          <p class="hint" id="stamp-pages-hint">Zum Beispiel 1-3, 5 oder 2-.</p>
+          <p class="hint err" id="stamp-pages-error"></p>
+        </div>
       </div>
       <button class="btn wide mt-m" id="stamp-save" disabled>
         <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>

@@ -13,6 +13,13 @@ import { saveBlob } from '../../ui/download.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import type { PDFDocumentProxy } from '../../ui/pdfjs/pdfjs.ts';
+import {
+  loadPdfjs,
+  pdfErrorCode,
+  PdfjsUnsupportedError,
+  UNSUPPORTED_TOOL,
+} from '../../ui/pdfjs/support.ts';
+import { unsupportedNote } from '../../ui/pdfjs/unsupported-note.ts';
 import { RectEditor, type NormRect } from '../../ui/rect-editor.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient } from '../../ui/worker-protocol.ts';
@@ -23,6 +30,7 @@ import type { RedactRequest } from './redact.worker.ts';
 const toWorkshop = workshopLink();
 
 const MESSAGES: Record<string, string> = {
+  unsupported: UNSUPPORTED_TOOL,
   empty: 'Die Datei ist leer.',
   encrypted:
     'Die PDF ist verschlüsselt (Passwort- oder Kopierschutz). Entferne den Schutz und füge sie erneut hinzu.',
@@ -35,7 +43,15 @@ const FAILED =
   'Die geschwärzte PDF konnte nicht erzeugt werden. Wähle eine geringere Auflösung und versuch es noch einmal.';
 
 // pdf.js und pdf-lib sofort laden (plan.md N4, offline).
-const pdfjs = import('../../ui/pdfjs/pdfjs.ts');
+const pdfjs = loadPdfjs();
+// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis oben statt „beschädigt“
+const showUnsupported = unsupportedNote('tool');
+let unsupported = false;
+pdfjs.catch((error: unknown) => {
+  if (!(error instanceof PdfjsUnsupportedError)) return;
+  unsupported = true;
+  render();
+});
 const worker = new Worker(new URL('./redact.worker.ts', import.meta.url), { type: 'module' });
 const client = createWorkerClient<RedactRequest>(worker);
 
@@ -101,6 +117,7 @@ function fileRow(entry: Current): HTMLLIElement {
 function render(): void {
   toWorkshop(current?.state === 'ok' ? [current.file] : null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
+  showUnsupported({ unsupported });
   $('#red-empty').hidden = current !== null;
   const ok = current?.state === 'ok' ? current : null;
   $('#red-editor').hidden = !ok;
@@ -150,8 +167,8 @@ async function open(file: File): Promise<void> {
   await closeCurrent();
   current = { state: 'checking', file };
   render();
-  const { openPdf, PdfOpenError } = await pdfjs;
   try {
+    const { openPdf, PdfOpenError } = await pdfjs;
     const bytes = new Uint8Array(await file.arrayBuffer());
     const doc = await openPdf(bytes);
     if ((await doc.getPermissions()) !== null) {
@@ -166,12 +183,7 @@ async function open(file: File): Promise<void> {
     await showPage(1);
   } catch (error) {
     if (token !== openToken) return;
-    const code =
-      error instanceof PdfOpenError
-        ? error.code
-        : error instanceof DOMException
-          ? 'unreadable'
-          : 'damaged';
+    const code = pdfErrorCode(error);
     current = { state: 'error', file, error: MESSAGES[code] ?? MESSAGES['damaged'] ?? '' };
   }
   render();

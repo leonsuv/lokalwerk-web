@@ -19,10 +19,12 @@ import {
   type IdSource,
   type PageBox,
   type PageKey,
+  type PagePick,
   type PageRef,
   type PageTemplate,
   type Source,
   type SourceId,
+  type SourceLayouts,
   type WorkshopState,
 } from './model.ts';
 
@@ -107,13 +109,23 @@ function addToSources(
   return next;
 }
 
-function sourcePages(source: Source, ids: IdSource): PageRef[] {
-  return source.pages.map((_, index) => ({
+/**
+ * Seitenverweise einer neuen Quelle: alle Seiten in Originalreihenfolge oder, mit Seitenfolge,
+ * genau diese. Seiten, die es in der Quelle nicht gibt, fallen weg; bleibt keine übrig, gelten
+ * alle Seiten (ein leeres Dokument könnte die Quelle nicht mehr freigeben).
+ */
+function sourcePages(source: Source, ids: IdSource, layout?: readonly PagePick[]): PageRef[] {
+  const picks = (layout ?? []).filter(
+    (p) => Number.isInteger(p.index) && p.index >= 0 && p.index < source.pages.length,
+  );
+  const plan: readonly PagePick[] =
+    picks.length > 0 ? picks : source.pages.map((_, index) => ({ index, rotate: 0 }));
+  return plan.map(({ index, rotate }) => ({
     key: ids('p'),
     kind: 'source',
     source: source.id,
     index,
-    rotate: 0,
+    rotate: normalizeRotation(rotate),
   }));
 }
 
@@ -157,10 +169,13 @@ function mapPages(
  * Neue Dateien aufnehmen. Ohne Ziel wird jede PDF ein eigenes Dokument; Bilder derselben
  * Ablage kommen zusammen in ein Dokument, benannt nach dem ersten Bild. Mit Ziel landen alle
  * Seiten an dieser Stelle im Dokument (Ablegen auf eine Spalte, „Bilder einfügen“).
+ * `layouts` legt je Quelle Reihenfolge, Drehung und ausgelassene Seiten fest (Übergabe aus
+ * „PDF-Seiten bearbeiten“).
  */
 export function addSources(
   sources: readonly Source[],
   target?: { doc: DocId; index: number },
+  layouts?: SourceLayouts,
 ): Command {
   return {
     label: 'Hinzufügen',
@@ -170,14 +185,14 @@ export function addSources(
       if (target) {
         const doc = findDoc(state, target.doc);
         if (!doc) return unchanged(state);
-        const pages = sources.flatMap((s) => sourcePages(s, ids));
+        const pages = sources.flatMap((s) => sourcePages(s, ids, layouts?.get(s.id)));
         const docs = replaceDoc(state.docs, insertAt(doc, target.index, pages));
         return { state: withDocs(state, docs, all), select: pages.map((p) => p.key) };
       }
       const created: Doc[] = [];
       let images: Doc | null = null;
       for (const source of sources) {
-        const pages = sourcePages(source, ids);
+        const pages = sourcePages(source, ids, layouts?.get(source.id));
         if (source.kind === 'image' && images) {
           images.pages = [...images.pages, ...pages];
           continue;

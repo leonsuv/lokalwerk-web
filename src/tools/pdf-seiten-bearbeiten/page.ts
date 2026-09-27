@@ -8,6 +8,7 @@ import { isPdf } from '../../core/files/classify.ts';
 import { formatBytes } from '../../core/format/bytes.ts';
 import type { PagePlan } from '../../core/pdf/organize.ts';
 import { normalizeRotation } from '../../core/pdf/stamp-geometry.ts';
+import { picksFromPlan } from '../../core/workshop/model.ts';
 import { $ } from '../../ui/dom.ts';
 import { saveBlob } from '../../ui/download.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
@@ -190,7 +191,10 @@ function scheduleThumb(entry: PageEntry): void {
 }
 
 function render(): void {
-  toWorkshop(current?.state === 'ok' ? [current.file] : null);
+  // Übergibt die Seiten, wie sie hier gerade stehen: Reihenfolge, Drehung, ohne gelöschte.
+  if (current?.state === 'ok') {
+    toWorkshop([current.file], new Map([[current.file, picksFromPlan(entries)]]));
+  } else toWorkshop(null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
   $('#org-empty').hidden = current !== null;
   const ok = current?.state === 'ok';

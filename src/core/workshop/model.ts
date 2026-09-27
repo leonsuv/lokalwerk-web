@@ -50,6 +50,26 @@ export type PageRef =
   | { key: PageKey; kind: 'source'; source: SourceId; index: number; rotate: Rotation }
   | { key: PageKey; kind: 'blank'; box: PageBox; rotate: Rotation };
 
+/**
+ * Seite einer Quelle mit zusätzlicher Drehung, ab 0 gezählt. Damit übergibt „PDF-Seiten
+ * bearbeiten“ Reihenfolge, Drehung und gelöschte Seiten an die Werkstatt.
+ */
+export interface PagePick {
+  index: number;
+  rotate: Rotation;
+}
+
+/** Seitenfolge je Quelle beim Hinzufügen; ohne Eintrag alle Seiten in Originalreihenfolge */
+export type SourceLayouts = ReadonlyMap<SourceId, readonly PagePick[]>;
+
+/**
+ * Seitenfolge aus dem Plan von „PDF-Seiten bearbeiten“ (organize.ts: Seite ab 1, Drehung in
+ * Grad) für die Übergabe an die Werkstatt.
+ */
+export function picksFromPlan(plan: readonly { source: number; rotate: number }[]): PagePick[] {
+  return plan.map((p) => ({ index: p.source - 1, rotate: normalizeRotation(p.rotate) }));
+}
+
 /** Seitenverweis ohne Schlüssel, z. B. in der internen Ablage */
 export type PageTemplate =
   | Omit<Extract<PageRef, { kind: 'source' }>, 'key'>

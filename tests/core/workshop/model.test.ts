@@ -23,6 +23,7 @@ import {
   counterIds,
   docNameFromFile,
   EMPTY_STATE,
+  picksFromPlan,
   totalSourceSize,
   unchangedSource,
   visiblePageSize,
@@ -107,6 +108,59 @@ describe('unverändertes Dokument (W12)', () => {
       counterIds(),
     ).state;
     expect(unchangedSource(image, image.docs[0] ?? doc())).toBeNull();
+  });
+});
+
+describe('Übergabe aus „PDF-Seiten bearbeiten“', () => {
+  it('rechnet Seiten ab 1 in Seiten ab 0 um und normalisiert die Drehung', () => {
+    expect(
+      picksFromPlan([
+        { source: 3, rotate: 90 },
+        { source: 1, rotate: -90 },
+        { source: 2, rotate: 360 },
+      ]),
+    ).toEqual([
+      { index: 2, rotate: 90 },
+      { index: 0, rotate: 270 },
+      { index: 1, rotate: 0 },
+    ]);
+  });
+
+  it('zeigt das Dokument bearbeitet und gibt es beim Export so aus', () => {
+    // Gelöscht: Seite 2; umsortiert: 4 vor 1; gedreht: Seite 3
+    const plan = [
+      { source: 4, rotate: 0 },
+      { source: 1, rotate: 0 },
+      { source: 3, rotate: 90 },
+    ];
+    const state = addSources(
+      [pdfSource('a', 4, 'Vertrag.pdf')],
+      undefined,
+      new Map([['a', picksFromPlan(plan)]]),
+    ).apply(EMPTY_STATE, counterIds()).state;
+    const doc = state.docs[0];
+    expect(doc && unchangedSource(state, doc)).toBeNull();
+    expect(exportPlan(state, [doc?.id ?? ''])).toEqual([
+      {
+        name: 'Vertrag.pdf',
+        pages: [
+          { kind: 'source', source: 'a', index: 3, rotate: 0 },
+          { kind: 'source', source: 'a', index: 0, rotate: 0 },
+          { kind: 'source', source: 'a', index: 2, rotate: 90 },
+        ],
+      },
+    ]);
+  });
+
+  it('bleibt ohne Änderungen die Originaldatei (W12)', () => {
+    const plan = [1, 2, 3].map((source) => ({ source, rotate: 0 }));
+    const state = addSources(
+      [pdfSource('a', 3)],
+      undefined,
+      new Map([['a', picksFromPlan(plan)]]),
+    ).apply(EMPTY_STATE, counterIds()).state;
+    const doc = state.docs[0];
+    expect(doc && unchangedSource(state, doc)?.id).toBe('a');
   });
 });
 

@@ -50,6 +50,59 @@ describe('addSources', () => {
     expect(result.select).toEqual(keysOf(result.state, 0, 1, 2));
   });
 
+  it('übernimmt eine vorgegebene Seitenfolge mit Drehung und ausgelassenen Seiten', () => {
+    const b = bench();
+    const layouts = new Map([
+      [
+        'a',
+        [
+          { index: 2, rotate: 90 },
+          { index: 0, rotate: 0 },
+          { index: 3, rotate: 270 },
+        ] as const,
+      ],
+    ]);
+    b.run(addSources([pdfSource('a', 4, 'Vertrag.pdf'), pdfSource('b', 2)], undefined, layouts));
+    expect(describeDocs(b.state)).toEqual({ Vertrag: ['a3r90', 'a1', 'a4r270'], b: ['b1', 'b2'] });
+    expect(new Set(allKeys(b.state)).size).toBe(5);
+  });
+
+  it('übernimmt eine Seitenfolge auch beim Einfügen an einer Stelle, Seiten auch doppelt', () => {
+    const b = bench(pdfSource('a', 2));
+    const doc = b.state.docs[0]?.id ?? '';
+    const layouts = new Map([
+      [
+        'b',
+        [
+          { index: 1, rotate: 180 },
+          { index: 1, rotate: 0 },
+        ] as const,
+      ],
+    ]);
+    const result = addSources([pdfSource('b', 3)], { doc, index: 1 }, layouts).apply(
+      b.state,
+      b.ids,
+    );
+    expect(describeDocs(result.state)).toEqual({ a: ['a1', 'b2r180', 'b2', 'a2'] });
+  });
+
+  it('lässt Seiten weg, die es nicht gibt, und nimmt ohne gültige Seite alle', () => {
+    const b = bench();
+    const layouts = new Map([
+      [
+        'a',
+        [
+          { index: 5, rotate: 0 },
+          { index: 1, rotate: 0 },
+          { index: -1, rotate: 0 },
+        ] as const,
+      ],
+      ['b', [{ index: 9, rotate: 90 }] as const],
+    ]);
+    b.run(addSources([pdfSource('a', 2), pdfSource('b', 2)], undefined, layouts));
+    expect(describeDocs(b.state)).toEqual({ a: ['a2'], b: ['b1', 'b2'] });
+  });
+
   it('ändert nichts ohne Dateien oder bei unbekanntem Ziel', () => {
     const b = bench(pdfSource('a', 1));
     expect(addSources([]).apply(b.state, b.ids).state).toBe(b.state);

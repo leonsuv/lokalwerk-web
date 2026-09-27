@@ -1,10 +1,31 @@
 # Plan Phase 3: PDF-Werkstatt
 
-Stand: 26.09.2026. Entwurf zur Freigabe durch Leon. Noch kein Produktivcode. Es gelten AGENTS.md, plan.md und plan-phase2.md unverändert; wo dieser Plan etwas Neues festlegt, steht es hier.
+Stand: 27.09.2026. **Plan und Entwurf freigegeben von Leon am 27.09.2026**, Entscheidungen unten. Umsetzung ab Stufe 1. Es gelten AGENTS.md, plan.md und plan-phase2.md unverändert; wo dieser Plan etwas Neues festlegt, steht es hier.
 
 Klickbarer Oberflächen-Entwurf: `prototype/pdf-werkstatt-entwurf.html` (nur Referenz, wird nie gebaut oder ausgeliefert; Platzhalter-Seiten statt echter PDFs).
 
 Aufwand wie in plan-phase2.md Abschnitt 0: **S** ein Schritt, höchstens ein Tag; **M** zwei bis drei Tage; **L** eine Woche oder mehr.
+
+## Entscheidungen (Leon, 27.09.2026)
+
+Antworten auf die offenen Fragen aus Abschnitt 14. Wo die Abschnitte 1–13 davon abweichen, gilt diese Liste.
+
+| Nr. | Frage | Entscheidung |
+|---|---|---|
+| W1 | Übergabe ohne Neuladen | Ja, wie auf der Startseite (Abschnitt 5.3). |
+| W2 | Kostenlos/Pro | Stufe 1 kostenlos. Stufe 2 kostenlos für einzelne Dokumente; Stapel auf mehrere Dokumente als Pro-Kandidat, **noch nicht bauen**. Stufe 3: PDF verkleinern **kostenlos** (wichtiger Suchbegriff), Texterkennung Pro, Projekt speichern Pro-Kandidat. |
+| W3 | Name und Adresse | „PDF-Werkstatt“ unter `/pdf-werkstatt/`. |
+| W4 | Hervorhebung | Wie vorgeschlagen. Die Startseiten-Ablage öffnet bei PDFs **nicht** sofort die Werkstatt, sondern zeigt die Auswahl mit der Werkstatt an erster Stelle (viele haben nur eine schnelle Einzelaufgabe). |
+| W5 | Tastenkürzel | Freigegeben mit Änderungen: Duplizieren auf **D** (ohne Modifier, wie R), weil Cmd+Umschalt+D auf dem Mac in Safari und Chrome belegt ist. Alt+Pfeil links/rechts ist unter Windows „Zurück/Vorwärts“; testen oder andere Kombination vorschlagen, siehe 6.2. Übersicht mit „?“: ja. Interne Ablage für Strg/Cmd+X/C/V: ja. |
+| W6 | Speicher | Nur Hinweis ab 1 GB, keine harte Grenze. |
+| W7 | Verlauf | 100 Schritte, dazu Freigabe von Quellen aus „Einbacken“ wie in Abschnitt 2 und 7.2. |
+| W8 | Einzelwerkzeuge auf Werkstatt-Module umstellen | Ja, aber **erst nach Stufe 2**, als eigener Schritt mit eigener Freigabe. Sichtbar bleibt alles gleich. |
+| W9 | Gemischte Ablage (PDFs und Bilder) auf der Startseite | Ja; dann wird nur die Werkstatt angeboten. |
+| W10 | Handy | Nur „Nach vorne/Nach hinten“ und „Verschieben nach …“, **kein Ziehen in Stufe 1**. |
+| W11 | Dateinamen | Wie vorgeschlagen; doppelte Dokumentnamen im ZIP automatisch mit „(2)“, „(3)“ usw. unterscheiden. |
+| W12 | Unverändertes Dokument | Originaldatei ausgeben; der Exporthinweis sagt kurz, dass sie unverändert übernommen wurde. |
+| W13 | Einbacken | Einverstanden. |
+| W14 | Leerseite | Größe wie die Nachbarseite als Vorgabe; DIN A4 hoch und quer als Alternativen. |
 
 ---
 
@@ -66,7 +87,7 @@ interface History { past: WorkshopState[]; present: WorkshopState; future: Works
 
 Befehle der Stufe 1 (je eine reine Funktion mit Tests): `addSources`, `newDoc`, `renameDoc`, `closeDoc`, `duplicateDoc`, `movePages(keys, targetDoc, targetIndex)`, `copyPages`, `rotatePages(keys, ±90)`, `deletePages`, `duplicatePages`, `insertBlank(doc, index, box)`, `insertImages(doc, index, sources)`, `splitDoc(doc, index)`, `mergeDocs(ids)`, `extractToNewDoc(keys)`.
 
-Verlaufsgrenze: 100 Schritte (Frage 7). Quellen, auf die weder der aktuelle Zustand noch der Verlauf verweist, werden freigegeben (pdf.js-Dokument schließen, Bytes im Worker löschen).
+Verlaufsgrenze: 100 Schritte (W7). Quellen, auf die weder der aktuelle Zustand noch der Verlauf verweist, werden freigegeben (pdf.js-Dokument schließen, Bytes im Worker löschen).
 
 ## 3. Architektur
 
@@ -143,7 +164,7 @@ Kopf wie jede Werkzeugseite (Icon, Titel „PDF-Werkstatt“, ein Satz). Darunte
 ### 5.2 Startseite, `/werkzeuge/` und Einzelwerkzeuge
 
 - **Register:** eigener Eintrag, Kategorie PDF, `featured: true`. Auf `/werkzeuge/` steht sie als breite erste Karte der Kategorie PDF, auf der Startseite als hervorgehobene Karte über dem Werkzeug-Raster.
-- **Startseite:** Beim Ablegen von PDFs (auch mehreren, auch gemischt mit Bildern, Frage 9) erscheint „In der PDF-Werkstatt öffnen“ als erste Option. Die Dateien bleiben im Arbeitsspeicher.
+- **Startseite:** Beim Ablegen von PDFs (auch mehreren) erscheint die Auswahl mit „In der PDF-Werkstatt öffnen“ als erster Option; die Werkstatt öffnet sich nicht sofort (W4). Bei gemischter Ablage aus PDFs und Bildern wird nur die Werkstatt angeboten (W9). Die Dateien bleiben im Arbeitsspeicher.
 - **Einzelwerkzeuge:** Nach dem Laden einer Datei erscheint „In der PDF-Werkstatt weiterbearbeiten“. Klick: Werkstatt ohne Neuladen öffnen, Datei(en) im Speicher übergeben. Betroffen: PDFs zusammenfügen, PDF teilen, PDF-Seiten bearbeiten, PDF zu Bildern, PDF schwärzen, Unterschrift einfügen, PDF-Formular ausfüllen, Seitenzahlen, Stempel, PDF-Metadaten entfernen, Bilder zu PDF, Dokument scannen (nach dem Erzeugen).
 - Die Erklärtexte der Einzelwerkzeuge bekommen einen Satz mit Link zur Werkstatt (Texte zur Freigabe).
 
@@ -159,7 +180,7 @@ Mehrere Spalten und Ziehen zwischen Dokumenten sind auf 390 px nicht sinnvoll: V
 - Raster mit drei Seiten je Zeile.
 - Tippen öffnet die große Vorschau; ein Knopf „Auswählen“ schaltet in den Auswahlmodus mit Häkchen (lange drücken ebenso).
 - Untere Aktionsleiste: Drehen, Löschen, Verschieben nach …, Mehr. „Verschieben nach …“ öffnet eine Liste der Dokumente und eine Position („Anfang“, „Ende“, „nach Seite …“). Das ersetzt Ziehen zwischen Dokumenten.
-- Umsortieren innerhalb eines Dokuments: in der großen Vorschau „Nach vorne“/„Nach hinten“; Ziehen nur mit Griff und nach kurzem Halten (Frage 10).
+- Umsortieren innerhalb eines Dokuments: „Nach vorne“/„Nach hinten“ in der Aktionsleiste und in der großen Vorschau. Kein Ziehen auf dem Handy in Stufe 1 (W10).
 - Export und Rückgängig wie am Desktop.
 - Grenze: auf älteren Handys weniger Seiten (Speicher), Meldung wie in Abschnitt 8.
 
@@ -185,16 +206,18 @@ Mehrere Spalten und Ziehen zwischen Dokumenten sind auf 390 px nicht sinnvoll: V
 | Esc | Auswahl aufheben, Ziehen oder Menü abbrechen |
 | Strg/Cmd+X, Strg/Cmd+C, Strg/Cmd+V | Seiten ausschneiden, kopieren, vor der Fokus-Seite einfügen (interne Ablage, nicht die Zwischenablage des Systems) |
 | Alt+Pfeil hoch/runter | Auswahl eine Position nach vorne/hinten |
-| Alt+Pfeil links/rechts | Auswahl ans Ende des Nachbardokuments |
+| ~~Alt+Pfeil links/rechts~~ → **M** (Vorschlag, W5) | „Verschieben nach …“: Dialog mit Ziel-Dokument und Position, derselbe wie auf dem Handy. Alt+Pfeil links/rechts ist unter Windows und Linux die Browser-Navigation; das ließ sich hier nicht prüfen (nur Chrome und Safari unter macOS vorhanden, wo die Kombination nicht belegt ist), also unsicher. Die Funktion bleibt außerdem über das Kontextmenü erreichbar. |
 | R / Umschalt+R | rechts / links drehen |
 | Entf | Auswahl löschen |
-| Strg/Cmd+Umschalt+D | Auswahl duplizieren (Strg+D belegt der Browser für Lesezeichen) |
+| D | Auswahl duplizieren (W5; Strg+D und Cmd+Umschalt+D belegt der Browser) |
 | Strg/Cmd+Z, Strg/Cmd+Umschalt+Z, Strg+Y | Rückgängig, Wiederholen |
 | Eingabe | große Vorschau; darin Pfeiltasten blättern, Esc schließt |
 | F2 | Dokument umbenennen (im Spaltenkopf) |
 | Umschalt+F10 oder Kontextmenü-Taste | Kontextmenü |
 
-Kürzel gelten nur, wenn der Fokus in den Spalten liegt, nie in Eingabefeldern. Eine Übersicht öffnet sich mit „?“ (Frage 5).
+Kürzel gelten nur, wenn der Fokus in den Spalten liegt, nie in Eingabefeldern. Eine Übersicht öffnet sich mit „?“ (W5).
+
+Hinweis Screenreader: Einzelbuchstaben (R, D, M) sind in NVDA und JAWS im Lesemodus eigene Befehle. Weil jede Spalte eine `listbox` ist, schalten beide dort in den Fokusmodus und reichen die Tasten an die Seite weiter; das wird in Schritt 1.4 mit NVDA geprüft (docs/livegang.md, Screenreader-Tests).
 
 ### 6.3 Touch
 
@@ -244,14 +267,14 @@ Ziel: mindestens 500 Seiten über alle Dokumente ohne spürbares Ruckeln.
 - **DOM:** 500 Seitenkacheln sind für den Browser unkritisch, wenn sie leicht sind: fester Platzhalter mit Seitenverhältnis, `content-visibility: auto` je Spalte, keine Schatten auf jeder Kachel beim Ziehen.
 - **Bilder:** höchstens etwa 200 gerenderte Vorschaubilder gleichzeitig (bei 150 × 212 px rund 25 MB), außerhalb des Sichtbereichs freigeben. iOS Safari begrenzt den gesamten Canvas-Speicher einer Seite hart; Freigeben (Canvas 0 × 0) ist dort Pflicht, nicht Kür.
 - **Befehle:** Verschieben von 100 Seiten ist ein neues Array je betroffenem Dokument, im Millisekundenbereich; die Oberfläche aktualisiert nur betroffene Spalten.
-- **Speichergrenzen:** Summe der Quellgrößen mitführen; ab etwa 1 GB Hinweis, dass der Browser knapp werden kann. `out-of-memory` aus dem Worker (vorhanden in `PdfError`) und fehlgeschlagene Vorschaubilder werden verständlich gemeldet („Zu wenig Arbeitsspeicher für diese Datei. Schließe andere Dokumente oder lade die Seite neu.“). Chrome meldet Speicher über `performance.memory`, Safari und Firefox nicht; dort nur die Summe als Richtwert (Frage 6).
+- **Speichergrenzen:** Summe der Quellgrößen mitführen; ab etwa 1 GB Hinweis, dass der Browser knapp werden kann. `out-of-memory` aus dem Worker (vorhanden in `PdfError`) und fehlgeschlagene Vorschaubilder werden verständlich gemeldet („Zu wenig Arbeitsspeicher für diese Datei. Schließe andere Dokumente oder lade die Seite neu.“). Chrome meldet Speicher über `performance.memory`, Safari und Firefox nicht; dort nur die Summe als Richtwert. Nur Hinweis, keine harte Grenze (W6).
 - **Export:** großer Export mit Fortschritt; mehrere Dokumente nacheinander, jede Quelle einmal geladen.
 
 ## 9. Export und Hinweise
 
 - **Einzelnes Dokument**, **Auswahl als neue PDF**, **alle Dokumente als ZIP**.
-- Dateiname: Dokumentname + `.pdf`; ZIP `pdf-werkstatt.zip` (Frage 11).
-- Wie in den Einzelwerkzeugen gehen beim Neuzusammensetzen Formularfelder, Lesezeichen und Signaturen verloren (docs/pdf-lib.md). Die Werkstatt erkennt sie beim Laden und zeigt vor dem Export einen Hinweis an der betroffenen Datei, mit denselben Texten wie in „PDF-Seiten bearbeiten“ und „PDFs zusammenfügen“. Ist ein Dokument unverändert eine einzige Quelle, wird die Originaldatei ausgegeben (Frage 12).
+- Dateiname: Dokumentname + `.pdf`; ZIP `pdf-werkstatt.zip`. Gleiche Dokumentnamen im ZIP werden automatisch unterschieden: `Vertrag.pdf`, `Vertrag (2).pdf`, `Vertrag (3).pdf` (W11).
+- Wie in den Einzelwerkzeugen gehen beim Neuzusammensetzen Formularfelder, Lesezeichen und Signaturen verloren (docs/pdf-lib.md). Die Werkstatt erkennt sie beim Laden und zeigt vor dem Export einen Hinweis an der betroffenen Datei, mit denselben Texten wie in „PDF-Seiten bearbeiten“ und „PDFs zusammenfügen“. Ist ein Dokument unverändert eine einzige Quelle (alle Seiten in Originalreihenfolge, ohne Drehung und Operationen), wird die Originaldatei ausgegeben; der Exporthinweis sagt kurz, dass sie unverändert übernommen wurde (W12).
 - Verschlüsselte PDFs werden beim Laden abgelehnt, mit derselben Meldung wie heute.
 - Vor dem Verlassen der Seite mit Änderungen seit dem letzten Export: Browser-Warnung (`beforeunload`).
 
@@ -314,17 +337,17 @@ Tests: Die bestehenden Tests der Werkzeuge bleiben; neu Tests für Operationen i
 - **Datenschutzerklärung:** Stufe 1 und 2 verarbeiten wie alle Werkzeuge nur im Browser; nach meiner Einschätzung keine inhaltliche Änderung. Stufe 3 „Projekt speichern“ legt eine Datei beim Nutzer ab, auch lokal; Hinweis an die Rechtsprüfung, ob das erwähnt werden soll.
 - **AGB:** nicht betroffen, solange kostenlos.
 
-## 13. Kostenlos oder Pro (zur Entscheidung)
+## 13. Kostenlos oder Pro (entschieden, W2)
 
 | Stufe | Vorschlag | Begründung |
 |---|---|---|
 | 1 Kern | **kostenlos** | Die Einzelwerkzeuge (Zusammenfügen, Teilen, Seiten bearbeiten, Bilder zu PDF) sind kostenlos; die Werkstatt verbindet sie nur. AGENTS.md Abschnitt 10: Kostenloses wird nicht nachträglich hinter Pro versteckt. Gutes Aushängeschild für Suchmaschinen. |
 | 2 Werkzeuge in der Werkstatt | **kostenlos** für die Anwendung auf ein Dokument; **Pro-Kandidat**: dieselbe Aktion auf mehrere Dokumente in einem Schritt (Stapel) | Die Werkzeuge selbst sind kostenlos; Pro spart Zeit bei wiederkehrender Arbeit (wie auf der Pro-Seite beschrieben). |
-| 3 Verkleinern | kostenlos oder Pro, offen | hoher Nutzen, hoher Aufwand |
+| 3 Verkleinern | **kostenlos** (W2) | hoher Nutzen, wichtiger Suchbegriff |
 | 3 Texterkennung | **Pro** | in AGENTS.md bereits als Pro vorgesehen |
 | 3 Projekt speichern | **Pro-Kandidat** | typische Funktion für regelmäßige Arbeit |
 
-## 14. Offene Fragen
+## 14. Offene Fragen (beantwortet, siehe Entscheidungen W1–W14)
 
 1. **Übergabe ohne Neuladen:** Einverstanden, dass Einzelwerkzeuge wie die Startseite per Seitenwechsel ohne Neuladen in die Werkstatt wechseln (Adresse ändert sich, Zurück-Taste lädt neu)? Eine Alternative ohne Browser-Speicher gibt es nicht, außer einem neuen Tab mit `postMessage` (fehleranfälliger, zwei Fenster).
 2. **Kostenlos oder Pro** je Stufe (Abschnitt 13).

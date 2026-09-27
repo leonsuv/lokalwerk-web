@@ -209,3 +209,9 @@ export function lossNote(
   const more = entries.length > 3 ? ` Weitere ${entries.length - 3} Dateien ebenso.` : '';
   return `${parts.join(' ')}${more} Beim Speichern als neu zusammengesetzte PDF sind sie nicht mehr enthalten, wie beim Zusammenfügen.`;
 }
+
+// Handy-Ansicht (plan-phase3.md 5.4)
+export const mobileDocOption = (name: string, count: number): string => `${name} (${count})`;
+export const mobileStatus = (count: number): string =>
+  count > 0 ? `${pages(count)} ausgewählt` : 'Tippe auf Seiten, um sie auszuwählen.';
+export const MOBILE_HINT = 'Tippen öffnet die Vorschau. Für mehrere Seiten auf „Auswählen“ tippen.';

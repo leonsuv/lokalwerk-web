@@ -25,6 +25,7 @@ export class Preview {
     private readonly pdfjs: Promise<PdfJs>,
     private readonly handlers: {
       rotate(key: PageKey): void;
+      shift(key: PageKey, delta: -1 | 1): void;
       /** Beim Schließen: Fokus auf diese Seite */
       closed(key: PageKey): void;
     },
@@ -32,6 +33,15 @@ export class Preview {
     $('#ws-preview-prev').addEventListener('click', () => this.step(-1));
     $('#ws-preview-next').addEventListener('click', () => this.step(1));
     $('#ws-preview-rotate').addEventListener('click', () => this.rotate());
+    // Handy (W10): Umsortieren in der Vorschau
+    $('#ws-preview-forward').addEventListener(
+      'click',
+      () => this.key && this.handlers.shift(this.key, -1),
+    );
+    $('#ws-preview-back').addEventListener(
+      'click',
+      () => this.key && this.handlers.shift(this.key, 1),
+    );
     this.dialog.addEventListener('keydown', (event) => {
       if (event.ctrlKey || event.metaKey || event.altKey) return;
       if (event.key === 'ArrowLeft') this.step(-1);

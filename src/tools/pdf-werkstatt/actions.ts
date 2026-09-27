@@ -270,9 +270,10 @@ export function createActions(ctx: ActionContext) {
       return { doc: doc.id, index, neighbour: blankBoxFor(store.state, doc, index) };
     },
 
-    insertBlank: (size: 'neighbour' | 'a4' | 'a4-landscape'): void => {
-      const focus = store.selection.focus ? where(store.selection.focus) : null;
-      const doc = findDoc(store.state, focus?.doc ?? store.state.docs[0]?.id ?? '');
+    /** Nach der Seite mit dem Fokus; mit `inDoc` am Ende dieses Dokuments */
+    insertBlank: (size: 'neighbour' | 'a4' | 'a4-landscape', inDoc?: DocId): void => {
+      const focus = !inDoc && store.selection.focus ? where(store.selection.focus) : null;
+      const doc = findDoc(store.state, inDoc ?? focus?.doc ?? store.state.docs[0]?.id ?? '');
       if (!doc) return;
       const index = focus ? focus.position : doc.pages.length;
       const box =
@@ -318,6 +319,13 @@ export function createActions(ctx: ActionContext) {
       store.run(extractToNewDoc(keys, name, 'copy'));
       ctx.announce(t.docCreated(name));
       ctx.focusAfterRender();
+    },
+
+    /** Eine bestimmte Seite eine Stelle verschieben (große Vorschau auf dem Handy) */
+    shiftOne: (key: PageKey, delta: -1 | 1): void => {
+      const before = store.state;
+      store.run(shiftPages([key], delta));
+      if (store.state !== before) ctx.announce(t.shifted(1, delta));
     },
 
     /** Eine bestimmte Seite drehen (große Vorschau) */

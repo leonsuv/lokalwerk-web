@@ -35,6 +35,7 @@ import { setupDrag } from './drag.ts';
 import { currentDoc, Exporter, lossSources } from './export.ts';
 import { handleAreaKey, handleBoardKey } from './keyboard.ts';
 import { Menu, type MenuItem } from './menu.ts';
+import { setupMobile } from './mobile.ts';
 import { Preview } from './preview.ts';
 import { SourceFiles } from './sources.ts';
 import { WorkshopStore } from './store.ts';
@@ -108,6 +109,7 @@ const moveDialog = new MoveDialog((keys, choice) => actions.moveTo(keys, choice.
 const mergeDialog = new MergeDialog((docs) => actions.merge(docs));
 const preview = new Preview(store, files, pdfjs, {
   rotate: (key) => actions.rotateOne(key, 90),
+  shift: (key, delta) => actions.shiftOne(key, delta),
   closed: (key) => {
     store.select(moveFocus(store.selection, key));
     pendingFocus = { doc: undefined };
@@ -150,6 +152,45 @@ function applyFocus(): void {
 // Zeichnen
 
 const toolbar = $('#ws-toolbar');
+const phone = window.matchMedia('(max-width: 640px)');
+
+// Handy-Ansicht (W10); „Mehr“ enthält, was nicht in die untere Leiste passt
+const mobile = setupMobile({
+  store,
+  actions,
+  board: boardEl,
+  menu,
+  phone,
+  openPreview: (key) => openPreview(key),
+  announceSelection,
+  moreItems: () => [
+    { id: 'undo', label: 'Rückgängig', disabled: !store.canUndo },
+    { id: 'redo', label: 'Wiederholen', disabled: !store.canRedo },
+    {
+      id: 'duplicate',
+      label: 'Duplizieren',
+      disabled: store.selection.keys.size === 0,
+      separator: true,
+    },
+    { id: 'extract', label: 'Als neues Dokument', disabled: store.selection.keys.size === 0 },
+    { id: 'blank-end', label: 'Leere Seite am Ende' },
+    { id: 'new-doc', label: 'Neues Dokument', separator: true },
+    { id: 'merge', label: 'Dokumente zusammenführen …', disabled: store.state.docs.length < 2 },
+  ],
+  runMore: (id) => {
+    const choices: Record<string, () => void> = {
+      undo: actions.undo,
+      redo: actions.redo,
+      duplicate: actions.duplicate,
+      extract: actions.extract,
+      'blank-end': () => actions.insertBlank('neighbour', mobile.activeDoc() ?? undefined),
+      'new-doc': actions.newDoc,
+      merge: () => mergeDialog.open(store.state),
+    };
+    choices[id]?.();
+  },
+});
+$('#ws-m-add').addEventListener('click', () => actions.addFiles());
 
 function render(): void {
   // Eine Kachel, die beim Umsortieren kurz aus dem Dokument genommen wird, verliert den Fokus.
@@ -197,6 +238,7 @@ function render(): void {
   $('#ws-loss').hidden = loss.length === 0;
   if (loss.length > 0) $('#ws-loss-text').textContent = t.lossNote(loss);
   preview.refresh();
+  mobile.render();
 }
 
 store.subscribe(render);
@@ -247,7 +289,8 @@ async function addFiles(list: File[], target?: { doc: DocId; index: number }): P
   for (const message of failed) showToast(message);
   if (added.length === 0) return;
   const pageCount = added.reduce((n, s) => n + s.pages.length, 0);
-  store.run(addSources(added, target));
+  const result = store.run(addSources(added, target));
+  if (result.doc) mobile.showDoc(result.doc);
   const targetDoc = target ? store.state.docs.find((d) => d.id === target.doc) : undefined;
   announce(targetDoc ? t.addedInto(pageCount, targetDoc.name) : t.added(added.length, pageCount));
 }
@@ -546,7 +589,6 @@ boardEl.addEventListener('drop', (event) => {
 });
 
 // Ziehen mit Maus und Touch (nicht in der Handy-Ansicht, W10)
-const phone = window.matchMedia('(max-width: 640px)');
 setupDrag({ store, actions, board: boardEl, announce, isPhone: () => phone.matches });
 
 // Rückgängig, Wiederholen und „?“ im ganzen Werkstatt-Bereich

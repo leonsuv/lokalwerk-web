@@ -124,6 +124,15 @@
     </button>
   </div>
 
+  <div class="ws-mobile" id="ws-mobile" hidden>
+    <select id="ws-m-doc" aria-label="Dokument"></select>
+    <button type="button" class="ws-tb" id="ws-m-select" aria-pressed="false">Auswählen</button>
+    <button type="button" class="ws-tb" data-cmd="add" id="ws-m-add" aria-label="Hinzufügen">
+      <svg width="20" height="20" aria-hidden="true"><use href="#i-plus" /></svg>
+    </button>
+  </div>
+  <p class="ws-m-status" id="ws-m-status"></p>
+
   <div class="ws-layout">
     <div class="ws-main">
       <label class="drop ws-drop" id="ws-drop">
@@ -169,6 +178,33 @@
         ><span id="ws-memory-text"></span>
       </p>
     </aside>
+  </div>
+
+  <div class="ws-actions" id="ws-actions" role="group" aria-label="Aktionen für die Auswahl" hidden>
+    <button type="button" data-m="rotate">
+      <svg width="20" height="20" aria-hidden="true"><use href="#i-rotate-right" /></svg>Drehen
+    </button>
+    <button type="button" data-m="forward">
+      <svg width="20" height="20" aria-hidden="true"><use href="#i-up" /></svg>Nach vorne
+    </button>
+    <button type="button" data-m="back">
+      <svg width="20" height="20" aria-hidden="true"><use href="#i-down" /></svg>Nach hinten
+    </button>
+    <button type="button" data-m="move">
+      <svg width="20" height="20" aria-hidden="true"><use href="#i-right" /></svg>Verschieben
+    </button>
+    <button type="button" data-m="delete">
+      <svg width="20" height="20" aria-hidden="true"><use href="#i-x" /></svg>Löschen
+    </button>
+    <button
+      type="button"
+      data-m="more"
+      aria-label="Weitere Aktionen"
+      aria-haspopup="menu"
+      aria-expanded="false"
+    >
+      <svg width="20" height="20" aria-hidden="true"><use href="#i-dots" /></svg>Mehr
+    </button>
   </div>
 
   <p class="visually-hidden" id="ws-live" aria-live="polite"></p>
@@ -322,9 +358,15 @@
       <button type="button" class="btn ghost" id="ws-preview-prev" aria-keyshortcuts="ArrowLeft">
         <svg width="18" height="18" aria-hidden="true"><use href="#i-left" /></svg>Vorherige
       </button>
+      <button type="button" class="btn ghost ws-m-only" id="ws-preview-forward">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-up" /></svg>Nach vorne
+      </button>
       <button type="button" class="btn ghost" id="ws-preview-rotate" aria-keyshortcuts="R">
         <svg width="18" height="18" aria-hidden="true"><use href="#i-rotate-right" /></svg>Rechts
         drehen
+      </button>
+      <button type="button" class="btn ghost ws-m-only" id="ws-preview-back">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-down" /></svg>Nach hinten
       </button>
       <button type="button" class="btn ghost" id="ws-preview-next" aria-keyshortcuts="ArrowRight">
         Nächste<svg width="18" height="18" aria-hidden="true"><use href="#i-right" /></svg>

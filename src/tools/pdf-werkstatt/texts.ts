@@ -130,3 +130,10 @@ export const AFTER_PAGE_INVALID = (max: number): string =>
     : `Gib eine Seite von 1 bis ${max} ein.`;
 
 export const EMPTY_DOC = `Noch keine Seiten. Verschiebe Seiten hierher oder füge sie mit ${combo('mod', 'V')} ein.`;
+
+// Ziehen (plan-phase3.md 6.4: Textentsprechung der Einfügemarke)
+export const dragTarget = (doc: string, before: number | null): string =>
+  before === null ? `Ziel: Ende von ${doc}` : `Ziel: vor Seite ${before} von ${doc}`;
+export const DRAG_NO_TARGET = 'Kein Ziel. Zum Ablegen über ein Dokument ziehen.';
+export const DRAG_CANCELLED = 'Ziehen abgebrochen';
+export const NOTHING_MOVED = 'Die Seiten stehen schon an dieser Stelle.';

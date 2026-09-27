@@ -1700,6 +1700,54 @@ select[multiple] {
 .ws-col-menu {
   flex: none;
 }
+/* Ziehen: Einfügemarke, mitgezogenes Bild, keine Textauswahl und kein Kontextmenü (iOS) */
+.ws-page {
+  -webkit-touch-callout: none;
+}
+.ws-dragging,
+.ws-dragging * {
+  cursor: grabbing;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ws-marker {
+  position: fixed;
+  z-index: 40;
+  background: var(--primary);
+  border-radius: 3px;
+  pointer-events: none;
+}
+.ws-marker.vertical {
+  width: 4px;
+}
+.ws-marker.horizontal {
+  height: 4px;
+}
+.ws-ghost {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  width: 5.75rem;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 20px rgb(14 21 48 / 0.3));
+}
+.ws-ghost-count {
+  position: absolute;
+  top: -0.6rem;
+  right: -0.6rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-ink);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ws-page {
+    transition: opacity 0.12s;
+  }
+}
 /* Menü (Kontextmenü, Spaltenkopf) */
 .ws-menu {
   position: fixed;

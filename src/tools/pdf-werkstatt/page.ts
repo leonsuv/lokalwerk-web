@@ -27,6 +27,7 @@ import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { createActions } from './actions.ts';
 import { Board, SourceBadges } from './board.ts';
 import { MoveDialog, ShortcutsDialog } from './dialogs.ts';
+import { setupDrag } from './drag.ts';
 import { handleAreaKey, handleBoardKey } from './keyboard.ts';
 import { Menu, type MenuItem } from './menu.ts';
 import { SourceFiles } from './sources.ts';
@@ -401,6 +402,10 @@ boardEl.addEventListener('drop', (event) => {
   const doc = id ? store.state.docs.find((d) => d.id === id) : undefined;
   void addFiles(dropped, doc ? { doc: doc.id, index: doc.pages.length } : undefined);
 });
+
+// Ziehen mit Maus und Touch (nicht in der Handy-Ansicht, W10)
+const phone = window.matchMedia('(max-width: 640px)');
+setupDrag({ store, actions, board: boardEl, announce, isPhone: () => phone.matches });
 
 // Rückgängig, Wiederholen und „?“ im ganzen Werkstatt-Bereich
 $('.ws-page-area').addEventListener('keydown', (event) => handleAreaKey(event, actions));

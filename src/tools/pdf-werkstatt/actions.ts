@@ -133,7 +133,13 @@ export function createActions(ctx: ActionContext) {
     moveTo: (keys: readonly PageKey[], doc: DocId, index: number): void => {
       const target = findDoc(store.state, doc);
       if (!target || keys.length === 0) return;
+      const before = store.state;
       store.run(movePages(keys, doc, index));
+      if (store.state === before) {
+        ctx.announce(t.NOTHING_MOVED);
+        ctx.focusAfterRender(doc);
+        return;
+      }
       const at = keys[0] ? where(keys[0]) : null;
       ctx.announce(t.moved(keys.length, target.name, at?.position ?? index + 1));
       ctx.focusAfterRender(doc);

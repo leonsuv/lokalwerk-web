@@ -1,14 +1,14 @@
 /**
  * Seiten einer PDF umsortieren, drehen und löschen (plan-phase2.md Werkzeug 2). Ohne DOM,
- * läuft im Worker. Wie beim Teilen werden die Seiten in eine neue PDF übernommen: keine
- * Metadaten, Lesezeichen, Formular-Definitionen oder Signaturen (docs/pdf-lib.md).
+ * läuft im Worker. Sonderfall von assemble.ts mit einer Quelle (plan-phase3.md Schritt 1.2):
+ * Die Seiten werden in eine neue PDF übernommen, ohne Metadaten, Lesezeichen,
+ * Formular-Definitionen oder Signaturen (docs/pdf-lib.md), auch wenn sich nichts ändert.
  *
  * Drehung: /Rotate der Seite in Schritten von 90 Grad im Uhrzeigersinn (ISO 32000-2, 7.7.3.3).
  */
 
-import { degrees, PDFDocument } from 'pdf-lib';
-import { loadPdf, PdfError, toPdfError } from './merge.ts';
-import { normalizeRotation } from './stamp-geometry.ts';
+import { assemblePdfs } from './assemble.ts';
+import { loadPdf, PdfError } from './merge.ts';
 
 export interface PagePlan {
   /** Seite im Original, ab 1 */
@@ -21,29 +21,25 @@ export async function organizePdf(
   bytes: Uint8Array,
   plan: readonly PagePlan[],
 ): Promise<Uint8Array> {
-  const source = await loadPdf(bytes);
-  const count = source.getPageCount();
-  if (plan.length === 0) throw new PdfError('no-pages');
-  for (const p of plan) {
-    if (!Number.isInteger(p.source) || p.source < 1 || p.source > count) {
-      throw new RangeError(`Seite ${p.source} gibt es nicht`);
-    }
+  if (plan.length === 0) {
+    // Fehler der Datei (leer, verschlüsselt, beschädigt) haben Vorrang, wie bisher.
+    await loadPdf(bytes);
+    throw new PdfError('no-pages');
   }
-  try {
-    const out = await PDFDocument.create({ updateMetadata: false });
-    const pages = await out.copyPages(
-      source,
-      plan.map((p) => p.source - 1),
-    );
-    for (const [i, page] of pages.entries()) {
-      const extra = plan[i]?.rotate ?? 0;
-      if (extra % 360 !== 0) {
-        page.setRotation(degrees(normalizeRotation(page.getRotation().angle + extra)));
-      }
-      out.addPage(page);
-    }
-    return await out.save();
-  } catch (error) {
-    throw toPdfError(error);
-  }
+  const [result] = await assemblePdfs(
+    [
+      {
+        name: '',
+        pages: plan.map((p) => ({
+          kind: 'source',
+          source: 'original',
+          index: p.source - 1,
+          rotate: p.rotate,
+        })),
+      },
+    ],
+    new Map([['original', { kind: 'pdf', bytes }]]),
+  );
+  if (!result) throw new PdfError('no-pages');
+  return result.bytes;
 }

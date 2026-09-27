@@ -1,0 +1,184 @@
+/**
+ * Datenmodell der PDF-Werkstatt (plan-phase3.md Abschnitt 2). Ohne DOM und ohne pdf-lib, läuft
+ * im Hauptthread und in Tests.
+ *
+ * Ein Dokument ist eine Liste von Seitenverweisen (Quelle, Seite, Drehung), die geladenen
+ * Dateien werden nie verändert. Der Zustand ist unveränderlich: Befehle (commands.ts) erzeugen
+ * neue Objekte und teilen unveränderte Teile mit dem alten Zustand.
+ */
+
+import { A4 } from '../pdf/image-layout.ts';
+import { normalizeRotation, visibleSize, type PageRotation } from '../pdf/stamp-geometry.ts';
+
+export type SourceId = string;
+export type DocId = string;
+/** Stabile ID eines Seitenverweises, auch bei Duplikaten eindeutig (Auswahl, DOM, Ansagen) */
+export type PageKey = string;
+export type Rotation = PageRotation;
+
+/** Seitengröße in pt, wie in der Datei (ohne die eigene /Rotate der Seite) */
+export interface PageBox {
+  width: number;
+  height: number;
+}
+
+/** Was beim Neuzusammensetzen verloren geht, für die Hinweise vor dem Export (Abschnitt 9) */
+export interface SourceFacts {
+  form: boolean;
+  xfa: boolean;
+  outline: boolean;
+  signed: boolean;
+}
+
+export const NO_FACTS: SourceFacts = { form: false, xfa: false, outline: false, signed: false };
+
+/** Eine geladene Datei. Die Bytes liegen nur im Worker und bei pdf.js, nicht im Zustand. */
+export interface Source {
+  id: SourceId;
+  kind: 'pdf' | 'image';
+  /** Dateiname, nur zur Anzeige */
+  name: string;
+  /** Dateigröße in Byte, für den Speicherhinweis (Abschnitt 8) */
+  size: number;
+  /** Je Seite: Größe und eigene Drehung der Seite in der Datei. Bilder: eine Seite. */
+  pages: readonly { box: PageBox; rotate: Rotation }[];
+  facts: SourceFacts;
+}
+
+/** Eine Seite im Dokument. `rotate` ist die zusätzliche Drehung im Uhrzeigersinn. */
+export type PageRef =
+  | { key: PageKey; kind: 'source'; source: SourceId; index: number; rotate: Rotation }
+  | { key: PageKey; kind: 'blank'; box: PageBox; rotate: Rotation };
+
+/** Seitenverweis ohne Schlüssel, z. B. in der internen Ablage */
+export type PageTemplate =
+  | Omit<Extract<PageRef, { kind: 'source' }>, 'key'>
+  | Omit<Extract<PageRef, { kind: 'blank' }>, 'key'>;
+
+export interface Doc {
+  id: DocId;
+  /** Änderbar; Vorgabe: Dateiname ohne .pdf */
+  name: string;
+  pages: readonly PageRef[];
+}
+
+export interface WorkshopState {
+  /** Reihenfolge der Spalten */
+  docs: readonly Doc[];
+  /** Nur Quellen, auf die eine Seite verweist (commands.ts räumt auf) */
+  sources: ReadonlyMap<SourceId, Source>;
+}
+
+export const EMPTY_STATE: WorkshopState = { docs: [], sources: new Map() };
+
+/**
+ * Liefert neue IDs. Der Zähler lebt außerhalb des Zustands und läuft nie zurück, damit eine
+ * ID nach Rückgängig nicht für etwas anderes wiederverwendet wird (die Oberfläche hängt DOM
+ * und Vorschaubilder an Schlüssel).
+ */
+export type IdSource = (prefix: 'd' | 'p' | 's') => string;
+
+export function counterIds(): IdSource {
+  let n = 0;
+  return (prefix) => `${prefix}${++n}`;
+}
+
+export interface PageLocation {
+  doc: Doc;
+  docIndex: number;
+  pageIndex: number;
+  page: PageRef;
+}
+
+/** Alle Seiten in der Reihenfolge der Spalten, mit Fundort */
+export function* allPages(state: WorkshopState): Generator<PageLocation> {
+  for (const [docIndex, doc] of state.docs.entries()) {
+    for (const [pageIndex, page] of doc.pages.entries()) yield { doc, docIndex, pageIndex, page };
+  }
+}
+
+/** Schlüssel → Fundort. Einmal aufbauen und mehrfach nachschlagen. */
+export function indexPages(state: WorkshopState): Map<PageKey, PageLocation> {
+  const index = new Map<PageKey, PageLocation>();
+  for (const location of allPages(state)) index.set(location.page.key, location);
+  return index;
+}
+
+export function findDoc(state: WorkshopState, id: DocId): Doc | undefined {
+  return state.docs.find((d) => d.id === id);
+}
+
+/** Die angegebenen Schlüssel, die es gibt, in der Reihenfolge der Spalten und Seiten */
+export function inPageOrder(state: WorkshopState, keys: Iterable<PageKey>): PageRef[] {
+  const wanted = new Set(keys);
+  const pages: PageRef[] = [];
+  if (wanted.size === 0) return pages;
+  for (const { page } of allPages(state)) if (wanted.has(page.key)) pages.push(page);
+  return pages;
+}
+
+/** Drehung, wie der Leser die Seite sieht: eigene /Rotate der Datei plus zusätzliche */
+export function totalRotation(state: WorkshopState, page: PageRef): Rotation {
+  if (page.kind === 'blank') return page.rotate;
+  const own = state.sources.get(page.source)?.pages[page.index]?.rotate ?? 0;
+  return normalizeRotation(own + page.rotate);
+}
+
+/** Größe der Seite, wie sie angezeigt wird (für Platzhalter mit richtigem Seitenverhältnis) */
+export function visiblePageSize(state: WorkshopState, page: PageRef): PageBox {
+  const box =
+    page.kind === 'blank'
+      ? page.box
+      : (state.sources.get(page.source)?.pages[page.index]?.box ?? A4);
+  return visibleSize({ x: 0, y: 0, ...box }, totalRotation(state, page));
+}
+
+export const A4_PORTRAIT: PageBox = { width: A4.width, height: A4.height };
+export const A4_LANDSCAPE: PageBox = { width: A4.height, height: A4.width };
+
+/**
+ * Vorgabe für eine Leerseite an Position `index` (W14): so groß, wie die Nachbarseite
+ * angezeigt wird (davor, sonst danach), in einem leeren Dokument DIN A4 hoch.
+ */
+export function blankBoxFor(state: WorkshopState, doc: Doc, index: number): PageBox {
+  const neighbour = doc.pages[index - 1] ?? doc.pages[index];
+  return neighbour ? visiblePageSize(state, neighbour) : A4_PORTRAIT;
+}
+
+/** Quellen, auf die das Dokument verweist */
+export function docSources(doc: Doc): Set<SourceId> {
+  const ids = new Set<SourceId>();
+  for (const page of doc.pages) if (page.kind === 'source') ids.add(page.source);
+  return ids;
+}
+
+/**
+ * Ist das Dokument unverändert eine einzige PDF-Quelle (alle Seiten in Originalreihenfolge,
+ * ohne zusätzliche Drehung)? Dann gibt der Export die Originaldatei aus (W12).
+ */
+export function unchangedSource(state: WorkshopState, doc: Doc): Source | null {
+  const first = doc.pages[0];
+  if (first?.kind !== 'source') return null;
+  const source = state.sources.get(first.source);
+  if (source?.kind !== 'pdf' || source.pages.length !== doc.pages.length) return null;
+  const same = doc.pages.every(
+    (p, i) => p.kind === 'source' && p.source === source.id && p.index === i && p.rotate === 0,
+  );
+  return same ? source : null;
+}
+
+/** Summe der Dateigrößen aller Quellen, für den Hinweis ab 1 GB (W6) */
+export function totalSourceSize(sources: Iterable<Source>): number {
+  let sum = 0;
+  for (const s of sources) sum += s.size;
+  return sum;
+}
+
+export const MEMORY_HINT_BYTES = 1024 ** 3;
+
+/** Dokumentname aus dem Dateinamen: ohne Endung von PDF oder Bild (W11) */
+export function docNameFromFile(fileName: string): string {
+  return (
+    fileName.replace(/\.(pdf|jpe?g|png|webp|gif|bmp|heic|heif|tiff?)$/i, '').trim() || fileName
+  );
+}

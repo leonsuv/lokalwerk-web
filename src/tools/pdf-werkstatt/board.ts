@@ -15,7 +15,14 @@ import {
 } from '../../core/workshop/model.ts';
 import type { Selection } from '../../core/workshop/selection.ts';
 import type { Thumbs } from './thumbs.ts';
-import { DOC_NAME_LABEL, docPagesLabel, EMPTY_DOC, pageLabel, pages } from './texts.ts';
+import {
+  DOC_NAME_LABEL,
+  docMenuLabel,
+  docPagesLabel,
+  EMPTY_DOC,
+  pageLabel,
+  pages,
+} from './texts.ts';
 
 /** Kennbuchstabe und Farbe je Quelle, fest ab dem Hinzufügen (auch nach Rückgängig) */
 export class SourceBadges {
@@ -54,6 +61,7 @@ export interface Column {
   el: HTMLElement;
   name: HTMLInputElement;
   count: HTMLElement;
+  menu: HTMLButtonElement;
   list: HTMLElement;
   empty: HTMLElement;
   /** Scrollt senkrecht; Bezug für die Vorschaubilder */
@@ -93,6 +101,25 @@ export class Board {
 
   tile(key: PageKey): HTMLElement | undefined {
     return this.tiles.get(key)?.el;
+  }
+
+  /** Fokus auf die Kachel legen und nur so weit scrollen, dass sie sichtbar ist */
+  focusTile(key: PageKey): boolean {
+    const el = this.tiles.get(key)?.el;
+    if (!el?.isConnected) return false;
+    el.focus({ preventScroll: true });
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    return true;
+  }
+
+  /** Spalten je Zeile im Raster der Seiten */
+  columnsOf(doc: DocId): number {
+    const list = this.columns.get(doc)?.list;
+    if (!list) return 1;
+    return Math.max(
+      1,
+      getComputedStyle(list).gridTemplateColumns.split(' ').filter(Boolean).length,
+    );
   }
 
   render(state: WorkshopState, selection: Selection): void {
@@ -139,7 +166,15 @@ export class Board {
     name.setAttribute('aria-label', DOC_NAME_LABEL);
     const count = document.createElement('span');
     count.className = 'ws-count';
-    head.append(name, count);
+    const menu = document.createElement('button');
+    menu.type = 'button';
+    menu.className = 'btn icon ws-col-menu';
+    menu.dataset.doc = doc.id;
+    menu.setAttribute('aria-haspopup', 'menu');
+    menu.setAttribute('aria-expanded', 'false');
+    // Festes Markup ohne Nutzerdaten; der HTML-Parser setzt den SVG-Namensraum selbst.
+    menu.innerHTML = '<svg width="18" height="18" aria-hidden="true"><use href="#i-dots" /></svg>';
+    head.append(name, count, menu);
     const list = document.createElement('div');
     list.className = 'ws-pages';
     list.dataset.doc = doc.id;
@@ -149,11 +184,12 @@ export class Board {
     const empty = document.createElement('p');
     empty.className = 'ws-empty-doc';
     empty.textContent = EMPTY_DOC;
+    empty.id = `ws-empty-${doc.id}`;
     const body = document.createElement('div');
     body.className = 'ws-col-body';
     body.append(list, empty);
     el.append(head, body);
-    const column = { el, name, count, list, empty, body };
+    const column = { el, name, count, menu, list, empty, body };
     this.columns.set(doc.id, column);
     return column;
   }
@@ -171,7 +207,12 @@ export class Board {
     set(column.el, 'aria-label', doc.name);
     set(column.list, 'aria-label', docPagesLabel(doc.name));
     text(column.count, pages(doc.pages.length));
+    set(column.menu, 'aria-label', docMenuLabel(doc.name));
     column.empty.hidden = doc.pages.length > 0;
+    // Eine leere Spalte ist selbst der Tabstopp (Einfügen mit Strg/Cmd+V, W5)
+    set(column.list, 'tabindex', doc.pages.length === 0 ? '0' : '-1');
+    if (doc.pages.length === 0) set(column.list, 'aria-describedby', column.empty.id);
+    else column.list.removeAttribute('aria-describedby');
 
     // Ein Tabstopp je Spalte (roving tabindex): die Seite mit dem Fokus, sonst die erste
     const focusHere = doc.pages.some((p) => p.key === selection.focus);
@@ -231,8 +272,8 @@ export class Board {
     const selected = selection.keys.has(page.key);
     tile.el.classList.toggle('sel', selected);
     set(tile.el, 'aria-selected', String(selected));
-    const tabIndex = tabStop ? 0 : -1;
-    if (tile.el.tabIndex !== tabIndex) tile.el.tabIndex = tabIndex;
+    // Über das Attribut: Ein div ohne tabindex meldet tabIndex -1, ist aber nicht fokussierbar.
+    set(tile.el, 'tabindex', tabStop ? '0' : '-1');
 
     const source = page.kind === 'source' ? state.sources.get(page.source) : undefined;
     set(

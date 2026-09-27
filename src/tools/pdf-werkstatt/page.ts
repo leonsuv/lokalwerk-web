@@ -1,35 +1,37 @@
 /**
  * Werkzeugseite „PDF-Werkstatt“ (plan-phase3.md). Zustand und Befehle: src/core/workshop/ und
- * store.ts; Spalten: board.ts; Vorschaubilder mit pdf.js: thumbs.ts; Lesen und Export mit
- * pdf-lib im Worker: workshop.worker.ts.
+ * store.ts; Aktionen: actions.ts; Spalten: board.ts; Vorschaubilder mit pdf.js: thumbs.ts;
+ * Tastatur: keyboard.ts; Menüs und Dialoge: menu.ts, dialogs.ts; Lesen und Export mit pdf-lib
+ * im Worker: workshop.worker.ts.
  */
 
 import { isPdf } from '../../core/files/classify.ts';
-import { addSources, newDoc, renameDoc } from '../../core/workshop/commands.ts';
+import { addSources, renameDoc } from '../../core/workshop/commands.ts';
 import {
   MEMORY_HINT_BYTES,
   totalSourceSize,
   type DocId,
   type Source,
 } from '../../core/workshop/model.ts';
-import { selectionSummary } from '../../core/workshop/selection.ts';
+import {
+  moveFocus,
+  selectionSummary,
+  selectOnly,
+  selectRange,
+  toggle,
+} from '../../core/workshop/selection.ts';
 import { $ } from '../../ui/dom.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
+import { createActions } from './actions.ts';
 import { Board, SourceBadges } from './board.ts';
+import { MoveDialog, ShortcutsDialog } from './dialogs.ts';
+import { handleAreaKey, handleBoardKey } from './keyboard.ts';
+import { Menu, type MenuItem } from './menu.ts';
 import { SourceFiles } from './sources.ts';
 import { WorkshopStore } from './store.ts';
-import {
-  ERRORS,
-  FALLBACK_ERROR,
-  fileError,
-  LEAVE_WARNING,
-  loading,
-  memoryHint,
-  NOT_SUPPORTED,
-  pages,
-} from './texts.ts';
+import * as t from './texts.ts';
 import { Thumbs } from './thumbs.ts';
 import type { AddPdfResult, WorkshopRequest } from './workshop.worker.ts';
 
@@ -39,7 +41,7 @@ const client = createWorkerClient<WorkshopRequest>(worker);
 const pdfjs = import('../../ui/pdfjs/pdfjs.ts');
 
 const messageFor = (error: unknown): string =>
-  (error instanceof WorkerError ? ERRORS[error.code] : undefined) ?? FALLBACK_ERROR;
+  (error instanceof WorkerError ? t.ERRORS[error.code] : undefined) ?? t.FALLBACK_ERROR;
 
 const files = new SourceFiles(pdfjs);
 const store = new WorkshopStore((ids) => {
@@ -47,26 +49,112 @@ const store = new WorkshopStore((ids) => {
   void client.request({ type: 'release', ids }).catch(() => undefined);
 });
 const thumbs = new Thumbs(files, pdfjs);
-const board = new Board($('#ws-board'), thumbs, new SourceBadges());
+const boardEl = $('#ws-board');
+const board = new Board(boardEl, thumbs, new SourceBadges());
 const input = $<HTMLInputElement>('#ws-input');
 const status = $('#ws-status');
+const live = $('#ws-live');
+const menu = new Menu($('#ws-menu'));
+const shortcutsDialog = new ShortcutsDialog();
+
+// ---------------------------------------------------------------------------------------------
+// Ansagen und Fokus
+
+let announceFrame = 0;
+function announce(message: string): void {
+  // Erst leeren, damit auch eine wiederholte gleiche Ansage erneut vorgelesen wird.
+  live.textContent = '';
+  cancelAnimationFrame(announceFrame);
+  announceFrame = requestAnimationFrame(() => (live.textContent = message));
+}
+
+function announceSelection(): void {
+  const { pages, docs } = selectionSummary(store.state, store.selection);
+  announce(t.selected(pages, docs));
+}
+
+/** Nach dem nächsten Zeichnen: Fokus auf die Seite mit dem Fokus, sonst auf die Spalte */
+let pendingFocus: { doc: DocId | undefined } | null = null;
+
+function focusDocName(doc: DocId): void {
+  const name = board.column(doc)?.name;
+  if (!name) return;
+  name.focus();
+  name.select();
+}
+
+const actions = createActions({
+  store,
+  announce,
+  focusAfterRender: (doc) => {
+    pendingFocus = { doc };
+    // Befehle ohne Änderung zeichnen nicht neu: dann gleich
+    queueMicrotask(applyFocus);
+  },
+  focusDocName,
+  openFilePicker: () => input.click(),
+  openMoveDialog: (keys) => moveDialog.open(store.state, keys),
+  openShortcuts: () => shortcutsDialog.open(),
+});
+
+const moveDialog = new MoveDialog((keys, choice) => actions.moveTo(keys, choice.doc, choice.index));
+
+function applyFocus(): void {
+  if (!pendingFocus) return;
+  const { doc } = pendingFocus;
+  pendingFocus = null;
+  const key = store.selection.focus;
+  if (key && board.focusTile(key)) return;
+  const fallback = doc ?? store.state.docs[0]?.id;
+  const column = fallback ? board.column(fallback) : undefined;
+  const first = fallback ? store.state.docs.find((d) => d.id === fallback)?.pages[0] : undefined;
+  if (first) {
+    store.select(moveFocus(store.selection, first.key));
+    board.focusTile(first.key);
+  } else {
+    column?.list.focus();
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Zeichnen
+
+const toolbar = $('#ws-toolbar');
 
 function render(): void {
+  // Eine Kachel, die beim Umsortieren kurz aus dem Dokument genommen wird, verliert den Fokus.
+  const hadFocus = boardEl.contains(document.activeElement);
   const { state, selection } = store;
   board.render(state, selection);
+  if (hadFocus && !boardEl.contains(document.activeElement) && !pendingFocus) {
+    pendingFocus = { doc: undefined };
+  }
+  applyFocus();
+
   const hasDocs = state.docs.length > 0;
   $('#ws-drop').hidden = hasDocs;
   const pageCount = state.docs.reduce((n, d) => n + d.pages.length, 0);
   $('#ws-docs').textContent = hasDocs ? String(state.docs.length) : '–';
   $('#ws-pages').textContent = hasDocs ? String(pageCount) : '–';
   const summary = selectionSummary(state, selection);
-  $('#ws-selected').textContent = summary.pages > 0 ? pages(summary.pages) : '–';
+  $('#ws-selected').textContent =
+    summary.pages > 0 ? t.moveSubtitle(summary.pages, summary.docs) : '–';
   const size = totalSourceSize(state.sources.values());
   $('#ws-memory').hidden = size < MEMORY_HINT_BYTES;
-  if (size >= MEMORY_HINT_BYTES) $('#ws-memory-text').textContent = memoryHint(size);
+  if (size >= MEMORY_HINT_BYTES) $('#ws-memory-text').textContent = t.memoryHint(size);
+
+  const hasTargets = actions.targets().length > 0;
+  for (const button of toolbar.querySelectorAll<HTMLButtonElement>('button[data-needs]')) {
+    const needs = button.dataset.needs;
+    button.disabled =
+      needs === 'pages' ? !hasTargets : needs === 'undo' ? !store.canUndo : !store.canRedo;
+  }
 }
 
 store.subscribe(render);
+
+// ---------------------------------------------------------------------------------------------
+// Dateien
 
 let loadingCount = 0;
 
@@ -77,65 +165,226 @@ let loadingCount = 0;
 async function addFiles(list: File[], target?: { doc: DocId; index: number }): Promise<void> {
   const pdfs = list.filter(isPdf);
   const other = list.filter((f) => !isPdf(f)).map((f) => f.name);
-  if (other.length > 0) showToast(NOT_SUPPORTED(other));
+  if (other.length > 0) showToast(t.NOT_SUPPORTED(other));
   if (pdfs.length === 0) return;
   loadingCount++;
   const added: Source[] = [];
   const failed: string[] = [];
   for (const [i, file] of pdfs.entries()) {
-    status.textContent = loading(i + 1, pdfs.length);
+    status.textContent = t.loading(i + 1, pdfs.length);
     const id = store.ids('s');
     try {
       const info = await client.request<AddPdfResult>({ type: 'add-pdf', id, file });
       files.add(id, file);
       added.push({ id, kind: 'pdf', name: file.name, size: file.size, ...info });
     } catch (error) {
-      failed.push(fileError(file.name, messageFor(error)));
+      failed.push(t.fileError(file.name, messageFor(error)));
     }
   }
   loadingCount--;
   if (loadingCount === 0) status.textContent = '';
   for (const message of failed) showToast(message);
-  if (added.length > 0) store.run(addSources(added, target));
+  if (added.length === 0) return;
+  const pageCount = added.reduce((n, s) => n + s.pages.length, 0);
+  store.run(addSources(added, target));
+  const targetDoc = target ? store.state.docs.find((d) => d.id === target.doc) : undefined;
+  announce(targetDoc ? t.addedInto(pageCount, targetDoc.name) : t.added(added.length, pageCount));
 }
 
 export function openFiles(list: File[]): void {
   void addFiles(list);
 }
 
+// ---------------------------------------------------------------------------------------------
 // Werkzeugleiste
-$('#ws-toolbar').addEventListener('click', (event) => {
+
+toolbar.addEventListener('click', (event) => {
   const button = (event.target as Element).closest<HTMLButtonElement>('button[data-cmd]');
   if (!button || button.disabled) return;
-  switch (button.dataset.cmd) {
-    case 'add':
-      input.click();
-      break;
-    case 'new-doc':
-      store.run(newDoc(`Dokument ${store.state.docs.length + 1}`));
-      break;
-  }
+  const commands: Record<string, () => void> = {
+    add: actions.addFiles,
+    'new-doc': actions.newDoc,
+    'rotate-left': () => actions.rotate(-90),
+    'rotate-right': () => actions.rotate(90),
+    duplicate: actions.duplicate,
+    move: actions.moveDialog,
+    delete: actions.remove,
+    undo: actions.undo,
+    redo: actions.redo,
+    shortcuts: actions.shortcuts,
+  };
+  commands[button.dataset.cmd ?? '']?.();
 });
 
+// ---------------------------------------------------------------------------------------------
+// Spalten: Auswahl mit der Maus, Menüs, Umbenennen
+
+boardEl.addEventListener('click', (event) => {
+  const target = event.target as Element;
+  const menuButton = target.closest<HTMLButtonElement>('.ws-col-menu');
+  if (menuButton?.dataset.doc) {
+    const rect = menuButton.getBoundingClientRect();
+    openDocMenu(menuButton.dataset.doc, { x: rect.left, y: rect.bottom + 4 }, menuButton);
+    return;
+  }
+  const tile = target.closest<HTMLElement>('.ws-page');
+  const key = tile?.dataset.key;
+  if (!key) {
+    // Klick auf freie Fläche einer Spalte hebt die Auswahl auf
+    if (!target.closest('input, button')) actions.clearSelection();
+    return;
+  }
+  const { state, selection } = store;
+  const mod = event.ctrlKey || event.metaKey;
+  if (event.shiftKey) store.select(selectRange(state, selection, key, mod));
+  else if (mod) store.select(toggle(selection, key));
+  else store.select(selectOnly(key));
+});
+
+boardEl.addEventListener('focusin', (event) => {
+  const key = (event.target as HTMLElement).closest<HTMLElement>('.ws-page')?.dataset.key;
+  if (key && store.selection.focus !== key) store.select(moveFocus(store.selection, key));
+});
+
+boardEl.addEventListener('keydown', (event) =>
+  handleBoardKey(event, {
+    store,
+    actions,
+    focusPage: (key) => board.focusTile(key),
+    columnsOf: (doc) => board.columnsOf(doc),
+    openContextMenu: (_key, anchor) => {
+      const rect = anchor.getBoundingClientRect();
+      openPageMenu({ x: rect.left + 12, y: rect.top + 24 }, anchor);
+    },
+    // Große Vorschau folgt in Schritt 1.6
+    openPreview: () => undefined,
+    announceSelection,
+  }),
+);
+
+boardEl.addEventListener('contextmenu', (event) => {
+  const tile = (event.target as Element).closest<HTMLElement>('.ws-page');
+  const key = tile?.dataset.key;
+  if (!tile || !key) return;
+  event.preventDefault();
+  if (!store.selection.keys.has(key)) store.select(selectOnly(key));
+  else store.select(moveFocus(store.selection, key));
+  openPageMenu({ x: event.clientX, y: event.clientY }, tile);
+});
+
+function pageMenuItems(): MenuItem[] {
+  return [
+    { id: 'rotate-right', label: 'Rechts drehen', shortcut: 'R', keys: 'R' },
+    { id: 'rotate-left', label: 'Links drehen', shortcut: t.combo('shift', 'R'), keys: 'Shift+R' },
+    { id: 'duplicate', label: 'Duplizieren', shortcut: 'D', keys: 'D' },
+    { id: 'move', label: 'Verschieben nach …', shortcut: 'M', keys: 'M' },
+    {
+      id: 'cut',
+      label: 'Ausschneiden',
+      shortcut: t.combo('mod', 'X'),
+      keys: 'Control+X Meta+X',
+      separator: true,
+    },
+    { id: 'copy', label: 'Kopieren', shortcut: t.combo('mod', 'C'), keys: 'Control+C Meta+C' },
+    {
+      id: 'paste',
+      label: 'Davor einfügen',
+      shortcut: t.combo('mod', 'V'),
+      keys: 'Control+V Meta+V',
+      disabled: !store.clipboard,
+    },
+    { id: 'delete', label: 'Löschen', shortcut: 'Entf', keys: 'Delete', separator: true },
+  ];
+}
+
+function openPageMenu(at: { x: number; y: number }, returnFocus: HTMLElement): void {
+  menu.show(pageMenuItems(), at, {
+    label: 'Seite',
+    returnFocus,
+    onChoose: (id) => {
+      const choices: Record<string, () => void> = {
+        'rotate-right': () => actions.rotate(90),
+        'rotate-left': () => actions.rotate(-90),
+        duplicate: actions.duplicate,
+        move: actions.moveDialog,
+        cut: actions.cut,
+        copy: actions.copy,
+        paste: () => actions.paste(),
+        delete: actions.remove,
+      };
+      choices[id]?.();
+    },
+  });
+}
+
+function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLElement): void {
+  const current = store.state.docs.find((d) => d.id === doc);
+  if (!current) return;
+  menu.show(
+    [
+      { id: 'rename', label: 'Umbenennen', shortcut: 'F2', keys: 'F2' },
+      {
+        id: 'select-all',
+        label: 'Alle Seiten auswählen',
+        shortcut: t.combo('mod', 'A'),
+        keys: 'Control+A Meta+A',
+        disabled: current.pages.length === 0,
+      },
+      { id: 'paste', label: 'Am Anfang einfügen', disabled: !store.clipboard },
+      { id: 'duplicate-doc', label: 'Dokument duplizieren', separator: true },
+      { id: 'close-doc', label: 'Dokument schließen' },
+    ],
+    at,
+    {
+      label: t.docMenuLabel(current.name),
+      returnFocus: opener,
+      opener,
+      onChoose: (id) => {
+        const choices: Record<string, () => void> = {
+          rename: () => actions.renameDoc(doc),
+          'select-all': () => actions.selectAll(doc),
+          paste: () => {
+            store.select({ ...store.selection, focus: null });
+            actions.paste(doc);
+          },
+          'duplicate-doc': () => actions.duplicateDoc(doc),
+          'close-doc': () => actions.closeDoc(doc),
+        };
+        choices[id]?.();
+      },
+    },
+  );
+}
+
 // Umbenennen im Spaltenkopf: übernehmen beim Verlassen oder mit Eingabe, Esc stellt zurück
-const boardEl = $('#ws-board');
 boardEl.addEventListener('change', (event) => {
   const field = event.target as HTMLInputElement;
   const id = field.dataset.doc;
   if (!field.classList.contains('ws-name') || !id) return;
+  const before = store.state;
   store.run(renameDoc(id, field.value));
-  // Leerer Name oder ohne Änderung: den gültigen Namen wieder anzeigen
   const doc = store.state.docs.find((d) => d.id === id);
+  if (doc && store.state !== before) announce(t.renamed(doc.name));
+  // Leerer Name oder ohne Änderung: den gültigen Namen wieder anzeigen
   if (doc) field.value = doc.name;
 });
 boardEl.addEventListener('keydown', (event) => {
   const field = event.target as HTMLInputElement;
   if (!field.classList.contains('ws-name')) return;
-  if (event.key === 'Enter') field.blur();
+  if (event.key !== 'Enter' && event.key !== 'Escape') return;
   if (event.key === 'Escape') {
     field.value = store.state.docs.find((d) => d.id === field.dataset.doc)?.name ?? field.value;
-    field.blur();
   }
+  event.preventDefault();
+  event.stopPropagation();
+  // Zurück zu den Seiten: Die Änderung wird beim Verlassen übernommen (change).
+  pendingFocus = { doc: field.dataset.doc };
+  const focus = store.selection.focus;
+  const inDoc = store.state.docs
+    .find((d) => d.id === field.dataset.doc)
+    ?.pages.some((p) => p.key === focus);
+  if (!inDoc) store.select({ ...store.selection, focus: null });
+  applyFocus();
 });
 
 // Dateien auf eine Spalte ziehen: dort anhängen; auf freie Fläche: neue Dokumente
@@ -153,11 +402,14 @@ boardEl.addEventListener('drop', (event) => {
   void addFiles(dropped, doc ? { doc: doc.id, index: doc.pages.length } : undefined);
 });
 
+// Rückgängig, Wiederholen und „?“ im ganzen Werkstatt-Bereich
+$('.ws-page-area').addEventListener('keydown', (event) => handleAreaKey(event, actions));
+
 window.addEventListener('beforeunload', (event) => {
   if (!store.dirty) return;
   event.preventDefault();
   // Ältere Browser zeigen die Warnung nur mit gesetztem returnValue (Text zeigen sie nicht).
-  event.returnValue = LEAVE_WARNING;
+  event.returnValue = t.LEAVE_WARNING;
 });
 
 preventAccidentalFileOpen();

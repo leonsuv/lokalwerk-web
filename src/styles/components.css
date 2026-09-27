@@ -1536,8 +1536,13 @@ select[multiple] {
   gap: 0.75rem;
   align-content: start;
 }
-.ws-pages:empty {
-  display: none;
+/* Leere Spalte: Die Liste selbst hat den Fokus (Einfügen), der Rahmen zeigt ihn am Hinweis */
+.ws-pages:empty:focus-visible {
+  outline: none;
+}
+.ws-col-body:has(.ws-pages:empty:focus-visible) .ws-empty-doc {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
 }
 .ws-empty-doc {
   margin: 0;
@@ -1691,6 +1696,155 @@ select[multiple] {
 .ws-note svg {
   flex: none;
   margin-top: 0.1rem;
+}
+.ws-col-menu {
+  flex: none;
+}
+/* Menü (Kontextmenü, Spaltenkopf) */
+.ws-menu {
+  position: fixed;
+  z-index: 30;
+  min-width: 15rem;
+  max-width: calc(100vw - 1rem);
+  padding: 0.35rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgb(14 21 48 / 0.18);
+}
+.ws-menu [role='menuitem'] {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font: inherit;
+  font-size: 0.92rem;
+  color: var(--ink);
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  cursor: pointer;
+}
+.ws-menu [role='menuitem']:hover:not(:disabled),
+.ws-menu [role='menuitem']:focus-visible {
+  background: var(--surface2);
+}
+.ws-menu [role='menuitem']:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.ws-menu [role='menuitem']:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.ws-menu [role='separator'] {
+  height: 1px;
+  margin: 0.3rem 0.4rem;
+  background: var(--line);
+}
+.ws-menu kbd,
+.ws-keys kbd {
+  font: 500 0.75rem var(--font);
+  color: var(--muted);
+  background: var(--surface2);
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+  white-space: nowrap;
+}
+/* Dialoge (Verschieben nach …, Tastenkürzel) */
+.ws-dialog {
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  padding: 1.3rem 1.4rem 1.2rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgb(14 21 48 / 0.3);
+}
+.ws-dialog::backdrop {
+  background: rgb(8 11 24 / 0.45);
+}
+.ws-dialog h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.2rem;
+}
+.ws-dialog-sub {
+  margin: 0 0 0.8rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.ws-dialog fieldset {
+  border: 0;
+  margin: 0 0 0.8rem;
+  padding: 0;
+}
+.ws-dialog legend {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.ws-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.ws-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.ws-radio:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+.ws-radio .ws-count {
+  margin-left: auto;
+}
+.ws-radio input {
+  accent-color: var(--primary);
+  margin: 0;
+}
+.ws-dialog input.ws-after {
+  width: 7rem;
+  margin-left: 2.2rem;
+}
+.ws-error {
+  margin: 0.4rem 0 0;
+  color: var(--err-ink);
+  font-size: 0.88rem;
+}
+.ws-error:empty {
+  display: none;
+}
+.ws-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.ws-keys {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.ws-keys td {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.ws-keys td:first-child {
+  padding-right: 1rem;
+  white-space: nowrap;
+}
+#ws-keys {
+  width: min(36rem, calc(100vw - 2rem));
 }
 @media (max-width: 900px) {
   .ws-layout {

@@ -22,6 +22,7 @@ import {
   PDFStream,
   PDFString,
   type PDFObject,
+  type PDFPage,
 } from 'pdf-lib';
 import { loadPdf, toPdfError } from './merge.ts';
 
@@ -109,11 +110,42 @@ function hasJavaScriptAction(doc: PDFDocument, action: PDFObject | undefined): b
 
 /** Wie oft die Datei nachträglich gespeichert wurde, ohne sie neu zu schreiben. */
 export function countEarlierVersions(bytes: Uint8Array): number {
-  const text = new TextDecoder('latin1').decode(bytes);
-  const eofs = text.match(/%%EOF/g)?.length ?? 0;
+  // Direkt in den Bytes suchen statt die ganze Datei in Text umzuwandeln: Bei Scans mit vielen
+  // MB spart das beim Laden in die Werkstatt spürbar Zeit und Speicher.
+  const EOF = [0x25, 0x25, 0x45, 0x4f, 0x46]; // „%%EOF“
+  let eofs = 0;
+  for (let i = bytes.indexOf(0x25); i !== -1 && i <= bytes.length - EOF.length;) {
+    if (EOF.every((b, k) => bytes[i + k] === b)) {
+      eofs++;
+      i = bytes.indexOf(0x25, i + EOF.length);
+    } else {
+      i = bytes.indexOf(0x25, i + 1);
+    }
+  }
   // Linearisierte PDFs („schnelle Webanzeige“) haben am Anfang einen zweiten Abschluss.
-  const linearized = /\/Linearized\b/.test(text.slice(0, 2048)) ? 1 : 0;
+  const head = new TextDecoder('latin1').decode(bytes.subarray(0, 2048));
+  const linearized = /\/Linearized\b/.test(head) ? 1 : 0;
   return Math.max(0, eofs - 1 - linearized);
+}
+
+/**
+ * Versteckte Angaben für die Hinweise der PDF-Werkstatt (Schritt 2.4): im Dokument (Info-Einträge,
+ * XMP, frühere Speicherstände; bleiben nur bei unverändert ausgegebener Originaldatei) und auf
+ * den Seiten (/Metadata, /PieceInfo, /LastModified; wandern beim Neuzusammensetzen mit).
+ */
+export function hiddenInfo(
+  doc: PDFDocument,
+  bytes: Uint8Array,
+): { metadata: boolean; pageMetadata: boolean } {
+  return {
+    metadata:
+      readInfo(doc).length > 0 ||
+      doc.catalog.lookup(PDFName.of('Metadata')) instanceof PDFStream ||
+      countEarlierVersions(bytes) > 0,
+    pageMetadata: doc
+      .getPages()
+      .some((page) => PAGE_METADATA_KEYS.some((key) => page.node.has(PDFName.of(key)))),
+  };
 }
 
 export async function inspectPdf(bytes: Uint8Array): Promise<PdfInspection> {
@@ -173,6 +205,11 @@ export async function inspectPdf(bytes: Uint8Array): Promise<PdfInspection> {
 }
 
 /** Neue PDF nur mit den Seiten, ohne Metadaten des Dokuments und der Seiten. */
+/** Eigene Metadaten der Seite entfernen (vor dem Übernehmen in eine neue PDF) */
+export function stripPageMetadata(page: PDFPage): void {
+  for (const key of PAGE_METADATA_KEYS) page.node.delete(PDFName.of(key));
+}
+
 export async function stripPdfMetadata(bytes: Uint8Array): Promise<Uint8Array> {
   const source = await loadPdf(bytes);
   try {
@@ -180,7 +217,7 @@ export async function stripPdfMetadata(bytes: Uint8Array): Promise<Uint8Array> {
     const out = await PDFDocument.create({ updateMetadata: false });
     const pages = await out.copyPages(source, source.getPageIndices());
     for (const page of pages) {
-      for (const key of PAGE_METADATA_KEYS) page.node.delete(PDFName.of(key));
+      stripPageMetadata(page);
       out.addPage(page);
     }
     return await out.save();

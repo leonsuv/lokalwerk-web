@@ -6,7 +6,7 @@
  */
 
 import type { AssembleDoc } from '../../core/pdf/assemble.ts';
-import { exportPlan, selectionPlan } from '../../core/workshop/export-plan.ts';
+import { exportPlan, selectionPlan, type ExportOptions } from '../../core/workshop/export-plan.ts';
 import {
   indexPages,
   unchangedSource,
@@ -33,10 +33,15 @@ export function currentDoc(state: WorkshopState, selection: Selection): Doc | un
 }
 
 /** Quellen mit Formular, Lesezeichen oder Signatur in Dokumenten, die neu zusammengesetzt werden */
-export function lossSources(state: WorkshopState, docs: readonly Doc[]): Source[] {
+export function lossSources(
+  state: WorkshopState,
+  docs: readonly Doc[],
+  options: ExportOptions = {},
+): Source[] {
   const found = new Map<string, Source>();
   for (const doc of docs) {
-    if (unchangedSource(state, doc)) continue;
+    // Beim Entfernen versteckter Angaben wird auch ein unverändertes Dokument neu gesetzt.
+    if (!options.strip && unchangedSource(state, doc)) continue;
     for (const page of doc.pages) {
       const source = page.kind === 'source' ? state.sources.get(page.source) : undefined;
       if (!source) continue;
@@ -49,6 +54,8 @@ export function lossSources(state: WorkshopState, docs: readonly Doc[]): Source[
 
 export class Exporter {
   private running = false;
+  /** Einstellungen beim Speichern (Schritt 2.4), gesetzt von der Seite */
+  options: ExportOptions = {};
 
   constructor(
     private readonly store: WorkshopStore,
@@ -67,18 +74,18 @@ export class Exporter {
 
   /** Ein Dokument als PDF */
   async doc(id: DocId): Promise<void> {
-    await this.run(exportPlan(this.store.state, [id]), false, [id]);
+    await this.run(exportPlan(this.store.state, [id], this.options), false, [id]);
   }
 
   /** Alle Dokumente mit Seiten als ZIP */
   async all(): Promise<void> {
     const ids = this.store.state.docs.map((d) => d.id);
-    await this.run(exportPlan(this.store.state, ids), true, ids);
+    await this.run(exportPlan(this.store.state, ids, this.options), true, ids);
   }
 
   /** Auswahl als neue PDF */
   async selection(keys: readonly PageKey[]): Promise<void> {
-    const plan = selectionPlan(this.store.state, keys, t.SELECTION_NAME);
+    const plan = selectionPlan(this.store.state, keys, t.SELECTION_NAME, this.options);
     if (plan) await this.run([plan], false, []);
   }
 
@@ -121,6 +128,7 @@ export class Exporter {
           files.map((f) => f.name),
           unchanged,
           zip || files.length > 1,
+          plan.some((d) => d.strip),
         ),
       );
     } catch (error) {

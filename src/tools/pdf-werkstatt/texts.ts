@@ -26,6 +26,9 @@ export const ERRORS: Record<string, string> = {
   encode: 'Das Bild konnte nicht neu gespeichert werden. Verkleinere es und füge es erneut hinzu.',
   metadata:
     'Im neu gespeicherten Bild wurden noch Metadaten gefunden. Das Bild wird deshalb nicht übernommen.',
+  // „Versteckte Angaben entfernen“ (Text wie in „PDF-Metadaten entfernen“)
+  'metadata-left':
+    'In der neuen Datei wurden noch Angaben gefunden. Sie wird deshalb nicht angeboten.',
 };
 
 export const FALLBACK_ERROR =
@@ -188,7 +191,12 @@ export const SELECTION_NAME = 'Auswahl';
 export const ZIP_NAME = 'pdf-werkstatt.zip';
 export const exporting = (done: number, total: number): string =>
   total > 0 ? `Wird gespeichert: ${done} von ${pages(total)} …` : 'Wird gespeichert …';
-export function exportDone(names: readonly string[], unchanged: number, zip: boolean): string {
+export function exportDone(
+  names: readonly string[],
+  unchanged: number,
+  zip: boolean,
+  stripped = false,
+): string {
   const what = zip
     ? `${names.length} Dokumente sind als ZIP gespeichert.`
     : `${names[0] ?? ''} ist gespeichert.`;
@@ -199,7 +207,13 @@ export function exportDone(names: readonly string[], unchanged: number, zip: boo
       : zip
         ? ` ${unchanged === 1 ? 'Eines davon war' : `${unchanged} davon waren`} unverändert und ${unchanged === 1 ? 'ist' : 'sind'} die Originaldatei.`
         : ' Es war unverändert: Gespeichert ist die Originaldatei.';
-  return `Fertig: ${what}${note}`;
+  // Schritt 2.4, Entwurf zur Freigabe
+  const clean = stripped
+    ? zip
+      ? ' Sie enthalten keine versteckten Angaben mehr.'
+      : ' Sie enthält keine versteckten Angaben mehr.'
+    : '';
+  return `Fertig: ${what}${note}${clean}`;
 }
 
 /** Hinweis vor dem Export: was beim Neuzusammensetzen verloren geht (wie im Zusammenfügen) */
@@ -242,7 +256,7 @@ export const pageNumbersRemoved = (name: string): string => `Seitenzahlen von ${
 export const PAGE_NUMBERS_BADGE = 'Mit Seitenzahlen';
 export const pageNumbersEdit = (name: string): string => `Seitenzahlen von ${name} bearbeiten`;
 
-// Stufe 2.2: Stempel und Unterschrift als Seiten-Operationen, Entwurf zur Freigabe
+// Stufe 2.2: Stempel und Unterschrift als Seiten-Operationen, freigegeben von Leon am 27.09.2026
 export const STAMP_ITEM = 'Stempel …';
 export const STAMP_TITLE = 'Stempel';
 export const stampSet = (count: number, name: string): string =>
@@ -266,7 +280,7 @@ export const signSet = (n: number, name: string): string =>
 export const signRemoved = (n: number, name: string): string =>
   `Unterschriften von Seite ${n} von ${name} entfernt`;
 
-// Stufe 2.3: Schwärzen und Formular ausfüllen („Einbacken“), Entwurf zur Freigabe
+// Stufe 2.3: Schwärzen und Formular ausfüllen („Einbacken“), freigegeben von Leon am 27.09.2026
 export const REDACT_ITEM = 'Schwärzen …';
 /** Name der neuen Quelle, z. B. in der Seitenbeschriftung „aus Vertrag (geschwärzt).pdf Seite 2“ */
 export const redactedName = (doc: string): string => `${doc} (geschwärzt).pdf`;
@@ -301,7 +315,7 @@ export const UNREDACTED_SAVE = 'Trotzdem speichern';
 
 export const FORM_ITEM = 'Formular ausfüllen …';
 export const FORM_TITLE = 'Formular ausfüllen';
-export const formDoc = (file: string, doc: string): string => `Formular aus ${file} in ${doc}`;
+export const formDoc = (file: string, doc: string): string => `Für ${doc}, Formular aus ${file}`;
 export const FORM_LOADING = 'Formular wird gelesen …';
 export const formHint = (file: string): string =>
   `Die ausgefüllten Seiten ersetzen in diesem Dokument die Seiten aus ${file}.`;
@@ -310,3 +324,14 @@ export const FORM_BUSY = 'Wird ausgefüllt …';
 export const formApplied = (name: string): string => `Formular in ${name} übernommen`;
 export const FORM_CHANGED =
   'Das Dokument hat sich während des Ausfüllens geändert. Übernimm das Formular noch einmal.';
+
+// Stufe 2.4: versteckte Angaben (Metadaten) beim Speichern, Entwurf zur Freigabe
+export const METADATA_LABEL = 'Versteckte Angaben';
+export const METADATA_KEEP = 'Behalten';
+export const METADATA_STRIP = 'Entfernen';
+export const METADATA_HINT =
+  'Angaben wie Autor, Titel, Programm und Datum. Beim Entfernen wird jedes Dokument neu zusammengesetzt und vor dem Speichern geprüft.';
+export const metadataKeptNote = (names: readonly string[]): string =>
+  names.length === 1
+    ? `${names[0] ?? ''} enthält versteckte Angaben wie Autor, Programm oder Datum. Sie bleiben beim Speichern erhalten.`
+    : `${names.length} Dokumente enthalten versteckte Angaben wie Autor, Programm oder Datum: ${names.join(', ')}. Sie bleiben beim Speichern erhalten.`;

@@ -250,7 +250,15 @@ export class Board {
       const page = doc.pages[i];
       if (!page) continue;
       const kind = page.kind === 'source' ? state.sources.get(page.source)?.kind : undefined;
-      this.thumbs.show(tile.paper, page, column.body, kind ?? 'pdf', visiblePageSize(state, page));
+      const numbers = pageNumbersOf(doc);
+      this.thumbs.show(
+        tile.paper,
+        page,
+        column.body,
+        kind ?? 'pdf',
+        visiblePageSize(state, page),
+        numbers ? { options: numbers, index: i, count: doc.pages.length } : null,
+      );
     }
   }
 

@@ -173,7 +173,7 @@ Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026**, einschließlich des S
 
 ## 11. Stufe 2, Schritt 2.2: Stempel und Unterschrift in der Werkstatt
 
-Stand: 27.09.2026. **Entwurf zur Freigabe** (Schritt 2.2 freigegeben von Leon am 27.09.2026, die Texte gibt er separat frei). Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.2“), `src/tools/pdf-werkstatt/main.html` (Dialog `#ws-sign`), `src/tools/pdf-stempel/embed.ts`, `src/tools/pdf-unterschreiben/embed.ts`, Befehlsnamen `src/core/workshop/commands.ts`. Felder, Hinweise und Fehlermeldungen aus „PDF stempeln“ und „PDF unterschreiben“ sind unverändert übernommen (freigegeben).
+Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026**, einschließlich des Satzes für den Erklärtext (eingebaut). Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.2“), `src/tools/pdf-werkstatt/main.html` (Dialog `#ws-sign`), `src/tools/pdf-stempel/embed.ts`, `src/tools/pdf-unterschreiben/embed.ts`, Befehlsnamen `src/core/workshop/commands.ts`. Felder, Hinweise und Fehlermeldungen aus „PDF stempeln“ und „PDF unterschreiben“ sind unverändert übernommen (freigegeben).
 
 **Wo es erscheint**
 
@@ -183,7 +183,7 @@ Stand: 27.09.2026. **Entwurf zur Freigabe** (Schritt 2.2 freigegeben von Leon am
 | Menü im Spaltenkopf | „Stempel …“ nach „Seitenzahlen …“ |
 | Kontextmenü einer Seite | „Unterschrift …“ nach „Als neues Dokument“, vor „Löschen“, mit Trennlinie |
 | Handy, „Mehr“ | „Stempel …“ und „Unterschrift …“ am Ende; „Unterschrift …“ nur mit genau einer ausgewählten Seite |
-| Vorschaubild | zeigt Stempel und Unterschriften wie gespeichert; dazu kleine Symbole (Stempel, Unterschrift) in der Zeile unter dem Bild, rechts neben der Seitennummer, ohne Text; Screenreader lesen sie in der Seitenbeschriftung mit (unten) |
+| Vorschaubild | zeigt Stempel, Unterschriften und Seitenzahlen wie gespeichert; dazu kleine Symbole (Stempel, Unterschrift) in der Zeile unter dem Bild, rechts neben der Seitennummer, ohne Text; Screenreader lesen sie in der Seitenbeschriftung mit (unten) |
 
 **Stempel, Bereich in der rechten Spalte**
 
@@ -218,11 +218,11 @@ Stand: 27.09.2026. **Entwurf zur Freigabe** (Schritt 2.2 freigegeben von Leon am
 | Seitenbeschriftung (Screenreader) | wie bisher, am Ende „, mit Stempel“, „, mit Unterschrift“ bzw. „, mit 2 Unterschriften“ |
 | Verlauf | „Rückgängig: Stempel“ / „Rückgängig: Stempel entfernen“ / „Rückgängig: Unterschrift“ / „Rückgängig: Unterschrift entfernen“ (ebenso „Wiederholen: …“) |
 
-**Vorschlag für den Erklärtext der Werkstatt** (noch nicht eingebaut), Satz nach dem Satz zu den Seitenzahlen: „Stempel und Unterschriften gehören zur Seite und wandern mit, wenn du sie verschiebst; gesetzt werden sie beim Speichern.“
+**Erklärtext der Werkstatt** (freigegeben, eingebaut), Satz nach dem Satz zu den Seitenzahlen: „Stempel und Unterschriften gehören zur Seite und wandern mit, wenn du sie verschiebst; gesetzt werden sie beim Speichern.“
 
 ## 12. Stufe 2, Schritt 2.3: Schwärzen und Formular ausfüllen in der Werkstatt
 
-Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.3“), `src/tools/pdf-werkstatt/main.html` (Dialoge `#ws-redact` und `#ws-unredacted-dialog`, Hinweis `#ws-unredacted`), `src/tools/pdf-schwaerzen/embed.ts`, `src/tools/pdf-formular-ausfuellen/embed.ts`. Unverändert aus den Einzelwerkzeugen (freigegeben): beim Schwärzen „Auflösung der neuen PDF“ mit den drei Stufen, „Geschwärzte Bereiche“, „Seiten mit Schwärzung“, der Prüfhinweis „Prüf die neue PDF, bevor du sie weitergibst …“, der Bedienhinweis zum Ziehen, „Bereich hinzufügen“, „Bereiche dieser Seite entfernen“, „Vorherige Seite“/„Nächste Seite“, „Bereich 1 auf Seite 2“, „Seite 3 von 12 …“, „PDF wird erstellt …“ und die Fehlermeldung „Die geschwärzte PDF konnte nicht erzeugt werden …“; beim Formular alle Feldbeschriftungen, „(Pflichtfeld)“, „Formular festschreiben“, „Felder“, „Pflichtfelder leer“, die Hinweise zu Signatur und XFA-Fassung und alle Meldungen (XFA, keine Felder, Zeichen außerhalb der Schrift).
+Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026** mit einer Änderung (Untertitel beim Formular, eingebaut), einschließlich des Satzes für den Erklärtext (eingebaut). Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.3“), `src/tools/pdf-werkstatt/main.html` (Dialoge `#ws-redact` und `#ws-unredacted-dialog`, Hinweis `#ws-unredacted`), `src/tools/pdf-schwaerzen/embed.ts`, `src/tools/pdf-formular-ausfuellen/embed.ts`. Unverändert aus den Einzelwerkzeugen (freigegeben): beim Schwärzen „Auflösung der neuen PDF“ mit den drei Stufen, „Geschwärzte Bereiche“, „Seiten mit Schwärzung“, der Prüfhinweis „Prüf die neue PDF, bevor du sie weitergibst …“, der Bedienhinweis zum Ziehen, „Bereich hinzufügen“, „Bereiche dieser Seite entfernen“, „Vorherige Seite“/„Nächste Seite“, „Bereich 1 auf Seite 2“, „Seite 3 von 12 …“, „PDF wird erstellt …“ und die Fehlermeldung „Die geschwärzte PDF konnte nicht erzeugt werden …“; beim Formular alle Feldbeschriftungen, „(Pflichtfeld)“, „Formular festschreiben“, „Felder“, „Pflichtfelder leer“, die Hinweise zu Signatur und XFA-Fassung und alle Meldungen (XFA, keine Felder, Zeichen außerhalb der Schrift).
 
 **Wo es erscheint**
 
@@ -264,7 +264,7 @@ Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundorte: `src/tools/pdf-werkstatt/
 
 **Formular ausfüllen, Bereich in der rechten Spalte**
 
-- Überschrift „Formular ausfüllen“, darunter „Formular aus Antrag.pdf in Antrag“
+- Überschrift „Formular ausfüllen“, darunter „Für Antrag, Formular aus Antrag.pdf“
 - Beim Öffnen kurz „Formular wird gelesen …“
 - Felder, Einstellung und Hinweise aus „PDF-Formular ausfüllen“ (ohne die Vorschau der Seite)
 - Neu: Hinweis „Die ausgefüllten Seiten ersetzen in diesem Dokument die Seiten aus Antrag.pdf.“
@@ -280,5 +280,28 @@ Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundorte: `src/tools/pdf-werkstatt/
 
 **Meldung nach dem Speichern:** Ein geschwärztes oder ausgefülltes Dokument, das sonst unverändert ist, wird als diese neue Datei ausgegeben. Der Zusatz „Es war unverändert: Gespeichert ist die Originaldatei.“ entfällt dann, weil er an das ungeschwärzte Original denken ließe; die Meldung lautet nur „Fertig: Vertrag.pdf ist gespeichert.“
 
-**Vorschlag für den Erklärtext der Werkstatt** (noch nicht eingebaut), nach dem Satz zu Stempel und Unterschrift: „Schwärzen und Formular ausfüllen erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum Bild, sodass nichts vom Original übrig bleibt.“
+**Dateiname beim Speichern** (Leon, 27.09.2026): Ein geschwärztes Dokument heißt „Vertrag (geschwärzt).pdf“, auch im ZIP, solange es nach dem Schwärzen nicht umbenannt wurde und alle Seiten geschwärzt sind.
+
+**Erklärtext der Werkstatt** (freigegeben, eingebaut), nach dem Satz zu Stempel und Unterschrift: „Schwärzen und Formular ausfüllen erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum Bild, sodass nichts vom Original übrig bleibt.“
+
+## 13. Stufe 2, Schritt 2.4: versteckte Angaben beim Speichern
+
+Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundort: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.4“ und `exportDone`). Die Fehlermeldung ist aus „PDF-Metadaten entfernen“ übernommen (freigegeben).
+
+**Einstellung** (rechte Spalte, über den Speichern-Knöpfen)
+
+- Beschriftung „Versteckte Angaben“, Umschalter „Behalten“ · „Entfernen“ (Vorgabe „Behalten“)
+- Hinweis darunter: „Angaben wie Autor, Titel, Programm und Datum. Beim Entfernen wird jedes Dokument neu zusammengesetzt und vor dem Speichern geprüft.“
+
+**Hinweis** (unter den Speichern-Knöpfen, nur bei „Behalten“ und wenn es zutrifft)
+
+- ein Dokument: „Vertrag enthält versteckte Angaben wie Autor, Programm oder Datum. Sie bleiben beim Speichern erhalten.“
+- mehrere: „2 Dokumente enthalten versteckte Angaben wie Autor, Programm oder Datum: Vertrag, Anlagen. Sie bleiben beim Speichern erhalten.“
+
+**Meldung nach dem Speichern** mit „Entfernen“, angehängt an die bisherige Meldung
+
+- ein Dokument: „Fertig: Vertrag.pdf ist gespeichert. Sie enthält keine versteckten Angaben mehr.“
+- ZIP: „Fertig: 2 Dokumente sind als ZIP gespeichert. Sie enthalten keine versteckten Angaben mehr.“
+
+**Fehlermeldung**, wenn die Prüfung noch etwas findet (aus dem Einzelwerkzeug): „In der neuen Datei wurden noch Angaben gefunden. Sie wird deshalb nicht angeboten.“
 

@@ -22,6 +22,7 @@ import {
   splitDoc,
   addSources,
   extractToNewDoc,
+  renameDoc,
   type BakedPage,
   type Command,
 } from '../../../src/core/workshop/commands.ts';
@@ -369,5 +370,49 @@ describe('formSourceOf (Formular ausfüllen …)', () => {
     expect(formSourceOf(state, doc, doc.pages[0]?.key)?.id).toBe('b');
     const plain = addSources([pdfSource('x', 2)]).apply(createHistory().present.state, ids).state;
     expect(formSourceOf(plain, plain.docs[0] ?? doc)).toBeNull();
+  });
+});
+
+describe('Dateiname geschwärzter Dokumente (Leon, 27.09.2026)', () => {
+  it('„<Name> (geschwärzt).pdf“, auch im ZIP, bis der Nutzer umbenennt', () => {
+    const ids = counterIds();
+    const box = LETTER_BOX;
+    let h: History = createHistory();
+    const run = (c: Command) => (h = execute(h, c, ids).history).present.state;
+    let state = run(addSources([pdfSource('a', 2, 'Vertrag.pdf')]));
+    const names = (s: WorkshopState) =>
+      exportPlan(
+        s,
+        s.docs.map((d) => d.id),
+      ).map((d) => d.name);
+    // Vor dem Schwärzen umbenannt: zählt nicht
+    state = run(renameDoc(state.docs[0]?.id ?? '', 'Mietvertrag'));
+    expect(names(state)).toEqual(['Mietvertrag.pdf']);
+    state = run(redactAll(state, 0, rasterSource('r', ['a'], [box, box])));
+    expect(names(state)).toEqual(['Mietvertrag (geschwärzt).pdf']);
+    // Duplizieren und Teilen: beide Teile geschwärzt, im ZIP unterschieden
+    state = run(duplicateDoc(state.docs[0]?.id ?? '', 'Mietvertrag'));
+    state = run(splitDoc(state.docs[1]?.id ?? '', 1, 'Anhang'));
+    expect(names(state)).toEqual([
+      'Mietvertrag (geschwärzt).pdf',
+      'Mietvertrag (geschwärzt) (2).pdf',
+      'Anhang (geschwärzt).pdf',
+    ]);
+    // Rückgängig bis vor das Schwärzen: wieder ohne Zusatz
+    h = undo(undo(undo(h)));
+    expect(names(h.present.state)).toEqual(['Mietvertrag.pdf']);
+    h = redo(h);
+    state = h.present.state;
+    expect(names(state)).toEqual(['Mietvertrag (geschwärzt).pdf']);
+    // Eine ungeschwärzte Seite dazu: kein Zusatz, solange sie drin ist
+    const other = run(addSources([pdfSource('b', 1, 'Anlage.pdf')]));
+    const withCopy = run(
+      copyPages([other.docs[1]?.pages[0]?.key ?? ''], other.docs[0]?.id ?? '', 0),
+    );
+    expect(names(withCopy)[0]).toBe('Mietvertrag.pdf');
+    h = undo(h);
+    // Selbst umbenannt: kein Zusatz mehr
+    state = run(renameDoc(h.present.state.docs[0]?.id ?? '', 'Für Anwalt'));
+    expect(names(state)[0]).toBe('Für Anwalt.pdf');
   });
 });

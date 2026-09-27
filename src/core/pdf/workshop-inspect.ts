@@ -10,12 +10,21 @@
 
 import { PDFArray, PDFDict, PDFName } from 'pdf-lib';
 import { loadPdf, toPdfError } from './merge.ts';
+import { hiddenInfo } from './metadata.ts';
 import { isSigned } from './stamp.ts';
 import { normalizeRotation, type PageRotation } from './stamp-geometry.ts';
 
 export interface WorkshopPdfInfo {
   pages: { box: { width: number; height: number }; rotate: PageRotation }[];
-  facts: { form: boolean; xfa: boolean; outline: boolean; signed: boolean };
+  facts: {
+    form: boolean;
+    xfa: boolean;
+    outline: boolean;
+    signed: boolean;
+    /** Versteckte Angaben im Dokument bzw. auf Seiten (Schritt 2.4) */
+    metadata: boolean;
+    pageMetadata: boolean;
+  };
 }
 
 /** Wirft PdfError (leer, verschlüsselt, beschädigt, keine Seiten, zu wenig Speicher). */
@@ -41,6 +50,7 @@ export async function inspectForWorkshop(bytes: Uint8Array): Promise<WorkshopPdf
         xfa,
         outline: outlines instanceof PDFDict && outlines.has(PDFName.of('First')),
         signed: isSigned(doc, bytes),
+        ...hiddenInfo(doc, bytes),
       },
     };
   } catch (error) {

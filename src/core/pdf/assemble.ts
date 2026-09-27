@@ -22,6 +22,7 @@ import { degrees, PDFDocument, type PDFFont, type PDFImage, type PDFPage } from 
 import type { NormRect } from '../geometry/norm-rect.ts';
 import { imagePagePlacement, type PageImage } from './image-layout.ts';
 import { loadPdf, PdfError, toPdfError } from './merge.ts';
+import { stripPageMetadata } from './metadata.ts';
 import type { PageNumberOptions } from './page-numbers.ts';
 import { drawPlacedImage } from './place-image.ts';
 import { normalizeRotation } from './stamp-geometry.ts';
@@ -49,6 +50,8 @@ export interface AssembleDoc {
   pages: readonly AssemblePage[];
   /** Quelle, deren Originaldatei unverändert ausgegeben wird (statt `pages` neu zu setzen) */
   original?: string;
+  /** Eigene Metadaten der Seiten entfernen (Werkstatt: „Versteckte Angaben entfernen“) */
+  strip?: boolean;
   /** Seitenzahlen auf das fertige Dokument setzen (Dokument-Operation) */
   numbers?: PageNumberOptions;
 }
@@ -167,6 +170,7 @@ async function assembleOne(
         const source = sourceOf(sources, p.source);
         const copy = copied.get(position);
         if (copy) {
+          if (doc.strip) stripPageMetadata(copy);
           page = out.addPage(copy);
         } else if (source.kind === 'image') {
           const { image } = source;

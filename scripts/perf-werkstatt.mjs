@@ -9,6 +9,10 @@
  *   - 100 Seiten verschieben bis zur Anzeige: unter 50 ms
  *   - gezeichnete Vorschaubilder nach dem Scrollen durch alle Seiten: höchstens 200
  *   - Export von 500 Seiten (nur Messwert, kein Ziel im Plan)
+ *
+ * Drittes Szenario (Abschluss Stufe 2): dieselben Text-PDFs mit Operationen im Arbeitsbereich,
+ * Stempel auf allen Seiten von Dokument 1, Seitenzahlen auf Dokument 2, 20 Seiten mit
+ * Unterschrift in Dokument 3 und Dokument 4 geschwärzt. Danach dieselben Messungen.
  */
 
 import { mkdtempSync, rmSync, statSync, writeFileSync } from 'node:fs';
@@ -102,12 +106,152 @@ const SCAN_SCRIPT = `(async () => {
 /** @typedef {{ name: string, value: string, target: string, ok: boolean | null }} Row */
 
 /**
+ * Operationen der Stufe 2 über die Oberfläche anlegen und ihre Dauer messen.
+ * @param {import('./lib/chrome.mjs').Send} send
+ * @param {ReturnType<typeof pageApi>} p
+ * @param {() => Promise<number>} now
+ * @param {(from: number, to: number) => Promise<number[]>} longTasks
+ * @returns {Promise<Row[]>}
+ */
+async function applyOps(send, p, now, longTasks) {
+  /** @type {Row[]} */
+  const rows = [];
+  /** Werkzeug über „Werkzeuge“ für das Dokument der ersten Seite von Spalte `col` öffnen */
+  const openTool = async (/** @type {number} */ col, /** @type {string} */ label) => {
+    await p.evaluate(
+      `document.querySelectorAll('.ws-col')[${col}].querySelector('.ws-page').click()`,
+    );
+    await p.evaluate(`document.querySelector('[data-cmd="tools"]').click()`);
+    await p.waitFor(`!document.querySelector('#ws-menu').hidden`);
+    await p.evaluate(
+      `[...document.querySelectorAll('#ws-menu [role=menuitem]')].find((b) => b.textContent.startsWith(${JSON.stringify(label)})).click()`,
+    );
+    await p.waitFor(`!document.querySelector('#ws-tool').hidden`);
+    await wait(300);
+  };
+  /** Klick und zwei Bilder später messen (wie „100 Seiten verschieben“) */
+  const timedClick = async (/** @type {string} */ expr) =>
+    /** @type {number} */ (
+      await p.evaluate(
+        `(async () => { const t = performance.now(); ${expr}.click(); await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))); return performance.now() - t; })()`,
+      )
+    );
+  const key = async (/** @type {string} */ k) => {
+    const code = `Key${k.toUpperCase()}`;
+    const vk = k.toUpperCase().charCodeAt(0);
+    await send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: k,
+      code,
+      text: k,
+      windowsVirtualKeyCode: vk,
+    });
+    await send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: k,
+      code,
+      windowsVirtualKeyCode: vk,
+    });
+  };
+
+  // Stempel (Standard: quer „ENTWURF“) auf alle 100 Seiten von Dokument 1
+  await openTool(0, 'Stempel');
+  await p.evaluate(
+    `(() => { const f = [...document.querySelectorAll('#ws-tool-body input')].find((i) => /seiten/i.test(document.querySelector('label[for="' + i.id + '"]')?.textContent ?? '')); f.value = ''; f.dispatchEvent(new Event('input', { bubbles: true })); })()`,
+  );
+  let from = await now();
+  const stampMs = await timedClick(`document.querySelector('#ws-tool-body .btn:not(.ghost)')`);
+  await wait(2000);
+  let long = await longTasks(from, await now());
+  rows.push({
+    name: 'Stempel auf 100 Seiten bis zur Anzeige',
+    value: `${Math.round(stampMs)} ms`,
+    target: 'unter 50 ms',
+    ok: stampMs < 50,
+  });
+  rows.push({
+    name: 'Lange Aufgaben beim Neuzeichnen danach',
+    value: long.length ? `${long.length}, längste ${Math.max(...long)} ms` : 'keine',
+    target: 'keine über 100 ms',
+    ok: long.every((d) => d <= 100),
+  });
+
+  // Seitenzahlen auf Dokument 2 (Standardeinstellung)
+  await openTool(1, 'Seitenzahlen');
+  const numbersMs = await timedClick(`document.querySelector('#ws-tool-body .btn:not(.ghost)')`);
+  rows.push({
+    name: 'Seitenzahlen auf 100 Seiten bis zur Anzeige',
+    value: `${Math.round(numbersMs)} ms`,
+    target: 'unter 50 ms',
+    ok: numbersMs < 50,
+  });
+
+  // Unterschrift auf Seite 1 von Dokument 3, dann 19-mal duplizieren (D)
+  await openTool(2, 'Unterschrift');
+  await p.drag('#sig-pad', [0.1, 0.7], [0.9, 0.3]);
+  await wait(300);
+  await p.evaluate(`document.querySelector('#ws-tool-body .btn:not(.ghost)').click()`);
+  await p.waitFor(`document.querySelector('#ws-sign').open`);
+  await wait(500);
+  await p.evaluate(`document.querySelector('#ws-sign-add').click()`);
+  await p.evaluate(`document.querySelector('#ws-sign-ok').click()`);
+  await wait(300);
+  await p.evaluate(`document.querySelectorAll('.ws-col')[2].querySelector('.ws-page').focus()`);
+  for (let i = 0; i < 19; i++) await key('d');
+  await wait(1000);
+  const signed = /** @type {number} */ (
+    await p.evaluate(
+      `[...document.querySelectorAll('.ws-ops')].filter((o) => (o.dataset.marks ?? '').includes('sign')).length`,
+    )
+  );
+  rows.push({
+    name: 'Seiten mit Unterschrift',
+    value: String(signed),
+    target: '20',
+    ok: signed === 20,
+  });
+
+  // Dokument 4 schwärzen: ein Bereich auf Seite 1, gerastert werden alle 100 Seiten
+  await openTool(3, 'Schwärzen');
+  await p.evaluate(
+    `[...document.querySelectorAll('#ws-tool-body .btn')].find((b) => b.textContent.startsWith('Bereiche festlegen')).click()`,
+  );
+  await p.waitFor(`document.querySelector('#ws-redact').open`);
+  await wait(500);
+  await p.evaluate(`document.querySelector('#ws-redact-add').click()`);
+  await p.evaluate(`document.querySelector('#ws-redact-ok').click()`);
+  await wait(200);
+  from = await now();
+  await p.evaluate(
+    `[...document.querySelectorAll('#ws-tool-body .btn')].find((b) => b.textContent.startsWith('Dokument schwärzen')).click()`,
+  );
+  await p.waitFor(`document.querySelector('#ws-tool').hidden`, 300000);
+  const redactMs = (await now()) - from;
+  long = await longTasks(from, await now());
+  rows.push({
+    name: 'Schwärzen von 100 Seiten (200 dpi)',
+    value: `${(redactMs / 1000).toFixed(1)} s`,
+    target: '–',
+    ok: null,
+  });
+  rows.push({
+    name: 'Lange Aufgaben beim Schwärzen',
+    value: long.length ? `${long.length}, längste ${Math.max(...long)} ms` : 'keine',
+    target: '– (Rastern im Hauptthread)',
+    ok: null,
+  });
+  await wait(1000);
+  return rows;
+}
+
+/**
  * Misst ein Szenario in einer frisch geladenen Werkstatt.
  * @param {import('./lib/chrome.mjs').Send} send
  * @param {string[]} files
+ * @param {boolean} [ops] vor den Messungen Operationen der Stufe 2 anlegen
  * @returns {Promise<Row[]>}
  */
-async function measure(send, files) {
+async function measure(send, files, ops = false) {
   const p = pageApi(send);
   /** @type {Row[]} */
   const rows = [];
@@ -172,6 +316,8 @@ async function measure(send, files) {
     target: '–',
     ok: null,
   });
+
+  if (ops) rows.push(...(await applyOps(send, p, now, longTasks)));
 
   // 2. Scrollen durch alle Spalten mit dem Mausrad; höchste Zahl gleichzeitig gezeichneter Bilder
   await p.evaluate(
@@ -391,12 +537,17 @@ try {
   const scenarios = [
     { label: `Text-PDFs (${size(text)})`, files: text },
     { label: `Scans, ein JPEG je Seite (${size(scans)})`, files: scans },
+    {
+      label: 'Text-PDFs mit Stempel, Seitenzahlen, Unterschriften und einem geschwärzten Dokument',
+      files: text,
+      ops: true,
+    },
   ];
   console.log(
     `\nPDF-Werkstatt, ${DOCS} × ${PAGES} Seiten, Chrome headless, 1440 × 900 bei doppelter Pixeldichte`,
   );
-  for (const { label, files } of scenarios) {
-    const rows = await measure(send, files);
+  for (const { label, files, ops } of scenarios) {
+    const rows = await measure(send, files, ops);
     const width = Math.max(...rows.map((r) => r.name.length));
     console.log(`\n${label}\n`);
     for (const r of rows) {

@@ -179,6 +179,15 @@
         <div class="stat-row"><span>Dokumente</span><b id="ws-docs">–</b></div>
         <div class="stat-row"><span>Seiten gesamt</span><b id="ws-pages">–</b></div>
         <div class="stat-row"><span>Ausgewählt</span><b id="ws-selected">–</b></div>
+        <!-- Einstellung beim Speichern (Stufe 2.4); Texte aus texts.ts -->
+        <div class="field mt-m">
+          <span class="lbl" id="ws-meta-label"></span>
+          <div class="seg" role="group" aria-labelledby="ws-meta-label">
+            <button type="button" data-meta="keep" aria-pressed="true"></button>
+            <button type="button" data-meta="strip" aria-pressed="false"></button>
+          </div>
+          <p class="hint" id="ws-meta-hint"></p>
+        </div>
         <button type="button" class="btn wide mt-m" id="ws-export-doc" disabled>
           <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
           <span id="ws-export-doc-label">Dokument als PDF speichern</span>
@@ -189,6 +198,10 @@
         <button type="button" class="btn ghost wide mt-s" id="ws-export-zip" disabled>
           Alle als ZIP speichern
         </button>
+        <p class="ws-note" id="ws-meta-kept" hidden>
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
+          ><span id="ws-meta-kept-text"></span>
+        </p>
         <p class="ws-note" id="ws-loss" hidden>
           <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
           ><span id="ws-loss-text"></span>
@@ -490,7 +503,10 @@
       zusammenführen. Jeder Schritt lässt sich rückgängig machen. Am Ende speicherst du ein
       Dokument, deine Auswahl oder alle Dokumente als ZIP. Deine Originaldateien bleiben
       unverändert. Über „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern
-      gesetzt und passen zur dann gültigen Reihenfolge.
+      gesetzt und passen zur dann gültigen Reihenfolge. Stempel und Unterschriften gehören zur Seite
+      und wandern mit, wenn du sie verschiebst; gesetzt werden sie beim Speichern. Schwärzen und
+      Formular ausfüllen erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum
+      Bild, sodass nichts vom Original übrig bleibt.
     </p>
     <h2>Gut zu wissen</h2>
     <p>

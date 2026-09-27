@@ -19,7 +19,14 @@ describe('inspectForWorkshop', () => {
       { box: { width: 300, height: 400 }, rotate: 0 },
       { box: { width: 100, height: 200 }, rotate: 270 },
     ]);
-    expect(info.facts).toEqual({ form: false, xfa: false, outline: false, signed: false });
+    expect(info.facts).toEqual({
+      form: false,
+      xfa: false,
+      outline: false,
+      signed: false,
+      metadata: false,
+      pageMetadata: false,
+    });
   });
 
   it('erkennt Formularfelder, XFA und Lesezeichen', async () => {
@@ -39,7 +46,7 @@ describe('inspectForWorkshop', () => {
     doc.catalog.set(PDFName.of('Outlines'), outlines);
     // Ohne updateFieldAppearances, sonst entfernt pdf-lib /XFA schon beim Speichern.
     const info = await inspectForWorkshop(await doc.save({ updateFieldAppearances: false }));
-    expect(info.facts).toEqual({ form: true, xfa: true, outline: true, signed: false });
+    expect(info.facts).toMatchObject({ form: true, xfa: true, outline: true, signed: false });
   });
 
   it('erkennt eine Signatur', async () => {
@@ -74,5 +81,21 @@ describe('inspectForWorkshop', () => {
     await expect(
       inspectForWorkshop(new TextEncoder().encode('%PDF-1.7 kaputt')),
     ).rejects.toMatchObject({ code: 'damaged' });
+  });
+
+  it('erkennt versteckte Angaben im Dokument und auf Seiten (Schritt 2.4)', async () => {
+    const withInfo = await PDFDocument.create({ updateMetadata: false });
+    withInfo.addPage([200, 200]);
+    withInfo.setAuthor('Autorin');
+    expect((await inspectForWorkshop(await withInfo.save())).facts).toMatchObject({
+      metadata: true,
+      pageMetadata: false,
+    });
+    const withPage = await PDFDocument.create({ updateMetadata: false });
+    withPage.addPage([200, 200]).node.set(PDFName.of('PieceInfo'), withPage.context.obj({}));
+    expect((await inspectForWorkshop(await withPage.save())).facts).toMatchObject({
+      metadata: false,
+      pageMetadata: true,
+    });
   });
 });

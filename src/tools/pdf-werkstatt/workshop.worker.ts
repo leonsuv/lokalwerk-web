@@ -12,6 +12,7 @@
 import { assemblePdfs, type AssembleDoc, type AssembleSource } from '../../core/pdf/assemble.ts';
 import { fillForm, readForm, type FieldValue } from '../../core/pdf/form.ts';
 import type { PageImage } from '../../core/pdf/from-images.ts';
+import { inspectPdf } from '../../core/pdf/metadata.ts';
 import { buildRasterPdf, type RasterPage } from '../../core/pdf/redact.ts';
 import { standardFontCharset } from '../../core/pdf/stamp.ts';
 import { inspectForWorkshop, type WorkshopPdfInfo } from '../../core/pdf/workshop-inspect.ts';
@@ -119,7 +120,24 @@ async function exportDocs(
         : { kind: 'image', image: source.image },
     );
   }
-  return assemblePdfs(docs, data, (done, total) => progress({ done, total }));
+  const files = await assemblePdfs(docs, data, (done, total) => progress({ done, total }));
+  // „Versteckte Angaben entfernen“: jedes Ergebnis noch einmal prüfen, wie im Werkzeug
+  // „PDF-Metadaten entfernen“, und nur ausgeben, wenn nichts mehr gefunden wird.
+  for (const [i, file] of files.entries()) {
+    if (!docs[i]?.strip) continue;
+    const check = await inspectPdf(file.bytes);
+    if (
+      check.info.length > 0 ||
+      check.xmpBytes !== null ||
+      check.attachments > 0 ||
+      check.javascript ||
+      check.pagesWithMetadata > 0 ||
+      check.earlierVersions > 0
+    ) {
+      throw new WorkerError('metadata-left');
+    }
+  }
+  return files;
 }
 
 serveRequests<WorkshopRequest>(async (request, progress) => {

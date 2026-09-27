@@ -207,11 +207,11 @@ export function exportDone(
       : zip
         ? ` ${unchanged === 1 ? 'Eines davon war' : `${unchanged} davon waren`} unverändert und ${unchanged === 1 ? 'ist' : 'sind'} die Originaldatei.`
         : ' Es war unverändert: Gespeichert ist die Originaldatei.';
-  // Schritt 2.4, Entwurf zur Freigabe
+  // Schritt 2.4, freigegeben von Leon am 27.09.2026
   const clean = stripped
     ? zip
-      ? ' Sie enthalten keine versteckten Angaben mehr.'
-      : ' Sie enthält keine versteckten Angaben mehr.'
+      ? ' Die Dateien enthalten keine versteckten Angaben mehr.'
+      : ' Die Datei enthält keine versteckten Angaben mehr.'
     : '';
   return `Fertig: ${what}${note}${clean}`;
 }
@@ -325,7 +325,7 @@ export const formApplied = (name: string): string => `Formular in ${name} übern
 export const FORM_CHANGED =
   'Das Dokument hat sich während des Ausfüllens geändert. Übernimm das Formular noch einmal.';
 
-// Stufe 2.4: versteckte Angaben (Metadaten) beim Speichern, Entwurf zur Freigabe
+// Stufe 2.4: versteckte Angaben (Metadaten) beim Speichern, freigegeben von Leon am 27.09.2026
 export const METADATA_LABEL = 'Versteckte Angaben';
 export const METADATA_KEEP = 'Behalten';
 export const METADATA_STRIP = 'Entfernen';

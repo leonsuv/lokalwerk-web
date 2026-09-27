@@ -85,6 +85,20 @@ export interface ExportOptions {
   strip?: boolean;
 }
 
+/** Was ein Einzelwerkzeug der Werkstatt bei der Übergabe mitgibt (workshop-link.ts) */
+export interface WorkshopHandover {
+  /** „PDF-Metadaten entfernen“: in der Werkstatt ist „Entfernen“ vorausgewählt */
+  stripMetadata?: boolean;
+}
+
+/**
+ * Einstellung beim Speichern nach einer Übergabe (M6, Leon 27.09.2026): „Entfernen“ nur aus
+ * „PDF-Metadaten entfernen“, bei allen anderen Übergaben „Behalten“. Umstellbar bleibt sie.
+ */
+export function exportOptionsFor(handover: WorkshopHandover = {}): ExportOptions {
+  return { strip: handover.stripMetadata === true };
+}
+
 /** Wird das Dokument als Originaldatei ausgegeben (W12)? Nicht, wenn Angaben entfernt werden. */
 function originalOf(state: WorkshopState, doc: Doc, options: ExportOptions) {
   return options.strip ? null : unchangedSource(state, doc);

@@ -15,7 +15,8 @@ import { workshopLink } from '../../ui/workshop-link.ts';
 import type { MetadataRequest, PdfInspection } from './metadata.worker.ts';
 
 // Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
-const toWorkshop = workshopLink();
+// In der Werkstatt ist „Versteckte Angaben: Entfernen“ vorausgewählt (M6)
+const toWorkshop = workshopLink(undefined, { stripMetadata: true });
 
 const MESSAGES: Record<string, string> = {
   empty: 'Die Datei ist leer.',

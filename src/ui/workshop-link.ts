@@ -5,6 +5,7 @@
  * geladen; statisch eingebunden ist nur dieser Knopf (chunk-guard).
  */
 
+import type { WorkshopHandover } from '../core/workshop/export-plan.ts';
 import type { PagePick } from '../core/workshop/model.ts';
 import { showToast } from './toast.ts';
 
@@ -16,9 +17,11 @@ const FAILED =
  * Legt den Knopf unten in der rechten Spalte des Werkzeugs an. Die zurückgegebene Funktion
  * setzt die Dateien, die übergeben werden; ohne Dateien ist der Knopf ausgeblendet. `layouts`
  * gibt je Datei Reihenfolge, Drehung und gelöschte Seiten mit (PDF-Seiten bearbeiten).
+ * `handover` legt Einstellungen der Werkstatt fest (PDF-Metadaten entfernen: „Entfernen“).
  */
 export function workshopLink(
   container: Element | null = document.querySelector('.workspace .side'),
+  handover: WorkshopHandover = {},
 ): (files: readonly File[] | null, layouts?: ReadonlyMap<File, readonly PagePick[]>) => void {
   const button = document.createElement('button');
   button.type = 'button';
@@ -33,7 +36,7 @@ export function workshopLink(
   button.addEventListener('click', () => {
     button.disabled = true;
     void import('./workshop-switch.ts')
-      .then(({ openInWorkshop }) => openInWorkshop([...files], pageLayouts))
+      .then(({ openInWorkshop }) => openInWorkshop([...files], pageLayouts, handover))
       .then((ok) => {
         if (!ok) showToast(FAILED);
       })

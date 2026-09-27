@@ -286,7 +286,7 @@ Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026** mit einer Änderung (U
 
 ## 13. Stufe 2, Schritt 2.4: versteckte Angaben beim Speichern
 
-Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundort: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.4“ und `exportDone`). Die Fehlermeldung ist aus „PDF-Metadaten entfernen“ übernommen (freigegeben).
+Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026** mit einer Änderung (Meldungen nach dem Speichern, eingebaut). Fundort: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.4“ und `exportDone`). Die Fehlermeldung ist aus „PDF-Metadaten entfernen“ übernommen (freigegeben).
 
 **Einstellung** (rechte Spalte, über den Speichern-Knöpfen)
 
@@ -300,8 +300,10 @@ Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundort: `src/tools/pdf-werkstatt/t
 
 **Meldung nach dem Speichern** mit „Entfernen“, angehängt an die bisherige Meldung
 
-- ein Dokument: „Fertig: Vertrag.pdf ist gespeichert. Sie enthält keine versteckten Angaben mehr.“
-- ZIP: „Fertig: 2 Dokumente sind als ZIP gespeichert. Sie enthalten keine versteckten Angaben mehr.“
+- ein Dokument: „Fertig: Vertrag.pdf ist gespeichert. Die Datei enthält keine versteckten Angaben mehr.“
+- ZIP: „Fertig: 2 Dokumente sind als ZIP gespeichert. Die Dateien enthalten keine versteckten Angaben mehr.“
 
 **Fehlermeldung**, wenn die Prüfung noch etwas findet (aus dem Einzelwerkzeug): „In der neuen Datei wurden noch Angaben gefunden. Sie wird deshalb nicht angeboten.“
+
+**Übergabe aus „PDF-Metadaten entfernen“** (M6, Leon 27.09.2026): Die Einstellung steht dann auf „Entfernen“, bei allen anderen Übergaben auf „Behalten“. Keine neuen Texte.
 

@@ -6,7 +6,12 @@
  */
 
 import { isImage, isPdf } from '../../core/files/classify.ts';
-import { imagePageBox, metadataKept } from '../../core/workshop/export-plan.ts';
+import {
+  exportOptionsFor,
+  imagePageBox,
+  metadataKept,
+  type WorkshopHandover,
+} from '../../core/workshop/export-plan.ts';
 import { addSources, renameDoc } from '../../core/workshop/commands.ts';
 import {
   allPages,
@@ -439,7 +444,15 @@ async function addImage(id: string, file: File): Promise<AddImageResult> {
 }
 
 /** Übergabe aus Startseite und Einzelwerkzeugen (tool-switch.ts, workshop-switch.ts) */
-export function openFiles(list: File[], layouts?: ReadonlyMap<File, readonly PagePick[]>): void {
+export function openFiles(
+  list: File[],
+  layouts?: ReadonlyMap<File, readonly PagePick[]>,
+  handover?: WorkshopHandover,
+): void {
+  // Jede Übergabe legt „Versteckte Angaben“ fest (M6): „Entfernen“ nur aus „PDF-Metadaten
+  // entfernen“, sonst „Behalten“. Sichtbar und umstellbar wie immer.
+  exporter.options = exportOptionsFor(handover);
+  render();
   void addFiles(list, undefined, layouts);
 }
 

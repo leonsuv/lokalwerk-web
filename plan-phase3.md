@@ -562,7 +562,7 @@ Vorher erledigt (Freigabe 2.2): D1–D10 bestätigt; Test, dass das Unterschrift
 
 Nach der Freigabe: Schritt 2.4 (Metadaten als Export-Einstellung, Hinweise).
 
-## 19. Schritt 2.4 und Abschluss Stufe 2 (27.09.2026, zur Freigabe)
+## 19. Schritt 2.4 und Abschluss Stufe 2 (27.09.2026, freigegeben von Leon am 27.09.2026; M1–M5 bestätigt, M6 geändert, Texte freigegeben)
 
 Vorher erledigt (Freigabe 2.3): E1–E9 bestätigt; Seitenzahlen in Vorschaubildern und großer Vorschau (C6 geändert); Dateiname „<Name> (geschwärzt).pdf“ (E8, mit Test); Untertitel beim Formular geändert; Texte 2.2 und 2.3 und beide Sätze für den Erklärtext eingebaut.
 
@@ -579,7 +579,7 @@ Vorher erledigt (Freigabe 2.3): E1–E9 bestätigt; Seitenzahlen in Vorschaubild
 - Browser: Hinweis bei einer PDF mit Autor und Seiten-Metadaten; „Behalten“ gibt die Originaldatei mit Autor aus; „Entfernen“ als ZIP und als Dokument ohne Autor, Titel und `/PieceInfo`, der Name der Autorin steht nicht mehr in den Bytes; hell und dunkel, 390 px ohne waagrechtes Scrollen.
 - `npm run check`: 1.226 Tests grün (13 übersprungen, lokale Spezifikationsdateien).
 
-### Von mir entschieden, zur Bestätigung (2.4)
+### Von mir entschieden, M1–M5 von Leon am 27.09.2026 bestätigt (2.4)
 
 | Nr. | Frage | Umsetzung |
 |---|---|---|
@@ -588,7 +588,7 @@ Vorher erledigt (Freigabe 2.3): E1–E9 bestätigt; Seitenzahlen in Vorschaubild
 | M3 | Unveränderte Dokumente bei „Entfernen“ | werden neu zusammengesetzt, weil die Originaldatei frühere Speicherstände mit alten Angaben enthalten kann; dabei gehen Formulare und Lesezeichen verloren, der Hinweis dazu erscheint |
 | M4 | Wenn die Prüfung etwas findet | nichts wird gespeichert (beim ZIP auch keine anderen Dateien), Meldung wie im Einzelwerkzeug |
 | M5 | Angaben in eingebetteten Bildern (z. B. Exif in JPEGs einer PDF) | werden weder erkannt noch entfernt, wie im Einzelwerkzeug („Bilder in der PDF können eigene Angaben enthalten“) |
-| M6 | Übergabe aus „PDF-Metadaten entfernen“ | stellt „Entfernen“ nicht automatisch ein |
+| M6 | Übergabe aus „PDF-Metadaten entfernen“ | **Geändert (Leon, 27.09.2026):** Bei der Übergabe aus „PDF-Metadaten entfernen“ ist „Entfernen“ vorausgewählt, sichtbar und umstellbar; bei allen anderen Übergaben (Einzelwerkzeuge, Startseite) „Behalten“. Umgesetzt über `WorkshopHandover` und `exportOptionsFor` (`export-plan.ts`), durchgereicht von `workshopLink` bis `openFiles`. Test: `tests/ui/workshop-handover.test.ts`; im Browser geprüft (gespeicherte Datei ohne Autor, Umstellen möglich, aus „PDF stempeln“ „Behalten“). |
 
 ### Browser-Prüfung aller Werkstatt-Abläufe (Chromium 141, Linux)
 
@@ -642,9 +642,8 @@ Einordnung:
 
 ### Offen, Prüfung durch Leon
 
-- Texte in `docs/texte-pdf-werkstatt.md` Abschnitt 13 (2.4).
-- Entscheidungen M1–M6.
-- Gerätetests oben.
+- Texte 2.4: freigegeben mit einer Änderung (Meldung nach dem Speichern „Die Datei enthält …“ bzw. „Die Dateien enthalten …“), eingebaut.
+- Gerätetests oben: übernimmt Leon, eingetragen in `docs/livegang.md` (V6 vor dem Start: B3, B5, C1, C2, C4, C6; N6 erste Wochen: B1, B2, B4, B6, C3, C5).
 - Datenschutzerklärung und AGB: nach meiner Einschätzung nicht betroffen (alles bleibt im Browser, die Einstellung wird nicht gespeichert).
 
 Stufe 2 ist damit umgesetzt. Nächste Schritte nach Plan: W8 (Einzelwerkzeuge auf Werkstatt-Module umstellen, eigene Freigabe) und Stufe 3 (nur Skizze).

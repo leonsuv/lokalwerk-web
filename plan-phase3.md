@@ -562,3 +562,90 @@ Vorher erledigt (Freigabe 2.2): D1–D10 bestätigt; Test, dass das Unterschrift
 
 Nach der Freigabe: Schritt 2.4 (Metadaten als Export-Einstellung, Hinweise).
 
+## 19. Schritt 2.4 und Abschluss Stufe 2 (27.09.2026, zur Freigabe)
+
+Vorher erledigt (Freigabe 2.3): E1–E9 bestätigt; Seitenzahlen in Vorschaubildern und großer Vorschau (C6 geändert); Dateiname „<Name> (geschwärzt).pdf“ (E8, mit Test); Untertitel beim Formular geändert; Texte 2.2 und 2.3 und beide Sätze für den Erklärtext eingebaut.
+
+### Umgesetzt in 2.4
+
+- **Export-Einstellung „Versteckte Angaben: Behalten / Entfernen“** über den Speichern-Knöpfen (Umschalter wie „Formular festschreiben“). Gilt für Dokument, Auswahl und ZIP. Bei „Entfernen“ wird jedes Dokument neu zusammengesetzt, auch ein unverändertes, und die Seiten verlieren ihre eigenen Metadaten (`/Metadata`, `/PieceInfo`, `/LastModified`; `stripPageMetadata`, dieselbe Liste wie im Werkzeug „PDF-Metadaten entfernen“). Angaben des Dokuments (Info, XMP, Anhänge, frühere Speicherstände) fallen beim Neuzusammensetzen ohnehin weg.
+- **Prüfung vor dem Speichern** wie im Einzelwerkzeug: Der Worker untersucht jedes Ergebnis mit `inspectPdf` und gibt nichts aus, wenn noch Angaben, XMP, Anhänge, JavaScript, Seiten-Metadaten oder frühere Speicherstände gefunden werden (Meldung aus dem Einzelwerkzeug).
+- **Erkennung beim Laden** (`hiddenInfo` in `metadata.ts`, `SourceFacts.metadata` und `pageMetadata`). **Hinweis** in der Übersicht, welche Dokumente beim Speichern versteckte Angaben behalten (`metadataKept`): unverändert ausgegebene mit Angaben im Dokument oder auf Seiten, neu zusammengesetzte mit Seiten-Metadaten. Der Hinweis zu Formularen, Lesezeichen und Signaturen berücksichtigt die Einstellung. Die Meldung nach dem Speichern sagt, dass keine versteckten Angaben mehr enthalten sind.
+- `countEarlierVersions` sucht „%%EOF“ jetzt direkt in den Bytes (siehe Leistungstest).
+
+### Tests (2.4)
+
+- Erkennung von Angaben im Dokument und auf Seiten; Exportplan ohne Originaldatei und mit `strip`; Verlust-Hinweis zählt unveränderte Dokumente beim Entfernen mit; Hinweis nennt die richtigen Dokumente (unverändert und neu zusammengesetzt); Export ohne Seiten-Metadaten, geprüft mit `inspectPdf`.
+- Browser: Hinweis bei einer PDF mit Autor und Seiten-Metadaten; „Behalten“ gibt die Originaldatei mit Autor aus; „Entfernen“ als ZIP und als Dokument ohne Autor, Titel und `/PieceInfo`, der Name der Autorin steht nicht mehr in den Bytes; hell und dunkel, 390 px ohne waagrechtes Scrollen.
+- `npm run check`: 1.226 Tests grün (13 übersprungen, lokale Spezifikationsdateien).
+
+### Von mir entschieden, zur Bestätigung (2.4)
+
+| Nr. | Frage | Umsetzung |
+|---|---|---|
+| M1 | Vorgabe | „Behalten“: Verhalten wie bisher, unveränderte Dateien bleiben Originaldateien (W12) mit Formularen und Lesezeichen |
+| M2 | Merken | nur für die Sitzung, nicht gespeichert (Regel 5), nicht im Verlauf |
+| M3 | Unveränderte Dokumente bei „Entfernen“ | werden neu zusammengesetzt, weil die Originaldatei frühere Speicherstände mit alten Angaben enthalten kann; dabei gehen Formulare und Lesezeichen verloren, der Hinweis dazu erscheint |
+| M4 | Wenn die Prüfung etwas findet | nichts wird gespeichert (beim ZIP auch keine anderen Dateien), Meldung wie im Einzelwerkzeug |
+| M5 | Angaben in eingebetteten Bildern (z. B. Exif in JPEGs einer PDF) | werden weder erkannt noch entfernt, wie im Einzelwerkzeug („Bilder in der PDF können eigene Angaben enthalten“) |
+| M6 | Übergabe aus „PDF-Metadaten entfernen“ | stellt „Entfernen“ nicht automatisch ein |
+
+### Browser-Prüfung aller Werkstatt-Abläufe (Chromium 141, Linux)
+
+Alle Abläufe ohne Konsolen- oder CSP-Meldungen und ohne Anfragen an fremde Adressen:
+
+- **Stufe 1** (1440 px): Laden von PDFs und einem Bild; R, Umschalt+R, D, Entf; Strg+C/X/V zwischen Dokumenten; Strg+Z/Strg+Y mit Ansage; M „Verschieben nach …“; Alt+Pfeil; Teilen; leere Seite DIN A4; „Mit dem nächsten zusammenführen“ und Dialog „Zusammenführen“; F2 Umbenennen; große Vorschau mit Blättern und Esc; „?“; Strg+A; Kontextmenü mit Umschalt+F10 und „Als neues Dokument“; Speichern als Dokument, Auswahl und ZIP (Seitenzahlen der Dateien geprüft); Handy 390 px: Auswahlmodus, Aktionsleiste, „Mehr“ mit allen Werkzeugen, kein waagrechtes Scrollen. Übergabe aus „PDF-Seiten bearbeiten“ mit Reihenfolge, Drehung und gelöschter Seite.
+- **Stufe 2:** Seitenzahlen (auch nach Umsortieren, in Vorschau und Export gleich); Stempel (Zeichenprüfung, wandert mit, Entfernen); Unterschrift (gedrehte Seite, Export aufrecht, ein Bild, Handy-Dialog); Vorschau mit Stempel, Unterschrift und Seitenzahl gegen die gespeicherte PDF verglichen; Schwärzen (Hinweis, Sprung, Nachfrage, Rückgängig/Wiederholen, gedrehte Seite, Stempel bleibt, Handy, Dateiname „(geschwärzt)“ und nach Umbenennen); Formular (Ł, Übernehmen, Felder im Export, Rückgängig); versteckte Angaben (Behalten, Entfernen, ZIP). Dunkelmodus für Stempel, Unterschrift, Schwärzen und die Einstellung.
+- **Einzelwerkzeuge** unverändert: „PDF stempeln“, „PDF unterschreiben“, „PDF schwärzen“, „PDF-Formular ausfüllen“.
+
+Nebenbei gefunden, nur die Prüfumgebung betreffend: Chromium speichert hier Dateinamen mit Umlauten als „download“, weil im Container keine UTF-8-Locale eingestellt ist (`POSIX`); mit `LC_ALL=C.UTF-8` stimmen die Namen. In `scripts/lib/chrome.mjs` bleibt das unverändert, weil `LC_ALL` das deutsche Datumsformat der Screenshots ändern würde.
+
+### Leistungstest (`npm run perf:werkstatt`, in dieser Umgebung: Chromium 141 headless im Container, 1440 × 900, doppelte Pixeldichte)
+
+Neues drittes Szenario: die Text-PDFs mit Stempel auf allen 100 Seiten von Dokument 1, Seitenzahlen auf Dokument 2, 20 Seiten mit Unterschrift in Dokument 3 und Dokument 4 geschwärzt.
+
+| Messung | Text-PDFs | Scans (171 MB) | Text-PDFs mit Operationen | Ziel |
+|---|---|---|---|---|
+| Erste Vorschaubilder sichtbar | 238 ms | 1,9 s | 219 ms | unter 1 s |
+| Alle sichtbaren Vorschaubilder | 1,4 s | 4,0 s | 1,3 s | – |
+| Stempel auf 100 Seiten bis zur Anzeige | – | – | 41 ms | unter 50 ms |
+| Seitenzahlen auf 100 Seiten bis zur Anzeige | – | – | 22 ms | unter 50 ms |
+| Lange Aufgaben beim Neuzeichnen nach dem Stempel | – | – | keine | keine über 100 ms |
+| Schwärzen von 100 Seiten (200 dpi) | – | – | 7,8 s, keine langen Aufgaben | – |
+| Lange Aufgaben beim Scrollen | keine | keine | keine | keine über 100 ms |
+| Gezeichnete Vorschaubilder höchstens | 200 | 179 | 200 | höchstens 200 |
+| Lange Aufgaben beim Ziehen von 20 Seiten | keine | 1, 57 ms | 2, längste 83 ms | keine über 100 ms |
+| 100 Seiten verschieben bis zur Anzeige | 61 ms | 92 ms | 77 ms | unter 50 ms |
+| Export aller Seiten als neue PDF | 0,3 s | 4,0 s | 0,6 s | – |
+| JS-Speicher am Ende | 9 MB | 176 MB | 47 MB | – |
+
+Einordnung:
+- **Erste Vorschaubilder der Scans:** Die Erkennung versteckter Angaben (2.4) wandelte beim Laden jede Datei in Text um und verdoppelte bei den Scans die Zeit (3,5 s). Behoben durch die Suche in den Bytes (34 MB: 23 ms statt 355 ms); danach 1,9 s, gleich wie der Stand vor Stufe 2.2 in dieser Umgebung (1,8 s). Auf dem Mac waren es bei Anhaltepunkt B 0,73 s.
+- **100 Seiten verschieben:** In dieser Umgebung verfehlt auch der Stand vor Stufe 2.2 das Ziel (53 bis 63 ms im Skript). Im direkten Vergleich mit einem CPU-Profil, beide Stände abwechselnd, je 12 Messungen: vorher 41 bis 66 ms, jetzt 39 bis 61 ms, kein Unterschied; die JavaScript-Arbeit beträgt etwa 3 ms, der Rest ist Stil und Layout des Browsers. Auf dem Mac waren es bei Anhaltepunkt B 27 und 32 ms. **Bitte `npm run perf:werkstatt` auf dem Mac wiederholen**; erst dort ist das Ziel belastbar zu beurteilen.
+
+### Offene Gerätetests (vollständige Liste, Stufe 1 und 2)
+
+| # | Prüfung | Seit |
+|---|---|---|
+| B1 | NVDA (Windows): R, D, M, Entf in einer Spalte im Fokusmodus; Ansagen der Live-Region; Kontextmenü mit Umschalt+F10 | Anhaltepunkt B |
+| B2 | VoiceOver (macOS, iOS) und TalkBack: dieselben Punkte | Anhaltepunkt B |
+| B3 | Echtes Handy (iOS Safari, Android Chrome): Handy-Ansicht, Auswahlmodus, Verschieben nach …, große Vorschau, Speichern | Anhaltepunkt B |
+| B4 | Tablet: Ziehen nach 300 ms Halten, Scrollen ohne Halten | Anhaltepunkt B |
+| B5 | Firefox, Safari und Edge am Computer: Ziehen, Tastatur, Dialoge, Export; Vorschau mit dem Legacy-Build von pdf.js (Browser support im README) | Anhaltepunkt B, pdf.js-Entscheidung |
+| B6 | Speicher auf älteren iPhones mit großen Scans (Canvas-Grenze) | Anhaltepunkt B |
+| C1 | Unterschrift mit Finger und Stift zeichnen und im Dialog platzieren (Handy, Tablet) | 2.2 |
+| C2 | Bereiche schwärzen mit dem Finger im Dialog (Handy, Tablet); Knöpfe unten sichtbar | 2.3 |
+| C3 | NVDA/VoiceOver: Ansage nach dem Schwärzen samt Hinweis auf nicht geschwärzte Seiten; Dialog vor dem Speichern (Fokus auf „Abbrechen“) | 2.3 |
+| C4 | Speichern mit Umlauten im Dateinamen („Vertrag (geschwärzt).pdf“) in Safari, Firefox und Edge | 2.3 |
+| C5 | Schwärzen großer Dokumente auf dem Handy (Speicher beim Rastern, 200 dpi) | 2.3 |
+| C6 | `npm run perf:werkstatt` auf dem Mac (siehe oben) | Abschluss Stufe 2 |
+
+### Offen, Prüfung durch Leon
+
+- Texte in `docs/texte-pdf-werkstatt.md` Abschnitt 13 (2.4).
+- Entscheidungen M1–M6.
+- Gerätetests oben.
+- Datenschutzerklärung und AGB: nach meiner Einschätzung nicht betroffen (alles bleibt im Browser, die Einstellung wird nicht gespeichert).
+
+Stufe 2 ist damit umgesetzt. Nächste Schritte nach Plan: W8 (Einzelwerkzeuge auf Werkstatt-Module umstellen, eigene Freigabe) und Stufe 3 (nur Skizze).
+

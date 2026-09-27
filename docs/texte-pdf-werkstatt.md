@@ -284,3 +284,24 @@ Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026** mit einer Änderung (U
 
 **Erklärtext der Werkstatt** (freigegeben, eingebaut), nach dem Satz zu Stempel und Unterschrift: „Schwärzen und Formular ausfüllen erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum Bild, sodass nichts vom Original übrig bleibt.“
 
+## 13. Stufe 2, Schritt 2.4: versteckte Angaben beim Speichern
+
+Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundort: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.4“ und `exportDone`). Die Fehlermeldung ist aus „PDF-Metadaten entfernen“ übernommen (freigegeben).
+
+**Einstellung** (rechte Spalte, über den Speichern-Knöpfen)
+
+- Beschriftung „Versteckte Angaben“, Umschalter „Behalten“ · „Entfernen“ (Vorgabe „Behalten“)
+- Hinweis darunter: „Angaben wie Autor, Titel, Programm und Datum. Beim Entfernen wird jedes Dokument neu zusammengesetzt und vor dem Speichern geprüft.“
+
+**Hinweis** (unter den Speichern-Knöpfen, nur bei „Behalten“ und wenn es zutrifft)
+
+- ein Dokument: „Vertrag enthält versteckte Angaben wie Autor, Programm oder Datum. Sie bleiben beim Speichern erhalten.“
+- mehrere: „2 Dokumente enthalten versteckte Angaben wie Autor, Programm oder Datum: Vertrag, Anlagen. Sie bleiben beim Speichern erhalten.“
+
+**Meldung nach dem Speichern** mit „Entfernen“, angehängt an die bisherige Meldung
+
+- ein Dokument: „Fertig: Vertrag.pdf ist gespeichert. Sie enthält keine versteckten Angaben mehr.“
+- ZIP: „Fertig: 2 Dokumente sind als ZIP gespeichert. Sie enthalten keine versteckten Angaben mehr.“
+
+**Fehlermeldung**, wenn die Prüfung noch etwas findet (aus dem Einzelwerkzeug): „In der neuen Datei wurden noch Angaben gefunden. Sie wird deshalb nicht angeboten.“
+

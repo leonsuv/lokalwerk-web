@@ -228,7 +228,9 @@ describe('Seiten-Operationen im Export (Stufe 2.2)', () => {
         source: 'a',
         index: 1,
         rotate: 0,
-        signatures: [{ id: 'g7', png: image.png, rect: { x: 0.1, y: 0.2, w: 0.3, h: 0.1 } }],
+        signatures: [
+          { id: 'g7', png: image.png, rect: { x: 0.1, y: 0.2, w: 0.3, h: 0.1 }, turn: 0 },
+        ],
       },
     ]);
     // Auch „Auswahl als neue PDF“ behält die Operationen der Seiten

@@ -21,7 +21,6 @@ import {
   splitDoc,
   toClipboard,
   turnedRect,
-  unturnedRect,
   type Command,
 } from '../../../src/core/workshop/commands.ts';
 import type { NormRect } from '../../../src/core/geometry/norm-rect.ts';
@@ -459,29 +458,36 @@ describe('Seiten-Operationen: Stempel und Unterschrift (Stufe 2.2)', () => {
     expect(remove.apply(b.state, b.ids).state).toBe(b.state);
   });
 
-  it('Unterschrift: Rechteck so, wie die Seite angezeigt wird, gespeichert ohne Werkstatt-Drehung', () => {
+  it('Unterschrift: Rechteck so, wie die Seite angezeigt wird, mit der Drehung von damals', () => {
     const shown = { x: 0.1, y: 0.2, w: 0.3, h: 0.05 };
     const close = (a: NormRect, e: NormRect) => {
       for (const k of ['x', 'y', 'w', 'h'] as const) expect(a[k], k).toBeCloseTo(e[k], 10);
     };
-    for (const rotate of [0, 90, 180, 270])
-      close(turnedRect(unturnedRect(shown, rotate), rotate), shown);
-    close(unturnedRect(shown, 90), { x: 0.2, y: 0.6, w: 0.05, h: 0.3 });
+    // Weiter gedreht: viermal eine Vierteldrehung ergibt wieder dasselbe Rechteck
+    close(turnedRect(shown, 90), { x: 0.75, y: 0.1, w: 0.05, h: 0.3 });
+    close(turnedRect(turnedRect(shown, 90), 270), shown);
+    close(turnedRect(shown, -90), turnedRect(shown, 270));
+    expect(turnedRect(shown, 0)).toBe(shown);
+
     const b = bench(pdfSource('a', 2));
     b.run(rotatePages(keysOf(b.state, 0, 1), 90));
     const key = keysOf(b.state, 0, 1)[0] ?? '';
-    b.run(setSignatures(key, image, [shown, { x: 0.5, y: 0.5, w: 0.2, h: 0.1 }]));
+    const second = { x: 0.5, y: 0.5, w: 0.2, h: 0.1 };
+    b.run(setSignatures(key, image, [shown, second]));
     const page = b.state.docs[0]?.pages[1];
     const sigs = page ? signaturesOf(page) : [];
-    expect(sigs.map((s) => s.rect)).toEqual([
-      unturnedRect(shown, 90),
-      unturnedRect({ x: 0.5, y: 0.5, w: 0.2, h: 0.1 }, 90),
+    expect(sigs.map((s) => [s.rect, s.turn])).toEqual([
+      [shown, 90],
+      [second, 90],
     ]);
     expect(sigs.every((s) => s.image === image)).toBe(true);
-    // Weiter gedreht: die Unterschrift bleibt am Inhalt (gespeichertes Rechteck unverändert)
+    // Weiter gedreht: gespeichert bleibt die Lage von damals, sie dreht sich mit dem Inhalt
     b.run(rotatePages([key], 90));
     const turned = b.state.docs[0]?.pages[1];
-    expect(turned ? signaturesOf(turned).map((s) => s.rect) : []).toEqual(sigs.map((s) => s.rect));
+    expect(turned ? signaturesOf(turned).map((s) => [s.rect, s.turn]) : []).toEqual([
+      [shown, 90],
+      [second, 90],
+    ]);
     // Leere Liste entfernt; Stempel bleibt dabei
     b.run(setStamp([key], stamp));
     b.run(setSignatures(key, null, []));

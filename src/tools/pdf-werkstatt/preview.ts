@@ -6,7 +6,7 @@
 
 import { indexPages, visiblePageSize, type PageKey } from '../../core/workshop/model.ts';
 import { $ } from '../../ui/dom.ts';
-import { decodeImage, drawImagePage } from './image-pages.ts';
+import { drawWorkshopPage } from './page-canvas.ts';
 import type { SourceFiles } from './sources.ts';
 import type { WorkshopStore } from './store.ts';
 import { NO_PREVIEW, previewTitle } from './texts.ts';
@@ -111,35 +111,7 @@ export class Preview {
     const pixels = cssWidth * (globalThis.devicePixelRatio || 1);
     let canvas: HTMLCanvasElement;
     try {
-      if (page.kind === 'blank') {
-        canvas = document.createElement('canvas');
-        canvas.width = Math.round(pixels);
-        canvas.height = Math.round((pixels * size.height) / size.width);
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.fillStyle = '#fff';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-      } else if (this.store.state.sources.get(page.source)?.kind === 'image') {
-        const file = this.files.file(page.source);
-        if (!file) throw new Error('Datei fehlt');
-        const bitmap = await decodeImage(file);
-        try {
-          canvas = drawImagePage(bitmap, page.rotate, pixels);
-        } finally {
-          bitmap.close();
-        }
-      } else {
-        const [{ pageSize, renderPageAt }, pdf] = await Promise.all([
-          this.pdfjs,
-          this.files.pdf(page.source),
-        ]);
-        const real = await pageSize(pdf, page.index + 1, page.rotate);
-        canvas = await renderPageAt(pdf, page.index + 1, {
-          scale: pixels / real.width,
-          extraRotation: page.rotate,
-        });
-      }
+      canvas = await drawWorkshopPage(this.store.state, page, this.files, this.pdfjs, pixels);
     } catch {
       if (token !== this.token) return;
       const err = document.createElement('p');

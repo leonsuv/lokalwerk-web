@@ -46,6 +46,7 @@ import { SourceFiles } from './sources.ts';
 import { WorkshopStore } from './store.ts';
 import * as t from './texts.ts';
 import { Thumbs } from './thumbs.ts';
+import { SignDialog } from './sign-dialog.ts';
 import { ToolPanel } from './tool-panel.ts';
 import type { AddImageResult, AddPdfResult, WorkshopRequest } from './workshop.worker.ts';
 
@@ -95,7 +96,23 @@ const charset = client
   .request<number[]>({ type: 'charset' })
   .then((codes): ReadonlySet<number> => new Set(codes));
 charset.catch(() => undefined);
-const toolPanel = new ToolPanel(store, announce, (doc) => board.column(doc)?.menu.focus(), charset);
+const toolPanel = new ToolPanel(
+  store,
+  announce,
+  (doc) => board.column(doc)?.menu.focus(),
+  charset,
+  new SignDialog(store, files, pdfjs),
+  store.ids,
+  showToast,
+);
+
+/** Seite für „Unterschrift …“: die Seite mit dem Fokus, sonst die erste ausgewählte */
+function signatureTarget(): string | null {
+  const { focus, keys } = store.selection;
+  const index = indexPages(store.state);
+  if (focus && index.has(focus)) return focus;
+  return [...keys].find((k) => index.has(k)) ?? null;
+}
 
 function announceSelection(): void {
   const { pages, docs } = selectionSummary(store.state, store.selection);
@@ -204,6 +221,7 @@ const mobile = setupMobile({
       separator: true,
     },
     { id: 'stamp', label: t.STAMP_ITEM, disabled: !mobileDocWithPages() },
+    { id: 'signature', label: t.SIGN_ITEM, disabled: store.selection.keys.size !== 1 },
   ],
   runMore: (id) => {
     const choices: Record<string, () => void> = {
@@ -221,6 +239,11 @@ const mobile = setupMobile({
       stamp: () => {
         const doc = mobileDocWithPages();
         if (doc) toolPanel.stamp(doc, $('#ws-actions [data-m="more"]'));
+      },
+      // Handy: genau eine ausgewählte Seite
+      signature: () => {
+        const [page] = [...store.selection.keys];
+        if (page) toolPanel.signature(page, $('#ws-actions [data-m="more"]'));
       },
     };
     choices[id]?.();
@@ -402,6 +425,7 @@ function openToolsMenu(button: HTMLElement): void {
     [
       { id: 'page-numbers', label: t.PAGE_NUMBERS_ITEM, disabled: !doc },
       { id: 'stamp', label: t.STAMP_ITEM, disabled: !doc },
+      { id: 'signature', label: t.SIGN_ITEM, disabled: signatureTarget() === null },
     ],
     { x: rect.left, y: rect.bottom + 4 },
     {
@@ -411,6 +435,8 @@ function openToolsMenu(button: HTMLElement): void {
       onChoose: (id) => {
         if (id === 'page-numbers' && doc) toolPanel.pageNumbers(doc.id, button);
         if (id === 'stamp' && doc) toolPanel.stamp(doc.id, button);
+        const page = signatureTarget();
+        if (id === 'signature' && page) toolPanel.signature(page, button);
       },
     },
   );
@@ -541,6 +567,7 @@ function pageMenuItems(): MenuItem[] {
     { id: 'blank', label: 'Leere Seite danach …', separator: true },
     { id: 'split', label: 'Dokument hier teilen', disabled: !focus || focus.pageIndex === 0 },
     { id: 'extract', label: 'Als neues Dokument' },
+    { id: 'signature', label: t.SIGN_ITEM, separator: true },
     { id: 'delete', label: 'Löschen', shortcut: 'Entf', keys: 'Delete', separator: true },
   ];
 }
@@ -563,6 +590,10 @@ function openPageMenu(at: { x: number; y: number }, returnFocus: HTMLElement): v
         copy: actions.copy,
         paste: () => actions.paste(),
         delete: actions.remove,
+        signature: () => {
+          const page = signatureTarget();
+          if (page) toolPanel.signature(page, returnFocus);
+        },
       };
       choices[id]?.();
     },

@@ -47,7 +47,12 @@ function toAssemblePage(page: PageRef): AssemblePage {
   if (stamp) base.stamp = stamp;
   const signatures = signaturesOf(page);
   if (signatures.length > 0) {
-    base.signatures = signatures.map((s) => ({ id: s.image.id, png: s.image.png, rect: s.rect }));
+    base.signatures = signatures.map((s) => ({
+      id: s.image.id,
+      png: s.image.png,
+      rect: s.rect,
+      turn: s.turn,
+    }));
   }
   return base;
 }

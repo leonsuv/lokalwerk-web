@@ -6,18 +6,29 @@
  */
 
 import { pageIndices, rangesFromPages } from '../../core/pdf/page-ranges.ts';
-import { setPageNumbers, setStamp } from '../../core/workshop/commands.ts';
+import {
+  setPageNumbers,
+  setSignatures,
+  setStamp,
+  turnedRect,
+} from '../../core/workshop/commands.ts';
 import {
   findDoc,
+  indexPages,
   pageNumbersOf,
+  signaturesOf,
   stampOf,
   type Doc,
   type DocId,
+  type IdSource,
+  type PageKey,
 } from '../../core/workshop/model.ts';
 import { $ } from '../../ui/dom.ts';
-import type { MountTool, ToolHost } from '../../ui/tool-host.ts';
+import type { EmbeddedTool, MountTool, ToolHost } from '../../ui/tool-host.ts';
 import { mountPageNumbers } from '../pdf-seitenzahlen/embed.ts';
 import { stampTool } from '../pdf-stempel/embed.ts';
+import { signatureTool } from '../pdf-unterschreiben/embed.ts';
+import type { SignDialog } from './sign-dialog.ts';
 import type { WorkshopStore } from './store.ts';
 import * as t from './texts.ts';
 
@@ -29,6 +40,9 @@ export class ToolPanel {
   private readonly body = $('#ws-tool-body');
   private doc: DocId | null = null;
   private returnFocus: HTMLElement | null = null;
+  private tool: EmbeddedTool | null = null;
+  /** Zeile unter der Überschrift; null, wenn das Ziel nicht mehr existiert (dann schließen) */
+  private line: () => string | null = () => null;
 
   /**
    * `focusDoc` setzt den Fokus in die Spalte des Dokuments, wenn das Element, das das Werkzeug
@@ -41,6 +55,9 @@ export class ToolPanel {
     private readonly focusDoc: (doc: DocId) => void,
     /** Zeichenvorrat der Stempelschrift aus dem Werkstatt-Worker */
     private readonly charset: Promise<ReadonlySet<number>>,
+    private readonly signDialog: SignDialog,
+    private readonly ids: IdSource,
+    private readonly notify: (message: string) => void,
   ) {
     this.section.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
@@ -108,21 +125,79 @@ export class ToolPanel {
     );
   }
 
-  /** Nach jeder Änderung: Dokumentzeile aktuell halten, schließen, wenn das Dokument weg ist */
+  /**
+   * Unterschrift auf eine Seite: erstellen in der rechten Spalte, platzieren im Dialog. Eine
+   * Seite je Durchgang; vorhandene Unterschriften der Seite lassen sich verschieben oder
+   * entfernen.
+   */
+  signature(key: PageKey, returnFocus: HTMLElement | null): void {
+    const at = indexPages(this.store.state).get(key);
+    if (!at) return;
+    const where = () => {
+      const now = indexPages(this.store.state).get(key);
+      return now ? { n: now.pageIndex + 1, name: now.doc.name, page: now.page } : null;
+    };
+    const n = at.pageIndex + 1;
+    const existing = signaturesOf(at.page);
+    this.show(
+      at.doc.id,
+      returnFocus,
+      t.SIGN_TITLE,
+      signatureTool({
+        labels: {
+          place: t.signPlace(n),
+          remove: t.signRemove(n),
+          needed: t.SIGN_NEEDED,
+          hint: t.SIGN_HINT,
+        },
+        newId: () => this.ids('g'),
+        place: (image, rects) => this.signDialog.open(key, image, rects),
+        notify: this.notify,
+      }),
+      () => {
+        const first = existing[0];
+        return first
+          ? {
+              image: first.image,
+              // So, wie die Seite jetzt angezeigt wird (sie kann seit dem Setzen gedreht sein)
+              rects: existing.map((s) => turnedRect(s.rect, at.page.rotate - s.turn)),
+            }
+          : null;
+      },
+      (result) => {
+        const now = where();
+        if (!now) return;
+        const before = this.store.state;
+        this.store.run(setSignatures(key, result?.image ?? null, result?.rects ?? []));
+        if (this.store.state === before) return;
+        this.announce(
+          result?.rects.length ? t.signSet(now.n, now.name) : t.signRemoved(now.n, now.name),
+        );
+      },
+      () => {
+        const now = where();
+        return now ? t.signDoc(now.n, now.name) : null;
+      },
+    );
+  }
+
+  /** Nach jeder Änderung: Zeile aktuell halten, schließen, wenn das Ziel weg ist */
   refresh(): void {
     if (this.doc === null) return;
-    const doc = findDoc(this.store.state, this.doc);
-    if (!doc) {
+    const line = this.line();
+    if (line === null) {
       this.close();
       return;
     }
-    this.docLine.textContent = t.toolDoc(doc.name, doc.pages.length);
+    this.docLine.textContent = line;
   }
 
   close(): void {
     const doc = this.doc;
     if (doc === null) return;
     this.doc = null;
+    this.tool?.dispose?.();
+    this.tool = null;
     this.body.replaceChildren();
     this.section.hidden = true;
     this.overview.hidden = false;
@@ -139,11 +214,16 @@ export class ToolPanel {
     mount: MountTool<Result>,
     current: (doc: Doc) => Result | null,
     apply: (result: Result | null) => void,
+    line: () => string | null = () => {
+      const now = findDoc(this.store.state, id);
+      return now ? t.toolDoc(now.name, now.pages.length) : null;
+    },
   ): void {
     const doc = findDoc(this.store.state, id);
     if (!doc) return;
     this.close();
     this.doc = id;
+    this.line = line;
     this.returnFocus = returnFocus;
     const store = this.store;
     const host: ToolHost<Result> = {
@@ -164,10 +244,11 @@ export class ToolPanel {
       cancel: () => this.close(),
     };
     this.title.textContent = title;
-    this.docLine.textContent = t.toolDoc(doc.name, doc.pages.length);
+    this.docLine.textContent = line() ?? '';
     this.overview.hidden = true;
     this.section.hidden = false;
     const tool = mount(host);
+    this.tool = tool;
     // Auf dem Handy steht die rechte Spalte unter den Seiten: dorthin scrollen, Überschrift
     // sichtbar unter der festen Kopfzeile (scroll-margin-top in components.css).
     const top = this.section.getBoundingClientRect().top;

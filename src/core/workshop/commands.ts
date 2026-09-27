@@ -339,26 +339,20 @@ export function setStamp(keys: Iterable<PageKey>, stamp: StampLook | null): Comm
 }
 
 /**
- * Unterschrift umrechnen: vom Rechteck, wie die Seite gerade angezeigt wird, auf die Seite ohne
- * die zusätzliche Drehung der Werkstatt (am Inhalt verankert, model.ts PageOp).
+ * Rechteck einer Unterschrift, nachdem die Seite um `by` Grad weiter gedreht wurde (im
+ * Uhrzeigersinn, Vielfache von 90). Für die Anzeige gesetzter Unterschriften auf einer Seite,
+ * die seit dem Setzen gedreht wurde.
  */
-export function unturnedRect(rect: NormRect, rotate: number): NormRect {
-  let r = fitRect(rect);
-  for (let turn = ((rotate % 360) + 360) % 360; turn > 0; turn -= 90) r = turnRect(r, -90);
-  return r;
-}
-
-/** Umgekehrt: Rechteck einer Unterschrift, wie die Seite mit ihrer Drehung angezeigt wird */
-export function turnedRect(rect: NormRect, rotate: number): NormRect {
+export function turnedRect(rect: NormRect, by: number): NormRect {
   let r = rect;
-  for (let turn = ((rotate % 360) + 360) % 360; turn > 0; turn -= 90) r = turnRect(r, 90);
+  for (let turn = normalizeRotation(by); turn > 0; turn -= 90) r = turnRect(r, 90);
   return r;
 }
 
 /**
  * Unterschriften einer Seite festlegen: `rects` so, wie die Seite gerade angezeigt wird (mit
- * ihrer Drehung). Ersetzt alle Unterschriften der Seite; alle bekommen das Bild `image`.
- * Leere Liste entfernt sie.
+ * ihrer Drehung, die als `turn` mitgespeichert wird). Ersetzt alle Unterschriften der Seite;
+ * alle bekommen das Bild `image`. Leere Liste entfernt sie.
  */
 export function setSignatures(
   key: PageKey,
@@ -380,7 +374,8 @@ export function setSignatures(
               : rects.map((rect) => ({
                   type: 'signature',
                   image,
-                  rect: unturnedRect(rect, page.rotate),
+                  rect: fitRect(rect),
+                  turn: page.rotate,
                 }));
           return withOps(page, [...others, ...signatures]);
         }),

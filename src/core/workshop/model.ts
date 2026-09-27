@@ -64,12 +64,13 @@ export interface SignatureImage {
  * Operation auf einer Seite, erst beim Export angewendet (plan-phase3.md 7.2, Schritt 2.2).
  * Sie gehört zur Seite und wandert mit, wenn die Seite verschoben, kopiert oder dupliziert wird.
  * - Stempel: höchstens einer je Seite, gesetzt so, wie die Seite am Ende zu sehen ist.
- * - Unterschrift: `rect` in Anteilen der Seite ohne die zusätzliche Drehung der Werkstatt, also
- *   am Inhalt verankert; wird die Seite danach gedreht, dreht sich die Unterschrift mit.
+ * - Unterschrift: `rect` in Anteilen der Seite, so wie sie beim Setzen angezeigt wurde, mit der
+ *   zusätzlichen Drehung `turn` von damals. So steht die Unterschrift in dieser Ansicht aufrecht;
+ *   wird die Seite danach gedreht, dreht sie sich mit dem Inhalt (am Inhalt verankert).
  */
 export type PageOp =
   | { type: 'stamp'; stamp: StampLook }
-  | { type: 'signature'; image: SignatureImage; rect: NormRect };
+  | { type: 'signature'; image: SignatureImage; rect: NormRect; turn: Rotation };
 
 /** Eine Seite im Dokument. `rotate` ist die zusätzliche Drehung im Uhrzeigersinn. */
 export type PageRef =

@@ -63,11 +63,16 @@ export async function placeImage(
 }
 
 /**
- * Setzt das Bild in das Rechteck auf der Seite, wie sie mit ihrer eigenen Drehung zu sehen ist.
- * Genutzt vom Werkzeug und beim Export der Werkstatt (assemble.ts, vor der zusätzlichen Drehung).
+ * Setzt das Bild aufrecht in das Rechteck auf der Seite, wie sie mit `rotation` angezeigt wird
+ * (Vorgabe: ihre eigene Drehung). Genutzt vom Werkzeug und beim Export der Werkstatt
+ * (assemble.ts, mit der Drehung, in der die Unterschrift gesetzt wurde).
  */
-export function drawPlacedImage(page: PDFPage, image: PDFImage, rect: NormRect): void {
-  const rotation = normalizeRotation(page.getRotation().angle);
+export function drawPlacedImage(
+  page: PDFPage,
+  image: PDFImage,
+  rect: NormRect,
+  rotation: PageRotation = normalizeRotation(page.getRotation().angle),
+): void {
   const p = placeOnPage(page.getCropBox(), rotation, rect);
   page.drawImage(image, {
     x: p.x,

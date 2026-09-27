@@ -248,3 +248,20 @@ export const STAMP_TITLE = 'Stempel';
 export const stampSet = (count: number, name: string): string =>
   `Stempel für ${pages(count)} von ${name} übernommen. Er wird beim Speichern gesetzt.`;
 export const stampRemoved = (name: string): string => `Stempel von ${name} entfernt`;
+export const SIGN_ITEM = 'Unterschrift …';
+export const SIGN_TITLE = 'Unterschrift';
+export const pageOf = (n: number, name: string): string => `Seite ${n} von ${name}`;
+export const signDoc = (n: number, name: string): string => `Für Seite ${n} von ${name}`;
+export const signPlace = (n: number): string => `Auf Seite ${n} setzen …`;
+export const signRemove = (n: number): string => `Unterschriften von Seite ${n} entfernen`;
+export const SIGN_NEEDED = 'Erstell zuerst deine Unterschrift: zeichnen oder ein Bild auswählen.';
+export const SIGN_HINT =
+  'Die Unterschrift gehört zur Seite und wandert mit, wenn du sie verschiebst oder drehst. Gesetzt wird sie beim Speichern.';
+export const signDialogTitle = (n: number, name: string): string =>
+  `Unterschrift auf Seite ${n} von ${name}`;
+export const signatureRectLabel = (i: number, page: string): string =>
+  `Unterschrift ${i} auf ${page}`;
+export const signSet = (n: number, name: string): string =>
+  `Unterschrift auf Seite ${n} von ${name} übernommen. Sie wird beim Speichern gesetzt.`;
+export const signRemoved = (n: number, name: string): string =>
+  `Unterschriften von Seite ${n} von ${name} entfernt`;

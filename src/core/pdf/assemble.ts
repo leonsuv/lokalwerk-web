@@ -10,9 +10,9 @@
  * Drehung: /Rotate der Seite in Schritten von 90 Grad im Uhrzeigersinn (ISO 32000-2, 7.7.3.3);
  * die zusätzliche Drehung wird zur vorhandenen addiert.
  *
- * Seiten-Operationen (plan-phase3.md 7.2, Schritt 2.2): Unterschriften werden vor der
- * zusätzlichen Drehung gesetzt, also am Inhalt verankert; Stempel danach, so wie die Seite am
- * Ende zu sehen ist.
+ * Seiten-Operationen (plan-phase3.md 7.2, Schritt 2.2): Unterschriften stehen aufrecht in der
+ * Ansicht, in der sie gesetzt wurden, und drehen sich danach mit dem Inhalt; Stempel werden
+ * zuletzt gesetzt, so wie die Seite am Ende zu sehen ist.
  *
  * Dokument-Operationen (plan-phase3.md 7.2) werden zuletzt angewendet, auf die fertige
  * Seitenfolge: Seitenzahlen zählen die Seiten des Ergebnisses in ihrer Endreihenfolge.
@@ -30,8 +30,11 @@ import { drawPageNumbers, drawStamp, stampFont, type StampOptions } from './stam
 /** Seiten-Operationen: erst beim Export angewendet */
 export interface AssemblePageOps {
   stamp?: Omit<StampOptions, 'pages'>;
-  /** PNG je Unterschrift; gleiche `id` = gleiches Bild, nur einmal eingebettet */
-  signatures?: readonly { id: string; png: Uint8Array; rect: NormRect }[];
+  /**
+   * PNG je Unterschrift; gleiche `id` = gleiches Bild, nur einmal eingebettet. `rect` in der
+   * Ansicht mit der zusätzlichen Drehung `turn` (Grad, im Uhrzeigersinn), in der sie gesetzt wurde.
+   */
+  signatures?: readonly { id: string; png: Uint8Array; rect: NormRect; turn: number }[];
 }
 
 export type AssemblePage =
@@ -193,7 +196,13 @@ async function assembleOne(
           image = await out.embedPng(signature.png);
           signatures.set(signature.id, image);
         }
-        drawPlacedImage(page, image, signature.rect);
+        // Aufrecht in der Ansicht von damals: eigene Drehung der Seite plus `turn`
+        drawPlacedImage(
+          page,
+          image,
+          signature.rect,
+          normalizeRotation(page.getRotation().angle + signature.turn),
+        );
       }
       if (p.rotate % 360 !== 0) {
         page.setRotation(degrees(normalizeRotation(page.getRotation().angle + p.rotate)));

@@ -861,3 +861,24 @@ export function pastePages(clipboard: Clipboard, target: DocId, index: number): 
     },
   };
 }
+
+/** Reihenfolge der Seiten umkehren, je Dokument unter den angegebenen Seiten */
+export function reversePages(keys: Iterable<PageKey>): Command {
+  return {
+    label: 'Reihenfolge umkehren',
+    apply(state) {
+      const set = new Set(keys);
+      if (set.size < 2) return unchanged(state);
+      const docs = state.docs.map((doc) => {
+        const picked = doc.pages.filter((p) => set.has(p.key)).reverse();
+        if (picked.length < 2) return doc;
+        let i = 0;
+        return withPages(
+          doc,
+          doc.pages.map((p) => (set.has(p.key) ? (picked[i++] ?? p) : p)),
+        );
+      });
+      return { state: withDocs(state, docs) };
+    },
+  };
+}

@@ -35,16 +35,16 @@ nach unten abarbeiten, nach jedem Commit den Status hier aktualisieren.
 |---|---|---|
 | 1 | Fortschritt und Entscheidungen anlegen | fertig |
 | 2 | Fachlogik: Trennlinien, Teilen an Trennlinien, Dokumente umordnen, Zusammenführen in Reihenfolge, Sprung im Verlauf, Auswahlrechteck, Auswahl umkehren, Zoom; mit Tests | fertig |
-| 3 | Befehlsliste (eine Definition je Aktion für Menü, Werkzeugleiste, Kontextmenü, Tastatur) | offen |
-| 4 | Menüsystem mit Untermenüs und Menüleiste (Tastatur nach WAI-ARIA) | offen |
-| 5 | Programm-Layout (HTML, CSS), Werkzeugleiste mit Tooltips, Statusleiste | offen |
-| 6 | Seitenraster: Dokumente als Abschnitte, Zoom, Trennlinien, FLIP-Animationen | offen |
-| 7 | Dokumentliste und Seitenminiaturen links | offen |
-| 8 | Einzelseite groß (ersetzt die große Vorschau) | offen |
-| 9 | Eigenschaften und Verlauf rechts, eingebettete Werkzeuge dort | offen |
-| 10 | Auswahlrechteck, Ziehen mit Platzhalter, Stapel, Ziehen auf Dokumentliste, Dokumente ziehen (umordnen, zusammenführen) | offen |
-| 11 | Schere als Werkzeug, Kontextmenüs überall | offen |
-| 12 | Zusammenführen-Dialog mit Reihenfolge, Tastenkürzel-Übersicht aus der Befehlsliste | offen |
+| 3 | Befehlsliste (eine Definition je Aktion für Menü, Werkzeugleiste, Kontextmenü, Tastatur) | fertig |
+| 4 | Menüsystem mit Untermenüs und Menüleiste (Tastatur nach WAI-ARIA) | fertig |
+| 5 | Programm-Layout (HTML, CSS), Werkzeugleiste mit Tooltips, Statusleiste | fertig |
+| 6 | Seitenraster: Dokumente als Abschnitte, Zoom, Trennlinien, FLIP-Animationen | fertig |
+| 7 | Dokumentliste und Seitenminiaturen links | fertig |
+| 8 | Einzelseite groß (ersetzt die große Vorschau) | fertig |
+| 9 | Eigenschaften und Verlauf rechts, eingebettete Werkzeuge dort | fertig |
+| 10 | Auswahlrechteck, Ziehen mit Platzhalter, Stapel, Ziehen auf Dokumentliste, Dokumente ziehen (umordnen, zusammenführen) | fertig |
+| 11 | Schere als Werkzeug, Kontextmenüs überall | fertig |
+| 12 | Zusammenführen-Dialog mit Reihenfolge, Tastenkürzel-Übersicht aus der Befehlsliste | fertig |
 | 13 | Handy-Ansicht (vereinfacht, alles erreichbar) | offen |
 | 14 | Texte sammeln (texte-pdf-werkstatt.md), Erklärtext anpassen | offen |
 | 15 | Screenshots- und Leistungsskript an die neue Oberfläche anpassen, README-Screenshots | offen |

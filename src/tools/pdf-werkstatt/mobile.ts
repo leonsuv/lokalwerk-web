@@ -1,7 +1,7 @@
 /**
  * Handy-Ansicht der PDF-Werkstatt (plan-phase3.md 5.4, W10), bis 640 px Breite:
  * - ein Dokument zur Zeit, Wechsel über die Auswahl oben,
- * - Tippen öffnet die große Vorschau; „Auswählen“ schaltet in den Auswahlmodus mit Häkchen,
+ * - Tippen öffnet die Einzelseite; „Auswählen“ schaltet in den Auswahlmodus mit Häkchen,
  * - untere Leiste: Drehen, Nach vorne, Nach hinten, Verschieben nach …, Löschen, Mehr,
  * - kein Ziehen (drag.ts fragt isPhone), Umsortieren nur mit „Nach vorne/Nach hinten“ und
  *   „Verschieben nach …“.
@@ -13,7 +13,7 @@ import { toggle } from '../../core/workshop/selection.ts';
 import type { DocId, PageKey } from '../../core/workshop/model.ts';
 import { $ } from '../../ui/dom.ts';
 import type { Actions } from './actions.ts';
-import type { Menu, MenuItem } from './menu.ts';
+import { openMenu, type MenuEntry } from './menu.ts';
 import type { WorkshopStore } from './store.ts';
 import { mobileDocOption, mobileStatus, MOBILE_HINT } from './texts.ts';
 
@@ -21,12 +21,10 @@ export interface MobileContext {
   store: WorkshopStore;
   actions: Actions;
   board: HTMLElement;
-  menu: Menu;
   phone: MediaQueryList;
   openPreview(key: PageKey): void;
-  /** Weitere Aktionen im Menü „Mehr“: Liste und Ausführung */
-  moreItems(): MenuItem[];
-  runMore(id: string): void;
+  /** Weitere Aktionen im Menü „Mehr“: die Menüs der Menüleiste */
+  moreItems(): MenuEntry[];
   announceSelection(): void;
 }
 
@@ -63,7 +61,7 @@ export function setupMobile(ctx: MobileContext): {
       );
     }
     if (active) select.value = active;
-    for (const col of ctx.board.querySelectorAll<HTMLElement>('.ws-col')) {
+    for (const col of ctx.board.querySelectorAll<HTMLElement>('.ws-sec')) {
       col.classList.toggle('active', col.dataset.doc === active);
     }
     document.documentElement.classList.toggle('ws-selecting', selecting);
@@ -88,7 +86,7 @@ export function setupMobile(ctx: MobileContext): {
     else render();
   });
 
-  // Tippen auf eine Seite: im Auswahlmodus an- oder abwählen, sonst große Vorschau. Läuft vor
+  // Tippen auf eine Seite: im Auswahlmodus an- oder abwählen, sonst Einzelseite. Läuft vor
   // der Auswahl des Desktops (Erfassungsphase) und hält sie auf.
   ctx.board.addEventListener(
     'click',
@@ -129,15 +127,15 @@ export function setupMobile(ctx: MobileContext): {
         break;
       case 'more': {
         const rect = button.getBoundingClientRect();
-        ctx.menu.show(
+        openMenu(
           ctx.moreItems(),
           { x: rect.right, y: rect.top - 8 },
           {
             label: button.getAttribute('aria-label') ?? '',
             returnFocus: button,
             opener: button,
-            onChoose: (id) => ctx.runMore(id),
           },
+          true,
         );
         break;
       }

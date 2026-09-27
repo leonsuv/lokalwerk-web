@@ -1,26 +1,38 @@
 /**
- * Werkzeugseite „PDF-Werkstatt“ (plan-phase3.md). Zustand und Befehle: src/core/workshop/ und
- * store.ts; Aktionen: actions.ts; Spalten: board.ts; Vorschaubilder mit pdf.js: thumbs.ts;
- * Tastatur: keyboard.ts; Menüs und Dialoge: menu.ts, dialogs.ts; Lesen und Export mit pdf-lib
+ * Werkzeugseite „PDF-Werkstatt“ (plan-phase3.md, Umbau zum Editor: docs/umbau-fortschritt.md).
+ *
+ * Aufbau wie ein Programm: Menüleiste und Werkzeugleiste (ui-commands.ts, menu.ts), links
+ * Dokumente und Seitenminiaturen (sidebar.ts), in der Mitte das Seitenraster (grid.ts) oder eine
+ * Seite groß (single-view.ts), rechts Eigenschaften und Verlauf (panels.ts), unten die
+ * Statusleiste. Zustand und Befehle: src/core/workshop/ und store.ts; Aktionen: actions.ts;
+ * Ziehen: drag.ts; Auswahlrechteck: band.ts; Tastatur: keyboard.ts; Lesen und Export mit pdf-lib
  * im Worker: workshop.worker.ts.
  */
 
 import { isImage, isPdf } from '../../core/files/classify.ts';
+import { parsePageRanges, pageIndices } from '../../core/pdf/page-ranges.ts';
 import {
   exportOptionsFor,
   imagePageBox,
-  metadataKept,
   type WorkshopHandover,
 } from '../../core/workshop/export-plan.ts';
 import { addSources, renameDoc } from '../../core/workshop/commands.ts';
 import {
+  clampZoom,
+  stepZoom,
+  wheelZoom,
+  ZOOM_DEFAULT,
+  TILE_WIDTH,
+} from '../../core/workshop/layout.ts';
+import {
   allPages,
+  findDoc,
   formSourceOf,
   indexPages,
-  MEMORY_HINT_BYTES,
   NO_FACTS,
-  totalSourceSize,
+  type Doc,
   type DocId,
+  type PageKey,
   type PagePick,
   type Source,
   type SourceId,
@@ -43,29 +55,49 @@ import { unsupportedNote } from '../../ui/pdfjs/unsupported-note.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { createActions } from './actions.ts';
-import { Board, SourceBadges } from './board.ts';
-import { MergeDialog, MoveDialog, ShortcutsDialog } from './dialogs.ts';
+import { setupBand } from './band.ts';
+import { AskDialog, MergeDialog, MoveDialog, ShortcutsDialog } from './dialogs.ts';
 import { setupDrag } from './drag.ts';
-import { currentDoc, Exporter, lossSources } from './export.ts';
-import { handleAreaKey, handleBoardKey } from './keyboard.ts';
-import { Menu, type MenuItem } from './menu.ts';
+import { Exporter } from './export.ts';
+import { Grid, SourceBadges } from './grid.ts';
+import { handleGridKey, handleShortcut, typing } from './keyboard.ts';
+import { closeMenus, MenuBar, openMenu, openMenuAt, type MenuEntry } from './menu.ts';
 import { setupMobile } from './mobile.ts';
-import { Preview } from './preview.ts';
+import { Panels } from './panels.ts';
+import { RedactDialog } from './redact-dialog.ts';
+import { ariaShortcut, shortcutLabel } from './shortcuts.ts';
+import { DocList, PageRail } from './sidebar.ts';
+import { SignDialog } from './sign-dialog.ts';
+import { SingleView } from './single-view.ts';
 import { SourceFiles } from './sources.ts';
-import { WorkshopStore } from './store.ts';
+import { WorkshopStore, type Change } from './store.ts';
 import * as t from './texts.ts';
 import { Thumbs } from './thumbs.ts';
-import { RedactDialog } from './redact-dialog.ts';
-import { SignDialog } from './sign-dialog.ts';
 import { ToolPanel } from './tool-panel.ts';
+import { setupTooltips } from './tooltip.ts';
+import {
+  createCommands,
+  docMenu,
+  emptyMenu,
+  gapMenu,
+  labelOf,
+  menubar,
+  pageMenu,
+  SHORTCUT_GROUPS,
+  TOOLBAR,
+  type App,
+  type MenuContext,
+  type ToolMode,
+  type ViewMode,
+} from './ui-commands.ts';
 import type { AddImageResult, AddPdfResult, WorkshopRequest } from './workshop.worker.ts';
 
 // Beides sofort laden: pdf-lib im Worker, pdf.js samt eigenem Worker (plan.md N4, offline).
 const worker = new Worker(new URL('./workshop.worker.ts', import.meta.url), { type: 'module' });
 const client = createWorkerClient<WorkshopRequest>(worker);
 const pdfjs = loadPdfjs();
-// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis über den Spalten, Speichern geht
-const showUnsupported = unsupportedNote('preview', document.querySelector('.ws-main'));
+// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis über den Seiten, Speichern geht
+const showUnsupported = unsupportedNote('preview', document.querySelector('.ws-center'));
 let unsupported = false;
 pdfjs.catch((error: unknown) => {
   if (!(error instanceof PdfjsUnsupportedError)) return;
@@ -84,13 +116,41 @@ function releaseSources(ids: SourceId[]): void {
 }
 const store = new WorkshopStore(releaseSources);
 const thumbs = new Thumbs(files, pdfjs);
+const app$ = $('#ws-app');
 const boardEl = $('#ws-board');
-const board = new Board(boardEl, thumbs, new SourceBadges());
+const scroller = $('#ws-scroller');
+const grid = new Grid(boardEl, scroller, thumbs, new SourceBadges());
+const docListEl = $('#ws-doclist');
+const docList = new DocList(docListEl);
+const railEl = $('#ws-rail');
+const rail = new PageRail(railEl, thumbs);
 const input = $<HTMLInputElement>('#ws-input');
 const status = $('#ws-status');
 const live = $('#ws-live');
-const menu = new Menu($('#ws-menu'));
-const shortcutsDialog = new ShortcutsDialog();
+
+// ---------------------------------------------------------------------------------------------
+// Ansichtszustand (gehört nicht zum Verlauf)
+
+const view = {
+  mode: 'grid' as ViewMode,
+  zoom: ZOOM_DEFAULT,
+  singleZoom: ZOOM_DEFAULT,
+  tool: 'select' as ToolMode,
+  collapsed: new Set<DocId>(),
+  left: true,
+  right: true,
+  active: null as DocId | null,
+  lastFocus: null as PageKey | null,
+};
+
+function activeDoc(): Doc | undefined {
+  const { state } = store;
+  return (
+    (view.active ? findDoc(state, view.active) : undefined) ??
+    (store.selection.focus ? indexPages(state).get(store.selection.focus)?.doc : undefined) ??
+    state.docs[0]
+  );
+}
 
 // ---------------------------------------------------------------------------------------------
 // Ansagen und Fokus
@@ -103,7 +163,52 @@ function announce(message: string): void {
   announceFrame = requestAnimationFrame(() => (live.textContent = message));
 }
 
-// Eingebettete Werkzeuge (Stufe 2) in der rechten Spalte
+function announceSelection(): void {
+  const { pages, docs } = selectionSummary(store.state, store.selection);
+  announce(t.selected(pages, docs));
+}
+
+/** Nach dem nächsten Zeichnen: Fokus auf die Seite mit dem Fokus, sonst auf das Dokument */
+let pendingFocus: { doc: DocId | undefined } | null = null;
+
+function applyFocus(): void {
+  if (!pendingFocus) return;
+  const { doc } = pendingFocus;
+  pendingFocus = null;
+  if (view.mode === 'single') {
+    single.focus();
+    return;
+  }
+  const key = store.selection.focus;
+  if (key && grid.focusTile(key)) return;
+  const fallback = doc ?? activeDoc()?.id;
+  const target = fallback ? findDoc(store.state, fallback) : undefined;
+  const first = target?.pages[0];
+  if (first && !view.collapsed.has(target.id)) {
+    store.select(moveFocus(store.selection, first.key));
+    grid.focusTile(first.key);
+  } else if (target) {
+    const section = grid.section(target.id);
+    if (section && !view.collapsed.has(target.id) && target.pages.length === 0)
+      section.list.focus();
+    else docList.focus(target.id);
+  } else {
+    docListEl.focus();
+  }
+}
+
+function focusDocName(doc: DocId): void {
+  if (view.collapsed.delete(doc)) render();
+  if (view.mode === 'single') setMode('grid');
+  const name = grid.section(doc)?.name;
+  if (!name) return;
+  name.focus();
+  name.select();
+}
+
+// ---------------------------------------------------------------------------------------------
+// Werkzeuge der Stufe 2 in der rechten Leiste
+
 const charset = client
   .request<number[]>({ type: 'charset' })
   .then((codes): ReadonlySet<number> => new Set(codes));
@@ -111,7 +216,7 @@ charset.catch(() => undefined);
 const toolPanel = new ToolPanel(
   store,
   announce,
-  (doc) => board.column(doc)?.menu.focus(),
+  (doc) => docList.focus(doc),
   charset,
   new SignDialog(store, files, pdfjs),
   store.ids,
@@ -134,9 +239,12 @@ const toolPanel = new ToolPanel(
   },
 );
 
+/** Das Element, das ein Werkzeug geöffnet hat, bekommt danach den Fokus zurück */
+const opener = (): HTMLElement | null => document.activeElement as HTMLElement | null;
+
 /** Dokument für „Formular ausfüllen …“, wenn es eine Quelle mit Formular hat */
 function hasForm(id: DocId | null | undefined): boolean {
-  const doc = id ? store.state.docs.find((d) => d.id === id) : undefined;
+  const doc = id ? findDoc(store.state, id) : undefined;
   return !!doc && formSourceOf(store.state, doc) !== null;
 }
 
@@ -148,20 +256,8 @@ function signatureTarget(): string | null {
   return [...keys].find((k) => index.has(k)) ?? null;
 }
 
-function announceSelection(): void {
-  const { pages, docs } = selectionSummary(store.state, store.selection);
-  announce(t.selected(pages, docs));
-}
-
-/** Nach dem nächsten Zeichnen: Fokus auf die Seite mit dem Fokus, sonst auf die Spalte */
-let pendingFocus: { doc: DocId | undefined } | null = null;
-
-function focusDocName(doc: DocId): void {
-  const name = board.column(doc)?.name;
-  if (!name) return;
-  name.focus();
-  name.select();
-}
+// ---------------------------------------------------------------------------------------------
+// Aktionen, Dialoge, Export
 
 const actions = createActions({
   store,
@@ -172,26 +268,14 @@ const actions = createActions({
     queueMicrotask(applyFocus);
   },
   focusDocName,
-  openFilePicker: () => input.click(),
+  openFilePicker: () => pickFiles(),
   openMoveDialog: (keys) => moveDialog.open(store.state, keys),
   openShortcuts: () => shortcutsDialog.open(),
 });
 
 const moveDialog = new MoveDialog((keys, choice) => actions.moveTo(keys, choice.doc, choice.index));
-const mergeDialog = new MergeDialog((docs) => actions.merge(docs));
-const preview = new Preview(store, files, pdfjs, {
-  rotate: (key) => actions.rotateOne(key, 90),
-  shift: (key, delta) => actions.shiftOne(key, delta),
-  closed: (key) => {
-    store.select(moveFocus(store.selection, key));
-    pendingFocus = { doc: undefined };
-    applyFocus();
-  },
-});
-
-function openPreview(key = store.selection.focus): void {
-  if (key) preview.show(key);
-}
+const mergeDialog = new MergeDialog((docs) => actions.join(docs));
+const askDialog = new AskDialog();
 
 const exporter = new Exporter(store, client, {
   status: (text) => (status.textContent = text),
@@ -203,169 +287,410 @@ const exporter = new Exporter(store, client, {
   failed: (error) => showToast(messageFor(error)),
 });
 
-function applyFocus(): void {
-  if (!pendingFocus) return;
-  const { doc } = pendingFocus;
-  pendingFocus = null;
-  const key = store.selection.focus;
-  if (key && board.focusTile(key)) return;
-  const fallback = doc ?? store.state.docs[0]?.id;
-  const column = fallback ? board.column(fallback) : undefined;
-  const first = fallback ? store.state.docs.find((d) => d.id === fallback)?.pages[0] : undefined;
-  if (first) {
-    store.select(moveFocus(store.selection, first.key));
-    board.focusTile(first.key);
-  } else {
-    column?.list.focus();
+// ---------------------------------------------------------------------------------------------
+// Befehle
+
+const single = new SingleView(store, files, pdfjs, (key) => {
+  store.select(selectOnly(key));
+  render();
+});
+
+function setMode(mode: ViewMode): void {
+  if (mode === 'single' && !store.selection.focus) {
+    const first = activeDoc()?.pages[0] ?? store.state.docs.find((d) => d.pages.length)?.pages[0];
+    if (!first) return;
+    store.select(selectOnly(first.key));
   }
+  if (view.mode === mode) return;
+  view.mode = mode;
+  if (mode === 'grid') single.close();
+  announce(mode === 'single' ? t.VIEW_SINGLE_ON : t.VIEW_GRID_ON);
+  pendingFocus = { doc: undefined };
+  render();
 }
+
+function setZoom(zoom: number): void {
+  const z = clampZoom(zoom);
+  if (view.mode === 'single') view.singleZoom = z;
+  else {
+    // Die Stelle oben links bleibt ungefähr, wo sie war
+    const ratio = scroller.scrollTop / Math.max(1, scroller.scrollHeight);
+    view.zoom = z;
+    render();
+    scroller.scrollTop = ratio * scroller.scrollHeight;
+    return;
+  }
+  render();
+}
+
+const currentZoom = () => (view.mode === 'single' ? view.singleZoom : view.zoom);
+
+const app: App = {
+  store,
+  actions,
+  mode: () => view.mode,
+  setMode,
+  tool: () => view.tool,
+  setTool: (tool) => {
+    view.tool = tool;
+    announce(tool === 'scissors' ? t.TOOL_SCISSORS_ON : t.TOOL_SELECT_ON);
+    if (tool === 'scissors' && view.mode === 'single') setMode('grid');
+    render();
+  },
+  zoom: currentZoom,
+  zoomBy: (direction) => setZoom(stepZoom(currentZoom(), direction)),
+  zoomReset: () => setZoom(ZOOM_DEFAULT),
+  zoomFit: () => {
+    if (view.mode === 'single') {
+      setZoom(ZOOM_DEFAULT);
+      return;
+    }
+    // So groß, dass etwa sechs Seiten nebeneinander passen
+    const width = scroller.clientWidth - 48;
+    setZoom(((width / 6 - 28) / TILE_WIDTH) * 100);
+  },
+  panel: (side) => (side === 'left' ? view.left : view.right),
+  togglePanel: (side) => {
+    if (side === 'left') view.left = !view.left;
+    else view.right = !view.right;
+    render();
+  },
+  folded: (doc) => view.collapsed.has(doc),
+  fold: (doc, folded) => {
+    if (folded) view.collapsed.add(doc);
+    else view.collapsed.delete(doc);
+    const name = findDoc(store.state, doc)?.name ?? '';
+    announce(folded ? t.folded(name) : t.unfolded(name));
+    render();
+  },
+  foldAll: (folded) => {
+    view.collapsed = new Set(folded ? store.state.docs.map((d) => d.id) : []);
+    render();
+  },
+  activeDoc,
+  openFiles: (target) => pickFiles(target),
+  saveDoc: (id) => {
+    const doc = findDoc(store.state, id);
+    if (doc) saveChecked(unredactedPages(store.state, [doc]), () => void exporter.doc(id));
+  },
+  saveSelection: () => {
+    const keys = actions.targets();
+    saveChecked(unredactedPages(store.state, store.state.docs, new Set(keys)), () => {
+      void exporter.selection(keys);
+    });
+  },
+  saveAll: () => saveChecked(unredactedPages(store.state), () => void exporter.all()),
+  canSave: () => !exporter.busy,
+  strip: () => !!exporter.options.strip,
+  setStrip: (strip) => {
+    exporter.options = { strip };
+    render();
+  },
+  pageNumbers: (doc) => toolPanel.pageNumbers(doc, opener()),
+  stamp: (doc) => toolPanel.stamp(doc, opener()),
+  signature: () => {
+    const page = signatureTarget();
+    if (page) toolPanel.signature(page, opener());
+  },
+  canSign: () => signatureTarget() !== null,
+  redact: (doc) => toolPanel.redact(doc, opener()),
+  form: (doc) => toolPanel.form(doc, opener()),
+  hasForm,
+  openMerge: (preselect) => mergeDialog.open(store.state, preselect),
+  openMove: actions.moveDialog,
+  openShortcuts: () => shortcutsDialog.open(),
+  goToPage: () => {
+    const doc = activeDoc();
+    if (!doc || doc.pages.length === 0) return;
+    askDialog.open({
+      title: t.GOTO_TITLE,
+      sub: t.gotoSub(doc.name, doc.pages.length),
+      label: t.GOTO_LABEL,
+      ok: t.GOTO_OK,
+      inputMode: 'numeric',
+      submit: (value) => {
+        const n = Number(value);
+        const page = Number.isInteger(n) ? doc.pages[n - 1] : undefined;
+        if (!page) return t.AFTER_PAGE_INVALID(doc.pages.length);
+        store.select(selectOnly(page.key));
+        pendingFocus = { doc: doc.id };
+        view.collapsed.delete(doc.id);
+        render();
+        return null;
+      },
+    });
+  },
+  selectRange: () => {
+    const doc = activeDoc();
+    if (!doc || doc.pages.length === 0) return;
+    askDialog.open({
+      title: t.RANGE_TITLE,
+      sub: t.gotoSub(doc.name, doc.pages.length),
+      label: t.RANGE_LABEL,
+      ok: t.RANGE_OK,
+      submit: (value) => {
+        const result = parsePageRanges(value, doc.pages.length);
+        if (!result.ok) return t.rangeError(doc.pages.length);
+        actions.selectNumbers(
+          doc.id,
+          result.ranges.flatMap(pageIndices).map((i) => i + 1),
+        );
+        pendingFocus = { doc: doc.id };
+        render();
+        return null;
+      },
+    });
+  },
+  showGuide: () => {
+    const target = document.getElementById('ws-explain');
+    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    target?.setAttribute('tabindex', '-1');
+    target?.focus({ preventScroll: true });
+  },
+  openSingle: (key) => {
+    if (key) store.select(moveFocus(store.selection, key));
+    setMode('single');
+  },
+};
+
+const cmds = createCommands(app);
+const menuCtx: MenuContext = { cmds, app };
+const shortcutsDialog = new ShortcutsDialog(SHORTCUT_GROUPS, () => cmds.values());
+const run = (id: string) => {
+  const cmd = cmds.get(id);
+  if (cmd && (!cmd.enabled || cmd.enabled())) cmd.run();
+};
+
+// ---------------------------------------------------------------------------------------------
+// Menüleiste und Werkzeugleiste
+
+const menuBar = new MenuBar($('#ws-menubar'), menubar(menuCtx));
+const toolbar = $('#ws-toolbar');
+
+function toolButton(id: string): HTMLButtonElement {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'ws-tb';
+  b.dataset.cmd = id;
+  b.tabIndex = -1;
+  if (id === 'blank') {
+    b.setAttribute('aria-label', t.C.blankMenu);
+    b.dataset.tip = t.C.blankMenu;
+    b.setAttribute('aria-haspopup', 'menu');
+    b.setAttribute('aria-expanded', 'false');
+    b.innerHTML = '<svg width="18" height="18" aria-hidden="true"><use href="#i-blank" /></svg>';
+    return b;
+  }
+  const cmd = cmds.get(id);
+  if (!cmd) throw new Error(`Befehl ${id} fehlt`);
+  const label = labelOf(cmd);
+  const key = cmd.keys?.[0];
+  b.setAttribute('aria-label', label);
+  b.dataset.tip = key ? `${label}\u0000${shortcutLabel(key)}` : label;
+  if (cmd.keys) b.setAttribute('aria-keyshortcuts', ariaShortcut(cmd.keys));
+  // Festes Markup ohne Nutzerdaten; der HTML-Parser setzt den SVG-Namensraum selbst.
+  b.innerHTML = `<svg width="18" height="18" aria-hidden="true"><use href="#${cmd.icon ?? 'i-tools'}" /></svg>`;
+  return b;
+}
+
+toolbar.replaceChildren(
+  ...TOOLBAR.flatMap((group, i) => {
+    const g = document.createElement('div');
+    g.className = 'ws-tb-group';
+    g.setAttribute('role', 'group');
+    g.append(...group.map(toolButton));
+    if (i === 0) {
+      const first = g.querySelector('button');
+      if (first) first.tabIndex = 0;
+    }
+    return [g];
+  }),
+);
+toolbar.addEventListener('click', (event) => {
+  const button = (event.target as Element).closest<HTMLButtonElement>('button[data-cmd]');
+  if (!button || button.disabled) return;
+  if (button.dataset.cmd === 'blank') {
+    openMenuAt(
+      button,
+      [
+        { label: t.C.blankNeighbour, run: () => actions.insertBlank('neighbour') },
+        { label: t.BLANK_A4_PORTRAIT, run: () => actions.insertBlank('a4') },
+        { label: t.BLANK_A4_LANDSCAPE, run: () => actions.insertBlank('a4-landscape') },
+      ],
+      t.C.blankMenu,
+    );
+    return;
+  }
+  run(button.dataset.cmd ?? '');
+});
+// Werkzeugleiste: ein Tabstopp, Pfeiltasten wechseln (WAI-ARIA Toolbar)
+toolbar.addEventListener('keydown', (event) => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  const buttons = [...toolbar.querySelectorAll<HTMLButtonElement>('button')].filter(
+    (b) => !b.disabled,
+  );
+  const i = buttons.indexOf(document.activeElement as HTMLButtonElement);
+  const next =
+    event.key === 'Home'
+      ? buttons[0]
+      : event.key === 'End'
+        ? buttons[buttons.length - 1]
+        : buttons[(i + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length];
+  if (!next) return;
+  for (const b of toolbar.querySelectorAll('button')) b.tabIndex = -1;
+  next.tabIndex = 0;
+  next.focus();
+  event.preventDefault();
+});
+setupTooltips(app$, $('#ws-tooltip'));
+
+// Statusleiste: Zoom
+const zoomInput = $<HTMLInputElement>('#ws-zoom');
+zoomInput.addEventListener('input', () => setZoom(Number(zoomInput.value)));
+$('#ws-statusbar').addEventListener('click', (event) => {
+  const button = (event.target as Element).closest<HTMLButtonElement>('button[data-cmd]');
+  if (button) run(button.dataset.cmd ?? '');
+});
+scroller.addEventListener(
+  'wheel',
+  (event) => {
+    if (!event.ctrlKey && !event.metaKey) return;
+    event.preventDefault();
+    setZoom(wheelZoom(view.zoom, event.deltaY));
+  },
+  { passive: false },
+);
+$('#ws-single-stage').addEventListener(
+  'wheel',
+  (event) => {
+    if (!event.ctrlKey && !event.metaKey) return;
+    event.preventDefault();
+    setZoom(wheelZoom(view.singleZoom, event.deltaY));
+  },
+  { passive: false },
+);
+
+const panels = new Panels(store, run, (strip) => app.setStrip(strip));
 
 // ---------------------------------------------------------------------------------------------
 // Zeichnen
 
-const toolbar = $('#ws-toolbar');
 const phone = window.matchMedia('(max-width: 640px)');
 
-// Handy-Ansicht (W10); „Mehr“ enthält, was nicht in die untere Leiste passt
 const mobile = setupMobile({
   store,
   actions,
   board: boardEl,
-  menu,
   phone,
-  openPreview: (key) => openPreview(key),
+  openPreview: (key) => app.openSingle(key),
   announceSelection,
-  moreItems: () => [
-    { id: 'undo', label: 'Rückgängig', disabled: !store.canUndo },
-    { id: 'redo', label: 'Wiederholen', disabled: !store.canRedo },
-    {
-      id: 'duplicate',
-      label: 'Duplizieren',
-      disabled: store.selection.keys.size === 0,
-      separator: true,
-    },
-    { id: 'extract', label: 'Als neues Dokument', disabled: store.selection.keys.size === 0 },
-    { id: 'blank-end', label: 'Leere Seite am Ende' },
-    { id: 'new-doc', label: 'Neues Dokument', separator: true },
-    { id: 'merge', label: 'Dokumente zusammenführen …', disabled: store.state.docs.length < 2 },
-    {
-      id: 'page-numbers',
-      label: t.PAGE_NUMBERS_ITEM,
-      disabled: !mobileDocWithPages(),
-      separator: true,
-    },
-    { id: 'stamp', label: t.STAMP_ITEM, disabled: !mobileDocWithPages() },
-    { id: 'signature', label: t.SIGN_ITEM, disabled: store.selection.keys.size !== 1 },
-    { id: 'redact', label: t.REDACT_ITEM, disabled: !mobileDocWithPages() },
-    { id: 'form', label: t.FORM_ITEM, disabled: !hasForm(mobileDocWithPages()) },
-  ],
-  runMore: (id) => {
-    const choices: Record<string, () => void> = {
-      undo: actions.undo,
-      redo: actions.redo,
-      duplicate: actions.duplicate,
-      extract: actions.extract,
-      'blank-end': () => actions.insertBlank('neighbour', mobile.activeDoc() ?? undefined),
-      'new-doc': actions.newDoc,
-      merge: () => mergeDialog.open(store.state),
-      'page-numbers': () => {
-        const doc = mobileDocWithPages();
-        if (doc) toolPanel.pageNumbers(doc, $('#ws-actions [data-m="more"]'));
-      },
-      stamp: () => {
-        const doc = mobileDocWithPages();
-        if (doc) toolPanel.stamp(doc, $('#ws-actions [data-m="more"]'));
-      },
-      redact: () => {
-        const doc = mobileDocWithPages();
-        if (doc) toolPanel.redact(doc, $('#ws-actions [data-m="more"]'));
-      },
-      form: () => {
-        const doc = mobileDocWithPages();
-        if (doc) toolPanel.form(doc, $('#ws-actions [data-m="more"]'));
-      },
-      // Handy: genau eine ausgewählte Seite
-      signature: () => {
-        const [page] = [...store.selection.keys];
-        if (page) toolPanel.signature(page, $('#ws-actions [data-m="more"]'));
-      },
-    };
-    choices[id]?.();
-  },
+  moreItems: () =>
+    menubar(menuCtx).map((m): MenuEntry => ({ kind: 'submenu', label: m.label, items: m.items })),
 });
 
-/** Dokument der Handy-Ansicht, wenn es Seiten hat (Seitenzahlen brauchen Seiten) */
-function mobileDocWithPages(): DocId | null {
-  const id = mobile.activeDoc();
-  const doc = id ? store.state.docs.find((d) => d.id === id) : undefined;
-  return doc && doc.pages.length > 0 ? doc.id : null;
+let rendering = false;
+function render(change?: Change): void {
+  if (rendering) return;
+  rendering = true;
+  try {
+    draw(change);
+  } finally {
+    rendering = false;
+  }
 }
-$('#ws-m-add').addEventListener('click', () => actions.addFiles());
 
-function render(): void {
-  // Eine Kachel, die beim Umsortieren kurz aus dem Dokument genommen wird, verliert den Fokus.
+function draw(change?: Change): void {
   const hadFocus = boardEl.contains(document.activeElement);
   const { state, selection } = store;
-  board.render(state, selection);
+  // Das aktive Dokument folgt dem Fokus
+  if (selection.focus !== view.lastFocus) {
+    view.lastFocus = selection.focus;
+    const doc = selection.focus ? indexPages(state).get(selection.focus)?.doc : undefined;
+    if (doc) view.active = doc.id;
+  }
+  if (view.active && !findDoc(state, view.active)) view.active = null;
+  for (const id of view.collapsed) if (!findDoc(state, id)) view.collapsed.delete(id);
+  const active = activeDoc();
+
+  const hasDocs = state.docs.length > 0;
+  app$.classList.toggle('empty', !hasDocs);
+  app$.classList.toggle('no-left', !view.left);
+  app$.classList.toggle('no-right', !view.right);
+  app$.classList.toggle('mode-single', view.mode === 'single');
+  app$.classList.toggle('tool-scissors', view.tool === 'scissors');
+  $('#ws-drop').hidden = hasDocs;
+  showUnsupported({ unsupported, fileLoaded: hasDocs });
+
+  const animate = change?.kind === 'command' || change?.kind === 'undo' || change?.kind === 'redo';
+  grid.render(state, selection, {
+    zoom: view.zoom,
+    active: active?.id ?? null,
+    collapsed: view.collapsed,
+    animate,
+  });
   if (hadFocus && !boardEl.contains(document.activeElement) && !pendingFocus) {
     pendingFocus = { doc: undefined };
   }
+  docList.render(state, active?.id ?? null, selection);
+  $('#ws-docs').textContent = hasDocs ? String(state.docs.length) : '';
+  rail.render(state, active?.id ?? null, selection, selection.focus);
+  $('#ws-rail-title').textContent = active ? t.railTitle(active.name) : t.RAIL_TITLE;
+  $('#ws-rail-count').textContent = active ? String(active.pages.length) : '';
+
+  // Einzelseite
+  const singleEl = $('#ws-single');
+  if (view.mode === 'single' && hasDocs) {
+    const focusKey = selection.focus ?? active?.pages[0]?.key ?? null;
+    singleEl.hidden = false;
+    scroller.hidden = true;
+    single.show(focusKey, view.singleZoom);
+    if (focusKey) rail.reveal(focusKey);
+  } else {
+    if (view.mode === 'single') view.mode = 'grid';
+    singleEl.hidden = true;
+    scroller.hidden = false;
+  }
   applyFocus();
 
-  const hasDocs = state.docs.length > 0;
-  $('#ws-drop').hidden = hasDocs;
-  showUnsupported({ unsupported, fileLoaded: hasDocs });
-  const pageCount = state.docs.reduce((n, d) => n + d.pages.length, 0);
-  $('#ws-docs').textContent = hasDocs ? String(state.docs.length) : '–';
-  $('#ws-pages').textContent = hasDocs ? String(pageCount) : '–';
-  const summary = selectionSummary(state, selection);
-  $('#ws-selected').textContent =
-    summary.pages > 0 ? t.moveSubtitle(summary.pages, summary.docs) : '–';
-  const size = totalSourceSize(state.sources.values());
-  $('#ws-memory').hidden = size < MEMORY_HINT_BYTES;
-  if (size >= MEMORY_HINT_BYTES) $('#ws-memory-text').textContent = t.memoryHint(size);
+  // Werkzeugleiste
+  for (const button of toolbar.querySelectorAll<HTMLButtonElement>('button[data-cmd]')) {
+    const id = button.dataset.cmd ?? '';
+    if (id === 'blank') {
+      button.disabled = !hasDocs;
+      continue;
+    }
+    const cmd = cmds.get(id);
+    if (!cmd) continue;
+    button.disabled = cmd.enabled ? !cmd.enabled() : false;
+    if (cmd.checked) button.setAttribute('aria-pressed', String(cmd.checked()));
+    const label = labelOf(cmd);
+    if (button.getAttribute('aria-label') !== label) {
+      button.setAttribute('aria-label', label);
+      const key = cmd.keys?.[0];
+      button.dataset.tip = key ? `${label}\u0000${shortcutLabel(key)}` : label;
+    }
+  }
+  const zoom = currentZoom();
+  zoomInput.value = String(zoom);
+  zoomInput.setAttribute('aria-valuetext', t.zoomValue(zoom));
+  $('#ws-zoom-value').textContent = t.zoomValue(zoom);
+  $('#ws-zoom-value').setAttribute('aria-label', t.zoomResetLabel(zoom));
 
-  const focusAt = selection.focus ? indexPages(state).get(selection.focus) : undefined;
-  const enabled: Record<string, boolean> = {
-    pages: actions.targets().length > 0,
-    focus: focusAt !== undefined,
-    split: focusAt !== undefined && focusAt.pageIndex > 0,
-    docs: hasDocs,
-    docs2: state.docs.length > 1,
-    undo: store.canUndo,
-    redo: store.canRedo,
-  };
-  for (const button of toolbar.querySelectorAll<HTMLButtonElement>('button[data-needs]')) {
-    button.disabled = !enabled[button.dataset.needs ?? ''];
-  }
-
-  // Export (rechte Spalte)
-  const doc = currentDoc(state, selection);
-  $('#ws-export-doc-label').textContent = t.exportDocLabel(doc?.name ?? 'Dokument');
-  $<HTMLButtonElement>('#ws-export-doc').disabled = exporter.busy || !doc;
-  $<HTMLButtonElement>('#ws-export-sel').disabled = exporter.busy || summary.pages === 0;
-  $<HTMLButtonElement>('#ws-export-zip').disabled = exporter.busy || pageCount === 0;
-  for (const b of metaButtons) {
-    b.setAttribute(
-      'aria-pressed',
-      String((b.dataset.meta === 'strip') === !!exporter.options.strip),
-    );
-  }
-  const kept = metadataKept(state, state.docs, exporter.options);
-  $('#ws-meta-kept').hidden = kept.length === 0;
-  if (kept.length > 0) {
-    $('#ws-meta-kept-text').textContent = t.metadataKeptNote(kept.map((d) => d.name));
-  }
-  const loss = lossSources(state, state.docs, exporter.options);
-  $('#ws-loss').hidden = loss.length === 0;
-  if (loss.length > 0) $('#ws-loss-text').textContent = t.lossNote(loss);
+  panels.render({
+    state,
+    selection,
+    doc: active,
+    tool: view.tool,
+    options: exporter.options,
+    busy: exporter.busy,
+    dirty: store.dirty,
+  });
   renderUnredacted();
-  preview.refresh();
   mobile.render();
   toolPanel.refresh();
 }
 
-store.subscribe(render);
+store.subscribe((change) => render(change));
 
 // ---------------------------------------------------------------------------------------------
 // Dateien
@@ -427,8 +752,12 @@ async function addFiles(
   for (const { page } of allPages(store.state)) {
     if (page.kind === 'source' && addedIds.has(page.source)) pageCount++;
   }
-  if (result.doc) mobile.showDoc(result.doc);
-  const targetDoc = target ? store.state.docs.find((d) => d.id === target.doc) : undefined;
+  if (result.doc) {
+    mobile.showDoc(result.doc);
+    view.active = result.doc;
+    render();
+  }
+  const targetDoc = target ? findDoc(store.state, target.doc) : undefined;
   announce(targetDoc ? t.addedInto(pageCount, targetDoc.name) : t.added(added.length, pageCount));
 }
 
@@ -442,6 +771,14 @@ async function addImage(id: string, file: File): Promise<AddImageResult> {
   const image = await prepareImage(file, jpeg, 'original');
   return client.request<AddImageResult>({ type: 'add-image', id, image });
 }
+
+/** „Dateien öffnen“; mit Ziel werden sie am Ende dieses Dokuments angehängt */
+let appendTarget: DocId | null = null;
+function pickFiles(target?: DocId): void {
+  appendTarget = target ?? null;
+  input.click();
+}
+input.addEventListener('cancel', () => (appendTarget = null));
 
 /** Übergabe aus Startseite und Einzelwerkzeugen (tool-switch.ts, workshop-switch.ts) */
 export function openFiles(
@@ -457,96 +794,6 @@ export function openFiles(
 }
 
 // ---------------------------------------------------------------------------------------------
-// Werkzeugleiste
-
-toolbar.addEventListener('click', (event) => {
-  const button = (event.target as Element).closest<HTMLButtonElement>('button[data-cmd]');
-  if (!button || button.disabled) return;
-  const commands: Record<string, () => void> = {
-    add: actions.addFiles,
-    'new-doc': actions.newDoc,
-    'rotate-left': () => actions.rotate(-90),
-    'rotate-right': () => actions.rotate(90),
-    duplicate: actions.duplicate,
-    blank: () => openBlankMenu(button, button),
-    delete: actions.remove,
-    split: actions.split,
-    merge: () => mergeDialog.open(store.state),
-    undo: actions.undo,
-    redo: actions.redo,
-    preview: () => openPreview(),
-    tools: () => openToolsMenu(button),
-    shortcuts: actions.shortcuts,
-  };
-  commands[button.dataset.cmd ?? '']?.();
-});
-
-/** Werkzeuge der Stufe 2 für das Dokument mit dem Fokus (wie „… als PDF speichern“) */
-function openToolsMenu(button: HTMLElement): void {
-  const doc = currentDoc(store.state, store.selection);
-  const rect = button.getBoundingClientRect();
-  menu.show(
-    [
-      { id: 'page-numbers', label: t.PAGE_NUMBERS_ITEM, disabled: !doc },
-      { id: 'stamp', label: t.STAMP_ITEM, disabled: !doc },
-      { id: 'signature', label: t.SIGN_ITEM, disabled: signatureTarget() === null },
-      { id: 'redact', label: t.REDACT_ITEM, disabled: !doc, separator: true },
-      { id: 'form', label: t.FORM_ITEM, disabled: !hasForm(doc?.id) },
-    ],
-    { x: rect.left, y: rect.bottom + 4 },
-    {
-      label: t.TOOLS_MENU,
-      returnFocus: button,
-      opener: button,
-      onChoose: (id) => {
-        if (id === 'page-numbers' && doc) toolPanel.pageNumbers(doc.id, button);
-        if (id === 'stamp' && doc) toolPanel.stamp(doc.id, button);
-        if (id === 'redact' && doc) toolPanel.redact(doc.id, button);
-        if (id === 'form' && doc) toolPanel.form(doc.id, button);
-        const page = signatureTarget();
-        if (id === 'signature' && page) toolPanel.signature(page, button);
-      },
-    },
-  );
-}
-
-/** Größe der leeren Seite wählen (W14): wie die Nachbarseite, DIN A4 hoch oder quer */
-function openBlankMenu(anchor: HTMLElement, returnFocus: HTMLElement, opener?: HTMLElement): void {
-  const target = actions.blankTarget();
-  if (!target) return;
-  const rect = anchor.getBoundingClientRect();
-  menu.show(
-    [
-      {
-        id: 'neighbour',
-        label: t.blankLikeNeighbour(target.neighbour.width, target.neighbour.height),
-      },
-      { id: 'a4', label: t.BLANK_A4_PORTRAIT },
-      { id: 'a4-landscape', label: t.BLANK_A4_LANDSCAPE },
-    ],
-    { x: rect.left, y: rect.bottom + 4 },
-    {
-      label: 'Leere Seite',
-      returnFocus,
-      opener: opener ?? anchor,
-      onChoose: (id) => actions.insertBlank(id as 'neighbour' | 'a4' | 'a4-landscape'),
-    },
-  );
-}
-
-// Versteckte Angaben beim Speichern (Stufe 2.4): nur für diese Sitzung, nicht gespeichert
-$('#ws-meta-label').textContent = t.METADATA_LABEL;
-$('#ws-meta-hint').textContent = t.METADATA_HINT;
-const metaButtons = [...document.querySelectorAll<HTMLButtonElement>('button[data-meta]')];
-for (const b of metaButtons) {
-  b.textContent = b.dataset.meta === 'strip' ? t.METADATA_STRIP : t.METADATA_KEEP;
-  b.addEventListener('click', () => {
-    exporter.options = { strip: b.dataset.meta === 'strip' };
-    render();
-  });
-}
-
-// ---------------------------------------------------------------------------------------------
 // Nicht geschwärzte Seiten aus einer geschwärzten Datei (Stufe 2.3)
 
 /** Seiten auswählen, zur ersten springen (auf dem Handy deren Dokument zeigen) */
@@ -554,23 +801,25 @@ function showPages(keys: readonly string[]): void {
   const [first] = keys;
   if (!first) return;
   const doc = indexPages(store.state).get(first)?.doc;
-  if (doc) mobile.showDoc(doc.id);
+  if (doc) {
+    mobile.showDoc(doc.id);
+    view.collapsed.delete(doc.id);
+    view.active = doc.id;
+  }
+  if (view.mode === 'single') setMode('grid');
   store.select(selectKeys(keys));
-  board.focusTile(first);
+  grid.focusTile(first);
 }
 
 /** Absätze mit je einem Satz und „Zu den Seiten“ */
-function unredactedLines(found: readonly UnredactedPages[], onShow?: () => void): HTMLElement[] {
+function unredactedLines(found: readonly UnredactedPages[]): HTMLElement[] {
   return found.map((f) => {
     const p = document.createElement('p');
     const show = document.createElement('button');
     show.type = 'button';
     show.className = 'btn ghost sm';
     show.textContent = t.UNREDACTED_SHOW;
-    show.addEventListener('click', () => {
-      onShow?.();
-      showPages(f.keys);
-    });
+    show.addEventListener('click', () => showPages(f.keys));
     p.append(t.unredacted(f.keys.length, f.doc.name), document.createElement('br'), show);
     return p;
   });
@@ -629,29 +878,66 @@ function saveChecked(found: readonly UnredactedPages[], save: () => void): void 
   $('#ws-unredacted-cancel').focus();
 }
 
-// Export
-$('#ws-export-doc').addEventListener('click', () => {
-  const doc = currentDoc(store.state, store.selection);
-  if (doc) saveChecked(unredactedPages(store.state, [doc]), () => void exporter.doc(doc.id));
-});
-$('#ws-export-sel').addEventListener('click', () => {
-  const keys = actions.targets();
-  saveChecked(unredactedPages(store.state, store.state.docs, new Set(keys)), () => {
-    void exporter.selection(keys);
-  });
-});
-$('#ws-export-zip').addEventListener('click', () => {
-  saveChecked(unredactedPages(store.state), () => void exporter.all());
-});
-
 // ---------------------------------------------------------------------------------------------
-// Spalten: Auswahl mit der Maus, Menüs, Umbenennen
+// Raster: Auswahl mit der Maus, Schere, Trennlinien, Menüs, Umbenennen
+
+function openDocMenu(doc: DocId, at: { x: number; y: number }, returnFocus: HTMLElement): void {
+  const target = findDoc(store.state, doc);
+  if (!target) return;
+  view.active = doc;
+  render();
+  openMenu(docMenu(menuCtx, target), at, {
+    label: t.docMenuLabel(target.name),
+    returnFocus,
+    ...(returnFocus.matches('[aria-haspopup]') ? { opener: returnFocus } : {}),
+  });
+}
+
+function openPageMenu(at: { x: number; y: number }, returnFocus: HTMLElement): void {
+  openMenu(pageMenu(menuCtx), at, { label: t.PAGE_MENU, returnFocus });
+}
+
+/** Stelle einer Kachel im Dokument */
+function tileAt(tile: HTMLElement): { doc: DocId; index: number } | null {
+  const key = tile.dataset.key;
+  const at = key ? indexPages(store.state).get(key) : undefined;
+  return at ? { doc: at.doc.id, index: at.pageIndex } : null;
+}
 
 boardEl.addEventListener('click', (event) => {
   const target = event.target as Element;
+  const gap = target.closest<HTMLElement>('.ws-gap');
+  if (gap) {
+    const at = tileAt(gap.closest<HTMLElement>('.ws-page') ?? gap);
+    if (!at) return;
+    if (view.tool === 'scissors') actions.splitAt(at.doc, at.index);
+    else if (gap.dataset.key) actions.toggleCut([gap.dataset.key]);
+    return;
+  }
+  const cutRemove = target.closest<HTMLElement>('.ws-cutline-x, .ws-cutline');
+  if (cutRemove?.dataset.key) {
+    if (view.tool === 'scissors') {
+      const tile = grid.tile(cutRemove.dataset.key);
+      const at = tile ? tileAt(tile) : null;
+      if (at) actions.splitAt(at.doc, at.index);
+    } else if (cutRemove.classList.contains('ws-cutline-x')) {
+      actions.toggleCut([cutRemove.dataset.key]);
+    }
+    return;
+  }
+  const fold = target.closest<HTMLButtonElement>('.ws-sec-fold');
+  if (fold?.dataset.doc) {
+    app.fold(fold.dataset.doc, !view.collapsed.has(fold.dataset.doc));
+    return;
+  }
   const numbersButton = target.closest<HTMLButtonElement>('.ws-col-numbers');
   if (numbersButton?.dataset.doc) {
     toolPanel.pageNumbers(numbersButton.dataset.doc, numbersButton);
+    return;
+  }
+  const cutsButton = target.closest<HTMLButtonElement>('.ws-sec-cuts');
+  if (cutsButton?.dataset.doc) {
+    actions.splitAtCuts(cutsButton.dataset.doc);
     return;
   }
   const menuButton = target.closest<HTMLButtonElement>('.ws-col-menu');
@@ -662,9 +948,21 @@ boardEl.addEventListener('click', (event) => {
   }
   const tile = target.closest<HTMLElement>('.ws-page');
   const key = tile?.dataset.key;
-  if (!key) {
-    // Klick auf freie Fläche einer Spalte hebt die Auswahl auf
-    if (!target.closest('input, button')) actions.clearSelection();
+  if (!tile || !key) {
+    const head = target.closest<HTMLElement>('.ws-sec-head');
+    if (head?.dataset.doc && !target.closest('input, button')) {
+      view.active = head.dataset.doc;
+      render();
+    }
+    return;
+  }
+  if (view.tool === 'scissors') {
+    // Linke Hälfte: vor der Seite teilen, rechte Hälfte: danach
+    const at = tileAt(tile);
+    if (!at) return;
+    const r = tile.getBoundingClientRect();
+    const after = (event as MouseEvent).clientX > r.left + r.width / 2;
+    actions.splitAt(at.doc, at.index + (after ? 1 : 0));
     return;
   }
   const { state, selection } = store;
@@ -674,186 +972,96 @@ boardEl.addEventListener('click', (event) => {
   else store.select(selectOnly(key));
 });
 
+// Schere: Linie an der Stelle zeigen, an der geschnitten würde
+boardEl.addEventListener('pointermove', (event) => {
+  if (view.tool !== 'scissors') return;
+  const tile = (event.target as Element).closest<HTMLElement>('.ws-page');
+  for (const el of boardEl.querySelectorAll('.snip-before, .snip-after')) {
+    if (el !== tile) el.classList.remove('snip-before', 'snip-after');
+  }
+  if (!tile) return;
+  const r = tile.getBoundingClientRect();
+  const after = event.clientX > r.left + r.width / 2;
+  tile.classList.toggle('snip-after', after);
+  tile.classList.toggle('snip-before', !after);
+});
+
+// Klick auf freie Fläche hebt die Auswahl auf (Auswahlrechteck: band.ts)
+scroller.addEventListener('click', (event) => {
+  const target = event.target as Element;
+  if (target.closest('.ws-page, .ws-sec-head, button, input, label, .ws-cutline, .ws-gap')) return;
+  actions.clearSelection();
+});
+
 boardEl.addEventListener('focusin', (event) => {
   const key = (event.target as HTMLElement).closest<HTMLElement>('.ws-page')?.dataset.key;
   if (key && store.selection.focus !== key) store.select(moveFocus(store.selection, key));
 });
 
-boardEl.addEventListener('keydown', (event) =>
-  handleBoardKey(event, {
+boardEl.addEventListener('keydown', (event) => {
+  handleGridKey(event, {
     store,
-    actions,
-    focusPage: (key) => board.focusTile(key),
-    columnsOf: (doc) => board.columnsOf(doc),
+    tiles: () => grid.visibleTiles(),
+    focusPage: (key) => grid.focusTile(key),
     openContextMenu: (_key, anchor) => {
       const rect = anchor.getBoundingClientRect();
       openPageMenu({ x: rect.left + 12, y: rect.top + 24 }, anchor);
     },
-    openPreview: (key) => openPreview(key),
+    openSingle: (key) => app.openSingle(key),
     announceSelection,
-  }),
-);
+  });
+});
 
 boardEl.addEventListener('dblclick', (event) => {
+  if (view.tool === 'scissors') return;
   const key = (event.target as Element).closest<HTMLElement>('.ws-page')?.dataset.key;
-  if (key) openPreview(key);
+  if (key) app.openSingle(key);
 });
 
-boardEl.addEventListener('contextmenu', (event) => {
-  const tile = (event.target as Element).closest<HTMLElement>('.ws-page');
-  const key = tile?.dataset.key;
-  if (!tile || !key) return;
+scroller.addEventListener('contextmenu', (event) => {
+  const target = event.target as Element;
+  if (target.closest('input')) return;
   event.preventDefault();
-  if (!store.selection.keys.has(key)) store.select(selectOnly(key));
-  else store.select(moveFocus(store.selection, key));
-  openPageMenu({ x: event.clientX, y: event.clientY }, tile);
+  const at = { x: event.clientX, y: event.clientY };
+  const gap = target.closest<HTMLElement>('.ws-gap, .ws-cutline');
+  if (gap?.dataset.key) {
+    const tile = grid.tile(gap.dataset.key);
+    const where = tile ? tileAt(tile) : null;
+    if (where) {
+      openMenu(gapMenu(menuCtx, where.doc, where.index), at, {
+        label: t.GAP_MENU,
+        returnFocus: tile ?? null,
+      });
+    }
+    return;
+  }
+  const tile = target.closest<HTMLElement>('.ws-page');
+  const key = tile?.dataset.key;
+  if (tile && key) {
+    if (!store.selection.keys.has(key)) store.select(selectOnly(key));
+    else store.select(moveFocus(store.selection, key));
+    openPageMenu(at, tile);
+    return;
+  }
+  const head = target.closest<HTMLElement>('.ws-sec-head');
+  if (head?.dataset.doc) {
+    openDocMenu(head.dataset.doc, at, grid.section(head.dataset.doc)?.menu ?? head);
+    return;
+  }
+  // Leere Fläche einer Liste: am Ende dieses Dokuments einfügen
+  const section = target.closest<HTMLElement>('.ws-sec');
+  if (section?.dataset.doc) view.active = section.dataset.doc;
+  openMenu(emptyMenu(menuCtx), at, { label: t.EMPTY_MENU, returnFocus: scroller });
 });
 
-function pageMenuItems(): MenuItem[] {
-  const focus = store.selection.focus
-    ? indexPages(store.state).get(store.selection.focus)
-    : undefined;
-  return [
-    { id: 'preview', label: 'Große Vorschau', shortcut: 'Eingabe', keys: 'Enter' },
-    { id: 'rotate-right', label: 'Rechts drehen', shortcut: 'R', keys: 'R', separator: true },
-    { id: 'rotate-left', label: 'Links drehen', shortcut: t.combo('shift', 'R'), keys: 'Shift+R' },
-    { id: 'duplicate', label: 'Duplizieren', shortcut: 'D', keys: 'D' },
-    { id: 'move', label: 'Verschieben nach …', shortcut: 'M', keys: 'M' },
-    {
-      id: 'cut',
-      label: 'Ausschneiden',
-      shortcut: t.combo('mod', 'X'),
-      keys: 'Control+X Meta+X',
-      separator: true,
-    },
-    { id: 'copy', label: 'Kopieren', shortcut: t.combo('mod', 'C'), keys: 'Control+C Meta+C' },
-    {
-      id: 'paste',
-      label: 'Davor einfügen',
-      shortcut: t.combo('mod', 'V'),
-      keys: 'Control+V Meta+V',
-      disabled: !store.clipboard,
-    },
-    { id: 'blank', label: 'Leere Seite danach …', separator: true },
-    { id: 'split', label: 'Dokument hier teilen', disabled: !focus || focus.pageIndex === 0 },
-    { id: 'extract', label: 'Als neues Dokument' },
-    { id: 'signature', label: t.SIGN_ITEM, separator: true },
-    { id: 'delete', label: 'Löschen', shortcut: 'Entf', keys: 'Delete', separator: true },
-  ];
-}
-
-function openPageMenu(at: { x: number; y: number }, returnFocus: HTMLElement): void {
-  menu.show(pageMenuItems(), at, {
-    label: 'Seite',
-    returnFocus,
-    onChoose: (id) => {
-      const choices: Record<string, () => void> = {
-        preview: () => openPreview(),
-        blank: () => openBlankMenu(returnFocus, returnFocus),
-        split: actions.split,
-        extract: actions.extract,
-        'rotate-right': () => actions.rotate(90),
-        'rotate-left': () => actions.rotate(-90),
-        duplicate: actions.duplicate,
-        move: actions.moveDialog,
-        cut: actions.cut,
-        copy: actions.copy,
-        paste: () => actions.paste(),
-        delete: actions.remove,
-        signature: () => {
-          const page = signatureTarget();
-          if (page) toolPanel.signature(page, returnFocus);
-        },
-      };
-      choices[id]?.();
-    },
-  });
-}
-
-function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLElement): void {
-  const docs = store.state.docs;
-  const position = docs.findIndex((d) => d.id === doc);
-  const current = docs[position];
-  const nextDoc = docs[position + 1];
-  if (!current) return;
-  menu.show(
-    [
-      { id: 'rename', label: 'Umbenennen', shortcut: 'F2', keys: 'F2' },
-      {
-        id: 'select-all',
-        label: 'Alle Seiten auswählen',
-        shortcut: t.combo('mod', 'A'),
-        keys: 'Control+A Meta+A',
-        disabled: current.pages.length === 0,
-      },
-      { id: 'paste', label: 'Am Anfang einfügen', disabled: !store.clipboard },
-      { id: 'append', label: 'Dateien anhängen …' },
-      {
-        id: 'save',
-        label: 'Als PDF speichern',
-        disabled: current.pages.length === 0,
-        separator: true,
-      },
-      {
-        id: 'page-numbers',
-        label: t.PAGE_NUMBERS_ITEM,
-        disabled: current.pages.length === 0,
-      },
-      { id: 'stamp', label: t.STAMP_ITEM, disabled: current.pages.length === 0 },
-      { id: 'redact', label: t.REDACT_ITEM, disabled: current.pages.length === 0 },
-      { id: 'form', label: t.FORM_ITEM, disabled: !hasForm(doc) },
-      { id: 'duplicate-doc', label: 'Dokument duplizieren', separator: true },
-      {
-        id: 'merge-next',
-        label: 'Mit dem nächsten zusammenführen',
-        disabled: nextDoc === undefined,
-      },
-      { id: 'close-doc', label: 'Dokument schließen', separator: true },
-    ],
-    at,
-    {
-      label: t.docMenuLabel(current.name),
-      returnFocus: opener,
-      opener,
-      onChoose: (id) => {
-        const choices: Record<string, () => void> = {
-          rename: () => actions.renameDoc(doc),
-          'select-all': () => actions.selectAll(doc),
-          paste: () => {
-            store.select({ ...store.selection, focus: null });
-            actions.paste(doc);
-          },
-          append: () => {
-            appendTarget = doc;
-            input.click();
-          },
-          save: () => {
-            const target = store.state.docs.find((d) => d.id === doc);
-            if (target)
-              saveChecked(unredactedPages(store.state, [target]), () => void exporter.doc(doc));
-          },
-          'page-numbers': () => toolPanel.pageNumbers(doc, opener),
-          stamp: () => toolPanel.stamp(doc, opener),
-          redact: () => toolPanel.redact(doc, opener),
-          form: () => toolPanel.form(doc, opener),
-          'merge-next': () => nextDoc && actions.merge([doc, nextDoc.id]),
-          'duplicate-doc': () => actions.duplicateDoc(doc),
-          'close-doc': () => actions.closeDoc(doc),
-        };
-        choices[id]?.();
-      },
-    },
-  );
-}
-
-// Umbenennen im Spaltenkopf: übernehmen beim Verlassen oder mit Eingabe, Esc stellt zurück
+// Umbenennen im Kopf des Dokuments: übernehmen beim Verlassen oder mit Eingabe, Esc stellt zurück
 boardEl.addEventListener('change', (event) => {
   const field = event.target as HTMLInputElement;
   const id = field.dataset.doc;
   if (!field.classList.contains('ws-name') || !id) return;
   const before = store.state;
   store.run(renameDoc(id, field.value));
-  const doc = store.state.docs.find((d) => d.id === id);
+  const doc = findDoc(store.state, id);
   if (doc && store.state !== before) announce(t.renamed(doc.name));
   // Leerer Name oder ohne Änderung: den gültigen Namen wieder anzeigen
   if (doc) field.value = doc.name;
@@ -863,40 +1071,210 @@ boardEl.addEventListener('keydown', (event) => {
   if (!field.classList.contains('ws-name')) return;
   if (event.key !== 'Enter' && event.key !== 'Escape') return;
   if (event.key === 'Escape') {
-    field.value = store.state.docs.find((d) => d.id === field.dataset.doc)?.name ?? field.value;
+    field.value = findDoc(store.state, field.dataset.doc ?? '')?.name ?? field.value;
   }
   event.preventDefault();
   event.stopPropagation();
   // Zurück zu den Seiten: Die Änderung wird beim Verlassen übernommen (change).
   pendingFocus = { doc: field.dataset.doc };
   const focus = store.selection.focus;
-  const inDoc = store.state.docs
-    .find((d) => d.id === field.dataset.doc)
-    ?.pages.some((p) => p.key === focus);
+  const inDoc = findDoc(store.state, field.dataset.doc ?? '')?.pages.some((p) => p.key === focus);
   if (!inDoc) store.select({ ...store.selection, focus: null });
   applyFocus();
 });
 
-// Dateien auf eine Spalte ziehen: dort anhängen; auf freie Fläche: neue Dokumente
-boardEl.addEventListener('dragover', (event) => {
-  if (!event.dataTransfer?.types.includes('Files')) return;
-  event.preventDefault();
-  event.dataTransfer.dropEffect = 'copy';
+// Dateien auf ein Dokument ziehen: dort anhängen; sonst neue Dokumente
+function fileDrop(area: HTMLElement): void {
+  area.addEventListener('dragover', (event) => {
+    if (!event.dataTransfer?.types.includes('Files')) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+  });
+  area.addEventListener('drop', (event) => {
+    const dropped = [...(event.dataTransfer?.files ?? [])];
+    if (dropped.length === 0) return;
+    event.preventDefault();
+    const id = (event.target as Element).closest<HTMLElement>('.ws-sec, .ws-doc')?.dataset.doc;
+    const doc = id ? findDoc(store.state, id) : undefined;
+    void addFiles(dropped, doc ? { doc: doc.id, index: doc.pages.length } : undefined);
+  });
+}
+fileDrop(scroller);
+fileDrop(docListEl);
+
+// ---------------------------------------------------------------------------------------------
+// Linke Leiste: Dokumente und Miniaturen
+
+function activate(doc: DocId, reveal = true): void {
+  view.active = doc;
+  view.collapsed.delete(doc);
+  mobile.showDoc(doc);
+  if (view.mode === 'single') {
+    const first = findDoc(store.state, doc)?.pages[0];
+    if (first) store.select(selectOnly(first.key));
+  }
+  render();
+  if (reveal && view.mode === 'grid') grid.reveal(doc);
+}
+
+docListEl.addEventListener('click', (event) => {
+  const item = (event.target as Element).closest<HTMLElement>('.ws-doc');
+  if (item?.dataset.doc) activate(item.dataset.doc);
 });
-boardEl.addEventListener('drop', (event) => {
-  const dropped = [...(event.dataTransfer?.files ?? [])];
-  if (dropped.length === 0) return;
+docListEl.addEventListener('dblclick', (event) => {
+  const item = (event.target as Element).closest<HTMLElement>('.ws-doc');
+  if (item?.dataset.doc) focusDocName(item.dataset.doc);
+});
+docListEl.addEventListener('contextmenu', (event) => {
+  const item = (event.target as Element).closest<HTMLElement>('.ws-doc');
   event.preventDefault();
-  const id = (event.target as Element).closest<HTMLElement>('.ws-col')?.dataset.doc;
-  const doc = id ? store.state.docs.find((d) => d.id === id) : undefined;
-  void addFiles(dropped, doc ? { doc: doc.id, index: doc.pages.length } : undefined);
+  if (item?.dataset.doc)
+    openDocMenu(item.dataset.doc, { x: event.clientX, y: event.clientY }, item);
+  else
+    openMenu(
+      emptyMenu(menuCtx),
+      { x: event.clientX, y: event.clientY },
+      { label: t.EMPTY_MENU, returnFocus: docListEl },
+    );
+});
+docListEl.addEventListener('keydown', (event) => {
+  const item = (event.target as Element).closest<HTMLElement>('.ws-doc');
+  const id = item?.dataset.doc;
+  if (!item || !id) return;
+  const docs = store.state.docs;
+  const i = docs.findIndex((d) => d.id === id);
+  let handled = true;
+  if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !event.altKey) {
+    const next = docs[i + (event.key === 'ArrowDown' ? 1 : -1)];
+    if (next) {
+      activate(next.id);
+      docList.focus(next.id);
+    }
+  } else if (event.key === 'Home' || event.key === 'End') {
+    const next = event.key === 'Home' ? docs[0] : docs[docs.length - 1];
+    if (next) {
+      activate(next.id);
+      docList.focus(next.id);
+    }
+  } else if (event.key === 'Enter') {
+    activate(id);
+    pendingFocus = { doc: id };
+    const doc = findDoc(store.state, id);
+    if (doc?.pages[0]) store.select(moveFocus(store.selection, doc.pages[0].key));
+    applyFocus();
+  } else if (event.key === 'F2') {
+    focusDocName(id);
+  } else if (event.key === 'Delete') {
+    actions.closeDoc(id);
+    const next = store.state.docs[Math.min(i, store.state.docs.length - 1)];
+    if (next) docList.focus(next.id);
+  } else if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) {
+    const r = item.getBoundingClientRect();
+    openDocMenu(id, { x: r.left + 12, y: r.bottom - 4 }, item);
+  } else {
+    handled = false;
+  }
+  if (handled) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 });
 
-// Ziehen mit Maus und Touch (nicht in der Handy-Ansicht, W10)
-setupDrag({ store, actions, board: boardEl, announce, isPhone: () => phone.matches });
+railEl.addEventListener('click', (event) => {
+  const item = (event.target as Element).closest<HTMLElement>('.ws-rail-item');
+  const key = item?.dataset.key;
+  if (!key) return;
+  const mod = event.ctrlKey || event.metaKey;
+  if (event.shiftKey) store.select(selectRange(store.state, store.selection, key, mod));
+  else if (mod) store.select(toggle(store.selection, key));
+  else store.select(selectOnly(key));
+  if (view.mode === 'grid')
+    grid.tile(key)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+});
+railEl.addEventListener('dblclick', (event) => {
+  const key = (event.target as Element).closest<HTMLElement>('.ws-rail-item')?.dataset.key;
+  if (key) app.openSingle(key);
+});
+railEl.addEventListener('keydown', (event) => {
+  const item = (event.target as Element).closest<HTMLElement>('.ws-rail-item');
+  if (!item || (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')) return;
+  const next = (
+    event.key === 'ArrowDown' ? item.nextElementSibling : item.previousElementSibling
+  ) as HTMLElement | null;
+  if (!next) return;
+  for (const el of railEl.children) (el as HTMLElement).tabIndex = -1;
+  next.tabIndex = 0;
+  next.focus();
+  event.preventDefault();
+  event.stopPropagation();
+});
+railEl.addEventListener('contextmenu', (event) => {
+  const key = (event.target as Element).closest<HTMLElement>('.ws-rail-item')?.dataset.key;
+  if (!key) return;
+  event.preventDefault();
+  if (!store.selection.keys.has(key)) store.select(selectOnly(key));
+  openPageMenu({ x: event.clientX, y: event.clientY }, rail.item(key) ?? railEl);
+});
 
-// Rückgängig, Wiederholen und „?“ im ganzen Werkstatt-Bereich
-$('.ws-page-area').addEventListener('keydown', (event) => handleAreaKey(event, actions));
+// Einzelseite: Esc zurück zum Raster, Kontextmenü der Seite
+$('#ws-single').addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  event.preventDefault();
+  event.stopPropagation();
+  setMode('grid');
+});
+$('#ws-single-stage').addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+  openPageMenu({ x: event.clientX, y: event.clientY }, $('#ws-single-stage'));
+});
+$('#ws-single-stage').addEventListener('dblclick', () => setMode('grid'));
+
+// ---------------------------------------------------------------------------------------------
+// Ziehen, Auswahlrechteck, Tastatur
+
+setupDrag({
+  store,
+  actions,
+  board: boardEl,
+  scroller,
+  rail: railEl,
+  docList: docListEl,
+  announce,
+  disabled: () => phone.matches || view.tool === 'scissors',
+  railDoc: () => rail.docId,
+  activate: (doc) => activate(doc),
+  toNewDoc: (_keys, copy) => (copy ? actions.extract() : actions.extractMove()),
+});
+
+setupBand({
+  store,
+  scroller,
+  band: $('#ws-band'),
+  tiles: () => grid.visibleTiles(),
+  disabled: () => phone.matches || view.tool === 'scissors',
+  done: announceSelection,
+});
+
+// Kürzel auch, wenn nach einem Klick auf freie Fläche niemand den Fokus hat (body)
+document.addEventListener('keydown', (event) => {
+  const target = event.target as Node;
+  if (target !== document.body && !app$.contains(target)) return;
+  if (!app$.isConnected) return;
+  // F10: in die Menüleiste (Umschalt+F10 ist das Kontextmenü)
+  if (event.key === 'F10' && !event.shiftKey && !typing(event.target)) {
+    event.preventDefault();
+    closeMenus();
+    menuBar.focusBar();
+    return;
+  }
+  // Esc: Schere beenden, sonst Auswahl aufheben (Befehl)
+  if (event.key === 'Escape' && view.tool === 'scissors' && !typing(event.target)) {
+    event.preventDefault();
+    app.setTool('select');
+    return;
+  }
+  handleShortcut(event, cmds);
+});
 
 window.addEventListener('beforeunload', (event) => {
   if (!store.dirty) return;
@@ -905,14 +1283,12 @@ window.addEventListener('beforeunload', (event) => {
   event.returnValue = t.LEAVE_WARNING;
 });
 
-/** „Dateien anhängen …“ im Spaltenmenü: Ziel für die nächste Dateiauswahl */
-let appendTarget: DocId | null = null;
-input.addEventListener('cancel', () => (appendTarget = null));
-
 preventAccidentalFileOpen();
 wireDropzone($('#ws-drop'), input, (list) => {
-  const doc = appendTarget ? store.state.docs.find((d) => d.id === appendTarget) : undefined;
+  const doc = appendTarget ? findDoc(store.state, appendTarget) : undefined;
   appendTarget = null;
   void addFiles(list, doc ? { doc: doc.id, index: doc.pages.length } : undefined);
 });
+$('#ws-m-add').addEventListener('click', () => pickFiles());
+
 render();

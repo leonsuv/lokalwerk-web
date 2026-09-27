@@ -1,218 +1,115 @@
-<div class="wrap ws-wide pdf ws-page-area">
-  <div class="tool-top">
-    <span class="ic"
-      ><svg width="26" height="26" aria-hidden="true"><use href="#i-workshop" /></svg
+<div class="ws-app pdf ws-page-area" id="ws-app">
+  <div class="ws-titlebar">
+    <span class="ws-app-ic"
+      ><svg width="18" height="18" aria-hidden="true"><use href="#i-workshop" /></svg
     ></span>
-    <div>
-      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
-      <h1>PDF-Werkstatt</h1>
-      <p>
-        PDFs und Bilder nebeneinander öffnen, Seiten zwischen Dokumenten verschieben, drehen,
-        löschen und neu zusammenstellen.
-      </p>
-    </div>
+    <h1>PDF-Werkstatt</h1>
+    <div class="ws-menubar" id="ws-menubar" aria-label="Menü der Werkstatt"></div>
+    <a class="ws-all" href="/werkzeuge/">Alle Werkzeuge</a>
   </div>
-
-  <div class="ws-toolbar" id="ws-toolbar" role="group" aria-label="Werkstatt">
-    <button type="button" class="ws-tb" data-cmd="add">
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-plus" /></svg>Hinzufügen
-    </button>
-    <button type="button" class="ws-tb" data-cmd="new-doc">
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-pdf" /></svg>Neues Dokument
-    </button>
-    <span class="ws-sep" aria-hidden="true"></span>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="rotate-left"
-      data-needs="pages"
-      aria-keyshortcuts="Shift+R"
-      aria-label="Links drehen"
-      title="Links drehen"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-rotate-left" /></svg>Links
-    </button>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="rotate-right"
-      data-needs="pages"
-      aria-keyshortcuts="R"
-      aria-label="Rechts drehen"
-      title="Rechts drehen"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-rotate-right" /></svg>Rechts
-    </button>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="duplicate"
-      data-needs="pages"
-      aria-keyshortcuts="D"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-copy" /></svg>Duplizieren
-    </button>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="blank"
-      data-needs="docs"
-      aria-haspopup="menu"
-      aria-expanded="false"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-blank" /></svg>Leere Seite
-    </button>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="delete"
-      data-needs="pages"
-      aria-keyshortcuts="Delete"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-x" /></svg>Löschen
-    </button>
-    <span class="ws-sep" aria-hidden="true"></span>
-    <button type="button" class="ws-tb" data-cmd="split" data-needs="split">
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-scissors" /></svg>Teilen
-    </button>
-    <button type="button" class="ws-tb" data-cmd="merge" data-needs="docs2">
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-merge" /></svg>Zusammenführen
-    </button>
-    <span class="ws-sep" aria-hidden="true"></span>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="undo"
-      data-needs="undo"
-      aria-keyshortcuts="Control+Z Meta+Z"
-      aria-label="Rückgängig"
-      title="Rückgängig"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-undo" /></svg>
-    </button>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="redo"
-      data-needs="redo"
-      aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y"
-      aria-label="Wiederholen"
-      title="Wiederholen"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-redo" /></svg>
-    </button>
-    <span class="ws-sep" aria-hidden="true"></span>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="preview"
-      data-needs="focus"
-      aria-keyshortcuts="Enter"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-eye" /></svg>Vorschau
-    </button>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="tools"
-      data-needs="docs"
-      aria-haspopup="menu"
-      aria-expanded="false"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-tools" /></svg>Werkzeuge
-    </button>
-    <button
-      type="button"
-      class="ws-tb"
-      data-cmd="shortcuts"
-      aria-keyshortcuts="?"
-      aria-label="Tastenkürzel"
-      title="Tastenkürzel (?)"
-    >
-      <svg width="18" height="18" aria-hidden="true"><use href="#i-keyboard" /></svg>
-    </button>
-  </div>
+  <div class="ws-toolbar" id="ws-toolbar" role="toolbar" aria-label="Werkzeugleiste"></div>
 
   <div class="ws-mobile" id="ws-mobile" hidden>
     <select id="ws-m-doc" aria-label="Dokument"></select>
     <button type="button" class="ws-tb" id="ws-m-select" aria-pressed="false">Auswählen</button>
-    <button type="button" class="ws-tb" data-cmd="add" id="ws-m-add" aria-label="Hinzufügen">
+    <button type="button" class="ws-tb" id="ws-m-add" aria-label="Dateien öffnen">
       <svg width="20" height="20" aria-hidden="true"><use href="#i-plus" /></svg>
     </button>
   </div>
   <p class="ws-m-status" id="ws-m-status"></p>
 
-  <div class="ws-layout">
-    <div class="ws-main">
-      <label class="drop ws-drop" id="ws-drop">
-        <input
-          type="file"
-          class="visually-hidden"
-          id="ws-input"
-          accept="application/pdf,.pdf,image/*"
-          multiple
-        />
-        <span class="ic"
-          ><svg width="22" height="22" aria-hidden="true"><use href="#i-pdf" /></svg
-        ></span>
-        <div>
-          <strong>PDFs oder Bilder hinzufügen</strong
-          ><span>Auswählen oder hierher ziehen, auch mehrere</span>
+  <div class="ws-body" id="ws-body">
+    <aside class="ws-left" id="ws-left" aria-label="Dokumente und Seiten">
+      <div class="ws-panel-head">
+        <h2 id="ws-docs-title">Dokumente</h2>
+        <span class="ws-panel-count" id="ws-docs"></span>
+      </div>
+      <div class="ws-doclist" id="ws-doclist" role="listbox" aria-labelledby="ws-docs-title"></div>
+      <div class="ws-panel-head">
+        <h2 id="ws-rail-title">Seiten</h2>
+        <span class="ws-panel-count" id="ws-rail-count"></span>
+      </div>
+      <nav class="ws-rail" id="ws-rail" aria-labelledby="ws-rail-title"></nav>
+    </aside>
+
+    <section class="ws-center" id="ws-center" aria-label="Arbeitsfläche">
+      <div class="ws-scroller" id="ws-scroller">
+        <label class="drop ws-drop" id="ws-drop">
+          <input
+            type="file"
+            class="visually-hidden"
+            id="ws-input"
+            accept="application/pdf,.pdf,image/*"
+            multiple
+          />
+          <span class="ic"
+            ><svg width="22" height="22" aria-hidden="true"><use href="#i-pdf" /></svg
+          ></span>
+          <div>
+            <strong>PDFs oder Bilder öffnen</strong
+            ><span>Auswählen oder hierher ziehen, auch mehrere</span>
+          </div>
+        </label>
+        <div class="ws-board" id="ws-board"></div>
+        <div class="ws-band" id="ws-band" hidden></div>
+      </div>
+      <div class="ws-single" id="ws-single" hidden>
+        <div class="ws-single-stage" id="ws-single-stage" tabindex="-1"></div>
+        <div class="ws-single-bar">
+          <button type="button" class="ws-tb" id="ws-single-prev">
+            <svg width="18" height="18" aria-hidden="true"><use href="#i-left" /></svg
+            ><span>Vorherige</span>
+          </button>
+          <span class="ws-single-title" id="ws-single-title" aria-live="polite"></span>
+          <button type="button" class="ws-tb" id="ws-single-next">
+            <span>Nächste</span
+            ><svg width="18" height="18" aria-hidden="true"><use href="#i-right" /></svg>
+          </button>
         </div>
-      </label>
-      <div class="ws-board" id="ws-board" aria-label="Dokumente"></div>
-    </div>
-    <aside class="card side ws-side" aria-label="Übersicht">
+      </div>
+    </section>
+
+    <aside class="ws-right" id="ws-right" aria-label="Eigenschaften und Verlauf">
       <!-- Seiten aus einer geschwärzten Datei, die nicht geschwärzt sind (Stufe 2.3) -->
       <div class="ws-warn" id="ws-unredacted" hidden>
         <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
         <div id="ws-unredacted-list"></div>
       </div>
-      <!-- Eingebettetes Werkzeug (Stufe 2, tool-panel.ts) an Stelle der Übersicht -->
+      <!-- Eingebettetes Werkzeug (Stufe 2, tool-panel.ts) an Stelle der Eigenschaften -->
       <section class="ws-tool" id="ws-tool" aria-labelledby="ws-tool-title" hidden>
         <h2 id="ws-tool-title"></h2>
         <p class="ws-tool-doc" id="ws-tool-doc"></p>
         <div id="ws-tool-body"></div>
       </section>
-      <div id="ws-overview">
-        <h2>Übersicht</h2>
-        <div class="stat-row"><span>Dokumente</span><b id="ws-docs">–</b></div>
-        <div class="stat-row"><span>Seiten gesamt</span><b id="ws-pages">–</b></div>
-        <div class="stat-row"><span>Ausgewählt</span><b id="ws-selected">–</b></div>
-        <!-- Einstellung beim Speichern (Stufe 2.4); Texte aus texts.ts -->
-        <div class="field mt-m">
-          <span class="lbl" id="ws-meta-label"></span>
-          <div class="seg" role="group" aria-labelledby="ws-meta-label">
-            <button type="button" data-meta="keep" aria-pressed="true"></button>
-            <button type="button" data-meta="strip" aria-pressed="false"></button>
-          </div>
-          <p class="hint" id="ws-meta-hint"></p>
+      <div class="ws-props" id="ws-overview"></div>
+      <section class="ws-history" aria-labelledby="ws-history-title">
+        <div class="ws-panel-head">
+          <h2 id="ws-history-title">Verlauf</h2>
         </div>
-        <button type="button" class="btn wide mt-m" id="ws-export-doc" disabled>
-          <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
-          <span id="ws-export-doc-label">Dokument als PDF speichern</span>
-        </button>
-        <button type="button" class="btn ghost wide mt-s" id="ws-export-sel" disabled>
-          Auswahl als neue PDF
-        </button>
-        <button type="button" class="btn ghost wide mt-s" id="ws-export-zip" disabled>
-          Alle als ZIP speichern
-        </button>
-        <p class="ws-note" id="ws-meta-kept" hidden>
-          <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
-          ><span id="ws-meta-kept-text"></span>
-        </p>
-        <p class="ws-note" id="ws-loss" hidden>
-          <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
-          ><span id="ws-loss-text"></span>
-        </p>
-        <p class="ws-status" id="ws-status" role="status"></p>
-        <p class="ws-note" id="ws-memory" hidden>
-          <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
-          ><span id="ws-memory-text"></span>
-        </p>
-      </div>
+        <ol class="ws-history-list" id="ws-history"></ol>
+      </section>
     </aside>
+  </div>
+
+  <div class="ws-statusbar" id="ws-statusbar">
+    <span id="ws-st-pages"></span>
+    <span id="ws-st-selection"></span>
+    <span class="ws-status" id="ws-status" role="status"></span>
+    <span class="ws-st-saved" id="ws-st-saved"></span>
+    <span class="ws-st-grow"></span>
+    <span class="ws-st-memory" id="ws-memory" hidden></span>
+    <div class="ws-zoom" role="group" aria-label="Zoom">
+      <button type="button" class="ws-tb" data-cmd="zoom-out" aria-label="Verkleinern">
+        <svg width="16" height="16" aria-hidden="true"><use href="#i-zoom-out" /></svg>
+      </button>
+      <input type="range" id="ws-zoom" min="50" max="400" step="1" value="100" aria-label="Zoom" />
+      <button type="button" class="ws-tb" data-cmd="zoom-in" aria-label="Vergrößern">
+        <svg width="16" height="16" aria-hidden="true"><use href="#i-zoom-in" /></svg>
+      </button>
+      <button type="button" class="ws-tb ws-zoom-value" data-cmd="zoom-reset" id="ws-zoom-value">
+        100 %
+      </button>
+    </div>
   </div>
 
   <div class="ws-actions" id="ws-actions" role="group" aria-label="Aktionen für die Auswahl" hidden>
@@ -243,7 +140,22 @@
   </div>
 
   <p class="visually-hidden" id="ws-live" aria-live="polite"></p>
-  <div class="ws-menu" id="ws-menu" hidden></div>
+  <div class="ws-tooltip" id="ws-tooltip" aria-hidden="true" hidden></div>
+
+  <!-- Eingabe einer Seite oder eines Seitenbereichs (Gehe zu Seite, Seiten auswählen) -->
+  <dialog class="ws-dialog" id="ws-ask" aria-labelledby="ws-ask-title">
+    <form method="dialog">
+      <h2 id="ws-ask-title"></h2>
+      <p class="ws-dialog-sub" id="ws-ask-sub"></p>
+      <label class="lbl" for="ws-ask-input" id="ws-ask-label"></label>
+      <input type="text" id="ws-ask-input" autocomplete="off" aria-describedby="ws-ask-error" />
+      <p class="ws-error" id="ws-ask-error" role="alert"></p>
+      <div class="ws-dialog-actions">
+        <button type="button" class="btn ghost" id="ws-ask-cancel">Abbrechen</button>
+        <button type="submit" class="btn" value="ok" id="ws-ask-ok"></button>
+      </div>
+    </form>
+  </dialog>
 
   <!-- Bereiche zum Schwärzen festlegen (Stufe 2.3, redact-dialog.ts); Texte aus „PDF schwärzen“ -->
   <dialog class="ws-dialog ws-sign" id="ws-redact" aria-labelledby="ws-redact-title">
@@ -358,129 +270,20 @@
   <dialog class="ws-dialog" id="ws-keys" aria-labelledby="ws-keys-title">
     <form method="dialog">
       <h2 id="ws-keys-title">Tastenkürzel</h2>
-      <p class="ws-dialog-sub">Gelten, wenn eine Seite oder ein Dokument den Fokus hat.</p>
-      <table class="ws-keys">
-        <tbody>
-          <tr>
-            <td><kbd>Pfeiltasten</kbd></td>
-            <td>Zur nächsten Seite</td>
-          </tr>
-          <tr>
-            <td><kbd data-combo="mod|Pfeil links/rechts">Strg+Pfeil links/rechts</kbd></td>
-            <td>Ins Nachbardokument</td>
-          </tr>
-          <tr>
-            <td><kbd>Leertaste</kbd></td>
-            <td>Seite auswählen oder abwählen</td>
-          </tr>
-          <tr>
-            <td><kbd data-combo="shift|Pfeiltasten">Umschalt+Pfeiltasten</kbd></td>
-            <td>Auswahl erweitern</td>
-          </tr>
-          <tr>
-            <td><kbd data-combo="mod|A">Strg+A</kbd></td>
-            <td>Alle Seiten des Dokuments auswählen</td>
-          </tr>
-          <tr>
-            <td><kbd>Esc</kbd></td>
-            <td>Auswahl aufheben</td>
-          </tr>
-          <tr>
-            <td><kbd>R</kbd> / <kbd data-combo="shift|R">Umschalt+R</kbd></td>
-            <td>Nach rechts / links drehen</td>
-          </tr>
-          <tr>
-            <td><kbd>D</kbd></td>
-            <td>Duplizieren</td>
-          </tr>
-          <tr>
-            <td><kbd>M</kbd></td>
-            <td>Verschieben nach …</td>
-          </tr>
-          <tr>
-            <td>
-              <kbd data-combo="alt|Pfeil hoch">Alt+Pfeil hoch</kbd> /
-              <kbd data-combo="alt|Pfeil runter">Alt+Pfeil runter</kbd>
-            </td>
-            <td>Eine Stelle nach vorne / hinten</td>
-          </tr>
-          <tr>
-            <td><kbd>Entf</kbd></td>
-            <td>Löschen</td>
-          </tr>
-          <tr>
-            <td>
-              <kbd data-combo="mod|X">Strg+X</kbd>, <kbd data-combo="mod|C">Strg+C</kbd>,
-              <kbd data-combo="mod|V">Strg+V</kbd>
-            </td>
-            <td>Ausschneiden, kopieren, vor der Seite einfügen</td>
-          </tr>
-          <tr>
-            <td>
-              <kbd data-combo="mod|Z">Strg+Z</kbd> /
-              <kbd data-combo="mod|shift|Z">Strg+Umschalt+Z</kbd>
-            </td>
-            <td>Rückgängig / Wiederholen</td>
-          </tr>
-          <tr>
-            <td><kbd>Eingabe</kbd></td>
-            <td>Große Vorschau (darin Pfeiltasten und R)</td>
-          </tr>
-          <tr>
-            <td><kbd>F2</kbd></td>
-            <td>Dokument umbenennen</td>
-          </tr>
-          <tr>
-            <td><kbd data-combo="shift|F10">Umschalt+F10</kbd></td>
-            <td>Menü der Seite</td>
-          </tr>
-          <tr>
-            <td><kbd>?</kbd></td>
-            <td>Diese Übersicht</td>
-          </tr>
-        </tbody>
-      </table>
+      <p class="ws-dialog-sub" id="ws-keys-sub"></p>
+      <div class="ws-keys-list" id="ws-keys-list"></div>
       <div class="ws-dialog-actions">
         <button type="submit" class="btn" value="close">Schließen</button>
       </div>
     </form>
   </dialog>
 
-  <dialog class="ws-preview" id="ws-preview" aria-labelledby="ws-preview-title">
-    <div class="ws-preview-top">
-      <h2 id="ws-preview-title"></h2>
-      <form method="dialog">
-        <button type="submit" class="btn ghost sm">
-          <svg width="18" height="18" aria-hidden="true"><use href="#i-x" /></svg>Schließen
-        </button>
-      </form>
-    </div>
-    <div class="ws-preview-stage" id="ws-preview-stage"></div>
-    <div class="ws-preview-bar">
-      <button type="button" class="btn ghost" id="ws-preview-prev" aria-keyshortcuts="ArrowLeft">
-        <svg width="18" height="18" aria-hidden="true"><use href="#i-left" /></svg>Vorherige
-      </button>
-      <button type="button" class="btn ghost ws-m-only" id="ws-preview-forward">
-        <svg width="18" height="18" aria-hidden="true"><use href="#i-up" /></svg>Nach vorne
-      </button>
-      <button type="button" class="btn ghost" id="ws-preview-rotate" aria-keyshortcuts="R">
-        <svg width="18" height="18" aria-hidden="true"><use href="#i-rotate-right" /></svg>Rechts
-        drehen
-      </button>
-      <button type="button" class="btn ghost ws-m-only" id="ws-preview-back">
-        <svg width="18" height="18" aria-hidden="true"><use href="#i-down" /></svg>Nach hinten
-      </button>
-      <button type="button" class="btn ghost" id="ws-preview-next" aria-keyshortcuts="ArrowRight">
-        Nächste<svg width="18" height="18" aria-hidden="true"><use href="#i-right" /></svg>
-      </button>
-    </div>
-  </dialog>
-
   <dialog class="ws-dialog" id="ws-merge" aria-labelledby="ws-merge-title">
     <form method="dialog">
       <h2 id="ws-merge-title">Dokumente zusammenführen</h2>
       <p class="ws-dialog-sub">
-        Die angekreuzten Dokumente werden in der Reihenfolge der Spalten an das erste angehängt.
+        Die angekreuzten Dokumente werden in dieser Reihenfolge zu einem zusammengeführt; das erste
+        behält seinen Namen. Mit den Pfeilen änderst du die Reihenfolge.
       </p>
       <fieldset>
         <legend>Dokumente</legend>
@@ -493,20 +296,29 @@
       </div>
     </form>
   </dialog>
+</div>
 
+<div class="wrap ws-explain-wrap">
   <section class="explain" aria-labelledby="ws-explain">
     <h2 id="ws-explain">So funktioniert es</h2>
     <p>
-      Füge eine oder mehrere PDFs oder Bilder hinzu. Jede Datei erscheint als eigenes Dokument in
-      einer Spalte, jede Seite als kleines Bild. Du kannst Seiten auswählen, drehen, löschen,
-      kopieren und zwischen den Dokumenten verschieben, leere Seiten einfügen, Dokumente teilen und
-      zusammenführen. Jeder Schritt lässt sich rückgängig machen. Am Ende speicherst du ein
-      Dokument, deine Auswahl oder alle Dokumente als ZIP. Deine Originaldateien bleiben
-      unverändert. Über „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern
-      gesetzt und passen zur dann gültigen Reihenfolge. Stempel und Unterschriften gehören zur Seite
-      und wandern mit, wenn du sie verschiebst; gesetzt werden sie beim Speichern. Schwärzen und
-      Formular ausfüllen erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum
-      Bild, sodass nichts vom Original übrig bleibt.
+      Die Werkstatt arbeitet wie ein Programm auf deinem Rechner: oben Menüs und Werkzeugleiste,
+      links deine Dokumente und die Seiten des aktiven Dokuments, in der Mitte alle Seiten als
+      Raster oder eine Seite groß, rechts die Eigenschaften der Auswahl und der Verlauf. Öffne eine
+      oder mehrere PDFs oder Bilder; jede Datei wird ein eigenes Dokument. Seiten wählst du mit
+      Klick, Umschalt, Strg oder einem aufgezogenen Rahmen aus und ziehst sie an eine andere Stelle,
+      in ein anderes Dokument oder auf ein Dokument in der Liste. Zwischen zwei Seiten setzt du mit
+      einem Klick eine Trennlinie; „An Trennlinien teilen“ macht daraus in einem Schritt mehrere
+      Dokumente, die Schere teilt sofort. Ein Dokument, das du auf ein anderes ziehst, wird mit ihm
+      zusammengeführt. Ein Rechtsklick zeigt überall, was an dieser Stelle möglich ist, und jede
+      Aktion hat einen Menüeintrag und meist ein Tastenkürzel. Jeder Schritt lässt sich rückgängig
+      machen, auch mehrere auf einmal über den Verlauf. Am Ende speicherst du ein Dokument, deine
+      Auswahl oder alle Dokumente als ZIP. Deine Originaldateien bleiben unverändert. Über
+      „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern gesetzt und passen
+      zur dann gültigen Reihenfolge. Stempel und Unterschriften gehören zur Seite und wandern mit,
+      wenn du sie verschiebst; gesetzt werden sie beim Speichern. Schwärzen und Formular ausfüllen
+      erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum Bild, sodass nichts vom
+      Original übrig bleibt.
     </p>
     <h2>Gut zu wissen</h2>
     <p>

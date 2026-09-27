@@ -25,6 +25,10 @@ export interface SignaturePreview {
 /** Neue Unterschrift: rechts unten, wie in „Unterschrift einfügen“ */
 const DEFAULT_RECT: NormRect = { x: 0.55, y: 0.78, w: 0.3, h: 0.08 };
 const MAX_WIDTH = 720;
+/** Untergrenze beim Einpassen in die Höhe */
+const MIN_WIDTH = 360;
+/** Innenabstand oben und unten von .ws-sign-stage (0,2 rem + 0,8 rem) */
+const STAGE_PADDING = 16;
 
 export class SignDialog {
   private readonly dialog = $<HTMLDialogElement>('#ws-sign');
@@ -90,8 +94,15 @@ export class SignDialog {
     const token = ++this.token;
     for (const old of this.view.querySelectorAll('canvas, .err')) old.remove();
     const size = visiblePageSize(this.store.state, at.page);
-    const stage = $('#ws-sign-stage').getBoundingClientRect();
-    const fit = Math.min(MAX_WIDTH, stage.width || MAX_WIDTH) / size.width;
+    const stageEl = $('#ws-sign-stage');
+    const byWidth =
+      Math.min(MAX_WIDTH, stageEl.getBoundingClientRect().width || MAX_WIDTH) / size.width;
+    // Die ganze Seite sichtbar, damit man sieht, wo man unterschreibt; auf sehr niedrigen
+    // Fenstern nicht schmaler als MIN_WIDTH (dann scrollt die Fläche).
+    const maxHeight = parseFloat(getComputedStyle(stageEl).maxHeight) - STAGE_PADDING;
+    const byHeight =
+      Number.isFinite(maxHeight) && maxHeight > 0 ? maxHeight / size.height : byWidth;
+    const fit = Math.min(byWidth, Math.max(byHeight, MIN_WIDTH / size.width));
     const cssWidth = Math.max(1, Math.floor(size.width * fit));
     let canvas: HTMLCanvasElement | HTMLElement;
     try {

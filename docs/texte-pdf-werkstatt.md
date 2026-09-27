@@ -173,7 +173,7 @@ Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026**, einschließlich des S
 
 ## 11. Stufe 2, Schritt 2.2: Stempel und Unterschrift in der Werkstatt
 
-Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.2“), `src/tools/pdf-werkstatt/main.html` (Dialog `#ws-sign`), `src/tools/pdf-stempel/embed.ts`, `src/tools/pdf-unterschreiben/embed.ts`, Befehlsnamen `src/core/workshop/commands.ts`. Felder, Hinweise und Fehlermeldungen aus „PDF stempeln“ und „PDF unterschreiben“ sind unverändert übernommen (freigegeben).
+Stand: 27.09.2026. **Entwurf zur Freigabe** (Schritt 2.2 freigegeben von Leon am 27.09.2026, die Texte gibt er separat frei). Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.2“), `src/tools/pdf-werkstatt/main.html` (Dialog `#ws-sign`), `src/tools/pdf-stempel/embed.ts`, `src/tools/pdf-unterschreiben/embed.ts`, Befehlsnamen `src/core/workshop/commands.ts`. Felder, Hinweise und Fehlermeldungen aus „PDF stempeln“ und „PDF unterschreiben“ sind unverändert übernommen (freigegeben).
 
 **Wo es erscheint**
 
@@ -219,3 +219,66 @@ Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundorte: `src/tools/pdf-werkstatt/
 | Verlauf | „Rückgängig: Stempel“ / „Rückgängig: Stempel entfernen“ / „Rückgängig: Unterschrift“ / „Rückgängig: Unterschrift entfernen“ (ebenso „Wiederholen: …“) |
 
 **Vorschlag für den Erklärtext der Werkstatt** (noch nicht eingebaut), Satz nach dem Satz zu den Seitenzahlen: „Stempel und Unterschriften gehören zur Seite und wandern mit, wenn du sie verschiebst; gesetzt werden sie beim Speichern.“
+
+## 12. Stufe 2, Schritt 2.3: Schwärzen und Formular ausfüllen in der Werkstatt
+
+Stand: 27.09.2026. **Entwurf zur Freigabe.** Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2.3“), `src/tools/pdf-werkstatt/main.html` (Dialoge `#ws-redact` und `#ws-unredacted-dialog`, Hinweis `#ws-unredacted`), `src/tools/pdf-schwaerzen/embed.ts`, `src/tools/pdf-formular-ausfuellen/embed.ts`. Unverändert aus den Einzelwerkzeugen (freigegeben): beim Schwärzen „Auflösung der neuen PDF“ mit den drei Stufen, „Geschwärzte Bereiche“, „Seiten mit Schwärzung“, der Prüfhinweis „Prüf die neue PDF, bevor du sie weitergibst …“, der Bedienhinweis zum Ziehen, „Bereich hinzufügen“, „Bereiche dieser Seite entfernen“, „Vorherige Seite“/„Nächste Seite“, „Bereich 1 auf Seite 2“, „Seite 3 von 12 …“, „PDF wird erstellt …“ und die Fehlermeldung „Die geschwärzte PDF konnte nicht erzeugt werden …“; beim Formular alle Feldbeschriftungen, „(Pflichtfeld)“, „Formular festschreiben“, „Felder“, „Pflichtfelder leer“, die Hinweise zu Signatur und XFA-Fassung und alle Meldungen (XFA, keine Felder, Zeichen außerhalb der Schrift).
+
+**Wo es erscheint**
+
+| Ort | Text |
+|---|---|
+| Menü „Werkzeuge“ | „Schwärzen …“ (Dokument mit dem Fokus, mit Trennlinie davor) und „Formular ausfüllen …“ (nur aktiv, wenn das Dokument Seiten aus einer PDF mit Formular hat) |
+| Menü im Spaltenkopf | „Schwärzen …“ und „Formular ausfüllen …“ nach „Stempel …“ |
+| Handy, „Mehr“ | „Schwärzen …“ und „Formular ausfüllen …“ am Ende |
+| Seitenbeschriftung (Screenreader) | die neue Datei heißt „Vertrag (geschwärzt).pdf“ bzw. „Antrag (ausgefüllt).pdf“, also z. B. „Seite 2 von 3, aus Vertrag (geschwärzt).pdf Seite 2“ |
+
+**Schwärzen, Bereich in der rechten Spalte**
+
+- Überschrift „Schwärzen“, darunter „Für Vertrag, 3 Seiten“
+- Neu: Hinweis „Geschwärzt wird das ganze Dokument: Jede Seite wird zum Bild, auch Seiten ohne Bereich. Stempel und Unterschriften bleiben änderbar.“
+- Knöpfe „Bereiche festlegen …“ (öffnet den Dialog) · „Dokument schwärzen“ (während der Arbeit „Seite 2 von 3 …“, dann „PDF wird erstellt …“) · „Abbrechen“ (auch Esc)
+
+**Schwärzen, Dialog**
+
+- Überschrift „Bereiche schwärzen in Vertrag“, Seitenwechsel mit „Seite 1 von 3“
+- Knöpfe „Abbrechen“ · „Übernehmen“
+
+**Ansagen und Meldungen beim Schwärzen**
+
+| Anlass | Text |
+|---|---|
+| Geschwärzt (Ansage) | „Vertrag ist geschwärzt. Prüf das Ergebnis, bevor du es weitergibst.“, falls zutreffend gefolgt vom Hinweis unten |
+| Dokument während des Schwärzens geändert, oder eine Seite mit Bereichen seitdem gedreht oder ersetzt | „Das Dokument hat sich während des Schwärzens geändert. Schwärze es noch einmal.“ |
+| Verlauf | „Rückgängig: Schwärzen“ / „Wiederholen: Schwärzen“ |
+
+**Hinweis auf nicht geschwärzte Seiten** (oben in der rechten Spalte, in der Fehlerfarbe, sichtbar auch bei offenem Werkzeug; je Dokument ein Satz mit Knopf)
+
+- „2 Seiten in ‚Anlagen‘ stammen aus derselben Datei und sind nicht geschwärzt.“ (eine Seite: „1 Seite in ‚Anlagen‘ stammt aus derselben Datei und ist nicht geschwärzt.“)
+- Knopf „Zu den Seiten“: wählt diese Seiten aus und springt zur ersten
+
+**Vor dem Speichern** („… als PDF speichern“, „Auswahl als neue PDF“, „Alle als ZIP speichern“), nur wenn das Gespeicherte solche Seiten enthält: Dialog
+
+- Überschrift „Nicht geschwärzte Seiten“, darunter dieselben Sätze wie im Hinweis
+- Knöpfe „Zu den Seiten“ · „Abbrechen“ (hat den Fokus) · „Trotzdem speichern“
+
+**Formular ausfüllen, Bereich in der rechten Spalte**
+
+- Überschrift „Formular ausfüllen“, darunter „Formular aus Antrag.pdf in Antrag“
+- Beim Öffnen kurz „Formular wird gelesen …“
+- Felder, Einstellung und Hinweise aus „PDF-Formular ausfüllen“ (ohne die Vorschau der Seite)
+- Neu: Hinweis „Die ausgefüllten Seiten ersetzen in diesem Dokument die Seiten aus Antrag.pdf.“
+- Knöpfe „Formular übernehmen“ (während der Arbeit „Wird ausgefüllt …“) · „Abbrechen“ (auch Esc)
+
+**Ansagen und Meldungen beim Formular**
+
+| Anlass | Text |
+|---|---|
+| Übernommen (Ansage) | „Formular in Antrag übernommen“ |
+| Dokument währenddessen geändert | „Das Dokument hat sich während des Ausfüllens geändert. Übernimm das Formular noch einmal.“ |
+| Verlauf | „Rückgängig: Formular ausfüllen“ / „Wiederholen: Formular ausfüllen“ |
+
+**Meldung nach dem Speichern:** Ein geschwärztes oder ausgefülltes Dokument, das sonst unverändert ist, wird als diese neue Datei ausgegeben. Der Zusatz „Es war unverändert: Gespeichert ist die Originaldatei.“ entfällt dann, weil er an das ungeschwärzte Original denken ließe; die Meldung lautet nur „Fertig: Vertrag.pdf ist gespeichert.“
+
+**Vorschlag für den Erklärtext der Werkstatt** (noch nicht eingebaut), nach dem Satz zu Stempel und Unterschrift: „Schwärzen und Formular ausfüllen erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum Bild, sodass nichts vom Original übrig bleibt.“
+

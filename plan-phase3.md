@@ -445,7 +445,7 @@ Vorher erledigt (Freigabe B): Texte der Stufe 1 mit den fünf Änderungen eingeb
 
 Nach der Freigabe: Vorrang hat die pdf.js-Kompatibilität (Abschnitt „Gefunden, nicht behoben“), vor Schritt 2.2. Untersuchung: `docs/pdfjs-kompatibilitaet.md`. Die README-Screenshots werden danach alle in einer einheitlichen Umgebung neu erzeugt.
 
-## 17. Stand bei Anhaltepunkt C, Schritt 2.2 (27.09.2026, zur Freigabe)
+## 17. Stand bei Anhaltepunkt C, Schritt 2.2 (27.09.2026, freigegeben von Leon am 27.09.2026; D1–D10 bestätigt, Texte separat)
 
 Vorher erledigt (Entscheidungen zur pdf.js-Kompatibilität vom 27.09.2026): Legacy-Build von pdfjs-dist auf allen Seiten mit pdf.js, core-js 3.50.0 auf der Lizenzseite (Build-Prüfung verlangt Eintrag und Version), zwei tote Adressen nur für Bundle-Teile mit pdf.js, Ausnahme `Function('return this')` in `docs/pdfjs-kompatibilitaet.md`; Prüfung beim Laden mit den freigegebenen Texten in allen sechs Werkzeugen mit pdf.js, „Die Datei ist beschädigt …“ erscheint auf zu alten Browsern nicht mehr (Test); `npm run compat:pdfjs` (nicht Teil von `check`, Pflicht bei jedem pdfjs-dist-Update laut AGENTS.md); README „Browser support“; alle README-Screenshots in einer Umgebung neu erzeugt (Chromium 141, Linux). Der Punkt „Gefunden, nicht behoben“ aus Abschnitt 16 ist damit erledigt.
 
@@ -467,7 +467,7 @@ Vorher erledigt (Entscheidungen zur pdf.js-Kompatibilität vom 27.09.2026): Lega
 - Browser (Chromium 141, 1280 px hell und dunkel, 390 px): Stempel über Menü und Auswahl, Zeichenprüfung, Seiten umsortieren, Stempel wandert mit, Entfernen, Rückgängig; Unterschrift zeichnen, im Dialog auf einer gedrehten Seite platzieren, Übernehmen, Marken, Export (aufrecht, richtige Stelle, ein Bild), erneutes Öffnen und Verschieben; Dialog auf 390 px ohne waagrechtes Scrollen; Einzelwerkzeuge „PDF stempeln“ und „PDF unterschreiben“ unverändert (Prüfung, Platzieren, Speichern, Wechsel auf Bild leert die Platzierungen). Keine Konsolen- oder CSP-Meldungen, keine fremden Anfragen.
 - `npm run check`: 1.204 Tests grün (13 übersprungen, lokale Spezifikationsdateien).
 
-### Von mir entschieden, zur Bestätigung
+### Von mir entschieden, von Leon am 27.09.2026 bestätigt
 
 | Nr. | Frage | Umsetzung |
 |---|---|---|
@@ -501,3 +501,64 @@ Vorher erledigt (Entscheidungen zur pdf.js-Kompatibilität vom 27.09.2026): Lega
 - Gerätetests: Safari und Firefox (Browser support im README), NVDA für R, D, M (B1); neu dazu: Zeichnen der Unterschrift mit Finger und Stift auf dem Handy in der Werkstatt.
 
 Nach der Freigabe: Schritt 2.3 (Schwärzen und Formular als „Einbacken“).
+
+## 18. Stand bei Anhaltepunkt C, Schritt 2.3 (27.09.2026, zur Freigabe)
+
+Vorher erledigt (Freigabe 2.2): D1–D10 bestätigt; Test, dass das Unterschriftsbild nur einmal im Speicher liegt (Abschnitt 17, Nachtrag); nach Leons Rückmeldung zeigt die Vorschau Stempel und Unterschriften (D7 geändert).
+
+### Umgesetzt in 2.3
+
+- **Befehl „Einbacken“** (`bakePages` in `core/workshop/commands.ts`): ersetzt Seiten eines Dokuments durch Seiten einer neu erzeugten Quelle. Schlüssel, Stempel und Unterschriften bleiben (eine Unterschrift an derselben Stelle der Ansicht, `turn` wird angepasst). Hat sich eine Seite seit dem Start geändert (andere Quelle, Seite oder Drehung), geschieht nichts; beim Schwärzen auch dann, wenn das Dokument inzwischen andere Seiten hat. Rückgängig stellt die alten Verweise her; die alte Quelle bleibt, solange der Verlauf sie braucht (W7).
+- **Herkunft von Quellen** (`Source.origin`): `redacted` bzw. `filled`, jeweils mit den Ausgangsquellen.
+- **Schwärzen:** Bereiche im Dialog `redact-dialog.ts` (RectEditor und Texte aus „PDF schwärzen“, Seite für Seite). `redact-bake.ts` zeichnet jede Seite des Dokuments so, wie sie angezeigt wird (ohne Stempel und Unterschriften), füllt die Bereiche schwarz, macht JPEGs; der Werkstatt-Worker baut daraus mit `buildRasterPdf` die neue PDF, ohne die Originaldatei zu lesen (wie im Einzelwerkzeug). Einstellungen und Prüfhinweis kommen aus `pdf-schwaerzen/main.html` (`#red-settings`, `#red-check`), der Bereich aus `pdf-schwaerzen/embed.ts`.
+- **Nicht geschwärzte Seiten** (`unredactedPages` in `model.ts`): Seiten, die auf eine Quelle verweisen, von der im Arbeitsbereich eine geschwärzte Fassung existiert, z. B. vorher kopierte oder später aus der Ablage eingefügte. Hinweis oben in der rechten Spalte mit „Zu den Seiten“, Ansage direkt nach dem Schwärzen, Nachfrage vor dem Speichern (Dokument, Auswahl, ZIP).
+- **Formular ausfüllen:** Felder, Zeichenprüfung und Pflichtfeld-Zähler aus `pdf-formular-ausfuellen/fields.ts`, Meldungen aus `messages.ts` (beide aus `page.ts` herausgelöst, die Werkzeugseite nutzt sie ebenso). Lesen und Ausfüllen im Werkstatt-Worker (`read-form`, `fill-form`); die ausgefüllte Datei wird eine neue Quelle, die Seiten dieses Dokuments aus der alten Quelle zeigen danach auf sie. Ist das Dokument danach unverändert diese Datei, wird sie samt Formularfeldern ausgegeben.
+- **Vorschaubilder** zeigen geschwärzte Seiten geschwärzt, weil sie auf die neue Quelle verweisen; das Original wird für sie nicht mehr gezeichnet.
+- **Meldung nach dem Speichern:** „Gespeichert ist die Originaldatei“ nur noch für geladene Dateien, nicht für geschwärzte oder ausgefüllte Quellen.
+
+### Tests
+
+- `tests/core/workshop/bake.test.ts`:
+  - Befehl: Seiten ersetzt, Schlüssel und Stempel bleiben, Unterschrift auf gedrehter Seite an derselben Stelle; nichts geschieht nach Drehen oder neuer Seite, wohl aber nach neuem Stempel.
+  - Hinweis: Kopien in „Anlagen“ gefunden, eingeschränkt auf Dokumente und Seiten; verschwindet, wenn das geschwärzte Dokument geschlossen ist.
+  - **Nichts vom Original im Export** (Leon, 27.09.2026), mit den Prüfhilfen des Einzelwerkzeugs (`tests/core/pdf/secrets.ts`, aus `redact.test.ts` ausgelagert: Text mit pdf.js, alle Objekte, entpackte Ströme, Latin-1, UTF-16 beide Richtungen, jeweils auch hexadezimal; dazu Titel und Autor): direkt, nach Rückgängig und Wiederholen, Dokument duplizieren, Teilen (beide Teile), Zusammenführen, „Auswahl als neue PDF“, alle als ZIP; auch das unverändert ausgegebene geschwärzte Dokument. Gegenprobe: vor dem Schwärzen und nach Rückgängig steckt der Name drin. Einziger Text im Ergebnis ist ein Stempel, den der Test selbst setzt.
+  - Formular: ausgefülltes Dokument wird unverändert mit Feldwert ausgegeben; Wahl der Formularquelle.
+- `tests/ui/pdfjs-support.test.ts`: „lädt pdf.js“ heißt jetzt „ruft `loadPdfjs(` auf“ (die Werkstatt importiert für das Schwärzen nur die Fehlerklasse und den Text „zu alt“).
+- Browser (Chromium 141, 1280 px hell und dunkel, 390 px):
+  - Schwärzen mit Bereichen auf zwei Seiten, Vorschaubilder geschwärzt, Hinweis und Sprung, Speichern ohne und mit Nachfrage (Fokus auf „Abbrechen“), Rückgängig und Wiederholen; gespeicherte Datei ohne Text, Name und Titel (pdf.js und Bytes geprüft).
+  - Gedrehte Seite und Stempel vor dem Schwärzen: gespeichert quer, Stempel noch da und einziger Text.
+  - Formular: Felder, Zeichenprüfung mit „Ł“, Übernehmen, gespeicherte Datei mit Werten und Feldern; Menüeintrag aus bei PDF ohne Formular.
+  - Einzelwerkzeuge „PDF schwärzen“ und „PDF-Formular ausfüllen“ unverändert (Zähler, Speichern, Zeichenprüfung, Pflichtfelder, Vorschau).
+  - Keine Konsolen- oder CSP-Meldungen, keine fremden Anfragen.
+- `npm run check`: 1.219 Tests grün (13 übersprungen, lokale Spezifikationsdateien).
+
+### Von mir entschieden, zur Bestätigung
+
+| Nr. | Frage | Umsetzung |
+|---|---|---|
+| E1 | Was wird gerastert | Das ganze Dokument, auch Seiten ohne Bereich, Leer- und Bildseiten (wie im Einzelwerkzeug). Nur so enthält sein Export garantiert nichts aus dem Original. Plan 7.2 sprach von „betroffenen Seiten“. |
+| E2 | Stempel und Unterschriften beim Schwärzen | bleiben Seiten-Operationen, werden nicht mitgerastert und lassen sich danach noch ändern oder entfernen; beim Speichern kommen sie über das Bild |
+| E3 | Bereiche vor dem Schwärzen | gelten nur, solange das Werkzeug offen ist (nicht im Verlauf). Wird eine Seite mit Bereichen vorher gedreht oder ersetzt, wird nicht geschwärzt, mit Meldung. |
+| E4 | Wann der Hinweis auf nicht geschwärzte Seiten gilt | solange die geschwärzte Fassung im Arbeitsbereich ist; er verschwindet, wenn diese Seiten ebenfalls geschwärzt, gelöscht oder das geschwärzte Dokument geschlossen wird. Er gilt auch für Seiten, die später aus der internen Ablage eingefügt werden. Er lässt sich nicht wegklicken. |
+| E5 | Nachfrage vor dem Speichern | Dialog mit „Trotzdem speichern“, Fokus auf „Abbrechen“; bei Dokument, Auswahl und ZIP |
+| E6 | Rückgängig nach dem Schwärzen | stellt das ungeschwärzte Dokument wieder her (Verlauf wie immer); der Export zeigt dann wieder das Original, ohne besondere Warnung |
+| E7 | Formular: welche Quelle | die Formular-PDF der Seite mit dem Fokus, sonst die erste im Dokument; ersetzt werden nur die Seiten dieses Dokuments, andere Dokumente behalten die alte Quelle |
+| E8 | Namen der neuen Quellen | „Vertrag (geschwärzt).pdf“, „Antrag (ausgefüllt).pdf“ (Seitenbeschriftung, Hinweise); der gespeicherte Dateiname kommt weiter vom Dokumentnamen |
+| E9 | Farbe des Hinweises | Fehlerfarbe (`--err-soft`/`--err-ink`, vorhandene Tokens wie bei `.badge.err`), neuer Baustein `.ws-warn` |
+
+### Abweichungen vom Plan
+
+- Gerastert wird im Hauptthread mit pdf.js (wie im Einzelwerkzeug), gebaut im Worker. Rastern im Worker (OffscreenCanvas) wäre eine eigene Änderung an der pdf.js-Anbindung.
+- Bereiche werden in einem Dialog festgelegt, nicht in der rechten Spalte; das Formular in der Werkstatt hat keine Vorschau der Seite, weil die rechte Spalte selbst der Bereich des Werkzeugs ist.
+- Wie in 2.1 und 2.2 werden nur Teile der Werkzeugseiten eingebettet (W8).
+- Nebenbei, weil 2.3 sie braucht: `fields.ts`/`messages.ts` aus der Formular-Seite und die Prüfhilfen aus `redact.test.ts` herausgelöst; `dialogPageWidth` in `page-canvas.ts` für beide Seiten-Dialoge; Knopfzeile der Seiten-Dialoge klebt unten (Handy).
+
+### Offen, Prüfung durch Leon
+
+- Texte in `docs/texte-pdf-werkstatt.md` Abschnitt 11 (2.2) und 12 (2.3), dazu die zwei Vorschläge für den Erklärtext.
+- Entscheidungen E1–E9.
+- Gerätetests: Safari und Firefox, NVDA für R, D, M; Unterschrift mit Finger und Stift; neu: Bereiche schwärzen mit Finger auf dem Handy, Ansage des Hinweises mit NVDA.
+- Datenschutzerklärung und AGB: nach meiner Einschätzung nicht betroffen (alles bleibt im Browser, keine neue Speicherung).
+
+Nach der Freigabe: Schritt 2.4 (Metadaten als Export-Einstellung, Hinweise).
+

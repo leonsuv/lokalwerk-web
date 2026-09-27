@@ -440,6 +440,8 @@ export const C = {
 export const P = {
   selection: 'Auswahl',
   selected: 'Ausgewählt',
+  selectionActions: 'Aktionen für die Auswahl',
+  pageActions: 'Aktionen für die Seite',
   noSelection: `Keine Seite ausgewählt. Klick auf eine Seite, zieh einen Rahmen auf oder drück ${combo('mod', 'A')}.`,
   page: 'Seite',
   position: 'Stelle',

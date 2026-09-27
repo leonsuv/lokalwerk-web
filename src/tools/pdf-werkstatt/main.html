@@ -85,6 +85,26 @@
       <section class="ws-history" aria-labelledby="ws-history-title">
         <div class="ws-panel-head">
           <h2 id="ws-history-title">Verlauf</h2>
+          <span class="ws-panel-tools">
+            <button
+              type="button"
+              class="ws-tb"
+              data-cmd="undo"
+              aria-label="Rückgängig"
+              data-tip="Rückgängig"
+            >
+              <svg width="16" height="16" aria-hidden="true"><use href="#i-undo" /></svg>
+            </button>
+            <button
+              type="button"
+              class="ws-tb"
+              data-cmd="redo"
+              aria-label="Wiederholen"
+              data-tip="Wiederholen"
+            >
+              <svg width="16" height="16" aria-hidden="true"><use href="#i-redo" /></svg>
+            </button>
+          </span>
         </div>
         <ol class="ws-history-list" id="ws-history"></ol>
       </section>

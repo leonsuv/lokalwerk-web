@@ -12,18 +12,26 @@ import {
   deletePages,
   duplicateDoc,
   duplicatePages,
+  extractToNewDoc,
+  insertBlank,
+  mergeDocs,
   movePages,
   newDoc,
   pastePages,
   rotatePages,
   shiftPages,
+  splitDoc,
   toClipboard,
 } from '../../core/workshop/commands.ts';
 import {
+  A4_LANDSCAPE,
+  A4_PORTRAIT,
+  blankBoxFor,
   findDoc,
   indexPages,
   inPageOrder,
   type DocId,
+  type PageBox,
   type PageKey,
 } from '../../core/workshop/model.ts';
 import { EMPTY_SELECTION, selectDoc, selectionSummary } from '../../core/workshop/selection.ts';
@@ -252,5 +260,70 @@ export function createActions(ctx: ActionContext) {
     },
 
     shortcuts: () => ctx.openShortcuts(),
+
+    /** Wo eine leere Seite hinkommt: nach der Seite mit dem Fokus, sonst ans Ende */
+    blankTarget: (): { doc: DocId; index: number; neighbour: PageBox } | null => {
+      const focus = store.selection.focus ? where(store.selection.focus) : null;
+      const doc = findDoc(store.state, focus?.doc ?? store.state.docs[0]?.id ?? '');
+      if (!doc) return null;
+      const index = focus ? focus.position : doc.pages.length;
+      return { doc: doc.id, index, neighbour: blankBoxFor(store.state, doc, index) };
+    },
+
+    insertBlank: (size: 'neighbour' | 'a4' | 'a4-landscape'): void => {
+      const focus = store.selection.focus ? where(store.selection.focus) : null;
+      const doc = findDoc(store.state, focus?.doc ?? store.state.docs[0]?.id ?? '');
+      if (!doc) return;
+      const index = focus ? focus.position : doc.pages.length;
+      const box =
+        size === 'a4'
+          ? A4_PORTRAIT
+          : size === 'a4-landscape'
+            ? A4_LANDSCAPE
+            : blankBoxFor(store.state, doc, index);
+      store.run(insertBlank(doc.id, index, box));
+      ctx.announce(t.blankInserted(doc.name, index + 1));
+      ctx.focusAfterRender(doc.id);
+    },
+
+    /** Dokument vor der Seite mit dem Fokus teilen */
+    split: (): void => {
+      const focus = store.selection.focus ? where(store.selection.focus) : null;
+      if (!focus) {
+        ctx.announce(t.NO_PAGE);
+        return;
+      }
+      if (focus.position === 1) {
+        ctx.announce(t.SPLIT_FIRST_PAGE);
+        return;
+      }
+      store.run(splitDoc(focus.doc, focus.position - 1, t.partName(focus.name)));
+      ctx.announce(t.splitDone(focus.name, focus.position));
+      ctx.focusAfterRender();
+    },
+
+    merge: (docs: readonly DocId[]): void => {
+      const first = store.state.docs.find((d) => docs.includes(d.id));
+      if (!first || docs.length < 2) return;
+      store.run(mergeDocs(docs));
+      ctx.announce(t.merged(docs.length, first.name));
+      ctx.focusAfterRender(first.id);
+    },
+
+    /** Seiten als Kopie in ein neues Dokument ganz rechts */
+    extract: (): void => {
+      const keys = needPages();
+      if (!keys) return;
+      const name = t.newDocName(store.state.docs.length + 1);
+      store.run(extractToNewDoc(keys, name, 'copy'));
+      ctx.announce(t.docCreated(name));
+      ctx.focusAfterRender();
+    },
+
+    /** Eine bestimmte Seite drehen (große Vorschau) */
+    rotateOne: (key: PageKey, degrees: 90 | -90): void => {
+      store.run(rotatePages([key], degrees));
+      ctx.announce(t.rotated(1, degrees));
+    },
   };
 }

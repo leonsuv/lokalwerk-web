@@ -8,7 +8,7 @@
 import type { DocId, PageKey, WorkshopState } from '../../core/workshop/model.ts';
 import { selectionSummary, selectKeys } from '../../core/workshop/selection.ts';
 import { $ } from '../../ui/dom.ts';
-import { AFTER_PAGE_INVALID, combo, moveSubtitle, pages } from './texts.ts';
+import { AFTER_PAGE_INVALID, combo, MERGE_TOO_FEW, moveSubtitle, pages } from './texts.ts';
 
 export interface MoveChoice {
   doc: DocId;
@@ -134,6 +134,53 @@ export class ShortcutsDialog {
   }
 
   open(): void {
+    this.dialog.showModal();
+  }
+}
+
+/**
+ * Zusammenführen: Dokumente ankreuzen (Vorgabe: alle); sie werden in der Reihenfolge der
+ * Spalten an das erste angekreuzte angehängt.
+ */
+export class MergeDialog {
+  private readonly dialog = $<HTMLDialogElement>('#ws-merge');
+  private readonly list = $('#ws-merge-docs');
+  private readonly error = $('#ws-merge-error');
+
+  constructor(private readonly onMerge: (docs: DocId[]) => void) {
+    $('#ws-merge-cancel').addEventListener('click', () => this.dialog.close());
+    this.dialog.addEventListener('submit', (event) => {
+      const docs = [
+        ...this.list.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:checked'),
+      ].map((input) => input.value);
+      if (docs.length < 2) {
+        event.preventDefault();
+        this.error.textContent = MERGE_TOO_FEW;
+        return;
+      }
+      this.onMerge(docs);
+    });
+  }
+
+  open(state: WorkshopState, preselect?: readonly DocId[]): void {
+    this.error.textContent = '';
+    this.list.replaceChildren(
+      ...state.docs.map((doc) => {
+        const label = document.createElement('label');
+        label.className = 'ws-radio';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = doc.id;
+        input.checked = preselect ? preselect.includes(doc.id) : true;
+        const name = document.createElement('span');
+        name.textContent = doc.name;
+        const count = document.createElement('span');
+        count.className = 'ws-count';
+        count.textContent = pages(doc.pages.length);
+        label.append(input, name, count);
+        return label;
+      }),
+    );
     this.dialog.showModal();
   }
 }

@@ -2,13 +2,14 @@
  * Bild für die PDF vorbereiten: dekodieren (mit Ausrichtung nach Exif), bei Bedarf
  * verkleinern und neu kodieren. Das Neu-Kodieren entfernt Metadaten wie GPS-Position und
  * Kameradaten; bei JPEG prüft findMetadata das zusätzlich. Läuft im Worker (OffscreenCanvas)
- * oder, falls der Browser das nicht kann, auf der Seite.
+ * oder, falls der Browser das nicht kann, auf der Seite. Gemeinsam für „Bilder zu PDF“ und die
+ * PDF-Werkstatt (plan-phase3.md 4.2).
  */
 
-import { findMetadata } from '../../core/images/metadata-check.ts';
-import type { PageImage } from '../../core/pdf/from-images.ts';
-import { renderToBlob } from '../../ui/canvas.ts';
-import { WorkerError } from '../../ui/worker-protocol.ts';
+import { findMetadata } from '../core/images/metadata-check.ts';
+import type { PageImage } from '../core/pdf/from-images.ts';
+import { renderToBlob } from './canvas.ts';
+import { WorkerError } from './worker-protocol.ts';
 
 export type ImageQuality = 'original' | 'small';
 

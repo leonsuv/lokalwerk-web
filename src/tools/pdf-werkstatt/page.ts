@@ -5,10 +5,13 @@
  * im Worker: workshop.worker.ts.
  */
 
-import { isPdf } from '../../core/files/classify.ts';
+import { isImage, isPdf } from '../../core/files/classify.ts';
+import { imagePageBox } from '../../core/workshop/export-plan.ts';
 import { addSources, renameDoc } from '../../core/workshop/commands.ts';
 import {
+  indexPages,
   MEMORY_HINT_BYTES,
+  NO_FACTS,
   totalSourceSize,
   type DocId,
   type Source,
@@ -22,19 +25,22 @@ import {
 } from '../../core/workshop/selection.ts';
 import { $ } from '../../ui/dom.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
+import { prepareImage } from '../../ui/image-prepare.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { createActions } from './actions.ts';
 import { Board, SourceBadges } from './board.ts';
-import { MoveDialog, ShortcutsDialog } from './dialogs.ts';
+import { MergeDialog, MoveDialog, ShortcutsDialog } from './dialogs.ts';
 import { setupDrag } from './drag.ts';
+import { currentDoc, Exporter, lossSources } from './export.ts';
 import { handleAreaKey, handleBoardKey } from './keyboard.ts';
 import { Menu, type MenuItem } from './menu.ts';
+import { Preview } from './preview.ts';
 import { SourceFiles } from './sources.ts';
 import { WorkshopStore } from './store.ts';
 import * as t from './texts.ts';
 import { Thumbs } from './thumbs.ts';
-import type { AddPdfResult, WorkshopRequest } from './workshop.worker.ts';
+import type { AddImageResult, AddPdfResult, WorkshopRequest } from './workshop.worker.ts';
 
 // Beides sofort laden: pdf-lib im Worker, pdf.js samt eigenem Worker (plan.md N4, offline).
 const worker = new Worker(new URL('./workshop.worker.ts', import.meta.url), { type: 'module' });
@@ -99,6 +105,29 @@ const actions = createActions({
 });
 
 const moveDialog = new MoveDialog((keys, choice) => actions.moveTo(keys, choice.doc, choice.index));
+const mergeDialog = new MergeDialog((docs) => actions.merge(docs));
+const preview = new Preview(store, files, pdfjs, {
+  rotate: (key) => actions.rotateOne(key, 90),
+  closed: (key) => {
+    store.select(moveFocus(store.selection, key));
+    pendingFocus = { doc: undefined };
+    applyFocus();
+  },
+});
+
+function openPreview(key = store.selection.focus): void {
+  if (key) preview.show(key);
+}
+
+const exporter = new Exporter(store, client, {
+  status: (text) => (status.textContent = text),
+  busy: () => render(),
+  done: (message) => {
+    showToast(message);
+    announce(message);
+  },
+  failed: (error) => showToast(messageFor(error)),
+});
 
 function applyFocus(): void {
   if (!pendingFocus) return;
@@ -144,12 +173,30 @@ function render(): void {
   $('#ws-memory').hidden = size < MEMORY_HINT_BYTES;
   if (size >= MEMORY_HINT_BYTES) $('#ws-memory-text').textContent = t.memoryHint(size);
 
-  const hasTargets = actions.targets().length > 0;
+  const focusAt = selection.focus ? indexPages(state).get(selection.focus) : undefined;
+  const enabled: Record<string, boolean> = {
+    pages: actions.targets().length > 0,
+    focus: focusAt !== undefined,
+    split: focusAt !== undefined && focusAt.pageIndex > 0,
+    docs: hasDocs,
+    docs2: state.docs.length > 1,
+    undo: store.canUndo,
+    redo: store.canRedo,
+  };
   for (const button of toolbar.querySelectorAll<HTMLButtonElement>('button[data-needs]')) {
-    const needs = button.dataset.needs;
-    button.disabled =
-      needs === 'pages' ? !hasTargets : needs === 'undo' ? !store.canUndo : !store.canRedo;
+    button.disabled = !enabled[button.dataset.needs ?? ''];
   }
+
+  // Export (rechte Spalte)
+  const doc = currentDoc(state, selection);
+  $('#ws-export-doc-label').textContent = t.exportDocLabel(doc?.name ?? 'Dokument');
+  $<HTMLButtonElement>('#ws-export-doc').disabled = exporter.busy || !doc;
+  $<HTMLButtonElement>('#ws-export-sel').disabled = exporter.busy || summary.pages === 0;
+  $<HTMLButtonElement>('#ws-export-zip').disabled = exporter.busy || pageCount === 0;
+  const loss = lossSources(state, state.docs);
+  $('#ws-loss').hidden = loss.length === 0;
+  if (loss.length > 0) $('#ws-loss-text').textContent = t.lossNote(loss);
+  preview.refresh();
 }
 
 store.subscribe(render);
@@ -164,20 +211,33 @@ let loadingCount = 0;
  * Dokument. Alle Dateien einer Ablage bilden einen Schritt im Verlauf.
  */
 async function addFiles(list: File[], target?: { doc: DocId; index: number }): Promise<void> {
-  const pdfs = list.filter(isPdf);
-  const other = list.filter((f) => !isPdf(f)).map((f) => f.name);
+  const accepted = list.filter((f) => isPdf(f) || isImage(f));
+  const other = list.filter((f) => !isPdf(f) && !isImage(f)).map((f) => f.name);
   if (other.length > 0) showToast(t.NOT_SUPPORTED(other));
-  if (pdfs.length === 0) return;
+  if (accepted.length === 0) return;
   loadingCount++;
   const added: Source[] = [];
   const failed: string[] = [];
-  for (const [i, file] of pdfs.entries()) {
-    status.textContent = t.loading(i + 1, pdfs.length);
+  for (const [i, file] of accepted.entries()) {
+    status.textContent = t.loading(i + 1, accepted.length);
     const id = store.ids('s');
     try {
-      const info = await client.request<AddPdfResult>({ type: 'add-pdf', id, file });
+      if (isPdf(file)) {
+        const info = await client.request<AddPdfResult>({ type: 'add-pdf', id, file });
+        added.push({ id, kind: 'pdf', name: file.name, size: file.size, ...info });
+      } else {
+        const size = await addImage(id, file);
+        const box = imagePageBox(size.width, size.height);
+        added.push({
+          id,
+          kind: 'image',
+          name: file.name,
+          size: file.size,
+          pages: [{ box, rotate: 0 }],
+          facts: NO_FACTS,
+        });
+      }
       files.add(id, file);
-      added.push({ id, kind: 'pdf', name: file.name, size: file.size, ...info });
     } catch (error) {
       failed.push(t.fileError(file.name, messageFor(error)));
     }
@@ -190,6 +250,17 @@ async function addFiles(list: File[], target?: { doc: DocId; index: number }): P
   store.run(addSources(added, target));
   const targetDoc = target ? store.state.docs.find((d) => d.id === target.doc) : undefined;
   announce(targetDoc ? t.addedInto(pageCount, targetDoc.name) : t.added(added.length, pageCount));
+}
+
+/** Kann der Worker Bilder neu kodieren (OffscreenCanvas)? Sonst geschieht das auf der Seite. */
+const workerCanvas = client.request<boolean>({ type: 'canvas' }).catch(() => false);
+
+async function addImage(id: string, file: File): Promise<AddImageResult> {
+  const jpeg = file.type === 'image/jpeg' || /\.jpe?g$/i.test(file.name);
+  if (await workerCanvas)
+    return client.request<AddImageResult>({ type: 'add-image', id, file, jpeg });
+  const image = await prepareImage(file, jpeg, 'original');
+  return client.request<AddImageResult>({ type: 'add-image', id, image });
 }
 
 export function openFiles(list: File[]): void {
@@ -208,14 +279,49 @@ toolbar.addEventListener('click', (event) => {
     'rotate-left': () => actions.rotate(-90),
     'rotate-right': () => actions.rotate(90),
     duplicate: actions.duplicate,
-    move: actions.moveDialog,
+    blank: () => openBlankMenu(button, button),
     delete: actions.remove,
+    split: actions.split,
+    merge: () => mergeDialog.open(store.state),
     undo: actions.undo,
     redo: actions.redo,
+    preview: () => openPreview(),
     shortcuts: actions.shortcuts,
   };
   commands[button.dataset.cmd ?? '']?.();
 });
+
+/** Größe der leeren Seite wählen (W14): wie die Nachbarseite, DIN A4 hoch oder quer */
+function openBlankMenu(anchor: HTMLElement, returnFocus: HTMLElement, opener?: HTMLElement): void {
+  const target = actions.blankTarget();
+  if (!target) return;
+  const rect = anchor.getBoundingClientRect();
+  menu.show(
+    [
+      {
+        id: 'neighbour',
+        label: t.blankLikeNeighbour(target.neighbour.width, target.neighbour.height),
+      },
+      { id: 'a4', label: t.BLANK_A4_PORTRAIT },
+      { id: 'a4-landscape', label: t.BLANK_A4_LANDSCAPE },
+    ],
+    { x: rect.left, y: rect.bottom + 4 },
+    {
+      label: 'Leere Seite',
+      returnFocus,
+      opener: opener ?? anchor,
+      onChoose: (id) => actions.insertBlank(id as 'neighbour' | 'a4' | 'a4-landscape'),
+    },
+  );
+}
+
+// Export
+$('#ws-export-doc').addEventListener('click', () => {
+  const doc = currentDoc(store.state, store.selection);
+  if (doc) void exporter.doc(doc.id);
+});
+$('#ws-export-sel').addEventListener('click', () => void exporter.selection(actions.targets()));
+$('#ws-export-zip').addEventListener('click', () => void exporter.all());
 
 // ---------------------------------------------------------------------------------------------
 // Spalten: Auswahl mit der Maus, Menüs, Umbenennen
@@ -257,11 +363,15 @@ boardEl.addEventListener('keydown', (event) =>
       const rect = anchor.getBoundingClientRect();
       openPageMenu({ x: rect.left + 12, y: rect.top + 24 }, anchor);
     },
-    // Große Vorschau folgt in Schritt 1.6
-    openPreview: () => undefined,
+    openPreview: (key) => openPreview(key),
     announceSelection,
   }),
 );
+
+boardEl.addEventListener('dblclick', (event) => {
+  const key = (event.target as Element).closest<HTMLElement>('.ws-page')?.dataset.key;
+  if (key) openPreview(key);
+});
 
 boardEl.addEventListener('contextmenu', (event) => {
   const tile = (event.target as Element).closest<HTMLElement>('.ws-page');
@@ -274,8 +384,12 @@ boardEl.addEventListener('contextmenu', (event) => {
 });
 
 function pageMenuItems(): MenuItem[] {
+  const focus = store.selection.focus
+    ? indexPages(store.state).get(store.selection.focus)
+    : undefined;
   return [
-    { id: 'rotate-right', label: 'Rechts drehen', shortcut: 'R', keys: 'R' },
+    { id: 'preview', label: 'Große Vorschau', shortcut: 'Eingabe', keys: 'Enter' },
+    { id: 'rotate-right', label: 'Rechts drehen', shortcut: 'R', keys: 'R', separator: true },
     { id: 'rotate-left', label: 'Links drehen', shortcut: t.combo('shift', 'R'), keys: 'Shift+R' },
     { id: 'duplicate', label: 'Duplizieren', shortcut: 'D', keys: 'D' },
     { id: 'move', label: 'Verschieben nach …', shortcut: 'M', keys: 'M' },
@@ -294,6 +408,9 @@ function pageMenuItems(): MenuItem[] {
       keys: 'Control+V Meta+V',
       disabled: !store.clipboard,
     },
+    { id: 'blank', label: 'Leere Seite danach …', separator: true },
+    { id: 'split', label: 'Dokument hier teilen', disabled: !focus || focus.pageIndex === 0 },
+    { id: 'extract', label: 'Als neues Dokument' },
     { id: 'delete', label: 'Löschen', shortcut: 'Entf', keys: 'Delete', separator: true },
   ];
 }
@@ -304,6 +421,10 @@ function openPageMenu(at: { x: number; y: number }, returnFocus: HTMLElement): v
     returnFocus,
     onChoose: (id) => {
       const choices: Record<string, () => void> = {
+        preview: () => openPreview(),
+        blank: () => openBlankMenu(returnFocus, returnFocus),
+        split: actions.split,
+        extract: actions.extract,
         'rotate-right': () => actions.rotate(90),
         'rotate-left': () => actions.rotate(-90),
         duplicate: actions.duplicate,
@@ -319,7 +440,10 @@ function openPageMenu(at: { x: number; y: number }, returnFocus: HTMLElement): v
 }
 
 function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLElement): void {
-  const current = store.state.docs.find((d) => d.id === doc);
+  const docs = store.state.docs;
+  const position = docs.findIndex((d) => d.id === doc);
+  const current = docs[position];
+  const nextDoc = docs[position + 1];
   if (!current) return;
   menu.show(
     [
@@ -332,8 +456,20 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
         disabled: current.pages.length === 0,
       },
       { id: 'paste', label: 'Am Anfang einfügen', disabled: !store.clipboard },
-      { id: 'duplicate-doc', label: 'Dokument duplizieren', separator: true },
-      { id: 'close-doc', label: 'Dokument schließen' },
+      { id: 'append', label: 'Dateien anhängen …' },
+      {
+        id: 'save',
+        label: 'Als PDF speichern',
+        disabled: current.pages.length === 0,
+        separator: true,
+      },
+      { id: 'duplicate-doc', label: 'Dokument duplizieren' },
+      {
+        id: 'merge-next',
+        label: 'Mit dem nächsten zusammenführen',
+        disabled: nextDoc === undefined,
+      },
+      { id: 'close-doc', label: 'Dokument schließen', separator: true },
     ],
     at,
     {
@@ -348,6 +484,12 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
             store.select({ ...store.selection, focus: null });
             actions.paste(doc);
           },
+          append: () => {
+            appendTarget = doc;
+            input.click();
+          },
+          save: () => void exporter.doc(doc),
+          'merge-next': () => nextDoc && actions.merge([doc, nextDoc.id]),
           'duplicate-doc': () => actions.duplicateDoc(doc),
           'close-doc': () => actions.closeDoc(doc),
         };
@@ -417,6 +559,14 @@ window.addEventListener('beforeunload', (event) => {
   event.returnValue = t.LEAVE_WARNING;
 });
 
+/** „Dateien anhängen …“ im Spaltenmenü: Ziel für die nächste Dateiauswahl */
+let appendTarget: DocId | null = null;
+input.addEventListener('cancel', () => (appendTarget = null));
+
 preventAccidentalFileOpen();
-wireDropzone($('#ws-drop'), input, openFiles);
+wireDropzone($('#ws-drop'), input, (list) => {
+  const doc = appendTarget ? store.state.docs.find((d) => d.id === appendTarget) : undefined;
+  appendTarget = null;
+  void addFiles(list, doc ? { doc: doc.id, index: doc.pages.length } : undefined);
+});
 render();

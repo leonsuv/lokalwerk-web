@@ -6,6 +6,7 @@
 
 import type { PageRef } from '../../core/workshop/model.ts';
 import { LazyRenderer } from '../../ui/lazy-render.ts';
+import { drawImagePage } from './image-pages.ts';
 import type { SourceFiles } from './sources.ts';
 import { NO_PREVIEW } from './texts.ts';
 
@@ -38,28 +39,48 @@ export class Thumbs {
   }
 
   /** Vorschau für die Seite auf dem Papier; `root` ist die scrollende Spalte */
-  show(paper: HTMLElement, page: PageRef, root: Element): void {
+  show(paper: HTMLElement, page: PageRef, root: Element, kind: 'pdf' | 'image'): void {
     if (page.kind === 'blank') {
       this.forget(paper);
       return;
     }
     const token = `${page.source}:${page.index}:${page.rotate}`;
+    if (kind === 'image') {
+      this.observe(paper, token, root, async () => {
+        const bitmap = await this.files.thumbImage(page.source);
+        const width = paper.getBoundingClientRect().width || 120;
+        return drawImagePage(bitmap, page.rotate, width * (globalThis.devicePixelRatio || 1));
+      });
+      return;
+    }
+    const { source, index, rotate } = page;
+    this.observe(paper, token, root, async () => {
+      const [{ pageSize, renderPageAt }, doc] = await Promise.all([
+        this.pdfjs,
+        this.files.pdf(source),
+      ]);
+      const size = await pageSize(doc, index + 1, rotate);
+      const width = paper.getBoundingClientRect().width || 120;
+      const scale = (width * (globalThis.devicePixelRatio || 1)) / size.width;
+      return renderPageAt(doc, index + 1, { scale, extraRotation: rotate });
+    });
+  }
+
+  /** Auftrag für das Papier, wenn er sich geändert hat; `draw` liefert das fertige Canvas */
+  private observe(
+    paper: HTMLElement,
+    token: string,
+    root: Element,
+    draw: () => Promise<HTMLCanvasElement>,
+  ): void {
     const wanted = this.wanted.get(paper);
     if (wanted?.token === token && wanted.root === root) return;
     this.wanted.set(paper, { token, root });
-    const { source, index, rotate } = page;
     this.lazy.observe(
       paper,
       async () => {
         try {
-          const [{ pageSize, renderPageAt }, doc] = await Promise.all([
-            this.pdfjs,
-            this.files.pdf(source),
-          ]);
-          const size = await pageSize(doc, index + 1, rotate);
-          const width = paper.getBoundingClientRect().width || 120;
-          const scale = (width * (globalThis.devicePixelRatio || 1)) / size.width;
-          const canvas = await renderPageAt(doc, index + 1, { scale, extraRotation: rotate });
+          const canvas = await draw();
           canvas.setAttribute('aria-hidden', 'true');
           if (this.wanted.get(paper)?.token === token) {
             clear(paper);

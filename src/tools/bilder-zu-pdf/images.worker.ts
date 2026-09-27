@@ -6,7 +6,7 @@
 
 import { imagesToPdf, type PageImage, type PageLayout } from '../../core/pdf/from-images.ts';
 import { serveRequests } from '../../ui/worker-protocol.ts';
-import { inspectImage, prepareImage, type ImageQuality } from './prepare.ts';
+import { inspectImage, prepareImage, type ImageQuality } from '../../ui/image-prepare.ts';
 
 export interface ImageSource {
   file: File;

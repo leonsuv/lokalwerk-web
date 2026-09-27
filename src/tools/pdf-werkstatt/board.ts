@@ -228,7 +228,9 @@ export class Board {
     // Nach dem Einsetzen: Die Vorschau misst gegen die Spalte, in der die Kachel jetzt steht.
     for (const [i, tile] of tiles.entries()) {
       const page = doc.pages[i];
-      if (page) this.thumbs.show(tile.paper, page, column.body);
+      if (!page) continue;
+      const kind = page.kind === 'source' ? state.sources.get(page.source)?.kind : undefined;
+      this.thumbs.show(tile.paper, page, column.body, kind ?? 'pdf');
     }
   }
 

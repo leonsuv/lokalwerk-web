@@ -13,7 +13,7 @@ import { countLocalBytes } from '../../ui/local-counter.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import type { ImagesProgress, ImagesRequest } from './images.worker.ts';
-import { inspectImage, prepareImage, type ImageQuality } from './prepare.ts';
+import { inspectImage, prepareImage, type ImageQuality } from '../../ui/image-prepare.ts';
 
 const MESSAGES: Record<string, string> = {
   decode:

@@ -19,6 +19,12 @@ export const ERRORS: Record<string, string> = {
   unreadable:
     'Die Datei konnte nicht gelesen werden. Prüfe, ob sie noch am selben Ort liegt, und füge sie erneut hinzu.',
   'worker-failed': 'Die Werkstatt konnte nicht starten. Lade die Seite neu.',
+  // Bilder (Texte wie in „Bilder zu PDF“)
+  decode:
+    'Dieses Bildformat kann dein Browser nicht öffnen. Speichere das Bild als JPEG und füge es erneut hinzu.',
+  encode: 'Das Bild konnte nicht neu gespeichert werden. Verkleinere es und füge es erneut hinzu.',
+  metadata:
+    'Im neu gespeicherten Bild wurden noch Metadaten gefunden. Das Bild wird deshalb nicht übernommen.',
 };
 
 export const FALLBACK_ERROR =
@@ -28,8 +34,8 @@ export const fileError = (name: string, message: string): string => `${name}: ${
 
 export const NOT_SUPPORTED = (names: string[]): string =>
   names.length === 1
-    ? `${names[0] ?? ''} wurde nicht übernommen: Die Werkstatt öffnet PDFs.`
-    : `${names.length} Dateien wurden nicht übernommen: Die Werkstatt öffnet PDFs.`;
+    ? `${names[0] ?? ''} wurde nicht übernommen: Die Werkstatt öffnet PDFs und Bilder.`
+    : `${names.length} Dateien wurden nicht übernommen: Die Werkstatt öffnet PDFs und Bilder.`;
 
 export const loading = (done: number, total: number): string =>
   total === 1 ? 'Datei wird geöffnet …' : `Dateien werden geöffnet: ${done} von ${total} …`;
@@ -137,3 +143,69 @@ export const dragTarget = (doc: string, before: number | null): string =>
 export const DRAG_NO_TARGET = 'Kein Ziel. Zum Ablegen über ein Dokument ziehen.';
 export const DRAG_CANCELLED = 'Ziehen abgebrochen';
 export const NOTHING_MOVED = 'Die Seiten stehen schon an dieser Stelle.';
+
+// Große Vorschau
+export const previewTitle = (doc: string, position: number, count: number): string =>
+  `${doc}: Seite ${position} von ${count}`;
+
+// Leere Seite (W14: Größe der Nachbarseite, DIN A4 hoch oder quer)
+const cm = (pt: number): string => ((pt / 72) * 2.54).toFixed(1).replace('.', ',');
+export const blankLikeNeighbour = (width: number, height: number): string =>
+  `Wie die Nachbarseite (${cm(width)} × ${cm(height)} cm)`;
+export const BLANK_A4_PORTRAIT = 'DIN A4 hoch';
+export const BLANK_A4_LANDSCAPE = 'DIN A4 quer';
+export const blankInserted = (doc: string, position: number): string =>
+  `Leere Seite in ${doc} an Position ${position} eingefügt`;
+
+// Teilen und Zusammenführen (Vorgabenamen: Freigabe bei Anhaltepunkt B)
+export const partName = (name: string): string => `${name} (Teil 2)`;
+export const splitDone = (doc: string, before: number): string =>
+  `${doc} vor Seite ${before} geteilt`;
+export const SPLIT_FIRST_PAGE =
+  'Vor der ersten Seite lässt sich nicht teilen. Wähle die Seite, mit der das neue Dokument beginnen soll.';
+export const merged = (count: number, doc: string): string =>
+  `${count} Dokumente zu ${doc} zusammengeführt`;
+export const MERGE_TOO_FEW = 'Wähle mindestens zwei Dokumente.';
+
+// Export (plan-phase3.md Abschnitt 9)
+export const exportDocLabel = (name: string): string => `${name} als PDF speichern`;
+export const SELECTION_NAME = 'Auswahl';
+export const ZIP_NAME = 'pdf-werkstatt.zip';
+export const exporting = (done: number, total: number): string =>
+  total > 0 ? `Wird gespeichert: ${done} von ${pages(total)} …` : 'Wird gespeichert …';
+export function exportDone(names: readonly string[], unchanged: number, zip: boolean): string {
+  const what = zip
+    ? `${names.length} Dokumente sind als ZIP gespeichert.`
+    : `${names[0] ?? ''} ist gespeichert.`;
+  // W12: unverändert übernommene Dokumente kurz nennen
+  const note =
+    unchanged === 0
+      ? ''
+      : zip
+        ? ` ${unchanged === 1 ? 'Eines davon war' : `${unchanged} davon waren`} unverändert und ${unchanged === 1 ? 'ist' : 'sind'} die Originaldatei.`
+        : ' Es war unverändert: Gespeichert ist die Originaldatei.';
+  return `Fertig: ${what}${note}`;
+}
+
+/** Hinweis vor dem Export: was beim Neuzusammensetzen verloren geht (wie im Zusammenfügen) */
+export function lossNote(
+  entries: readonly {
+    name: string;
+    facts: { form: boolean; xfa: boolean; outline: boolean; signed: boolean };
+  }[],
+): string {
+  const parts = entries.slice(0, 3).map(({ name, facts }) => {
+    const items = [
+      facts.form || facts.xfa ? 'Formularfelder' : '',
+      facts.outline ? 'Lesezeichen' : '',
+      facts.signed ? 'eine digitale Signatur' : '',
+    ].filter(Boolean);
+    const list =
+      items.length > 1
+        ? `${items.slice(0, -1).join(', ')} und ${items[items.length - 1] ?? ''}`
+        : (items[0] ?? '');
+    return `${name} enthält ${list}.`;
+  });
+  const more = entries.length > 3 ? ` Weitere ${entries.length - 3} Dateien ebenso.` : '';
+  return `${parts.join(' ')}${more} Beim Speichern als neu zusammengesetzte PDF sind sie nicht mehr enthalten, wie beim Zusammenfügen.`;
+}

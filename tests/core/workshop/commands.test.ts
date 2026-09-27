@@ -14,12 +14,19 @@ import {
   pastePages,
   renameDoc,
   rotatePages,
+  setPageNumbers,
   shiftPages,
   splitDoc,
   toClipboard,
   type Command,
 } from '../../../src/core/workshop/commands.ts';
-import { allPages, type PageKey, type WorkshopState } from '../../../src/core/workshop/model.ts';
+import type { PageNumberOptions } from '../../../src/core/pdf/page-numbers.ts';
+import {
+  allPages,
+  pageNumbersOf,
+  type PageKey,
+  type WorkshopState,
+} from '../../../src/core/workshop/model.ts';
 import { bench, describeDocs, imageSource, keysOf, pdfSource, seeded } from './helpers.ts';
 
 function allKeys(state: WorkshopState): PageKey[] {
@@ -48,6 +55,59 @@ describe('addSources', () => {
     const result = addSources([pdfSource('b', 2)], { doc, index: 1 }).apply(b.state, b.ids);
     expect(describeDocs(result.state)).toEqual({ a: ['a1', 'b1', 'b2', 'a2', 'a3'] });
     expect(result.select).toEqual(keysOf(result.state, 0, 1, 2));
+  });
+
+  it('übernimmt eine vorgegebene Seitenfolge mit Drehung und ausgelassenen Seiten', () => {
+    const b = bench();
+    const layouts = new Map([
+      [
+        'a',
+        [
+          { index: 2, rotate: 90 },
+          { index: 0, rotate: 0 },
+          { index: 3, rotate: 270 },
+        ] as const,
+      ],
+    ]);
+    b.run(addSources([pdfSource('a', 4, 'Vertrag.pdf'), pdfSource('b', 2)], undefined, layouts));
+    expect(describeDocs(b.state)).toEqual({ Vertrag: ['a3r90', 'a1', 'a4r270'], b: ['b1', 'b2'] });
+    expect(new Set(allKeys(b.state)).size).toBe(5);
+  });
+
+  it('übernimmt eine Seitenfolge auch beim Einfügen an einer Stelle, Seiten auch doppelt', () => {
+    const b = bench(pdfSource('a', 2));
+    const doc = b.state.docs[0]?.id ?? '';
+    const layouts = new Map([
+      [
+        'b',
+        [
+          { index: 1, rotate: 180 },
+          { index: 1, rotate: 0 },
+        ] as const,
+      ],
+    ]);
+    const result = addSources([pdfSource('b', 3)], { doc, index: 1 }, layouts).apply(
+      b.state,
+      b.ids,
+    );
+    expect(describeDocs(result.state)).toEqual({ a: ['a1', 'b2r180', 'b2', 'a2'] });
+  });
+
+  it('lässt Seiten weg, die es nicht gibt, und nimmt ohne gültige Seite alle', () => {
+    const b = bench();
+    const layouts = new Map([
+      [
+        'a',
+        [
+          { index: 5, rotate: 0 },
+          { index: 1, rotate: 0 },
+          { index: -1, rotate: 0 },
+        ] as const,
+      ],
+      ['b', [{ index: 9, rotate: 90 }] as const],
+    ]);
+    b.run(addSources([pdfSource('a', 2), pdfSource('b', 2)], undefined, layouts));
+    expect(describeDocs(b.state)).toEqual({ a: ['a2'], b: ['b1', 'b2'] });
   });
 
   it('ändert nichts ohne Dateien oder bei unbekanntem Ziel', () => {
@@ -294,5 +354,66 @@ describe('Eigenschaften über zufällige Befehlsfolgen', () => {
         expect(multiset(after)).toEqual(multiset(before));
       }
     }
+  });
+});
+
+describe('setPageNumbers (Dokument-Operation, Stufe 2.1)', () => {
+  const numbers: PageNumberOptions = {
+    format: 'seite-n-von-m',
+    anchor: 'bottom-center',
+    fromPage: 2,
+    startAt: 1,
+    fontSize: 10,
+    marginMm: 10,
+  };
+
+  it('setzt, ändert und entfernt Seitenzahlen; gleiche Einstellung ist kein neuer Schritt', () => {
+    const b = bench(pdfSource('a', 3), pdfSource('b', 1));
+    const [a, other] = b.state.docs;
+    const id = a?.id ?? '';
+    const set = setPageNumbers(id, numbers);
+    expect(set.label).toBe('Seitenzahlen');
+    const result = set.apply(b.state, b.ids);
+    const doc = result.state.docs[0];
+    expect(doc && pageNumbersOf(doc)).toEqual(numbers);
+    expect(result.doc).toBeUndefined();
+    // Seiten und andere Dokumente bleiben dieselben Objekte
+    expect(doc?.pages).toBe(a?.pages);
+    expect(result.state.docs[1]).toBe(other);
+    expect(setPageNumbers(id, { ...numbers }).apply(result.state, b.ids).state).toBe(result.state);
+    const changed = setPageNumbers(id, { ...numbers, format: 'n' }).apply(result.state, b.ids);
+    expect(changed.state.docs[0] && pageNumbersOf(changed.state.docs[0])?.format).toBe('n');
+    expect(changed.state.docs[0]?.ops).toHaveLength(1);
+    const removed = setPageNumbers(id, null);
+    expect(removed.label).toBe('Seitenzahlen entfernen');
+    const cleared = removed.apply(changed.state, b.ids).state.docs[0];
+    expect(cleared && pageNumbersOf(cleared)).toBeNull();
+    expect(cleared && 'ops' in cleared).toBe(false);
+    expect(removed.apply(b.state, b.ids).state).toBe(b.state);
+    expect(setPageNumbers('gibt-es-nicht', numbers).apply(b.state, b.ids).state).toBe(b.state);
+  });
+
+  it('bleibt beim Umsortieren, Duplizieren und Teilen erhalten; beim Zusammenführen gilt das erste', () => {
+    const b = bench(pdfSource('a', 4), pdfSource('b', 2));
+    const [a, second] = b.state.docs;
+    b.run(setPageNumbers(a?.id ?? '', numbers));
+    b.run(setPageNumbers(second?.id ?? '', { ...numbers, format: 'n' }));
+    b.run(shiftPages(keysOf(b.state, 0, 3), -1));
+    b.run(rotatePages(keysOf(b.state, 0, 0), 90));
+    expect(pageNumbersOf(b.state.docs[0] ?? { id: '', name: '', pages: [] })).toEqual(numbers);
+    b.run(duplicateDoc(a?.id ?? '', 'Kopie'));
+    b.run(splitDoc(a?.id ?? '', 2, 'Teil 2'));
+    expect(b.state.docs.map((d) => [d.name, pageNumbersOf(d)?.format ?? null])).toEqual([
+      ['a', 'seite-n-von-m'],
+      ['Teil 2', 'seite-n-von-m'],
+      ['Kopie', 'seite-n-von-m'],
+      ['b', 'n'],
+    ]);
+    b.run(mergeDocs([b.state.docs[3]?.id ?? '', b.state.docs[0]?.id ?? '']));
+    expect(b.state.docs.map((d) => [d.name, pageNumbersOf(d)?.format ?? null])).toEqual([
+      ['a', 'seite-n-von-m'],
+      ['Teil 2', 'seite-n-von-m'],
+      ['Kopie', 'seite-n-von-m'],
+    ]);
   });
 });

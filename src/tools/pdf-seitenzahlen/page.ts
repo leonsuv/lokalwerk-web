@@ -5,8 +5,6 @@
 
 import { isPdf } from '../../core/files/classify.ts';
 import { formatBytes } from '../../core/format/bytes.ts';
-import type { NumberFormat, PageNumberOptions } from '../../core/pdf/stamp.ts';
-import type { Anchor } from '../../core/pdf/stamp-geometry.ts';
 import { $ } from '../../ui/dom.ts';
 import { saveBlob } from '../../ui/download.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
@@ -15,6 +13,7 @@ import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { workshopLink } from '../../ui/workshop-link.ts';
 import type { NumbersRequest, PdfFacts } from './numbers.worker.ts';
+import { numberSettings } from './settings.ts';
 
 // Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
 const toWorkshop = workshopLink();
@@ -41,9 +40,6 @@ const worker = new Worker(new URL('./numbers.worker.ts', import.meta.url), { typ
 const client = createWorkerClient<NumbersRequest>(worker);
 
 const fileList = $<HTMLUListElement>('#num-file');
-const fromInput = $<HTMLInputElement>('#num-from');
-const startInput = $<HTMLInputElement>('#num-start');
-const errorText = $('#num-error');
 const saveButton = $<HTMLButtonElement>('#num-save');
 const saveLabel = $('#num-save-label');
 const clearButton = $<HTMLButtonElement>('#num-clear');
@@ -55,24 +51,8 @@ type Current =
   | { state: 'error'; file: File; error: string };
 let current: Current | null = null;
 let busy = false;
-
-function options(): PageNumberOptions | string {
-  const pages = current?.state === 'ok' ? current.facts.pages : 0;
-  const from = Number(fromInput.value);
-  const start = Number(startInput.value);
-  if (!Number.isInteger(from) || from < 1 || from > pages) {
-    return `„Ab Seite“ muss zwischen 1 und ${pages} liegen.`;
-  }
-  if (!Number.isInteger(start) || start < 0) return '„Erste Zahl“ muss eine ganze Zahl ab 0 sein.';
-  return {
-    format: $<HTMLSelectElement>('#num-format').value as NumberFormat,
-    anchor: $<HTMLSelectElement>('#num-anchor').value as Anchor,
-    fromPage: from,
-    startAt: start,
-    fontSize: Number($<HTMLSelectElement>('#num-size').value),
-    marginMm: Number($<HTMLSelectElement>('#num-margin').value),
-  };
-}
+const settings = numberSettings(document, () => render());
+const pageCount = (): number => (current?.state === 'ok' ? current.facts.pages : 0);
 
 function fileRow(entry: Current): HTMLLIElement {
   const li = document.createElement('li');
@@ -106,12 +86,8 @@ function render(): void {
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
   $('#num-empty').hidden = current !== null;
   $('#num-signed').hidden = !(current?.state === 'ok' && current.facts.signed);
-  const result = current?.state === 'ok' ? options() : null;
-  const error = typeof result === 'string' ? result : '';
-  errorText.textContent = error;
-  fromInput.setAttribute('aria-invalid', String(error.startsWith('„Ab')));
-  startInput.setAttribute('aria-invalid', String(error.startsWith('„Erste')));
-  if (current?.state === 'ok') fromInput.max = String(current.facts.pages);
+  const result = current?.state === 'ok' ? settings.validate(pageCount()) : null;
+  if (result === null) settings.clearError();
   saveButton.disabled = busy || result === null || typeof result === 'string';
   clearButton.disabled = busy || current === null;
 }
@@ -141,7 +117,7 @@ export function openFiles(files: File[]): void {
 }
 
 async function save(): Promise<void> {
-  const opts = options();
+  const opts = settings.read(pageCount());
   if (current?.state !== 'ok' || typeof opts === 'string') return;
   const { file } = current;
   busy = true;
@@ -173,18 +149,6 @@ clearButton.addEventListener('click', () => {
   render();
   $<HTMLInputElement>('#num-input').focus();
 });
-for (const id of [
-  '#num-from',
-  '#num-start',
-  '#num-format',
-  '#num-anchor',
-  '#num-size',
-  '#num-margin',
-]) {
-  $(id).addEventListener('input', render);
-  $(id).addEventListener('change', render);
-}
-
 preventAccidentalFileOpen();
 wireDropzone($('#num-drop'), $<HTMLInputElement>('#num-input'), openFiles);
 render();

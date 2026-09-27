@@ -5,6 +5,7 @@
  * geladen; statisch eingebunden ist nur dieser Knopf (chunk-guard).
  */
 
+import type { PagePick } from '../core/workshop/model.ts';
 import { showToast } from './toast.ts';
 
 const LABEL = 'In der PDF-Werkstatt weiterbearbeiten';
@@ -13,11 +14,12 @@ const FAILED =
 
 /**
  * Legt den Knopf unten in der rechten Spalte des Werkzeugs an. Die zurückgegebene Funktion
- * setzt die Dateien, die übergeben werden; ohne Dateien ist der Knopf ausgeblendet.
+ * setzt die Dateien, die übergeben werden; ohne Dateien ist der Knopf ausgeblendet. `layouts`
+ * gibt je Datei Reihenfolge, Drehung und gelöschte Seiten mit (PDF-Seiten bearbeiten).
  */
 export function workshopLink(
   container: Element | null = document.querySelector('.workspace .side'),
-): (files: readonly File[] | null) => void {
+): (files: readonly File[] | null, layouts?: ReadonlyMap<File, readonly PagePick[]>) => void {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'btn ghost wide mt-s workshop-link';
@@ -27,18 +29,20 @@ export function workshopLink(
   button.append(LABEL);
   container?.append(button);
   let files: readonly File[] = [];
+  let pageLayouts: ReadonlyMap<File, readonly PagePick[]> | undefined;
   button.addEventListener('click', () => {
     button.disabled = true;
     void import('./workshop-switch.ts')
-      .then(({ openInWorkshop }) => openInWorkshop([...files]))
+      .then(({ openInWorkshop }) => openInWorkshop([...files], pageLayouts))
       .then((ok) => {
         if (!ok) showToast(FAILED);
       })
       .catch(() => showToast(FAILED))
       .finally(() => (button.disabled = false));
   });
-  return (next) => {
+  return (next, layouts) => {
     files = next ?? [];
+    pageLayouts = layouts;
     button.hidden = files.length === 0;
   };
 }

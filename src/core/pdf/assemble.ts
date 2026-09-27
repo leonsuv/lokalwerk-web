@@ -9,12 +9,17 @@
  *
  * Drehung: /Rotate der Seite in Schritten von 90 Grad im Uhrzeigersinn (ISO 32000-2, 7.7.3.3);
  * die zusätzliche Drehung wird zur vorhandenen addiert.
+ *
+ * Dokument-Operationen (plan-phase3.md 7.2) werden zuletzt angewendet, auf die fertige
+ * Seitenfolge: Seitenzahlen zählen die Seiten des Ergebnisses in ihrer Endreihenfolge.
  */
 
 import { degrees, PDFDocument, type PDFImage, type PDFPage } from 'pdf-lib';
 import { imagePagePlacement, type PageImage } from './image-layout.ts';
 import { loadPdf, PdfError, toPdfError } from './merge.ts';
+import type { PageNumberOptions } from './page-numbers.ts';
 import { normalizeRotation } from './stamp-geometry.ts';
+import { drawPageNumbers } from './stamp.ts';
 
 export type AssemblePage =
   /** Seite einer Quelle, `index` ab 0; Bilder haben nur Seite 0 */
@@ -28,6 +33,8 @@ export interface AssembleDoc {
   pages: readonly AssemblePage[];
   /** Quelle, deren Originaldatei unverändert ausgegeben wird (statt `pages` neu zu setzen) */
   original?: string;
+  /** Seitenzahlen auf das fertige Dokument setzen (Dokument-Operation) */
+  numbers?: PageNumberOptions;
 }
 
 export type AssembleSource =
@@ -87,7 +94,8 @@ export async function assemblePdfs(
 
   const results: AssembledDoc[] = [];
   for (const [i, doc] of docs.entries()) {
-    if (doc.original !== undefined) {
+    // Mit Operationen wird immer neu gesetzt, auch wenn die Seiten unverändert sind.
+    if (doc.original !== undefined && !doc.numbers) {
       const source = sourceOf(sources, doc.original);
       if (source.kind !== 'pdf') throw new RangeError(`Quelle ${doc.original} ist keine PDF`);
       results.push({ name: doc.name, bytes: source.bytes, unchanged: true });
@@ -168,6 +176,7 @@ async function assembleOne(
         page.setRotation(degrees(normalizeRotation(page.getRotation().angle + p.rotate)));
       }
     }
+    if (doc.numbers) await drawPageNumbers(out, doc.numbers);
     return await out.save();
   } catch (error) {
     throw toPdfError(error);

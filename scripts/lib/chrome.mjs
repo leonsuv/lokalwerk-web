@@ -16,6 +16,7 @@ import { join } from 'node:path';
  *   setFiles: (selector: string, files: string[]) => Promise<void>,
  *   setValue: (selector: string, value: string) => Promise<void>,
  *   drag: (selector: string, from: [number, number], to: [number, number]) => Promise<void>,
+ *   click: (selector: string, keys?: { shift?: boolean }) => Promise<void>,
  * }} PageApi
  */
 
@@ -155,6 +156,16 @@ export function pageApi(/** @type {Send} */ send) {
         e.value = ${JSON.stringify(value)};
         e.dispatchEvent(new Event('input', { bubbles: true }));
         e.dispatchEvent(new Event('change', { bubbles: true })); })()`);
+    },
+    /** Klick mit der Maus in die Mitte des Elements, auf Wunsch mit Umschalt */
+    async click(selector, { shift = false } = {}) {
+      const [x, y] = /** @type {[number, number]} */ (
+        await evaluate(`(() => { const r = document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();
+          return [r.left + r.width / 2, r.top + r.height / 2]; })()`)
+      );
+      const at = { x, y, button: 'left', clickCount: 1, modifiers: shift ? 8 : 0 };
+      await send('Input.dispatchMouseEvent', { type: 'mousePressed', ...at, buttons: 1 });
+      await send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...at, buttons: 0 });
     },
     /** Ziehen mit der Maus, Koordinaten als Anteile des Elements */
     async drag(selector, [x1, y1], [x2, y2]) {

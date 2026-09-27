@@ -9,12 +9,15 @@ import { isImage, isPdf } from '../../core/files/classify.ts';
 import { imagePageBox } from '../../core/workshop/export-plan.ts';
 import { addSources, renameDoc } from '../../core/workshop/commands.ts';
 import {
+  allPages,
   indexPages,
   MEMORY_HINT_BYTES,
   NO_FACTS,
   totalSourceSize,
   type DocId,
+  type PagePick,
   type Source,
+  type SourceId,
 } from '../../core/workshop/model.ts';
 import {
   moveFocus,
@@ -41,6 +44,7 @@ import { SourceFiles } from './sources.ts';
 import { WorkshopStore } from './store.ts';
 import * as t from './texts.ts';
 import { Thumbs } from './thumbs.ts';
+import { ToolPanel } from './tool-panel.ts';
 import type { AddImageResult, AddPdfResult, WorkshopRequest } from './workshop.worker.ts';
 
 // Beides sofort laden: pdf-lib im Worker, pdf.js samt eigenem Worker (plan.md N4, offline).
@@ -75,6 +79,9 @@ function announce(message: string): void {
   cancelAnimationFrame(announceFrame);
   announceFrame = requestAnimationFrame(() => (live.textContent = message));
 }
+
+// Eingebettete Werkzeuge (Stufe 2) in der rechten Spalte
+const toolPanel = new ToolPanel(store, announce, (doc) => board.column(doc)?.menu.focus());
 
 function announceSelection(): void {
   const { pages, docs } = selectionSummary(store.state, store.selection);
@@ -176,6 +183,12 @@ const mobile = setupMobile({
     { id: 'blank-end', label: 'Leere Seite am Ende' },
     { id: 'new-doc', label: 'Neues Dokument', separator: true },
     { id: 'merge', label: 'Dokumente zusammenführen …', disabled: store.state.docs.length < 2 },
+    {
+      id: 'page-numbers',
+      label: t.PAGE_NUMBERS_ITEM,
+      disabled: !mobileDocWithPages(),
+      separator: true,
+    },
   ],
   runMore: (id) => {
     const choices: Record<string, () => void> = {
@@ -186,10 +199,21 @@ const mobile = setupMobile({
       'blank-end': () => actions.insertBlank('neighbour', mobile.activeDoc() ?? undefined),
       'new-doc': actions.newDoc,
       merge: () => mergeDialog.open(store.state),
+      'page-numbers': () => {
+        const doc = mobileDocWithPages();
+        if (doc) toolPanel.pageNumbers(doc, $('#ws-actions [data-m="more"]'));
+      },
     };
     choices[id]?.();
   },
 });
+
+/** Dokument der Handy-Ansicht, wenn es Seiten hat (Seitenzahlen brauchen Seiten) */
+function mobileDocWithPages(): DocId | null {
+  const id = mobile.activeDoc();
+  const doc = id ? store.state.docs.find((d) => d.id === id) : undefined;
+  return doc && doc.pages.length > 0 ? doc.id : null;
+}
 $('#ws-m-add').addEventListener('click', () => actions.addFiles());
 
 function render(): void {
@@ -239,6 +263,7 @@ function render(): void {
   if (loss.length > 0) $('#ws-loss-text').textContent = t.lossNote(loss);
   preview.refresh();
   mobile.render();
+  toolPanel.refresh();
 }
 
 store.subscribe(render);
@@ -250,15 +275,21 @@ let loadingCount = 0;
 
 /**
  * Dateien öffnen: ohne Ziel jede PDF als eigenes Dokument, mit Ziel an dieser Stelle im
- * Dokument. Alle Dateien einer Ablage bilden einen Schritt im Verlauf.
+ * Dokument. Alle Dateien einer Ablage bilden einen Schritt im Verlauf. `layouts` gibt je Datei
+ * die Seitenfolge vor (Übergabe aus „PDF-Seiten bearbeiten“).
  */
-async function addFiles(list: File[], target?: { doc: DocId; index: number }): Promise<void> {
+async function addFiles(
+  list: File[],
+  target?: { doc: DocId; index: number },
+  layouts?: ReadonlyMap<File, readonly PagePick[]>,
+): Promise<void> {
   const accepted = list.filter((f) => isPdf(f) || isImage(f));
   const other = list.filter((f) => !isPdf(f) && !isImage(f)).map((f) => f.name);
   if (other.length > 0) showToast(t.NOT_SUPPORTED(other));
   if (accepted.length === 0) return;
   loadingCount++;
   const added: Source[] = [];
+  const sourceLayouts = new Map<SourceId, readonly PagePick[]>();
   const failed: string[] = [];
   for (const [i, file] of accepted.entries()) {
     status.textContent = t.loading(i + 1, accepted.length);
@@ -280,6 +311,8 @@ async function addFiles(list: File[], target?: { doc: DocId; index: number }): P
         });
       }
       files.add(id, file);
+      const layout = layouts?.get(file);
+      if (layout) sourceLayouts.set(id, layout);
     } catch (error) {
       failed.push(t.fileError(file.name, messageFor(error)));
     }
@@ -288,8 +321,13 @@ async function addFiles(list: File[], target?: { doc: DocId; index: number }): P
   if (loadingCount === 0) status.textContent = '';
   for (const message of failed) showToast(message);
   if (added.length === 0) return;
-  const pageCount = added.reduce((n, s) => n + s.pages.length, 0);
-  const result = store.run(addSources(added, target));
+  const result = store.run(addSources(added, target, sourceLayouts));
+  // Die Quellen sind neu: Jede Seite, die auf sie verweist, ist gerade hinzugekommen.
+  const addedIds = new Set(added.map((s) => s.id));
+  let pageCount = 0;
+  for (const { page } of allPages(store.state)) {
+    if (page.kind === 'source' && addedIds.has(page.source)) pageCount++;
+  }
   if (result.doc) mobile.showDoc(result.doc);
   const targetDoc = target ? store.state.docs.find((d) => d.id === target.doc) : undefined;
   announce(targetDoc ? t.addedInto(pageCount, targetDoc.name) : t.added(added.length, pageCount));
@@ -306,8 +344,9 @@ async function addImage(id: string, file: File): Promise<AddImageResult> {
   return client.request<AddImageResult>({ type: 'add-image', id, image });
 }
 
-export function openFiles(list: File[]): void {
-  void addFiles(list);
+/** Übergabe aus Startseite und Einzelwerkzeugen (tool-switch.ts, workshop-switch.ts) */
+export function openFiles(list: File[], layouts?: ReadonlyMap<File, readonly PagePick[]>): void {
+  void addFiles(list, undefined, layouts);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -329,10 +368,29 @@ toolbar.addEventListener('click', (event) => {
     undo: actions.undo,
     redo: actions.redo,
     preview: () => openPreview(),
+    tools: () => openToolsMenu(button),
     shortcuts: actions.shortcuts,
   };
   commands[button.dataset.cmd ?? '']?.();
 });
+
+/** Werkzeuge der Stufe 2 für das Dokument mit dem Fokus (wie „… als PDF speichern“) */
+function openToolsMenu(button: HTMLElement): void {
+  const doc = currentDoc(store.state, store.selection);
+  const rect = button.getBoundingClientRect();
+  menu.show(
+    [{ id: 'page-numbers', label: t.PAGE_NUMBERS_ITEM, disabled: !doc }],
+    { x: rect.left, y: rect.bottom + 4 },
+    {
+      label: t.TOOLS_MENU,
+      returnFocus: button,
+      opener: button,
+      onChoose: (id) => {
+        if (id === 'page-numbers' && doc) toolPanel.pageNumbers(doc.id, button);
+      },
+    },
+  );
+}
 
 /** Größe der leeren Seite wählen (W14): wie die Nachbarseite, DIN A4 hoch oder quer */
 function openBlankMenu(anchor: HTMLElement, returnFocus: HTMLElement, opener?: HTMLElement): void {
@@ -371,6 +429,11 @@ $('#ws-export-zip').addEventListener('click', () => void exporter.all());
 
 boardEl.addEventListener('click', (event) => {
   const target = event.target as Element;
+  const numbersButton = target.closest<HTMLButtonElement>('.ws-col-numbers');
+  if (numbersButton?.dataset.doc) {
+    toolPanel.pageNumbers(numbersButton.dataset.doc, numbersButton);
+    return;
+  }
   const menuButton = target.closest<HTMLButtonElement>('.ws-col-menu');
   if (menuButton?.dataset.doc) {
     const rect = menuButton.getBoundingClientRect();
@@ -506,7 +569,12 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
         disabled: current.pages.length === 0,
         separator: true,
       },
-      { id: 'duplicate-doc', label: 'Dokument duplizieren' },
+      {
+        id: 'page-numbers',
+        label: t.PAGE_NUMBERS_ITEM,
+        disabled: current.pages.length === 0,
+      },
+      { id: 'duplicate-doc', label: 'Dokument duplizieren', separator: true },
       {
         id: 'merge-next',
         label: 'Mit dem nächsten zusammenführen',
@@ -532,6 +600,7 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
             input.click();
           },
           save: () => void exporter.doc(doc),
+          'page-numbers': () => toolPanel.pageNumbers(doc, opener),
           'merge-next': () => nextDoc && actions.merge([doc, nextDoc.id]),
           'duplicate-doc': () => actions.duplicateDoc(doc),
           'close-doc': () => actions.closeDoc(doc),

@@ -8,6 +8,7 @@
  */
 
 import { A4 } from '../pdf/image-layout.ts';
+import type { PageNumberOptions } from '../pdf/page-numbers.ts';
 import { normalizeRotation, visibleSize, type PageRotation } from '../pdf/stamp-geometry.ts';
 
 export type SourceId = string;
@@ -50,16 +51,49 @@ export type PageRef =
   | { key: PageKey; kind: 'source'; source: SourceId; index: number; rotate: Rotation }
   | { key: PageKey; kind: 'blank'; box: PageBox; rotate: Rotation };
 
+/**
+ * Seite einer Quelle mit zusätzlicher Drehung, ab 0 gezählt. Damit übergibt „PDF-Seiten
+ * bearbeiten“ Reihenfolge, Drehung und gelöschte Seiten an die Werkstatt.
+ */
+export interface PagePick {
+  index: number;
+  rotate: Rotation;
+}
+
+/** Seitenfolge je Quelle beim Hinzufügen; ohne Eintrag alle Seiten in Originalreihenfolge */
+export type SourceLayouts = ReadonlyMap<SourceId, readonly PagePick[]>;
+
+/**
+ * Seitenfolge aus dem Plan von „PDF-Seiten bearbeiten“ (organize.ts: Seite ab 1, Drehung in
+ * Grad) für die Übergabe an die Werkstatt.
+ */
+export function picksFromPlan(plan: readonly { source: number; rotate: number }[]): PagePick[] {
+  return plan.map((p) => ({ index: p.source - 1, rotate: normalizeRotation(p.rotate) }));
+}
+
 /** Seitenverweis ohne Schlüssel, z. B. in der internen Ablage */
 export type PageTemplate =
   | Omit<Extract<PageRef, { kind: 'source' }>, 'key'>
   | Omit<Extract<PageRef, { kind: 'blank' }>, 'key'>;
+
+/**
+ * Operation auf ein ganzes Dokument, erst beim Export angewendet (plan-phase3.md 7.2), weil sie
+ * von der Endreihenfolge abhängt. Stufe 2.1: Seitenzahlen.
+ */
+export type DocOp = { type: 'page-numbers'; options: PageNumberOptions };
 
 export interface Doc {
   id: DocId;
   /** Änderbar; Vorgabe: Dateiname ohne .pdf */
   name: string;
   pages: readonly PageRef[];
+  /** Dokument-Operationen; fehlt, wenn es keine gibt. Höchstens eine je Art. */
+  ops?: readonly DocOp[];
+}
+
+/** Seitenzahlen des Dokuments, falls gesetzt */
+export function pageNumbersOf(doc: Doc): PageNumberOptions | null {
+  return doc.ops?.find((op) => op.type === 'page-numbers')?.options ?? null;
 }
 
 export interface WorkshopState {
@@ -154,9 +188,11 @@ export function docSources(doc: Doc): Set<SourceId> {
 
 /**
  * Ist das Dokument unverändert eine einzige PDF-Quelle (alle Seiten in Originalreihenfolge,
- * ohne zusätzliche Drehung)? Dann gibt der Export die Originaldatei aus (W12).
+ * ohne zusätzliche Drehung, ohne Dokument-Operationen)? Dann gibt der Export die
+ * Originaldatei aus (W12).
  */
 export function unchangedSource(state: WorkshopState, doc: Doc): Source | null {
+  if (doc.ops && doc.ops.length > 0) return null;
   const first = doc.pages[0];
   if (first?.kind !== 'source') return null;
   const source = state.sources.get(first.source);

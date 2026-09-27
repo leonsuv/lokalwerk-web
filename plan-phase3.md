@@ -404,7 +404,7 @@ Befehle mit 5.000 Seiten (Unit-Test): alle unter 1 ms.
 - Lizenzprüfung (`build/shipped-packages.ts`): Pakete eines nachgeladenen anderen Werkzeugs zählen bei diesem, nicht beim aufrufenden (nötig für den Knopf zur Werkstatt).
 - Tests für Browser-Module (`tests/ui/`) mit eigener `tsconfig.dom-tests.json`, damit die DOM-Typen nicht in die Node-Skripte geraten.
 
-## 16. Stand bei Anhaltepunkt C, Schritt 2.1 (27.09.2026)
+## 16. Stand bei Anhaltepunkt C, Schritt 2.1 (27.09.2026, freigegeben von Leon am 27.09.2026)
 
 Vorher erledigt (Freigabe B): Texte der Stufe 1 mit den fünf Änderungen eingebaut und `docs/texte-pdf-werkstatt.md` als freigegeben markiert; „PDF-Seiten bearbeiten“ übergibt Reihenfolge, Drehung und gelöschte Seiten an die Werkstatt (`addSources` mit Seitenfolge je Quelle, Tests); README mit neuer Werkstatt-Aufnahme und erneuerten Bildern. B1 (NVDA: R, D, M) bleibt bei Leon auf der Liste der Gerätetests.
 
@@ -423,7 +423,7 @@ Vorher erledigt (Freigabe B): Texte der Stufe 1 mit den fünf Änderungen eingeb
 - Exportplan und Hinweise: Seitenzahlen im Plan, nicht in „Auswahl als neue PDF“; ein Dokument mit Seitenzahlen zählt für die Hinweise zu Formularen, Lesezeichen und Signaturen als neu zusammengesetzt.
 - Browser (Chromium, 1280 px hell und dunkel, 390 px): Menü, Bereich, Fehlermeldung, Übernehmen, Umsortieren, Export mit Seitenzahlen in der Endreihenfolge, Esc und Fokus zurück, Entfernen, Rückgängig; Werkzeugseite „Seitenzahlen einfügen“ unverändert (Prüfung, Speichern, „Andere PDF wählen“). Keine Konsolenmeldungen, keine fremden Anfragen.
 
-### Von mir entschieden, bitte bestätigen
+### Von mir entschieden, von Leon am 27.09.2026 bestätigt
 
 | Nr. | Frage | Umsetzung |
 |---|---|---|
@@ -438,7 +438,9 @@ Vorher erledigt (Freigabe B): Texte der Stufe 1 mit den fünf Änderungen eingeb
 
 - **pdf.js 6.3 braucht `Map.prototype.getOrInsertComputed`** (auch `getOrInsert`) im Hauptthread und im Worker. Chromium 141 (in dieser Arbeitsumgebung) hat das nicht: Alle Vorschaubilder zeigen dort „Keine Vorschau möglich“, in allen Werkzeugen mit pdf.js. Auf dem Mac des Betreibers (aktuelles Chrome) tritt es nicht auf. Welche Browser-Versionen die Methode haben, habe ich nicht nachgeschlagen; bitte gegen MDN oder caniuse prüfen. Möglichkeiten: (a) kleine eigene Ergänzung (etwa 10 Zeilen, nur wenn die Methode fehlt) vor pdf.js im Hauptthread und im pdf.js-Worker; (b) den „legacy“-Build von pdfjs-dist ausliefern (bringt diese Ergänzungen mit, größer; die Tests nutzen ihn schon in Node). Für die Aufnahmen und Browser-Prüfungen hier habe ich die Ergänzung nur in den lokalen Build-Dateien vorangestellt, nie im Quellcode.
 
-### Abweichungen vom Plan
+### Abweichungen vom Plan (Einbetten nur der Einstellungen: von Leon am 27.09.2026 bestätigt)
 
 - Nicht die ganze `main.html` wird eingebettet und `page.ts` bekommt kein `mount(host)`: Eingebettet werden nur die Einstellungen (`#num-settings`), die Werkzeugseite behält ihren Aufbau. Das Umstellen der ganzen Seiten gehört zu W8 (nach Stufe 2, eigene Freigabe).
 - `Doc.ops` ist optional statt Pflichtfeld (Dokumente ohne Operation bleiben wie in Stufe 1).
+
+Nach der Freigabe: Vorrang hat die pdf.js-Kompatibilität (Abschnitt „Gefunden, nicht behoben“), vor Schritt 2.2. Untersuchung: `docs/pdfjs-kompatibilitaet.md`. Die README-Screenshots werden danach alle in einer einheitlichen Umgebung neu erzeugt.

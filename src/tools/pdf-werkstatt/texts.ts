@@ -1,6 +1,7 @@
 /**
- * Texte der PDF-Werkstatt an einer Stelle (AGENTS.md Abschnitt 7). Entwurf zur Freigabe bei
- * Anhaltepunkt B (plan-phase3.md); die Befehlsnamen stehen in src/core/workshop/commands.ts.
+ * Texte der PDF-Werkstatt an einer Stelle (AGENTS.md Abschnitt 7). Freigegeben am 27.09.2026
+ * (docs/texte-pdf-werkstatt.md); die Texte der Stufe 2 unten sind Entwurf zur Freigabe bei
+ * Anhaltepunkt C. Die Befehlsnamen stehen in src/core/workshop/commands.ts.
  */
 
 import { formatBytes } from '../../core/format/bytes.ts';
@@ -215,3 +216,14 @@ export const mobileDocOption = (name: string, count: number): string => `${name}
 export const mobileStatus = (count: number): string =>
   count > 0 ? `${pages(count)} ausgewählt` : 'Tippe auf Seiten, um sie auszuwählen.';
 export const MOBILE_HINT = 'Tippen öffnet die Vorschau. Für mehrere Seiten auf „Auswählen“ tippen.';
+
+// Stufe 2: Werkzeuge in der Werkstatt (plan-phase3.md Abschnitt 7), Entwurf zur Freigabe
+export const TOOLS_MENU = 'Werkzeuge';
+export const PAGE_NUMBERS_ITEM = 'Seitenzahlen …';
+export const PAGE_NUMBERS_TITLE = 'Seitenzahlen';
+export const toolDoc = (name: string, count: number): string => `Für ${name}, ${pages(count)}`;
+export const pageNumbersSet = (name: string): string =>
+  `Seitenzahlen für ${name} übernommen. Sie werden beim Speichern gesetzt.`;
+export const pageNumbersRemoved = (name: string): string => `Seitenzahlen von ${name} entfernt`;
+export const PAGE_NUMBERS_BADGE = 'Mit Seitenzahlen';
+export const pageNumbersEdit = (name: string): string => `Seitenzahlen von ${name} bearbeiten`;

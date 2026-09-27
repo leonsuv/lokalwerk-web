@@ -54,4 +54,5 @@
   <symbol id="i-blank" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" /><path d="M12 9v6M9 12h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></symbol>
   <symbol id="i-merge" viewBox="0 0 24 24"><path d="M6 3v4a5 5 0 0 0 5 5h2a5 5 0 0 1 5 5v4M18 3v4a5 5 0 0 1-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8" /><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8" /></symbol>
+  <symbol id="i-tools" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /><circle cx="16" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="1.8" /><circle cx="10" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.8" /><circle cx="18" cy="18" r="2" fill="none" stroke="currentColor" stroke-width="1.8" /></symbol>
 </svg>

@@ -21,13 +21,14 @@ import {
 import { loadPdf, toPdfError } from './merge.ts';
 export { unsupportedChars } from './winansi.ts';
 import { pageIndices, type PageRange } from './page-ranges.ts';
+import { pageNumberText, type PageNumberOptions } from './page-numbers.ts';
+export { pageNumberText, type NumberFormat, type PageNumberOptions } from './page-numbers.ts';
 import {
   diagonalAngle,
   normalizeRotation,
   placeAtEdge,
   placeCentered,
   visibleSize,
-  type Anchor,
 } from './stamp-geometry.ts';
 
 /** Zeichenvorrat von Helvetica (WinAnsi), aus der in pdf-lib eingebauten Schrift gelesen */
@@ -71,35 +72,6 @@ export async function inspectForStamp(bytes: Uint8Array): Promise<PdfFacts> {
   return { pages: doc.getPageCount(), signed: isSigned(doc, bytes) };
 }
 
-export type NumberFormat = 'n' | 'seite-n' | 'seite-n-von-m' | 'n-von-m' | 'strich';
-
-export function pageNumberText(format: NumberFormat, n: number, last: number): string {
-  switch (format) {
-    case 'n':
-      return String(n);
-    case 'seite-n':
-      return `Seite ${n}`;
-    case 'seite-n-von-m':
-      return `Seite ${n} von ${last}`;
-    case 'n-von-m':
-      return `${n} / ${last}`;
-    case 'strich':
-      return `– ${n} –`;
-  }
-}
-
-export interface PageNumberOptions {
-  format: NumberFormat;
-  anchor: Anchor;
-  /** Erste Seite (ab 1), die eine Zahl bekommt; davor bleibt frei (z. B. Deckblatt) */
-  fromPage: number;
-  /** Zahl auf der ersten nummerierten Seite */
-  startAt: number;
-  fontSize: number;
-  /** Abstand vom Seitenrand in Millimetern */
-  marginMm: number;
-}
-
 const MM = 72 / 25.4;
 
 /**
@@ -121,6 +93,16 @@ export async function addPageNumbers(
   options: PageNumberOptions,
 ): Promise<Uint8Array> {
   const doc = await loadPdf(bytes);
+  await drawPageNumbers(doc, options);
+  return save(doc);
+}
+
+/**
+ * Setzt die Seitenzahlen auf die Seiten des Dokuments, so wie der Leser jede Seite sieht
+ * (eigene Drehung berücksichtigt). Liegt „Ab Seite“ hinter der letzten Seite, bekommt keine
+ * Seite eine Zahl. Genutzt vom Werkzeug und beim Export der Werkstatt (assemble.ts).
+ */
+export async function drawPageNumbers(doc: PDFDocument, options: PageNumberOptions): Promise<void> {
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const pages = doc.getPages();
   const first = Math.max(1, Math.floor(options.fromPage));
@@ -146,7 +128,6 @@ export async function addPageNumbers(
       rotate: degrees(place.rotate),
     });
   });
-  return save(doc);
 }
 
 export type StampPlacement = 'diagonal' | 'top' | 'bottom';

@@ -403,3 +403,42 @@ Befehle mit 5.000 Seiten (Unit-Test): alle unter 1 ms.
 - `LazyRenderer` gibt Bilder erst über der Grenze von 200 frei, die am längsten nicht gesehenen zuerst, statt schon beim Verlassen des Sichtbereichs (weniger Neuzeichnen, Grenze bleibt).
 - Lizenzprüfung (`build/shipped-packages.ts`): Pakete eines nachgeladenen anderen Werkzeugs zählen bei diesem, nicht beim aufrufenden (nötig für den Knopf zur Werkstatt).
 - Tests für Browser-Module (`tests/ui/`) mit eigener `tsconfig.dom-tests.json`, damit die DOM-Typen nicht in die Node-Skripte geraten.
+
+## 16. Stand bei Anhaltepunkt C, Schritt 2.1 (27.09.2026)
+
+Vorher erledigt (Freigabe B): Texte der Stufe 1 mit den fünf Änderungen eingebaut und `docs/texte-pdf-werkstatt.md` als freigegeben markiert; „PDF-Seiten bearbeiten“ übergibt Reihenfolge, Drehung und gelöschte Seiten an die Werkstatt (`addSources` mit Seitenfolge je Quelle, Tests); README mit neuer Werkstatt-Aufnahme und erneuerten Bildern. B1 (NVDA: R, D, M) bleibt bei Leon auf der Liste der Gerätetests.
+
+### Umgesetzt in 2.1
+
+- **Dokument-Operation:** `Doc.ops` (optional) mit `{ type: 'page-numbers', options }`; Befehl `setPageNumbers(doc, options | null)` („Seitenzahlen“ / „Seitenzahlen entfernen“, rückgängig machbar). Der Export gibt die Einstellung an `assemble.ts`, das die Zahlen nach dem Zusammensetzen auf die Endreihenfolge setzt (`drawPageNumbers` aus `stamp.ts`, dieselbe Platzierung wie im Werkzeug, auch auf gedrehten Seiten).
+- **Einstellungen ohne pdf-lib:** `src/core/pdf/page-numbers.ts` (Typen, Text, Prüfung von „Ab Seite“/„Erste Zahl“); `stamp.ts` gibt sie unverändert weiter.
+- **`ToolHost`** (`src/ui/tool-host.ts`): Bereich, Zieldokument (Name, aktuelle Seitenzahl), vorhandenes Ergebnis, `apply(result | null)`, `cancel()`. Das Werkzeug gibt ein Ergebnis zurück statt zu speichern. PDF-Bytes als Eingabe kommen erst mit dem Einbacken (2.3), weil Seitenzahlen sie nicht brauchen.
+- **Seitenzahlen einbettbar:** Die Felder stehen in `main.html` in `#num-settings`; `settings.ts` sucht sie beim Einbinden (nicht mehr beim Laden des Moduls) und wird von der Werkzeugseite und von `embed.ts` genutzt. `embed.ts` übernimmt das Markup aus `main.html`, lädt weder Worker noch pdf-lib. Sichtbar ist die Werkzeugseite unverändert.
+- **Werkstatt:** Knopf „Werkzeuge“ mit Menü, Eintrag im Spaltenmenü und im Handy-Menü „Mehr“; das Werkzeug erscheint in der rechten Spalte an Stelle der Übersicht; Knopf im Spaltenkopf zeigt „mit Seitenzahlen“ und öffnet das Werkzeug. Texte zur Freigabe: `docs/texte-pdf-werkstatt.md` Abschnitt 10.
+
+### Tests
+
+- Export: Seitenzahlen nach Umsortieren (Deckblatt ohne Zahl, „Seite 1 von 2“ …), mit pdf.js zurückgelesen; auf gedrehten Seiten (eigene /Rotate und zusätzliche Drehung) unten mittig 10 mm über dem sichtbaren Rand; ein unverändertes Dokument mit Seitenzahlen wird neu gesetzt statt als Original ausgegeben.
+- Befehl: setzen, ändern, entfernen, gleiche Einstellung ohne neuen Schritt; bleibt beim Umsortieren, Drehen, Duplizieren und Teilen; beim Zusammenführen gilt das erste Dokument.
+- Exportplan und Hinweise: Seitenzahlen im Plan, nicht in „Auswahl als neue PDF“; ein Dokument mit Seitenzahlen zählt für die Hinweise zu Formularen, Lesezeichen und Signaturen als neu zusammengesetzt.
+- Browser (Chromium, 1280 px hell und dunkel, 390 px): Menü, Bereich, Fehlermeldung, Übernehmen, Umsortieren, Export mit Seitenzahlen in der Endreihenfolge, Esc und Fokus zurück, Entfernen, Rückgängig; Werkzeugseite „Seitenzahlen einfügen“ unverändert (Prüfung, Speichern, „Andere PDF wählen“). Keine Konsolenmeldungen, keine fremden Anfragen.
+
+### Von mir entschieden, bitte bestätigen
+
+| Nr. | Frage | Umsetzung |
+|---|---|---|
+| C1 | Teilen und Duplizieren eines Dokuments mit Seitenzahlen | Beide Teile bzw. die Kopie behalten die Einstellung; jeder Teil wird für sich nummeriert. |
+| C2 | Zusammenführen | Die Einstellung des ersten Dokuments gilt, die der anderen entfällt. |
+| C3 | „Auswahl als neue PDF“ | ohne Seitenzahlen (neues Dokument) |
+| C4 | Formulare, Lesezeichen, Signaturen | Ein Dokument mit Seitenzahlen wird immer neu zusammengesetzt, verliert diese also (Hinweis vor dem Export erscheint). Das Einzelwerkzeug behält sie, weil es die Originaldatei bemalt. |
+| C5 | „Ab Seite“ hinter der letzten Seite (nach Löschen von Seiten) | Beim Speichern bekommt keine Seite eine Zahl; beim nächsten Öffnen zeigt das Werkzeug die Fehlermeldung. Alternative: Hinweis vor dem Export. |
+| C6 | Anzeige | Vorschaubilder und große Vorschau zeigen die Zahlen nicht; sichtbar ist das nur am Knopf im Spaltenkopf. |
+
+### Gefunden, nicht behoben (Entscheidung nötig)
+
+- **pdf.js 6.3 braucht `Map.prototype.getOrInsertComputed`** (auch `getOrInsert`) im Hauptthread und im Worker. Chromium 141 (in dieser Arbeitsumgebung) hat das nicht: Alle Vorschaubilder zeigen dort „Keine Vorschau möglich“, in allen Werkzeugen mit pdf.js. Auf dem Mac des Betreibers (aktuelles Chrome) tritt es nicht auf. Welche Browser-Versionen die Methode haben, habe ich nicht nachgeschlagen; bitte gegen MDN oder caniuse prüfen. Möglichkeiten: (a) kleine eigene Ergänzung (etwa 10 Zeilen, nur wenn die Methode fehlt) vor pdf.js im Hauptthread und im pdf.js-Worker; (b) den „legacy“-Build von pdfjs-dist ausliefern (bringt diese Ergänzungen mit, größer; die Tests nutzen ihn schon in Node). Für die Aufnahmen und Browser-Prüfungen hier habe ich die Ergänzung nur in den lokalen Build-Dateien vorangestellt, nie im Quellcode.
+
+### Abweichungen vom Plan
+
+- Nicht die ganze `main.html` wird eingebettet und `page.ts` bekommt kein `mount(host)`: Eingebettet werden nur die Einstellungen (`#num-settings`), die Werkzeugseite behält ihren Aufbau. Das Umstellen der ganzen Seiten gehört zu W8 (nach Stufe 2, eigene Freigabe).
+- `Doc.ops` ist optional statt Pflichtfeld (Dokumente ohne Operation bleiben wie in Stufe 1).

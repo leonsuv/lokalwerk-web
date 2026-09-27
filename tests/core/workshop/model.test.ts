@@ -7,6 +7,7 @@ import {
   insertBlank,
   movePages,
   rotatePages,
+  setPageNumbers,
   shiftPages,
 } from '../../../src/core/workshop/commands.ts';
 import {
@@ -161,6 +162,49 @@ describe('Übergabe aus „PDF-Seiten bearbeiten“', () => {
     ).apply(EMPTY_STATE, counterIds()).state;
     const doc = state.docs[0];
     expect(doc && unchangedSource(state, doc)?.id).toBe('a');
+  });
+});
+
+describe('Seitenzahlen im Export (Stufe 2.1)', () => {
+  const numbers = {
+    format: 'n',
+    anchor: 'bottom-right',
+    fromPage: 1,
+    startAt: 1,
+    fontSize: 10,
+    marginMm: 10,
+  } as const;
+
+  it('ein Dokument mit Seitenzahlen ist nie unverändert und nimmt sie in den Plan mit', () => {
+    const b = bench(pdfSource('a', 2));
+    const id = b.state.docs[0]?.id ?? '';
+    b.run(setPageNumbers(id, numbers));
+    const doc = b.state.docs[0];
+    expect(doc && unchangedSource(b.state, doc)).toBeNull();
+    expect(exportPlan(b.state, [id])).toEqual([
+      {
+        name: 'a.pdf',
+        pages: [
+          { kind: 'source', source: 'a', index: 0, rotate: 0 },
+          { kind: 'source', source: 'a', index: 1, rotate: 0 },
+        ],
+        numbers,
+      },
+    ]);
+  });
+
+  it('„Auswahl als neue PDF“ ist ein neues Dokument ohne Seitenzahlen', () => {
+    const b = bench(pdfSource('a', 2));
+    b.run(setPageNumbers(b.state.docs[0]?.id ?? '', numbers));
+    expect(selectionPlan(b.state, keysOf(b.state, 0, 1), 'Auswahl')).not.toHaveProperty('numbers');
+  });
+
+  it('Hinweise vor dem Export zählen ein Dokument mit Seitenzahlen als neu zusammengesetzt', () => {
+    const b = bench({ ...pdfSource('a', 1), facts: { ...pdfSource('a', 1).facts, form: true } });
+    const id = b.state.docs[0]?.id ?? '';
+    expect(lossFacts(b.state, [id]).form).toBe(false);
+    b.run(setPageNumbers(id, numbers));
+    expect(lossFacts(b.state, [id]).form).toBe(true);
   });
 });
 

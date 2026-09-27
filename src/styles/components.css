@@ -1731,8 +1731,22 @@ select[multiple] {
   flex: none;
   margin-top: 0.1rem;
 }
-.ws-col-menu {
+.ws-col-menu,
+.ws-col-numbers {
   flex: none;
+}
+/* Dokument mit Seitenzahlen: Knopf im Spaltenkopf in der Akzentfarbe der Kategorie */
+.ws-col-numbers {
+  color: var(--c);
+}
+/* Eingebettetes Werkzeug (Stufe 2) in der rechten Spalte */
+.ws-tool {
+  scroll-margin-top: 5rem;
+}
+.ws-tool-doc {
+  margin: -0.3rem 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.88rem;
 }
 /* Ziehen: Einfügemarke, mitgezogenes Bild, keine Textauswahl und kein Kontextmenü (iOS) */
 .ws-page {

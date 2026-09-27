@@ -25,7 +25,7 @@ The promise is backed by mechanisms that fail the build or block the browser, no
 
 ## Tools
 
-**PDF workshop:** the main tool. Several PDFs and images open side by side, one column per document. Pages can be selected across documents (click, Shift and Ctrl/Cmd like a file manager), moved and copied between documents by dragging or with the keyboard, rotated, duplicated and deleted; blank pages can be inserted, documents split and merged. Every step can be undone. Documents are only lists of page references, so the loaded files are never changed; real PDFs are assembled in a Web Worker on export (one document, the selection, or all documents as ZIP). An unchanged document is saved as the original file. Every PDF tool below offers to continue in the workshop without reloading, with the file kept in memory.
+**PDF workshop:** the main tool. Several PDFs and images open side by side, one column per document. Pages can be selected across documents (click, Shift and Ctrl/Cmd like a file manager), moved and copied between documents by dragging or with the keyboard, rotated, duplicated and deleted; blank pages can be inserted, documents split and merged. Every step can be undone. Documents are only lists of page references, so the loaded files are never changed; real PDFs are assembled in a Web Worker on export (one document, the selection, or all documents as ZIP). An unchanged document is saved as the original file. Page numbers can be set per document; they are drawn on export, so they follow the final page order. Every PDF tool below offers to continue in the workshop without reloading, with the file kept in memory.
 
 **PDF (12 more):** merge PDFs · split PDF · edit PDF pages (rotate, reorder, delete) · PDF to images · redact PDF (pages are rasterised, nothing of the original remains) · insert signature (as an image; not an electronic signature) · fill PDF forms · page numbers · stamp and watermark · remove PDF metadata · images to PDF · scan a document (camera via the file picker, four-corner perspective correction)
 
@@ -113,7 +113,7 @@ vendor/        SheetJS archive with checksum
 
 ## Quality
 
-- **Tests:** 1,184 tests in 85 files (Vitest). Every module in `src/core/` has unit tests.
+- **Tests:** 1,195 tests in 86 files (Vitest). Every module in `src/core/` has unit tests.
 - **Against official specifications:**
   - SEPA pain.001 files are validated against the German banking industry's XSD (`pain.001.001.09_GBIC_5.xsd`) with xmllint, and the text rules of the DFÜ Agreement, Annex 3 are tested separately. The schema and example files may not be redistributed, so they are kept locally in `.local-specs/`.
   - SHA-1 and SHA-256 against the NIST CAVP test vectors ([`tests/fixtures/nist/`](tests/fixtures/nist/)).
@@ -140,7 +140,7 @@ npm run preview   # serve dist/ with the production security headers
 npm run screenshots  # rebuild and regenerate docs/screenshots/ (needs Google Chrome)
 ```
 
-Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 1,171 tests run and the tests that depend on those files are skipped with a clear notice. The GitHub Actions workflow runs `npm run check` the same way.
+Without the licensed specification files in `.local-specs/` (see [`docs/lokale-spezifikationen.md`](docs/lokale-spezifikationen.md)), 1,182 tests run and the tests that depend on those files are skipped with a clear notice. The GitHub Actions workflow runs `npm run check` the same way.
 
 ## Status
 

@@ -140,3 +140,33 @@ Beschriftung einer Seite: „Seite 3 von 12, aus Anlagen.pdf Seite 1, gedreht um
 > Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der [PDF-Werkstatt](/pdf-werkstatt/).
 
 „PDF-Seiten bearbeiten“: Der Knopf übergibt die Datei mit den Änderungen aus dem Werkzeug (Reihenfolge, Drehung, gelöschte Seiten); die Werkstatt zeigt das Dokument im bearbeiteten Zustand. Ein Zusatzsatz ist damit nicht nötig.
+
+## 10. Stufe 2, Schritt 2.1: Seitenzahlen in der Werkstatt (Entwurf zur Freigabe, Anhaltepunkt C)
+
+Stand: 27.09.2026. **Noch nicht freigegeben.** Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2“), `src/tools/pdf-seitenzahlen/embed.ts`, Befehlsnamen `src/core/workshop/commands.ts`.
+
+**Wo es erscheint**
+
+| Ort | Text |
+|---|---|
+| Werkzeugleiste | Knopf „Werkzeuge“ (Symbol aus dem Entwurf), öffnet ein Menü mit „Seitenzahlen …“ für das Dokument mit dem Fokus |
+| Menü im Spaltenkopf | neuer Eintrag „Seitenzahlen …“ nach „Als PDF speichern“ |
+| Handy, „Mehr“ | neuer Eintrag „Seitenzahlen …“ am Ende |
+| Spaltenkopf | Knopf mit Seitenzahl-Symbol, nur wenn das Dokument Seitenzahlen hat; Hinweis beim Darüberfahren „Mit Seitenzahlen“, Name für Screenreader „Seitenzahlen von Vertrag bearbeiten“ |
+
+**Bereich in der rechten Spalte** (an Stelle der Übersicht, solange er offen ist)
+
+- Überschrift „Seitenzahlen“, darunter „Für Vertrag, 5 Seiten“
+- Felder, Hinweis („Ab Seite 2 lässt zum Beispiel ein Deckblatt frei.“) und Fehlermeldungen („„Ab Seite“ muss zwischen 1 und 5 liegen.“, „„Erste Zahl“ muss eine ganze Zahl ab 0 sein.“) unverändert aus „Seitenzahlen einfügen“ (freigegeben)
+- Neu: Hinweis „Die Seitenzahlen werden beim Speichern gesetzt und zählen die Seiten in der Reihenfolge, die das Dokument dann hat.“
+- Knöpfe „Seitenzahlen übernehmen“ · „Seitenzahlen entfernen“ (nur, wenn schon gesetzt) · „Abbrechen“ (auch Esc)
+
+**Ansagen und Befehlsnamen**
+
+| Anlass | Text |
+|---|---|
+| Übernommen | „Seitenzahlen für Vertrag übernommen. Sie werden beim Speichern gesetzt.“ |
+| Entfernt | „Seitenzahlen von Vertrag entfernt“ |
+| Verlauf | „Rückgängig: Seitenzahlen“ / „Rückgängig: Seitenzahlen entfernen“ (ebenso „Wiederholen: …“) |
+
+**Vorschlag, noch nicht eingebaut** (Erklärtext der Werkstatt ist freigegeben): ein Satz am Ende von „So funktioniert es“: „Über „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern gesetzt und passen zur dann gültigen Reihenfolge.“

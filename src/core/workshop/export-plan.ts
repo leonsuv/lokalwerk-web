@@ -9,6 +9,7 @@ import { imagePagePlacement } from '../pdf/image-layout.ts';
 import { uniqueNames } from '../zip/write.ts';
 import {
   inPageOrder,
+  pageNumbersOf,
   unchangedSource,
   type Doc,
   type DocId,
@@ -44,6 +45,8 @@ function toAssemblePage(page: PageRef): AssemblePage {
 function planDoc(state: WorkshopState, doc: Doc, name: string): AssembleDoc {
   const original = unchangedSource(state, doc);
   const plan: AssembleDoc = { name, pages: doc.pages.map(toAssemblePage) };
+  const numbers = pageNumbersOf(doc);
+  if (numbers) plan.numbers = numbers;
   return original ? { ...plan, original: original.id } : plan;
 }
 

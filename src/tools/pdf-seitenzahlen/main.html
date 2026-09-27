@@ -32,57 +32,60 @@
     </div>
     <div class="card side">
       <h2>Seitenzahlen</h2>
-      <div class="field">
-        <label class="lbl" for="num-format">Form</label>
-        <select id="num-format">
-          <option value="n">3</option>
-          <option value="seite-n">Seite 3</option>
-          <option value="seite-n-von-m" selected>Seite 3 von 12</option>
-          <option value="n-von-m">3 / 12</option>
-          <option value="strich">– 3 –</option>
-        </select>
-      </div>
-      <div class="field">
-        <label class="lbl" for="num-anchor">Position</label>
-        <select id="num-anchor">
-          <option value="bottom-center" selected>Unten Mitte</option>
-          <option value="bottom-right">Unten rechts</option>
-          <option value="bottom-left">Unten links</option>
-          <option value="top-center">Oben Mitte</option>
-          <option value="top-right">Oben rechts</option>
-          <option value="top-left">Oben links</option>
-        </select>
-      </div>
-      <div class="form-grid mt-m">
+      <!-- Einstellungen: auch in der PDF-Werkstatt eingebettet (settings.ts, embed.ts) -->
+      <div id="num-settings">
         <div class="field">
-          <label class="lbl" for="num-from">Ab Seite</label>
-          <input type="number" id="num-from" min="1" step="1" value="1" inputmode="numeric" />
-        </div>
-        <div class="field">
-          <label class="lbl" for="num-start">Erste Zahl</label>
-          <input type="number" id="num-start" min="0" step="1" value="1" inputmode="numeric" />
-        </div>
-      </div>
-      <p class="hint" id="num-range-hint">Ab Seite 2 lässt zum Beispiel ein Deckblatt frei.</p>
-      <p class="hint err" id="num-error"></p>
-      <div class="form-grid mt-m">
-        <div class="field">
-          <label class="lbl" for="num-size">Schriftgröße</label>
-          <select id="num-size">
-            <option value="8">8 Punkt</option>
-            <option value="10" selected>10 Punkt</option>
-            <option value="12">12 Punkt</option>
-            <option value="14">14 Punkt</option>
+          <label class="lbl" for="num-format">Form</label>
+          <select id="num-format">
+            <option value="n">3</option>
+            <option value="seite-n">Seite 3</option>
+            <option value="seite-n-von-m" selected>Seite 3 von 12</option>
+            <option value="n-von-m">3 / 12</option>
+            <option value="strich">– 3 –</option>
           </select>
         </div>
         <div class="field">
-          <label class="lbl" for="num-margin">Abstand zum Rand</label>
-          <select id="num-margin">
-            <option value="5">5 mm</option>
-            <option value="10" selected>10 mm</option>
-            <option value="15">15 mm</option>
-            <option value="20">20 mm</option>
+          <label class="lbl" for="num-anchor">Position</label>
+          <select id="num-anchor">
+            <option value="bottom-center" selected>Unten Mitte</option>
+            <option value="bottom-right">Unten rechts</option>
+            <option value="bottom-left">Unten links</option>
+            <option value="top-center">Oben Mitte</option>
+            <option value="top-right">Oben rechts</option>
+            <option value="top-left">Oben links</option>
           </select>
+        </div>
+        <div class="form-grid mt-m">
+          <div class="field">
+            <label class="lbl" for="num-from">Ab Seite</label>
+            <input type="number" id="num-from" min="1" step="1" value="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label class="lbl" for="num-start">Erste Zahl</label>
+            <input type="number" id="num-start" min="0" step="1" value="1" inputmode="numeric" />
+          </div>
+        </div>
+        <p class="hint" id="num-range-hint">Ab Seite 2 lässt zum Beispiel ein Deckblatt frei.</p>
+        <p class="hint err" id="num-error"></p>
+        <div class="form-grid mt-m">
+          <div class="field">
+            <label class="lbl" for="num-size">Schriftgröße</label>
+            <select id="num-size">
+              <option value="8">8 Punkt</option>
+              <option value="10" selected>10 Punkt</option>
+              <option value="12">12 Punkt</option>
+              <option value="14">14 Punkt</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="lbl" for="num-margin">Abstand zum Rand</label>
+            <select id="num-margin">
+              <option value="5">5 mm</option>
+              <option value="10" selected>10 mm</option>
+              <option value="15">15 mm</option>
+              <option value="20">20 mm</option>
+            </select>
+          </div>
         </div>
       </div>
       <button class="btn wide mt-m" id="num-save" disabled>

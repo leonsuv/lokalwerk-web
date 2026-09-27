@@ -114,6 +114,16 @@
     <button
       type="button"
       class="ws-tb"
+      data-cmd="tools"
+      data-needs="docs"
+      aria-haspopup="menu"
+      aria-expanded="false"
+    >
+      <svg width="18" height="18" aria-hidden="true"><use href="#i-tools" /></svg>Werkzeuge
+    </button>
+    <button
+      type="button"
+      class="ws-tb"
       data-cmd="shortcuts"
       aria-keyshortcuts="?"
       aria-label="Tastenkürzel"
@@ -153,29 +163,37 @@
       <div class="ws-board" id="ws-board" aria-label="Dokumente"></div>
     </div>
     <aside class="card side ws-side" aria-label="Übersicht">
-      <h2>Übersicht</h2>
-      <div class="stat-row"><span>Dokumente</span><b id="ws-docs">–</b></div>
-      <div class="stat-row"><span>Seiten gesamt</span><b id="ws-pages">–</b></div>
-      <div class="stat-row"><span>Ausgewählt</span><b id="ws-selected">–</b></div>
-      <button type="button" class="btn wide mt-m" id="ws-export-doc" disabled>
-        <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
-        <span id="ws-export-doc-label">Dokument als PDF speichern</span>
-      </button>
-      <button type="button" class="btn ghost wide mt-s" id="ws-export-sel" disabled>
-        Auswahl als neue PDF
-      </button>
-      <button type="button" class="btn ghost wide mt-s" id="ws-export-zip" disabled>
-        Alle als ZIP speichern
-      </button>
-      <p class="ws-note" id="ws-loss" hidden>
-        <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
-        ><span id="ws-loss-text"></span>
-      </p>
-      <p class="ws-status" id="ws-status" role="status"></p>
-      <p class="ws-note" id="ws-memory" hidden>
-        <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
-        ><span id="ws-memory-text"></span>
-      </p>
+      <!-- Eingebettetes Werkzeug (Stufe 2, tool-panel.ts) an Stelle der Übersicht -->
+      <section class="ws-tool" id="ws-tool" aria-labelledby="ws-tool-title" hidden>
+        <h2 id="ws-tool-title"></h2>
+        <p class="ws-tool-doc" id="ws-tool-doc"></p>
+        <div id="ws-tool-body"></div>
+      </section>
+      <div id="ws-overview">
+        <h2>Übersicht</h2>
+        <div class="stat-row"><span>Dokumente</span><b id="ws-docs">–</b></div>
+        <div class="stat-row"><span>Seiten gesamt</span><b id="ws-pages">–</b></div>
+        <div class="stat-row"><span>Ausgewählt</span><b id="ws-selected">–</b></div>
+        <button type="button" class="btn wide mt-m" id="ws-export-doc" disabled>
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
+          <span id="ws-export-doc-label">Dokument als PDF speichern</span>
+        </button>
+        <button type="button" class="btn ghost wide mt-s" id="ws-export-sel" disabled>
+          Auswahl als neue PDF
+        </button>
+        <button type="button" class="btn ghost wide mt-s" id="ws-export-zip" disabled>
+          Alle als ZIP speichern
+        </button>
+        <p class="ws-note" id="ws-loss" hidden>
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
+          ><span id="ws-loss-text"></span>
+        </p>
+        <p class="ws-status" id="ws-status" role="status"></p>
+        <p class="ws-note" id="ws-memory" hidden>
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg
+          ><span id="ws-memory-text"></span>
+        </p>
+      </div>
     </aside>
   </div>
 

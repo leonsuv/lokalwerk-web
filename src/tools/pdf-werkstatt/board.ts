@@ -5,6 +5,7 @@
  */
 
 import {
+  pageNumbersOf,
   visiblePageSize,
   type Doc,
   type DocId,
@@ -20,7 +21,9 @@ import {
   docMenuLabel,
   docPagesLabel,
   EMPTY_DOC,
+  PAGE_NUMBERS_BADGE,
   pageLabel,
+  pageNumbersEdit,
   pages,
 } from './texts.ts';
 
@@ -61,6 +64,8 @@ export interface Column {
   el: HTMLElement;
   name: HTMLInputElement;
   count: HTMLElement;
+  /** Zeigt, dass das Dokument Seitenzahlen bekommt; öffnet das Werkzeug */
+  numbers: HTMLButtonElement;
   menu: HTMLButtonElement;
   list: HTMLElement;
   empty: HTMLElement;
@@ -166,6 +171,15 @@ export class Board {
     name.setAttribute('aria-label', DOC_NAME_LABEL);
     const count = document.createElement('span');
     count.className = 'ws-count';
+    const numbers = document.createElement('button');
+    numbers.type = 'button';
+    numbers.className = 'btn icon ws-col-numbers';
+    numbers.dataset.doc = doc.id;
+    numbers.hidden = true;
+    numbers.title = PAGE_NUMBERS_BADGE;
+    // Festes Markup ohne Nutzerdaten; der HTML-Parser setzt den SVG-Namensraum selbst.
+    numbers.innerHTML =
+      '<svg width="18" height="18" aria-hidden="true"><use href="#i-page-number" /></svg>';
     const menu = document.createElement('button');
     menu.type = 'button';
     menu.className = 'btn icon ws-col-menu';
@@ -174,7 +188,7 @@ export class Board {
     menu.setAttribute('aria-expanded', 'false');
     // Festes Markup ohne Nutzerdaten; der HTML-Parser setzt den SVG-Namensraum selbst.
     menu.innerHTML = '<svg width="18" height="18" aria-hidden="true"><use href="#i-dots" /></svg>';
-    head.append(name, count, menu);
+    head.append(name, count, numbers, menu);
     const list = document.createElement('div');
     list.className = 'ws-pages';
     list.dataset.doc = doc.id;
@@ -189,7 +203,7 @@ export class Board {
     body.className = 'ws-col-body';
     body.append(list, empty);
     el.append(head, body);
-    const column = { el, name, count, menu, list, empty, body };
+    const column = { el, name, count, numbers, menu, list, empty, body };
     this.columns.set(doc.id, column);
     return column;
   }
@@ -208,6 +222,8 @@ export class Board {
     set(column.list, 'aria-label', docPagesLabel(doc.name));
     text(column.count, pages(doc.pages.length));
     set(column.menu, 'aria-label', docMenuLabel(doc.name));
+    column.numbers.hidden = pageNumbersOf(doc) === null;
+    set(column.numbers, 'aria-label', pageNumbersEdit(doc.name));
     column.empty.hidden = doc.pages.length > 0;
     // Eine leere Spalte ist selbst der Tabstopp (Einfügen mit Strg/Cmd+V, W5)
     set(column.list, 'tabindex', doc.pages.length === 0 ? '0' : '-1');

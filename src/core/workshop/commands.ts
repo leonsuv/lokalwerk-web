@@ -9,11 +9,13 @@
  * Die Namen der Befehle (`label`) erscheinen in Ansagen und im Menü („Rückgängig: Drehen“).
  */
 
+import { samePageNumbers, type PageNumberOptions } from '../pdf/page-numbers.ts';
 import { normalizeRotation } from '../pdf/stamp-geometry.ts';
 import {
   docNameFromFile,
   findDoc,
   inPageOrder,
+  pageNumbersOf,
   type Doc,
   type DocId,
   type IdSource,
@@ -260,13 +262,42 @@ export function duplicateDoc(id: DocId, name: string): Command {
         name,
         pages: doc.pages.map((p) => withKey(template(p), ids('p'))),
       };
+      if (doc.ops) copy.ops = doc.ops;
       const docs = [...state.docs.slice(0, at + 1), copy, ...state.docs.slice(at + 1)];
       return { state: withDocs(state, docs), doc: copy.id };
     },
   };
 }
 
-/** Ab Seite `index` (ab 0) in ein neues Dokument direkt rechts daneben */
+/**
+ * Seitenzahlen für ein Dokument setzen, ändern oder mit `null` entfernen (Dokument-Operation,
+ * plan-phase3.md 7.2). Gezeichnet wird erst beim Export, auf die dann gültige Seitenfolge.
+ */
+export function setPageNumbers(id: DocId, options: PageNumberOptions | null): Command {
+  return {
+    label: options ? 'Seitenzahlen' : 'Seitenzahlen entfernen',
+    apply(state) {
+      const doc = findDoc(state, id);
+      if (!doc) return unchanged(state);
+      const current = pageNumbersOf(doc);
+      if (options === null ? current === null : current && samePageNumbers(current, options)) {
+        return unchanged(state);
+      }
+      const others = (doc.ops ?? []).filter((op) => op.type !== 'page-numbers');
+      const ops = options
+        ? [...others, { type: 'page-numbers' as const, options: { ...options } }]
+        : others;
+      const { ops: _old, ...rest } = doc;
+      const next: Doc = ops.length > 0 ? { ...rest, ops } : rest;
+      return { state: withDocs(state, replaceDoc(state.docs, next)) };
+    },
+  };
+}
+
+/**
+ * Ab Seite `index` (ab 0) in ein neues Dokument direkt rechts daneben. Dokument-Operationen
+ * (Seitenzahlen) gelten für beide Teile: Jeder Teil wird für sich nummeriert.
+ */
 export function splitDoc(id: DocId, index: number, name: string): Command {
   return {
     label: 'Teilen',
@@ -276,13 +307,17 @@ export function splitDoc(id: DocId, index: number, name: string): Command {
       if (!doc || index <= 0 || index >= doc.pages.length) return unchanged(state);
       const head: Doc = { ...doc, pages: doc.pages.slice(0, index) };
       const tail: Doc = { id: ids('d'), name, pages: doc.pages.slice(index) };
+      if (doc.ops) tail.ops = doc.ops;
       const docs = [...state.docs.slice(0, at), head, tail, ...state.docs.slice(at + 1)];
       return { state: withDocs(state, docs), doc: tail.id };
     },
   };
 }
 
-/** Alle Dokumente in der Reihenfolge der Spalten in das erste von ihnen */
+/**
+ * Alle Dokumente in der Reihenfolge der Spalten in das erste von ihnen. Es behält seine
+ * Dokument-Operationen, die der anderen entfallen.
+ */
 export function mergeDocs(docIds: Iterable<DocId>): Command {
   return {
     label: 'Zusammenführen',

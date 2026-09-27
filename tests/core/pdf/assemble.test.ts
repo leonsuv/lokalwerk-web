@@ -152,6 +152,77 @@ describe('assemblePdfs', () => {
     expect(out?.bytes).toBe(bytes);
   });
 
+  it('setzt Seitenzahlen auf die Endreihenfolge und ersetzt dafür auch ein unverändertes Original', async () => {
+    const bytes = await labelledPdf('A', 3);
+    const numbers = {
+      format: 'seite-n-von-m',
+      anchor: 'bottom-center',
+      fromPage: 2,
+      startAt: 1,
+      fontSize: 10,
+      marginMm: 10,
+    } as const;
+    const sources = new Map<string, AssembleSource>([['a', { kind: 'pdf', bytes }]]);
+    const [sorted, original] = await assemblePdfs(
+      [
+        { name: 'um.pdf', pages: [src('a', 2), src('a', 0), src('a', 1)], numbers },
+        { name: 'a.pdf', pages: [src('a', 0), src('a', 1), src('a', 2)], original: 'a', numbers },
+      ],
+      sources,
+    );
+    // Deckblatt ohne Zahl, dann „Seite 1 von 2“ und „Seite 2 von 2“ in der neuen Reihenfolge
+    expect(await pageTexts(sorted?.bytes ?? new Uint8Array())).toEqual([
+      'A3',
+      'A1Seite 1 von 2',
+      'A2Seite 2 von 2',
+    ]);
+    expect(original?.unchanged).toBe(false);
+    expect(await pageTexts(original?.bytes ?? new Uint8Array())).toEqual([
+      'A1',
+      'A2Seite 1 von 2',
+      'A3Seite 2 von 2',
+    ]);
+  });
+
+  it('setzt Seitenzahlen auf gedrehten Seiten so, wie man die Seite liest', async () => {
+    const sources = new Map<string, AssembleSource>([
+      ['a', { kind: 'pdf', bytes: await labelledPdf('A', 2, [90]) }],
+    ]);
+    const numbers = {
+      format: 'n',
+      anchor: 'bottom-center',
+      fromPage: 1,
+      startAt: 1,
+      fontSize: 10,
+      marginMm: 10,
+    } as const;
+    // Seite 1: eigene Drehung 90; Seite 2: zusätzlich in der Werkstatt um 270 gedreht
+    const [out] = await assemblePdfs(
+      [{ name: 'x.pdf', pages: [src('a', 0), src('a', 1, 270)], numbers }],
+      sources,
+    );
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const doc = await pdfjs.getDocument({ data: out?.bytes.slice(), verbosity: 0 }).promise;
+    for (const [n, label] of [
+      [1, '1'],
+      [2, '2'],
+    ] as const) {
+      const page = await doc.getPage(n);
+      const viewport = page.getViewport({ scale: 1 });
+      const item = (await page.getTextContent()).items.find((i) => 'str' in i && i.str === label);
+      if (!item || !('transform' in item)) throw new Error(`Seitenzahl ${label} fehlt`);
+      const transform = item.transform as number[];
+      const [x = 0, y = 0] = viewport.convertToViewportPoint(
+        transform[4] ?? 0,
+        transform[5] ?? 0,
+      ) as number[];
+      // Unten in der Mitte der sichtbaren Seite, 10 mm über dem Rand
+      expect(Math.abs(x - viewport.width / 2)).toBeLessThan(10);
+      expect(viewport.height - y).toBeCloseTo((10 * 72) / 25.4, 0);
+    }
+    await doc.loadingTask.destroy();
+  });
+
   it('schreibt keine Metadaten, auch nicht die der Quellen', async () => {
     const [out] = await assemblePdfs(
       [{ name: 'a.pdf', pages: [src('a', 0)] }],

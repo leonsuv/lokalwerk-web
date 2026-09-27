@@ -1,6 +1,6 @@
 # pdf.js 6.3: Browser-Kompatibilität
 
-Stand: 27.09.2026. **Untersuchung zur Entscheidung, noch nichts umgesetzt.** Anlass: In Chromium 141 zeigen alle Werkzeuge mit Vorschau „Keine Vorschau möglich“ (plan-phase3.md Abschnitt 16).
+Stand: 27.09.2026. **Entschieden von Leon am 27.09.2026:** Legacy-Build für alle Seiten mit pdf.js (b), core-js als mitgelieferter Teil freigegeben (Lizenzseite, Build-Prüfung), die zwei core-js-Adressen als tote Adressen, Prüfung beim Laden mit den Texten aus Abschnitt 5, unterstützte Browser wie pdf.js für Legacy angibt, Nachstellungs-Skript `npm run compat:pdfjs`. Umsetzung siehe Abschnitt 6. Anlass: In Chromium 141 zeigen alle Werkzeuge mit Vorschau „Keine Vorschau möglich“ (plan-phase3.md Abschnitt 16).
 
 Betroffen sind alle Werkzeuge, die pdf.js nutzen: PDF-Werkstatt, PDF-Seiten bearbeiten, PDF schwärzen, PDF zu Bildern, Unterschrift einfügen, PDF-Formular ausfüllen.
 
@@ -109,7 +109,9 @@ Zusammen etwa +35 KB gzip (+7 %) je Seite mit pdf.js; Seiten ohne pdf.js ändern
 
 ### 3.2 eval und new Function
 
-Der moderne Build enthält weder `eval` noch `new Function` (die einzige Fundstelle ist `new FunctionBasedShading`). Der Legacy-Build enthält aus core-js eine Stelle `Function('return this')()`, im Hauptthread und im Worker, als letzten Ausweg, um das globale Objekt zu finden. Sie wird nur erreicht, wenn es kein `globalThis` gibt (Chrome 71, Firefox 65, Safari 12.1), also nie in einem Browser, der die ES2022-Syntax des Builds überhaupt lesen kann. Unter unserer CSP (ohne `'unsafe-eval'`) würde sie scheitern. In allen Läufen gab es keine CSP-Meldung. Der Kommentar in `src/ui/pdfjs/pdfjs.ts` („beide Bundles enthalten kein eval und kein new Function“) müsste dann genauer werden.
+Der moderne Build enthält weder `eval` noch `new Function` (die einzige Fundstelle ist `new FunctionBasedShading`). Der Legacy-Build enthält aus core-js eine Stelle `Function('return this')()`, im Hauptthread und im Worker, als letzten Ausweg, um das globale Objekt zu finden. Sie wird nur erreicht, wenn es kein `globalThis` gibt (Chrome 71, Firefox 65, Safari 12.1), also nie in einem Browser, der die ES2022-Syntax des Builds überhaupt lesen kann. Unter unserer CSP (ohne `'unsafe-eval'`) würde sie scheitern. In allen Läufen gab es keine CSP-Meldung. Der Kommentar in `src/ui/pdfjs/pdfjs.ts` ist entsprechend angepasst.
+
+**Dokumentierte Ausnahme (Leon, 27.09.2026):** `Function('return this')()` aus core-js (Modul `global-this`, Legacy-Build `pdf.mjs` Zeile 1476, `pdf.worker.mjs` Zeile 1418) bleibt im ausgelieferten Code. Warum sie nie läuft: Sie steht am Ende einer Kette `check(typeof globalThis == 'object' && globalThis) || check(typeof window …) || check(typeof self …) || … || (function () { return this; })() || Function('return this')()`. Schon der erste Teil liefert in jedem Browser mit `globalThis` ein Ergebnis (Chrome 71, Firefox 65, Safari 12.1 laut MDN), und jeder Browser, der den Build überhaupt lesen kann, braucht ES2022 (Chrome 94, Firefox 93, Safari 16.4). Selbst wenn sie liefe, würde unsere CSP (`script-src 'self'` ohne `'unsafe-eval'`) den Aufruf blockieren; es entstünde ein Fehler, kein ausgeführter Code.
 
 ### 3.3 check-dist, Abhängigkeiten, Lizenz
 

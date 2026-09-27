@@ -11,6 +11,8 @@ In den Ersatzdekodern (`pdfjs/openjpeg_nowasm_fallback.js`, `pdfjs/jbig2_nowasm_
 
 Fundstelle: Zeile in `node_modules/pdfjs-dist/build/pdf.mjs` bzw. `pdf.worker.mjs`.
 
+**Seit 27.09.2026 Legacy-Build** (Leon, docs/pdfjs-kompatibilitaet.md): Ausgeliefert wird `legacy/build/pdf.mjs` bzw. `legacy/build/pdf.worker.mjs`. Jede Adresse steht dort in einer wortgleichen Zeile; die Zeilennummern unten gelten für den modernen Build, die für den Legacy-Build stehen in `scripts/allowed-urls-pdfjs.mjs` (P1.1: 6284 im Hauptthread; P2.1–P2.15: 48521–48577 im Worker, gleicher Abstand; P2.16: 56305; P3: 6644 und 7606). Neu dazu kommt Gruppe P4 (unten).
+
 Keine der Adressen wird abgerufen. pdf.js enthält zwar `fetch` und `XMLHttpRequest`, aber nur für Wege, die die Einbindung abschaltet: PDFs von einer Adresse laden (wir übergeben immer Bytes), CMaps, Standardschriften, WASM und ICC-Profile nachladen (`useWorkerFetch: false`, keine Adressen, eigene `LocalBinaryDataFactory`). Die Content-Security-Policy (`connect-src 'none'`) würde es zusätzlich verhindern. Im Browsertest gab es nach dem Laden der Seite keine einzige Anfrage.
 
 
@@ -68,5 +70,14 @@ pdf.js zerlegt Adresstexte mit `new URL(text, basis)`. Die Basis ist ein Platzha
 | P3 Basisadressen | 2 | Platzhalter für `new URL` | nein |
 | Lizenzadresse | 0 | nicht im Build (Kommentare entfernt) | – |
 | **Summe** | **19** | | |
+
+## Gruppe P4: Urheberrechtstext von core-js im Legacy-Build (2)
+
+**Freigegeben von Leon am 27.09.2026 als tote Adressen**, nur für Bundle-Teile mit pdf.js. core-js legt beim Laden ein Objekt mit Version, Urheber, Lizenzadresse und Quelladresse im globalen Speicher ab (`shared-store`). Die Adressen sind Daten, sie werden nie abgerufen. Sie stehen im Hauptthread- und im Worker-Teil.
+
+| # | Adresse | Zeile im Legacy-Build |
+|---|---|---|
+| P4.1 | `https://github.com/zloirock/core-js/blob/v3.50.0/LICENSE` | Hauptthread 3391, Worker 3279 |
+| P4.2 | `https://github.com/zloirock/core-js` | Hauptthread 3392, Worker 3280 |
 
 `tests/scripts/check-dist.test.ts` prüft, dass jede Adresse in der genannten Zeile steht, nur in Dateien mit pdf.js gilt und dass unser Code pdf.js nie Dateien schreiben lässt (P2.16, P3).

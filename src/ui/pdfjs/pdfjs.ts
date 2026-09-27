@@ -6,9 +6,13 @@
  * - Worker lokal über workerPort (kein workerSrc, kein CDN).
  * - Keine Nachladedaten: cMapUrl, standardFontDataUrl und iccUrl bleiben leer, useWorkerFetch ist
  *   aus. Alle Dateianfragen von pdf.js beantwortet LocalBinaryDataFactory ohne Netzwerk.
+ * - Legacy-Build von pdfjs-dist (Leon, 27.09.2026, docs/pdfjs-kompatibilitaet.md): Der moderne
+ *   Build setzt die jeweils neuesten Browser voraus; der Legacy-Build ergänzt fehlende APIs mit
+ *   core-js. Unterstützt laut pdf.js: Chrome/Edge 125+, Firefox ESR, Safari 18+.
  * - Kein PDF-JavaScript: Das führt pdf.js nur im Viewer über pdf.sandbox aus, das hier nicht
  *   eingebunden ist (scripts/check-dist.mjs prüft es). Die frühere Option isEvalSupported gibt
- *   es in pdf.js 6.3 nicht mehr; beide Bundles enthalten kein eval und kein new Function.
+ *   es in pdf.js 6.3 nicht mehr. Kein eval und kein new Function; einzige Ausnahme ist die nie
+ *   erreichte Stelle Function('return this') aus core-js (docs/pdfjs-kompatibilitaet.md 3.2).
  * - Kein WebAssembly (plan-phase2.md E4): Die CSP bleibt ohne 'wasm-unsafe-eval'.
  * - Schriften über die FontFace-API, keine <style>-Elemente.
  */
@@ -19,7 +23,7 @@ import {
   GlobalWorkerOptions,
   VerbosityLevel,
   type PDFDocumentProxy,
-} from 'pdfjs-dist';
+} from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { LocalBinaryDataFactory } from './binary-data.ts';
 import { FALLBACK_DIR } from './fallbacks.ts';
 

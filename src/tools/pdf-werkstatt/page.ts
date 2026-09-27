@@ -29,6 +29,8 @@ import {
 import { $ } from '../../ui/dom.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { prepareImage } from '../../ui/image-prepare.ts';
+import { loadPdfjs, PdfjsUnsupportedError } from '../../ui/pdfjs/support.ts';
+import { unsupportedNote } from '../../ui/pdfjs/unsupported-note.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
 import { createActions } from './actions.ts';
@@ -50,7 +52,15 @@ import type { AddImageResult, AddPdfResult, WorkshopRequest } from './workshop.w
 // Beides sofort laden: pdf-lib im Worker, pdf.js samt eigenem Worker (plan.md N4, offline).
 const worker = new Worker(new URL('./workshop.worker.ts', import.meta.url), { type: 'module' });
 const client = createWorkerClient<WorkshopRequest>(worker);
-const pdfjs = import('../../ui/pdfjs/pdfjs.ts');
+const pdfjs = loadPdfjs();
+// Zu alter Browser (docs/pdfjs-kompatibilitaet.md 5): Hinweis über den Spalten, Speichern geht
+const showUnsupported = unsupportedNote('preview', document.querySelector('.ws-main'));
+let unsupported = false;
+pdfjs.catch((error: unknown) => {
+  if (!(error instanceof PdfjsUnsupportedError)) return;
+  unsupported = true;
+  render();
+});
 
 const messageFor = (error: unknown): string =>
   (error instanceof WorkerError ? t.ERRORS[error.code] : undefined) ?? t.FALLBACK_ERROR;
@@ -228,6 +238,7 @@ function render(): void {
 
   const hasDocs = state.docs.length > 0;
   $('#ws-drop').hidden = hasDocs;
+  showUnsupported({ unsupported, fileLoaded: hasDocs });
   const pageCount = state.docs.reduce((n, d) => n + d.pages.length, 0);
   $('#ws-docs').textContent = hasDocs ? String(state.docs.length) : '–';
   $('#ws-pages').textContent = hasDocs ? String(pageCount) : '–';

@@ -26,6 +26,7 @@ import {
 } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { LocalBinaryDataFactory } from './binary-data.ts';
 import { FALLBACK_DIR } from './fallbacks.ts';
+import { missingPdfjsApis } from './support.ts';
 
 GlobalWorkerOptions.workerPort = new Worker(new URL('./pdfjs.worker.ts', import.meta.url), {
   type: 'module',
@@ -33,7 +34,8 @@ GlobalWorkerOptions.workerPort = new Worker(new URL('./pdfjs.worker.ts', import.
 
 export type { PDFDocumentProxy };
 
-export type PdfOpenCode = 'empty' | 'encrypted' | 'damaged';
+/** `unsupported`: Browser zu alt für pdf.js (support.ts) */
+export type PdfOpenCode = 'empty' | 'encrypted' | 'damaged' | 'unsupported';
 
 /** PDF ließ sich mit pdf.js nicht öffnen; `code` wie in core/pdf/merge.ts. */
 export class PdfOpenError extends Error {
@@ -52,6 +54,8 @@ export class PdfOpenError extends Error {
  */
 export async function openPdf(data: Uint8Array): Promise<PDFDocumentProxy> {
   if (data.length === 0) throw new PdfOpenError('empty');
+  // Zweite Sicherung neben loadPdfjs: nie „beschädigt“ melden, wenn der Browser zu alt ist.
+  if (missingPdfjsApis().length > 0) throw new PdfOpenError('unsupported');
   try {
     return await getDocument({
       data,

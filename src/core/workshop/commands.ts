@@ -13,6 +13,7 @@ import { fitRect, turnRect, type NormRect } from '../geometry/norm-rect.ts';
 import { samePageNumbers, type PageNumberOptions } from '../pdf/page-numbers.ts';
 import { normalizeRotation } from '../pdf/stamp-geometry.ts';
 import {
+  cutIndices,
   docNameFromFile,
   findDoc,
   inPageOrder,
@@ -96,6 +97,19 @@ function prunedSources(
   return next;
 }
 
+/**
+ * Trennlinien nur vor Seiten, die im Dokument stehen und nicht die erste sind, jede einmal.
+ * Unverändert dasselbe Objekt.
+ */
+function prunedCuts(doc: Doc): Doc {
+  if (!doc.cuts) return doc;
+  const inner = new Set(doc.pages.slice(1).map((p) => p.key));
+  const cuts = [...new Set(doc.cuts)].filter((k) => inner.has(k));
+  if (cuts.length === doc.cuts.length) return doc;
+  const { cuts: _old, ...rest } = doc;
+  return cuts.length > 0 ? { ...rest, cuts } : rest;
+}
+
 /** Neuer Zustand aus neuen Dokumenten; derselbe Zustand, wenn sich nichts geändert hat */
 function withDocs(
   state: WorkshopState,
@@ -103,7 +117,8 @@ function withDocs(
   sources: ReadonlyMap<SourceId, Source> = state.sources,
 ): WorkshopState {
   if (sameArray(state.docs, docs) && sources === state.sources) return state;
-  return { docs, sources: prunedSources(sources, docs) };
+  const cleaned = docs.map(prunedCuts);
+  return { docs: cleaned, sources: prunedSources(sources, cleaned) };
 }
 
 function addToSources(
@@ -264,13 +279,20 @@ export function duplicateDoc(id: DocId, name: string): Command {
       const at = state.docs.findIndex((d) => d.id === id);
       const doc = state.docs[at];
       if (!doc) return unchanged(state);
+      const keys = new Map<PageKey, PageKey>();
       const copy: Doc = {
         id: ids('d'),
         name,
-        pages: doc.pages.map((p) => withKey(template(p), ids('p'))),
+        pages: doc.pages.map((p) => {
+          const page = withKey(template(p), ids('p'));
+          keys.set(p.key, page.key);
+          return page;
+        }),
       };
       if (doc.ops) copy.ops = doc.ops;
       if (doc.redacted) copy.redacted = true;
+      const cuts = (doc.cuts ?? []).flatMap((k) => keys.get(k) ?? []);
+      if (cuts.length > 0) copy.cuts = cuts;
       const docs = [...state.docs.slice(0, at + 1), copy, ...state.docs.slice(at + 1)];
       return { state: withDocs(state, docs), doc: copy.id };
     },
@@ -485,6 +507,8 @@ export function splitDoc(id: DocId, index: number, name: string): Command {
       const tail: Doc = { id: ids('d'), name, pages: doc.pages.slice(index) };
       if (doc.ops) tail.ops = doc.ops;
       if (doc.redacted) tail.redacted = true;
+      // Trennlinien bleiben bei ihren Seiten; withDocs räumt die überzähligen auf
+      if (doc.cuts) tail.cuts = doc.cuts;
       const docs = [...state.docs.slice(0, at), head, tail, ...state.docs.slice(at + 1)];
       return { state: withDocs(state, docs), doc: tail.id };
     },
@@ -503,11 +527,140 @@ export function mergeDocs(docIds: Iterable<DocId>): Command {
       const merged = state.docs.filter((d) => wanted.has(d.id));
       const [first] = merged;
       if (!first || merged.length < 2) return unchanged(state);
-      const target: Doc = { ...first, pages: merged.flatMap((d) => d.pages) };
+      const target = joined(first, merged);
       const docs = state.docs.flatMap((d) =>
         d.id === first.id ? [target] : wanted.has(d.id) ? [] : [d],
       );
       return { state: withDocs(state, docs), doc: first.id };
+    },
+  };
+}
+
+/** `first` mit den Seiten aller `docs` nacheinander; Trennlinien aller Teile bleiben */
+function joined(first: Doc, docs: readonly Doc[]): Doc {
+  const target: Doc = { ...first, pages: docs.flatMap((d) => d.pages) };
+  const cuts = docs.flatMap((d) => d.cuts ?? []);
+  if (cuts.length > 0) target.cuts = cuts;
+  return target;
+}
+
+/**
+ * Dokumente in der angegebenen Reihenfolge zusammenführen (Dialog mit Reihenfolge, Ziehen einer
+ * Dokumentkarte auf eine andere). Ziel ist das erste Dokument der Liste: Es behält Namen,
+ * Dokument-Operationen und seinen Platz in der Liste.
+ */
+export function joinDocs(order: readonly DocId[]): Command {
+  return {
+    label: 'Zusammenführen',
+    apply(state) {
+      const ids = [...new Set(order)];
+      const docs = ids.flatMap((id) => findDoc(state, id) ?? []);
+      const [first] = docs;
+      if (!first || docs.length < 2) return unchanged(state);
+      const target = joined(first, docs);
+      const wanted = new Set(ids);
+      const next = state.docs.flatMap((d) =>
+        d.id === first.id ? [target] : wanted.has(d.id) ? [] : [d],
+      );
+      return { state: withDocs(state, next), doc: first.id };
+    },
+  };
+}
+
+/** Dokument an eine andere Stelle der Liste; `index` ist die Stelle vor dem Herausnehmen */
+export function moveDoc(id: DocId, index: number): Command {
+  return {
+    label: 'Dokument verschieben',
+    apply(state) {
+      const from = state.docs.findIndex((d) => d.id === id);
+      const doc = state.docs[from];
+      if (!doc) return unchanged(state);
+      const at = clamp(index, state.docs.length);
+      const to = at > from ? at - 1 : at;
+      if (to === from) return unchanged(state);
+      const rest = state.docs.filter((d) => d.id !== id);
+      return { state: withDocs(state, [...rest.slice(0, to), doc, ...rest.slice(to)]) };
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Trennlinien (Umbau zum Editor)
+
+/**
+ * Trennlinie vor den Seiten setzen (`on`) oder entfernen. Vor der ersten Seite eines Dokuments
+ * gibt es keine. Mehrere Seiten auf einmal: z. B. „Trennlinie vor jeder ausgewählten Seite“.
+ */
+export function setCuts(keys: Iterable<PageKey>, on: boolean): Command {
+  return {
+    label: on ? 'Trennlinie setzen' : 'Trennlinie entfernen',
+    apply(state) {
+      const wanted = new Set(keys);
+      if (wanted.size === 0) return unchanged(state);
+      const docs = state.docs.map((doc) => {
+        const inner = doc.pages.slice(1).filter((p) => wanted.has(p.key));
+        if (inner.length === 0) return doc;
+        const current = new Set(doc.cuts ?? []);
+        const before = current.size;
+        for (const p of inner) {
+          if (on) current.add(p.key);
+          else current.delete(p.key);
+        }
+        if (current.size === before) return doc;
+        const { cuts: _old, ...rest } = doc;
+        return current.size > 0 ? { ...rest, cuts: [...current] } : rest;
+      });
+      return { state: withDocs(state, docs) };
+    },
+  };
+}
+
+/** Alle Trennlinien der Dokumente entfernen */
+export function clearCuts(ids: Iterable<DocId>): Command {
+  return {
+    label: 'Trennlinien entfernen',
+    apply(state) {
+      const wanted = new Set(ids);
+      const docs = state.docs.map((doc) => {
+        if (!wanted.has(doc.id) || !doc.cuts) return doc;
+        const { cuts: _old, ...rest } = doc;
+        return rest;
+      });
+      return { state: withDocs(state, docs) };
+    },
+  };
+}
+
+/**
+ * Dokument an allen Trennlinien teilen, in einem Schritt. Der erste Teil behält Namen und Platz,
+ * die weiteren kommen direkt dahinter und heißen `name(2)`, `name(3)` … Dokument-Operationen
+ * gelten für jeden Teil (jeder wird für sich nummeriert), wie beim Teilen an einer Stelle.
+ */
+export function splitAtCuts(id: DocId, name: (part: number) => string): Command {
+  return {
+    label: 'An Trennlinien teilen',
+    apply(state, ids) {
+      const at = state.docs.findIndex((d) => d.id === id);
+      const doc = state.docs[at];
+      if (!doc) return unchanged(state);
+      const cuts = cutIndices(doc);
+      if (cuts.length === 0) return unchanged(state);
+      const bounds = [0, ...cuts, doc.pages.length];
+      const { cuts: _old, ...base } = doc;
+      const parts: Doc[] = [];
+      for (let i = 0; i + 1 < bounds.length; i++) {
+        const pages = doc.pages.slice(bounds[i], bounds[i + 1]);
+        if (i === 0) {
+          parts.push({ ...base, pages });
+          continue;
+        }
+        const part: Doc = { id: ids('d'), name: name(i + 1), pages };
+        if (doc.ops) part.ops = doc.ops;
+        if (doc.redacted) part.redacted = true;
+        parts.push(part);
+      }
+      const docs = [...state.docs.slice(0, at), ...parts, ...state.docs.slice(at + 1)];
+      return { state: withDocs(state, docs), doc: parts[1]?.id ?? doc.id };
     },
   };
 }

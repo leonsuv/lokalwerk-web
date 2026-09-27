@@ -100,3 +100,42 @@ export function releasedSources(
   const live = liveSources(after, keep);
   return [...liveSources(before)].filter((id) => !live.has(id));
 }
+
+/** Ein Schritt im Verlauf-Bedienfeld */
+export interface TimelineEntry {
+  /** Name des Befehls; beim ersten Zustand leer („Beginn“ in der Oberfläche) */
+  label: string;
+  /** Stelle für jumpTo */
+  index: number;
+  /** Der aktuelle Zustand */
+  current: boolean;
+  /** Ein zurückgenommener Schritt, der sich wiederholen lässt */
+  undone: boolean;
+}
+
+/** Alle Zustände des Verlaufs vom ältesten bis zum neuesten */
+export function timeline(h: History): TimelineEntry[] {
+  const now = h.past.length;
+  return [...entries(h)].map((entry, index) => ({
+    label: entry.label,
+    index,
+    current: index === now,
+    undone: index > now,
+  }));
+}
+
+/**
+ * Zu einem Zustand springen (Klick im Verlauf-Bedienfeld): so oft Rückgängig oder Wiederholen
+ * wie nötig, in einem Zug. Stellen außerhalb des Verlaufs ändern nichts.
+ */
+export function jumpTo(h: History, index: number): History {
+  const all = [...entries(h)];
+  const target = all[index];
+  if (!Number.isInteger(index) || !target || index === h.past.length) return h;
+  return {
+    ...h,
+    past: all.slice(0, index),
+    present: target,
+    future: all.slice(index + 1),
+  };
+}

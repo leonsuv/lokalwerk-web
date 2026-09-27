@@ -12,10 +12,12 @@ import {
   createHistory,
   execute,
   HISTORY_LIMIT,
+  jumpTo,
   liveSources,
   redo,
   redoLabel,
   releasedSources,
+  timeline,
   undo,
   undoLabel,
   type History,
@@ -147,5 +149,34 @@ describe('Quellen freigeben', () => {
     const h2 = run(h1, ids, addSources([pdfSource('c', 1)]));
     expect(releasedSources(h1, h2, ['a'])).toEqual([]);
     expect(releasedSources(h1, h2)).toEqual(['a']);
+  });
+});
+
+describe('Verlauf-Bedienfeld', () => {
+  it('listet alle Schritte und springt in einem Zug vor und zurück', () => {
+    const ids = counterIds();
+    const h0 = run(createHistory(), ids, addSources([pdfSource('a', 3)]));
+    const keys = keysOf(h0.present.state, 0, 0, 1, 2);
+    const h = run(h0, ids, rotatePages([keys[0] ?? ''], 90), deletePages([keys[1] ?? '']));
+    expect(timeline(h).map((e) => [e.label, e.current, e.undone])).toEqual([
+      ['', false, false],
+      ['Hinzufügen', false, false],
+      ['Drehen', false, false],
+      ['Löschen', true, false],
+    ]);
+    const back = jumpTo(h, 1);
+    expect(back.present.state).toBe(h0.present.state);
+    expect(timeline(back).map((e) => e.undone)).toEqual([false, false, true, true]);
+    expect(canRedo(back)).toBe(true);
+    // Wieder nach vorn: derselbe Zustand wie vorher
+    expect(jumpTo(back, 3).present.state).toBe(h.present.state);
+    // Zum Anfang: leer, alles lässt sich wiederholen
+    const start = jumpTo(h, 0);
+    expect(start.present.state.docs).toEqual([]);
+    expect(canUndo(start)).toBe(false);
+    // Aktueller Schritt oder ungültige Stelle: derselbe Verlauf
+    expect(jumpTo(h, 3)).toBe(h);
+    expect(jumpTo(h, 9)).toBe(h);
+    expect(jumpTo(h, -1)).toBe(h);
   });
 });

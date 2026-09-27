@@ -157,6 +157,23 @@ export interface Doc {
    * „<Name> (geschwärzt).pdf“ (export-plan.ts), solange alle Seiten geschwärzt sind.
    */
   redacted?: true;
+  /**
+   * Trennlinien (Umbau zum Editor): vor diesen Seiten wird bei „An Trennlinien teilen“ ein neues
+   * Dokument begonnen. Die Linie hängt an der Seite danach und wandert mit ihr; commands.ts
+   * räumt Linien vor Seiten auf, die nicht mehr im Dokument oder an erster Stelle stehen.
+   */
+  cuts?: readonly PageKey[];
+}
+
+/** Stellen der Trennlinien als Seitenindex (ab 0) der Seite nach der Linie, aufsteigend */
+export function cutIndices(doc: Doc): number[] {
+  if (!doc.cuts?.length) return [];
+  const cuts = new Set(doc.cuts);
+  const found: number[] = [];
+  doc.pages.forEach((p, i) => {
+    if (i > 0 && cuts.has(p.key)) found.push(i);
+  });
+  return found;
 }
 
 /** Seitenzahlen des Dokuments, falls gesetzt */

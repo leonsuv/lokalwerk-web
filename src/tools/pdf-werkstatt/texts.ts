@@ -265,3 +265,48 @@ export const signSet = (n: number, name: string): string =>
   `Unterschrift auf Seite ${n} von ${name} übernommen. Sie wird beim Speichern gesetzt.`;
 export const signRemoved = (n: number, name: string): string =>
   `Unterschriften von Seite ${n} von ${name} entfernt`;
+
+// Stufe 2.3: Schwärzen und Formular ausfüllen („Einbacken“), Entwurf zur Freigabe
+export const REDACT_ITEM = 'Schwärzen …';
+/** Name der neuen Quelle, z. B. in der Seitenbeschriftung „aus Vertrag (geschwärzt).pdf Seite 2“ */
+export const redactedName = (doc: string): string => `${doc} (geschwärzt).pdf`;
+export const filledName = (file: string): string =>
+  `${file.replace(/\.pdf$/i, '')} (ausgefüllt).pdf`;
+export const REDACT_TITLE = 'Schwärzen';
+export const REDACT_HINT =
+  'Geschwärzt wird das ganze Dokument: Jede Seite wird zum Bild, auch Seiten ohne Bereich. Stempel und Unterschriften bleiben änderbar.';
+export const REDACT_AREAS = 'Bereiche festlegen …';
+export const REDACT_APPLY = 'Dokument schwärzen';
+export const redactProgress = (n: number, total: number): string => `Seite ${n} von ${total} …`;
+export const REDACT_BUILDING = 'PDF wird erstellt …';
+export const redactDone = (name: string): string =>
+  `${name} ist geschwärzt. Prüf das Ergebnis, bevor du es weitergibst.`;
+export const REDACT_CHANGED =
+  'Das Dokument hat sich während des Schwärzens geändert. Schwärze es noch einmal.';
+export const REDACT_FAILED =
+  'Die geschwärzte PDF konnte nicht erzeugt werden. Wähle eine geringere Auflösung und versuch es noch einmal.';
+export const redactDialogTitle = (name: string): string => `Bereiche schwärzen in ${name}`;
+export const redactPageLabel = (n: number, total: number): string => `Seite ${n} von ${total}`;
+export const redactRectLabel = (i: number, page: number): string =>
+  `Bereich ${i} auf Seite ${page}`;
+
+/** Seiten aus derselben Datei, nicht geschwärzt (Hinweis nach dem Schwärzen und beim Speichern) */
+export const unredacted = (count: number, name: string): string =>
+  count === 1
+    ? `1 Seite in ‚${name}‘ stammt aus derselben Datei und ist nicht geschwärzt.`
+    : `${count} Seiten in ‚${name}‘ stammen aus derselben Datei und sind nicht geschwärzt.`;
+export const UNREDACTED_SHOW = 'Zu den Seiten';
+export const UNREDACTED_TITLE = 'Nicht geschwärzte Seiten';
+export const UNREDACTED_SAVE = 'Trotzdem speichern';
+
+export const FORM_ITEM = 'Formular ausfüllen …';
+export const FORM_TITLE = 'Formular ausfüllen';
+export const formDoc = (file: string, doc: string): string => `Formular aus ${file} in ${doc}`;
+export const FORM_LOADING = 'Formular wird gelesen …';
+export const formHint = (file: string): string =>
+  `Die ausgefüllten Seiten ersetzen in diesem Dokument die Seiten aus ${file}.`;
+export const FORM_APPLY = 'Formular übernehmen';
+export const FORM_BUSY = 'Wird ausgefüllt …';
+export const formApplied = (name: string): string => `Formular in ${name} übernommen`;
+export const FORM_CHANGED =
+  'Das Dokument hat sich während des Ausfüllens geändert. Übernimm das Formular noch einmal.';

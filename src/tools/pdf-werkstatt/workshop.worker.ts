@@ -10,7 +10,9 @@
  */
 
 import { assemblePdfs, type AssembleDoc, type AssembleSource } from '../../core/pdf/assemble.ts';
+import { fillForm, readForm, type FieldValue } from '../../core/pdf/form.ts';
 import type { PageImage } from '../../core/pdf/from-images.ts';
+import { buildRasterPdf, type RasterPage } from '../../core/pdf/redact.ts';
 import { standardFontCharset } from '../../core/pdf/stamp.ts';
 import { inspectForWorkshop, type WorkshopPdfInfo } from '../../core/pdf/workshop-inspect.ts';
 import { prepareImage } from '../../ui/image-prepare.ts';
@@ -25,9 +27,30 @@ export type WorkshopRequest =
   | { type: 'add-image'; id: string; file: File; jpeg: boolean }
   | { type: 'add-image'; id: string; image: PageImage }
   | { type: 'release'; ids: string[] }
-  | { type: 'export'; docs: AssembleDoc[] };
+  | { type: 'export'; docs: AssembleDoc[] }
+  /**
+   * Schwärzen (Stufe 2.3): neue PDF nur aus den fertig geschwärzten Seitenbildern, wie im
+   * Einzelwerkzeug (core/pdf/redact.ts). Die Original-PDF wird dafür nicht gelesen.
+   */
+  | { type: 'redact'; id: string; name: string; pages: RasterPage[] }
+  /** Formular der Quelle lesen und ausgefüllt als neue Quelle anlegen (Stufe 2.3) */
+  | { type: 'read-form'; source: string }
+  | {
+      type: 'fill-form';
+      id: string;
+      source: string;
+      name: string;
+      values: Record<string, FieldValue>;
+      flatten: boolean;
+    };
 
 export type AddPdfResult = WorkshopPdfInfo;
+
+/** Neu erzeugte Quelle: die Datei (für pdf.js im Hauptthread) und was der Worker gelesen hat */
+export interface BakedResult {
+  file: File;
+  info: WorkshopPdfInfo;
+}
 
 /** Größe des neu kodierten Bilds in Pixeln */
 export interface AddImageResult {
@@ -60,6 +83,20 @@ async function readFile(file: File): Promise<Uint8Array> {
       /allocation failed|out of memory/i.test(String(error)) ? 'out-of-memory' : 'unreadable',
     );
   }
+}
+
+/** Neue PDF als Quelle ablegen und wie eine geladene Datei einlesen */
+async function addBaked(id: string, name: string, bytes: Uint8Array): Promise<BakedResult> {
+  const file = new File([bytes as Uint8Array<ArrayBuffer>], name, { type: 'application/pdf' });
+  const info = await inspectForWorkshop(bytes);
+  sources.set(id, { kind: 'pdf', file });
+  return { file, info };
+}
+
+async function pdfBytes(id: string): Promise<Uint8Array> {
+  const source = sources.get(id);
+  if (source?.kind !== 'pdf') throw new WorkerError('unknown-source');
+  return readFile(source.file);
 }
 
 async function exportDocs(
@@ -108,6 +145,20 @@ serveRequests<WorkshopRequest>(async (request, progress) => {
     case 'release':
       for (const id of request.ids) sources.delete(id);
       return { result: null };
+    case 'redact': {
+      const bytes = await buildRasterPdf(request.pages);
+      return { result: await addBaked(request.id, request.name, bytes) };
+    }
+    case 'read-form':
+      return { result: await readForm(await pdfBytes(request.source)) };
+    case 'fill-form': {
+      const filled = await fillForm(
+        await pdfBytes(request.source),
+        request.values,
+        request.flatten,
+      );
+      return { result: await addBaked(request.id, request.name, filled) };
+    }
     case 'export': {
       const files = await exportDocs(request.docs, progress);
       return {

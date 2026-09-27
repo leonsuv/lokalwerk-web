@@ -49,17 +49,20 @@
     </div>
     <div class="card side">
       <h2>Schwärzen</h2>
-      <div class="field">
-        <label class="lbl" for="red-dpi">Auflösung der neuen PDF</label>
-        <select id="red-dpi">
-          <option value="150">150 dpi, kleinere Datei</option>
-          <option value="200" selected>200 dpi, Standard</option>
-          <option value="300">300 dpi, für den Druck</option>
-        </select>
+      <!-- Auch in der PDF-Werkstatt eingebettet (embed.ts) -->
+      <div id="red-settings">
+        <div class="field">
+          <label class="lbl" for="red-dpi">Auflösung der neuen PDF</label>
+          <select id="red-dpi">
+            <option value="150">150 dpi, kleinere Datei</option>
+            <option value="200" selected>200 dpi, Standard</option>
+            <option value="300">300 dpi, für den Druck</option>
+          </select>
+        </div>
+        <div class="stat-row mt-m"><span>Geschwärzte Bereiche</span><b id="red-count">–</b></div>
+        <div class="stat-row"><span>Seiten mit Schwärzung</span><b id="red-pages">–</b></div>
       </div>
-      <div class="stat-row mt-m"><span>Geschwärzte Bereiche</span><b id="red-count">–</b></div>
-      <div class="stat-row"><span>Seiten mit Schwärzung</span><b id="red-pages">–</b></div>
-      <div class="note mt-m">
+      <div class="note mt-m" id="red-check">
         <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
         <span
           >Prüf die neue PDF, bevor du sie weitergibst: Sind alle Stellen vollständig schwarz? Das

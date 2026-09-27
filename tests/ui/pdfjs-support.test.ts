@@ -88,7 +88,8 @@ describe('Werkzeuge mit pdf.js', () => {
     .map((f) => ({ file: f, text: readFileSync(join(tools, f), 'utf8') }));
 
   it('laden pdf.js nur über loadPdfjs und zeigen den Hinweis', () => {
-    const users = sources.filter((s) => /ui\/pdfjs\/support\.ts/.test(s.text));
+    // Wer pdf.js lädt; andere Dateien dürfen z. B. nur die Fehlerklasse importieren
+    const users = sources.filter((s) => /\bloadPdfjs\(/.test(s.text));
     expect(users.map((s) => s.file.split('/')[0]).sort()).toEqual([
       'pdf-formular-ausfuellen',
       'pdf-schwaerzen',

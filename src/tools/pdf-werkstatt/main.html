@@ -163,6 +163,11 @@
       <div class="ws-board" id="ws-board" aria-label="Dokumente"></div>
     </div>
     <aside class="card side ws-side" aria-label="Übersicht">
+      <!-- Seiten aus einer geschwärzten Datei, die nicht geschwärzt sind (Stufe 2.3) -->
+      <div class="ws-warn" id="ws-unredacted" hidden>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
+        <div id="ws-unredacted-list"></div>
+      </div>
       <!-- Eingebettetes Werkzeug (Stufe 2, tool-panel.ts) an Stelle der Übersicht -->
       <section class="ws-tool" id="ws-tool" aria-labelledby="ws-tool-title" hidden>
         <h2 id="ws-tool-title"></h2>
@@ -226,6 +231,51 @@
 
   <p class="visually-hidden" id="ws-live" aria-live="polite"></p>
   <div class="ws-menu" id="ws-menu" hidden></div>
+
+  <!-- Bereiche zum Schwärzen festlegen (Stufe 2.3, redact-dialog.ts); Texte aus „PDF schwärzen“ -->
+  <dialog class="ws-dialog ws-sign" id="ws-redact" aria-labelledby="ws-redact-title">
+    <h2 id="ws-redact-title"></h2>
+    <p class="hint" id="ws-redact-keys">
+      Zieh mit Maus, Stift oder Finger einen Bereich über die Stelle. Ohne Maus: „Bereich
+      hinzufügen“, dann mit den Pfeiltasten verschieben, mit Umschalt und Pfeiltasten die Größe
+      ändern, mit Entf löschen.
+    </p>
+    <div class="page-nav">
+      <button type="button" class="btn icon" id="ws-redact-prev" aria-label="Vorherige Seite">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-left" /></svg>
+      </button>
+      <span id="ws-redact-page" aria-live="polite"></span>
+      <button type="button" class="btn icon" id="ws-redact-next" aria-label="Nächste Seite">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-right" /></svg>
+      </button>
+    </div>
+    <div class="ws-redact-tools">
+      <button type="button" class="btn ghost sm" id="ws-redact-add">Bereich hinzufügen</button>
+      <button type="button" class="btn ghost sm" id="ws-redact-clear-page">
+        Bereiche dieser Seite entfernen
+      </button>
+    </div>
+    <div class="ws-sign-stage ws-redact-stage" id="ws-redact-stage">
+      <div class="page-view" id="ws-redact-view">
+        <div class="rect-layer redact" id="ws-redact-layer"></div>
+      </div>
+    </div>
+    <div class="ws-dialog-actions">
+      <button type="button" class="btn ghost" id="ws-redact-cancel">Abbrechen</button>
+      <button type="button" class="btn" id="ws-redact-ok">Übernehmen</button>
+    </div>
+  </dialog>
+
+  <!-- Vor dem Speichern: nicht geschwärzte Seiten aus einer geschwärzten Datei (Stufe 2.3) -->
+  <dialog class="ws-dialog" id="ws-unredacted-dialog" aria-labelledby="ws-unredacted-title">
+    <h2 id="ws-unredacted-title"></h2>
+    <div id="ws-unredacted-dialog-list"></div>
+    <div class="ws-dialog-actions">
+      <button type="button" class="btn ghost" id="ws-unredacted-show"></button>
+      <button type="button" class="btn ghost" id="ws-unredacted-cancel">Abbrechen</button>
+      <button type="button" class="btn" id="ws-unredacted-save"></button>
+    </div>
+  </dialog>
 
   <!-- Unterschrift auf eine Seite setzen (Stufe 2.2, sign-dialog.ts) -->
   <dialog class="ws-dialog ws-sign" id="ws-sign" aria-labelledby="ws-sign-title">

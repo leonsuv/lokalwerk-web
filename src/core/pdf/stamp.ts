@@ -25,13 +25,9 @@ export { unsupportedChars } from './winansi.ts';
 import { pageIndices, type PageRange } from './page-ranges.ts';
 import { pageNumberText, type PageNumberOptions } from './page-numbers.ts';
 export { pageNumberText, type NumberFormat, type PageNumberOptions } from './page-numbers.ts';
-import {
-  diagonalAngle,
-  normalizeRotation,
-  placeAtEdge,
-  placeCentered,
-  visibleSize,
-} from './stamp-geometry.ts';
+import { normalizeRotation, placeAtEdge, toUserSpace, visibleSize } from './stamp-geometry.ts';
+import { CAP_HEIGHT, MM, stampInView, type StampLookOptions } from './stamp-layout.ts';
+export { diagonalFontSize, type StampColor, type StampPlacement } from './stamp-layout.ts';
 
 /** Zeichenvorrat von Helvetica (WinAnsi), aus der in pdf-lib eingebauten Schrift gelesen */
 export async function standardFontCharset(): Promise<number[]> {
@@ -73,14 +69,6 @@ export async function inspectForStamp(bytes: Uint8Array): Promise<PdfFacts> {
   const doc = await loadPdf(bytes);
   return { pages: doc.getPageCount(), signed: isSigned(doc, bytes) };
 }
-
-const MM = 72 / 25.4;
-
-/**
- * Versalhöhe von Helvetica und Helvetica-Bold: 718/1000 der Schriftgröße (CapHeight in den Adobe
- * Core 14 AFM, wie sie @pdf-lib/standard-fonts mitbringt; geprüft am 25.09.2026).
- */
-const CAP_HEIGHT = 0.718;
 
 async function save(doc: PDFDocument): Promise<Uint8Array> {
   try {
@@ -132,29 +120,9 @@ export async function drawPageNumbers(doc: PDFDocument, options: PageNumberOptio
   });
 }
 
-export type StampPlacement = 'diagonal' | 'top' | 'bottom';
-export type StampColor = 'gray' | 'red' | 'blue';
-
-const COLORS: Record<StampColor, [number, number, number]> = {
-  gray: [0.45, 0.45, 0.45],
-  red: [0.8, 0.1, 0.1],
-  blue: [0.15, 0.3, 0.8],
-};
-
-export interface StampOptions {
-  text: string;
-  placement: StampPlacement;
-  color: StampColor;
-  /** 0 bis 1 */
-  opacity: number;
+export interface StampOptions extends StampLookOptions {
   /** Seiten; leer heißt alle */
   pages: PageRange[];
-}
-
-/** Schriftgröße für den diagonalen Stempel: Zeile etwa 70 % der Diagonale, 12 bis 150 Punkt */
-export function diagonalFontSize(diagonal: number, widthAtOnePoint: number): number {
-  if (widthAtOnePoint <= 0) return 12;
-  return Math.max(12, Math.min(150, (0.7 * diagonal) / widthAtOnePoint));
 }
 
 export async function addStamp(bytes: Uint8Array, options: StampOptions): Promise<Uint8Array> {
@@ -184,38 +152,21 @@ export function drawStamp(
   font: PDFFont,
   options: Omit<StampOptions, 'pages'>,
 ): void {
-  const [r, g, b] = COLORS[options.color];
   const box = page.getCropBox();
   const rotation = normalizeRotation(page.getRotation().angle);
-  let size = 28;
-  let place;
-  if (options.placement === 'diagonal') {
-    const { width, height } = visibleSize(box, rotation);
-    size = diagonalFontSize(Math.hypot(width, height), font.widthOfTextAtSize(options.text, 1));
-    place = placeCentered(
-      box,
-      rotation,
-      diagonalAngle(box, rotation),
-      font.widthOfTextAtSize(options.text, size),
-      size * CAP_HEIGHT,
-    );
-  } else {
-    place = placeAtEdge(
-      box,
-      rotation,
-      options.placement === 'top' ? 'top-center' : 'bottom-center',
-      font.widthOfTextAtSize(options.text, size),
-      size * CAP_HEIGHT,
-      12 * MM,
-    );
-  }
+  const { width, height } = visibleSize(box, rotation);
+  const stamp = stampInView(width, height, options, (size) =>
+    font.widthOfTextAtSize(options.text, size),
+  );
+  const [r, g, b] = stamp.rgb;
+  const at = toUserSpace(box, rotation, stamp.vx, stamp.vy);
   page.drawText(options.text, {
-    x: place.x,
-    y: place.y,
-    size,
+    x: at.x,
+    y: at.y,
+    size: stamp.size,
     font,
     color: rgb(r, g, b),
-    opacity: Math.min(1, Math.max(0.05, options.opacity)),
-    rotate: degrees(place.rotate),
+    opacity: stamp.opacity,
+    rotate: degrees((stamp.angle + rotation) % 360),
   });
 }

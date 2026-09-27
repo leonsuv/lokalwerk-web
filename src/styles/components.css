@@ -1751,6 +1751,50 @@ select[multiple] {
 .ws-sign-stage .page-view .err {
   padding: 2rem;
 }
+/* Seiten-Dialoge: Scrollt der Inhalt (Handy), bleiben die Knöpfe unten sichtbar */
+.ws-dialog.ws-sign .ws-dialog-actions {
+  position: sticky;
+  bottom: -1.2rem;
+  margin: 0 -1.4rem -1.2rem;
+  padding: 0.8rem 1.4rem 1.2rem;
+  background: var(--surface);
+}
+/* Bereiche schwärzen (Stufe 2.3): über der Seite stehen Seitenwechsel und Knöpfe, daher
+   weniger Höhe für die Seite als bei der Unterschrift */
+.ws-sign-stage.ws-redact-stage {
+  max-height: calc(100vh - 21rem);
+}
+/* Bereiche schwärzen (Stufe 2.3): Knöpfe über der Seite */
+.ws-redact-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.8rem 0 0.6rem;
+}
+/* Nicht geschwärzte Seiten aus einer geschwärzten Datei: Warnung in der Fehlerfarbe */
+.ws-warn {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  background: var(--err-soft);
+  color: var(--err-ink);
+  font-size: 0.88rem;
+}
+.ws-warn svg {
+  flex: none;
+  margin-top: 0.1rem;
+}
+.ws-warn p {
+  margin: 0;
+}
+.ws-warn p + p {
+  margin-top: 0.6rem;
+}
+.ws-warn .btn {
+  margin-top: 0.35rem;
+}
 /* Marken für Stempel und Unterschrift auf einer Seite (Stufe 2.2) */
 .ws-ops {
   display: inline-flex;
@@ -1944,6 +1988,7 @@ select[multiple] {
 }
 .ws-dialog-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;

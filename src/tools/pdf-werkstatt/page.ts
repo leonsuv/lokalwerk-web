@@ -10,6 +10,7 @@ import { imagePageBox } from '../../core/workshop/export-plan.ts';
 import { addSources, renameDoc } from '../../core/workshop/commands.ts';
 import {
   allPages,
+  formSourceOf,
   indexPages,
   MEMORY_HINT_BYTES,
   NO_FACTS,
@@ -18,10 +19,13 @@ import {
   type PagePick,
   type Source,
   type SourceId,
+  type UnredactedPages,
+  unredactedPages,
 } from '../../core/workshop/model.ts';
 import {
   moveFocus,
   selectionSummary,
+  selectKeys,
   selectOnly,
   selectRange,
   toggle,
@@ -46,6 +50,7 @@ import { SourceFiles } from './sources.ts';
 import { WorkshopStore } from './store.ts';
 import * as t from './texts.ts';
 import { Thumbs } from './thumbs.ts';
+import { RedactDialog } from './redact-dialog.ts';
 import { SignDialog } from './sign-dialog.ts';
 import { ToolPanel } from './tool-panel.ts';
 import type { AddImageResult, AddPdfResult, WorkshopRequest } from './workshop.worker.ts';
@@ -67,10 +72,12 @@ const messageFor = (error: unknown): string =>
   (error instanceof WorkerError ? t.ERRORS[error.code] : undefined) ?? t.FALLBACK_ERROR;
 
 const files = new SourceFiles(pdfjs);
-const store = new WorkshopStore((ids) => {
+/** pdf.js-Dokument schließen, Datei im Worker vergessen */
+function releaseSources(ids: SourceId[]): void {
   files.release(ids);
   void client.request({ type: 'release', ids }).catch(() => undefined);
-});
+}
+const store = new WorkshopStore(releaseSources);
 const thumbs = new Thumbs(files, pdfjs);
 const boardEl = $('#ws-board');
 const board = new Board(boardEl, thumbs, new SourceBadges());
@@ -104,7 +111,29 @@ const toolPanel = new ToolPanel(
   new SignDialog(store, files, pdfjs),
   store.ids,
   showToast,
+  {
+    redactDialog: new RedactDialog(store, files, pdfjs),
+    files,
+    pdfjs,
+    client,
+    release: releaseSources,
+    // Nach dem Schwärzen: Hinweis auf nicht geschwärzte Seiten derselben Datei gleich mit ansagen
+    redacted: (name) => {
+      const found = unredactedPages(store.state);
+      announce(
+        [t.redactDone(name), ...found.map((f) => t.unredacted(f.keys.length, f.doc.name))].join(
+          ' ',
+        ),
+      );
+    },
+  },
 );
+
+/** Dokument für „Formular ausfüllen …“, wenn es eine Quelle mit Formular hat */
+function hasForm(id: DocId | null | undefined): boolean {
+  const doc = id ? store.state.docs.find((d) => d.id === id) : undefined;
+  return !!doc && formSourceOf(store.state, doc) !== null;
+}
 
 /** Seite für „Unterschrift …“: die Seite mit dem Fokus, sonst die erste ausgewählte */
 function signatureTarget(): string | null {
@@ -222,6 +251,8 @@ const mobile = setupMobile({
     },
     { id: 'stamp', label: t.STAMP_ITEM, disabled: !mobileDocWithPages() },
     { id: 'signature', label: t.SIGN_ITEM, disabled: store.selection.keys.size !== 1 },
+    { id: 'redact', label: t.REDACT_ITEM, disabled: !mobileDocWithPages() },
+    { id: 'form', label: t.FORM_ITEM, disabled: !hasForm(mobileDocWithPages()) },
   ],
   runMore: (id) => {
     const choices: Record<string, () => void> = {
@@ -239,6 +270,14 @@ const mobile = setupMobile({
       stamp: () => {
         const doc = mobileDocWithPages();
         if (doc) toolPanel.stamp(doc, $('#ws-actions [data-m="more"]'));
+      },
+      redact: () => {
+        const doc = mobileDocWithPages();
+        if (doc) toolPanel.redact(doc, $('#ws-actions [data-m="more"]'));
+      },
+      form: () => {
+        const doc = mobileDocWithPages();
+        if (doc) toolPanel.form(doc, $('#ws-actions [data-m="more"]'));
       },
       // Handy: genau eine ausgewählte Seite
       signature: () => {
@@ -304,6 +343,7 @@ function render(): void {
   const loss = lossSources(state, state.docs);
   $('#ws-loss').hidden = loss.length === 0;
   if (loss.length > 0) $('#ws-loss-text').textContent = t.lossNote(loss);
+  renderUnredacted();
   preview.refresh();
   mobile.render();
   toolPanel.refresh();
@@ -426,6 +466,8 @@ function openToolsMenu(button: HTMLElement): void {
       { id: 'page-numbers', label: t.PAGE_NUMBERS_ITEM, disabled: !doc },
       { id: 'stamp', label: t.STAMP_ITEM, disabled: !doc },
       { id: 'signature', label: t.SIGN_ITEM, disabled: signatureTarget() === null },
+      { id: 'redact', label: t.REDACT_ITEM, disabled: !doc, separator: true },
+      { id: 'form', label: t.FORM_ITEM, disabled: !hasForm(doc?.id) },
     ],
     { x: rect.left, y: rect.bottom + 4 },
     {
@@ -435,6 +477,8 @@ function openToolsMenu(button: HTMLElement): void {
       onChoose: (id) => {
         if (id === 'page-numbers' && doc) toolPanel.pageNumbers(doc.id, button);
         if (id === 'stamp' && doc) toolPanel.stamp(doc.id, button);
+        if (id === 'redact' && doc) toolPanel.redact(doc.id, button);
+        if (id === 'form' && doc) toolPanel.form(doc.id, button);
         const page = signatureTarget();
         if (id === 'signature' && page) toolPanel.signature(page, button);
       },
@@ -466,13 +510,103 @@ function openBlankMenu(anchor: HTMLElement, returnFocus: HTMLElement, opener?: H
   );
 }
 
+// ---------------------------------------------------------------------------------------------
+// Nicht geschwärzte Seiten aus einer geschwärzten Datei (Stufe 2.3)
+
+/** Seiten auswählen, zur ersten springen (auf dem Handy deren Dokument zeigen) */
+function showPages(keys: readonly string[]): void {
+  const [first] = keys;
+  if (!first) return;
+  const doc = indexPages(store.state).get(first)?.doc;
+  if (doc) mobile.showDoc(doc.id);
+  store.select(selectKeys(keys));
+  board.focusTile(first);
+}
+
+/** Absätze mit je einem Satz und „Zu den Seiten“ */
+function unredactedLines(found: readonly UnredactedPages[], onShow?: () => void): HTMLElement[] {
+  return found.map((f) => {
+    const p = document.createElement('p');
+    const show = document.createElement('button');
+    show.type = 'button';
+    show.className = 'btn ghost sm';
+    show.textContent = t.UNREDACTED_SHOW;
+    show.addEventListener('click', () => {
+      onShow?.();
+      showPages(f.keys);
+    });
+    p.append(t.unredacted(f.keys.length, f.doc.name), document.createElement('br'), show);
+    return p;
+  });
+}
+
+let unredactedShown = '';
+function renderUnredacted(): void {
+  const found = unredactedPages(store.state);
+  // Nur neu aufbauen, wenn sich etwas geändert hat (Fokus auf einem Knopf bleibt erhalten)
+  const key = found.map((f) => `${f.doc.id}:${f.doc.name}:${f.keys.join(',')}`).join('|');
+  if (key === unredactedShown) return;
+  unredactedShown = key;
+  $('#ws-unredacted').hidden = found.length === 0;
+  $('#ws-unredacted-list').replaceChildren(...unredactedLines(found));
+}
+
+const unredactedDialog = $<HTMLDialogElement>('#ws-unredacted-dialog');
+$('#ws-unredacted-title').textContent = t.UNREDACTED_TITLE;
+$('#ws-unredacted-show').textContent = t.UNREDACTED_SHOW;
+$('#ws-unredacted-save').textContent = t.UNREDACTED_SAVE;
+let unredactedSave: (() => void) | null = null;
+let unredactedKeys: string[] = [];
+$('#ws-unredacted-cancel').addEventListener('click', () => unredactedDialog.close());
+$('#ws-unredacted-show').addEventListener('click', () => {
+  unredactedDialog.close();
+  showPages(unredactedKeys);
+});
+$('#ws-unredacted-save').addEventListener('click', () => {
+  const save = unredactedSave;
+  unredactedDialog.close();
+  save?.();
+});
+unredactedDialog.addEventListener('close', () => {
+  unredactedSave = null;
+});
+
+/**
+ * Speichern; enthalten die gespeicherten Dokumente Seiten aus einer geschwärzten Datei, die
+ * nicht geschwärzt sind, erscheint der Hinweis vorher noch einmal (Leon, 27.09.2026).
+ */
+function saveChecked(found: readonly UnredactedPages[], save: () => void): void {
+  if (found.length === 0) {
+    save();
+    return;
+  }
+  unredactedSave = save;
+  unredactedKeys = found.flatMap((f) => f.keys);
+  $('#ws-unredacted-dialog-list').replaceChildren(
+    ...found.map((f) => {
+      const p = document.createElement('p');
+      p.textContent = t.unredacted(f.keys.length, f.doc.name);
+      return p;
+    }),
+  );
+  unredactedDialog.showModal();
+  $('#ws-unredacted-cancel').focus();
+}
+
 // Export
 $('#ws-export-doc').addEventListener('click', () => {
   const doc = currentDoc(store.state, store.selection);
-  if (doc) void exporter.doc(doc.id);
+  if (doc) saveChecked(unredactedPages(store.state, [doc]), () => void exporter.doc(doc.id));
 });
-$('#ws-export-sel').addEventListener('click', () => void exporter.selection(actions.targets()));
-$('#ws-export-zip').addEventListener('click', () => void exporter.all());
+$('#ws-export-sel').addEventListener('click', () => {
+  const keys = actions.targets();
+  saveChecked(unredactedPages(store.state, store.state.docs, new Set(keys)), () => {
+    void exporter.selection(keys);
+  });
+});
+$('#ws-export-zip').addEventListener('click', () => {
+  saveChecked(unredactedPages(store.state), () => void exporter.all());
+});
 
 // ---------------------------------------------------------------------------------------------
 // Spalten: Auswahl mit der Maus, Menüs, Umbenennen
@@ -630,6 +764,8 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
         disabled: current.pages.length === 0,
       },
       { id: 'stamp', label: t.STAMP_ITEM, disabled: current.pages.length === 0 },
+      { id: 'redact', label: t.REDACT_ITEM, disabled: current.pages.length === 0 },
+      { id: 'form', label: t.FORM_ITEM, disabled: !hasForm(doc) },
       { id: 'duplicate-doc', label: 'Dokument duplizieren', separator: true },
       {
         id: 'merge-next',
@@ -655,9 +791,15 @@ function openDocMenu(doc: DocId, at: { x: number; y: number }, opener: HTMLEleme
             appendTarget = doc;
             input.click();
           },
-          save: () => void exporter.doc(doc),
+          save: () => {
+            const target = store.state.docs.find((d) => d.id === doc);
+            if (target)
+              saveChecked(unredactedPages(store.state, [target]), () => void exporter.doc(doc));
+          },
           'page-numbers': () => toolPanel.pageNumbers(doc, opener),
           stamp: () => toolPanel.stamp(doc, opener),
+          redact: () => toolPanel.redact(doc, opener),
+          form: () => toolPanel.form(doc, opener),
           'merge-next': () => nextDoc && actions.merge([doc, nextDoc.id]),
           'duplicate-doc': () => actions.duplicateDoc(doc),
           'close-doc': () => actions.closeDoc(doc),

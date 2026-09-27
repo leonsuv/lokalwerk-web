@@ -26,6 +26,7 @@ import {
   type PagePick,
   type PageRef,
   type PageTemplate,
+  type Rotation,
   type SignatureImage,
   type Source,
   type SourceId,
@@ -380,6 +381,86 @@ export function setSignatures(
           return withOps(page, [...others, ...signatures]);
         }),
       };
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Einbacken (Stufe 2.3): Schwärzen und Formular ausfüllen
+
+/** Eine Seite beim Einbacken: wie sie beim Start aussah und was an ihre Stelle kommt */
+export interface BakedPage {
+  key: PageKey;
+  /** Seite beim Start des Werkzeugs; hat sie sich seitdem geändert, geschieht nichts */
+  before: PageRef;
+  /** Seite in der neuen Quelle (ab 0) und ihre zusätzliche Drehung */
+  index: number;
+  rotate: Rotation;
+}
+
+/** Gleiche Grundlage: dieselbe Seite derselben Quelle mit derselben Drehung (Operationen egal) */
+export function sameBase(a: PageRef, b: PageRef): boolean {
+  if (a.kind !== b.kind || a.rotate !== b.rotate) return false;
+  if (a.kind === 'blank' && b.kind === 'blank') {
+    return a.box.width === b.box.width && a.box.height === b.box.height;
+  }
+  return a.kind === 'source' && b.kind === 'source' && a.source === b.source && a.index === b.index;
+}
+
+/**
+ * Seiten eines Dokuments durch Seiten einer neu erzeugten Quelle ersetzen (plan-phase3.md 7.2).
+ * Die Seiten behalten ihre Schlüssel und Operationen (Stempel, Unterschriften); eine
+ * Unterschrift bleibt dabei an derselben Stelle der angezeigten Seite. Rückgängig stellt die
+ * alten Verweise wieder her; die alte Quelle bleibt, solange der Verlauf sie braucht.
+ *
+ * Nichts geschieht, wenn eine Seite fehlt oder sich ihre Grundlage seit dem Start geändert
+ * hat, und mit `whole`, wenn das Dokument inzwischen andere Seiten enthält (Schwärzen gilt für
+ * das ganze Dokument).
+ */
+export function bakePages(
+  id: DocId,
+  source: Source,
+  pages: readonly BakedPage[],
+  label: string,
+  whole: boolean,
+): Command {
+  return {
+    label,
+    apply(state) {
+      const doc = findDoc(state, id);
+      if (!doc || pages.length === 0) return unchanged(state);
+      const byKey = new Map(pages.map((p) => [p.key, p]));
+      if (whole && (doc.pages.length !== byKey.size || doc.pages.some((p) => !byKey.has(p.key)))) {
+        return unchanged(state);
+      }
+      const present = new Set(doc.pages.map((p) => p.key));
+      if (pages.some((p) => !present.has(p.key))) return unchanged(state);
+      if (
+        !doc.pages.every((p) => {
+          const b = byKey.get(p.key);
+          return !b || sameBase(p, b.before);
+        })
+      ) {
+        return unchanged(state);
+      }
+      const next = doc.pages.map((page): PageRef => {
+        const baked = byKey.get(page.key);
+        if (!baked) return page;
+        const shift = baked.rotate - page.rotate;
+        const ops = page.ops?.map((op) =>
+          op.type === 'signature' ? { ...op, turn: normalizeRotation(op.turn + shift) } : op,
+        );
+        const ref: PageRef = {
+          key: page.key,
+          kind: 'source',
+          source: source.id,
+          index: baked.index,
+          rotate: baked.rotate,
+        };
+        return ops?.length ? { ...ref, ops } : ref;
+      });
+      const docs = replaceDoc(state.docs, { ...doc, pages: next });
+      return { state: withDocs(state, docs, addToSources(state.sources, [source])) };
     },
   };
 }

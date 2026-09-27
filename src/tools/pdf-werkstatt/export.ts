@@ -111,7 +111,11 @@ export class Exporter {
       // Warnung beim Verlassen erst aus, wenn alle Dokumente mit Seiten gespeichert sind
       const all = state.docs.filter((d) => d.pages.length > 0).every((d) => docIds.includes(d.id));
       if (all && this.store.state === state) this.store.markSaved();
-      const unchanged = files.filter((f) => f.unchanged).length;
+      // „Originaldatei“ nur für geladene Dateien: Eine geschwärzte oder ausgefüllte Quelle
+      // (Stufe 2.3) ist keine, der Satz ließe sonst an das ungeschwärzte Original denken.
+      const unchanged = files.filter(
+        (f, i) => f.unchanged && !state.sources.get(plan[i]?.original ?? '')?.origin,
+      ).length;
       this.ui.done(
         t.exportDone(
           files.map((f) => f.name),

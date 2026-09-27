@@ -112,7 +112,7 @@ export const NOTHING_TO_REDO = 'Nichts zum Wiederholen';
 export const HISTORY_LIMIT_HINT =
   'Ältere Schritte lassen sich nicht mehr rückgängig machen: Die Werkstatt merkt sich die letzten 100.';
 export const renamed = (name: string): string => `Dokument umbenannt in ${name}`;
-export const docCreated = (name: string): string => `Neues Dokument ${name} angelegt`;
+export const docCreated = (name: string): string => `${name} angelegt`;
 export const docClosed = (name: string): string => `${name} geschlossen`;
 export const docDuplicated = (name: string): string => `${name} angelegt`;
 export const added = (docs: number, pageCount: number): string =>
@@ -207,7 +207,7 @@ export function lossNote(
     return `${name} enthält ${list}.`;
   });
   const more = entries.length > 3 ? ` Weitere ${entries.length - 3} Dateien ebenso.` : '';
-  return `${parts.join(' ')}${more} Diese Angaben sind in neu zusammengesetzten PDFs nicht mehr enthalten, wie beim Zusammenfügen.`;
+  return `${parts.join(' ')}${more} Diese Angaben sind in neu zusammengesetzten PDFs nicht mehr enthalten.`;
 }
 
 // Handy-Ansicht (plan-phase3.md 5.4)

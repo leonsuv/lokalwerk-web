@@ -441,6 +441,26 @@ const app: App = {
       },
     });
   },
+  cutsEvery: () => {
+    const doc = activeDoc();
+    if (!doc || doc.pages.length < 2) return;
+    askDialog.open({
+      title: t.CUTS_EVERY_TITLE,
+      sub: t.cutsEverySub(doc.name, doc.pages.length),
+      label: t.CUTS_EVERY_LABEL,
+      ok: t.CUTS_EVERY_OK,
+      inputMode: 'numeric',
+      value: '1',
+      submit: (value) => {
+        const n = Number(value);
+        if (!Number.isInteger(n) || n < 1 || n >= doc.pages.length) {
+          return t.cutsEveryError(doc.pages.length);
+        }
+        actions.cutsEvery(doc.id, n);
+        return null;
+      },
+    });
+  },
   showGuide: () => {
     const target = document.getElementById('ws-explain');
     target?.scrollIntoView({ behavior: 'smooth', block: 'start' });

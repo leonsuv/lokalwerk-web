@@ -615,6 +615,26 @@ export function setCuts(keys: Iterable<PageKey>, on: boolean): Command {
   };
 }
 
+/** Trennlinien eines Dokuments durch genau diese ersetzen (Trennlinien alle n Seiten) */
+export function replaceCuts(id: DocId, keys: readonly PageKey[]): Command {
+  return {
+    label: 'Trennlinien setzen',
+    apply(state) {
+      const doc = findDoc(state, id);
+      if (!doc) return unchanged(state);
+      const inner = new Set(doc.pages.slice(1).map((p) => p.key));
+      const cuts = keys.filter((k) => inner.has(k));
+      const before = doc.cuts ?? [];
+      if (cuts.length === before.length && cuts.every((k) => before.includes(k))) {
+        return unchanged(state);
+      }
+      const { cuts: _old, ...rest } = doc;
+      const next: Doc = cuts.length > 0 ? { ...rest, cuts } : rest;
+      return { state: withDocs(state, replaceDoc(state.docs, next)) };
+    },
+  };
+}
+
 /** Alle Trennlinien der Dokumente entfernen */
 export function clearCuts(ids: Iterable<DocId>): Command {
   return {

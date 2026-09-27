@@ -11,6 +11,7 @@ import {
   closeDoc,
   joinDocs,
   moveDoc,
+  replaceCuts,
   reversePages,
   setCuts,
   splitAtCuts,
@@ -40,6 +41,7 @@ import {
   type DocId,
   type PageBox,
   type PageKey,
+  visiblePageSize,
 } from '../../core/workshop/model.ts';
 import {
   EMPTY_SELECTION,
@@ -574,6 +576,39 @@ export function createActions(ctx: ActionContext) {
       const target = findDoc(store.state, doc);
       if (!target) return;
       selectAnnounce(target.pages.filter((_, i) => (i % 2 === 0) === odd).map((p) => p.key));
+    },
+
+    /** Trennlinien alle `n` Seiten setzen (Teilen nach Seitenzahl, erst ansehen, dann teilen) */
+    cutsEvery: (doc: DocId, n: number): void => {
+      const target = findDoc(store.state, doc);
+      if (!target || n < 1) return;
+      const keys = target.pages.filter((_, i) => i > 0 && i % n === 0).map((p) => p.key);
+      if (keys.length === 0) {
+        ctx.announce(t.CUTS_EVERY_NONE);
+        return;
+      }
+      store.run(replaceCuts(doc, keys));
+      ctx.announce(t.cutsEveryDone(keys.length + 1, target.name));
+    },
+
+    /** Seiten im Querformat um 90 Grad drehen, damit alle hochkant stehen */
+    portrait: (): void => {
+      const keys = needPages();
+      if (!keys) return;
+      const index = indexPages(store.state);
+      const wide = keys.filter((k) => {
+        const page = index.get(k)?.page;
+        if (!page) return false;
+        const size = visiblePageSize(store.state, page);
+        return size.width > size.height;
+      });
+      if (wide.length === 0) {
+        ctx.announce(t.PORTRAIT_NONE);
+        return;
+      }
+      store.run(rotatePages(wide, 90));
+      ctx.announce(t.portraitDone(wide.length));
+      ctx.focusAfterRender();
     },
 
     /** Seiten nach Nummern (ab 1) im Dokument auswählen */

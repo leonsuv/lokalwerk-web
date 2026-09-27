@@ -407,6 +407,8 @@ export const C = {
   cutRemoveHere: 'Trennlinie davor entfernen',
   splitHere: 'Dokument hier teilen',
   splitCuts: 'An Trennlinien teilen',
+  cutsEvery: 'Trennlinien alle … Seiten',
+  portrait: 'Querformat hochkant drehen',
   clearCuts: 'Alle Trennlinien entfernen',
   openSingle: 'Seite groß zeigen',
   rename: 'Umbenennen',
@@ -588,3 +590,18 @@ export const GRID_KEYS: readonly (readonly [string, string])[] = [
   [combo('shift', 'F10'), 'Menü der Seite'],
   ['F10', 'Menüleiste'],
 ];
+
+// Teilen nach Seitenzahl, Querformat hochkant
+export const CUTS_EVERY_TITLE = 'Trennlinien alle … Seiten';
+export const CUTS_EVERY_LABEL = 'Seiten je Teil';
+export const CUTS_EVERY_OK = 'Trennlinien setzen';
+export const cutsEverySub = (name: string, count: number): string =>
+  `${name}, ${pages(count)}. Vorhandene Trennlinien werden ersetzt; geteilt wird erst mit „An Trennlinien teilen“.`;
+export const cutsEveryError = (count: number): string =>
+  `Gib eine Zahl von 1 bis ${Math.max(1, count - 1)} ein.`;
+export const cutsEveryDone = (parts: number, name: string): string =>
+  `Trennlinien gesetzt: ${name} ergibt ${parts} Teile. Mit „An Trennlinien teilen“ entstehen die Dokumente.`;
+export const CUTS_EVERY_NONE =
+  'Das Dokument ist nicht länger als ein Teil. Es wurde keine Trennlinie gesetzt.';
+export const portraitDone = (n: number): string => `${pages(n)} im Querformat hochkant gedreht`;
+export const PORTRAIT_NONE = 'Keine der Seiten steht im Querformat.';

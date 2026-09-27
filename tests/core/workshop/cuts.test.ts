@@ -6,6 +6,7 @@ import {
   joinDocs,
   mergeDocs,
   moveDoc,
+  replaceCuts,
   movePages,
   setCuts,
   setPageNumbers,
@@ -59,6 +60,16 @@ describe('Trennlinien', () => {
     // Keine Linien mehr, Seitenzahlen gelten für jeden Teil
     expect(result.state.docs.every((d) => d.cuts === undefined)).toBe(true);
     expect(result.state.docs.slice(0, 3).every((d) => d.ops?.length === 1)).toBe(true);
+  });
+
+  it('ersetzt alle Linien eines Dokuments in einem Schritt (alle n Seiten)', () => {
+    const b = bench(pdfSource('a', 7));
+    const doc = b.state.docs[0]?.id ?? '';
+    b.run(setCuts(keysOf(b.state, 0, 1), true));
+    b.run(replaceCuts(doc, keysOf(b.state, 0, 0, 3, 6)));
+    expect(b.state.docs[0] && cutIndices(b.state.docs[0])).toEqual([3, 6]);
+    const before = b.state;
+    expect(b.run(replaceCuts(doc, keysOf(b.state, 0, 6, 3)))).toBe(before);
   });
 
   it('ohne Linien ändert „An Trennlinien teilen“ nichts', () => {

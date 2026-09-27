@@ -74,6 +74,7 @@ export interface App {
   openShortcuts: () => void;
   goToPage: () => void;
   selectRange: () => void;
+  cutsEvery: () => void;
   showGuide: () => void;
   openSingle: (key?: PageKey) => void;
 }
@@ -421,6 +422,13 @@ export function createCommands(app: App): Map<string, Cmd> {
       group: 'doc',
     },
     {
+      id: 'cuts-every',
+      label: t.C.cutsEvery,
+      enabled: () => (doc()?.pages.length ?? 0) > 1,
+      run: app.cutsEvery,
+    },
+    { id: 'portrait', label: t.C.portrait, enabled: hasPages, run: actions.portrait },
+    {
       id: 'clear-cuts',
       label: t.C.clearCuts,
       enabled: () => {
@@ -700,6 +708,7 @@ export function menubar(ctx: MenuContext): { label: string; items: () => MenuEnt
         e('rotate-right'),
         e('rotate-left'),
         e('rotate-180'),
+        e('portrait'),
         SEP,
         e('shift-up'),
         e('shift-down'),
@@ -745,6 +754,7 @@ export function menubar(ctx: MenuContext): { label: string; items: () => MenuEnt
         e('duplicate-doc'),
         SEP,
         e('split-cuts'),
+        e('cuts-every'),
         e('clear-cuts'),
         e('merge'),
         {

@@ -141,9 +141,9 @@ Beschriftung einer Seite: „Seite 3 von 12, aus Anlagen.pdf Seite 1, gedreht um
 
 „PDF-Seiten bearbeiten“: Der Knopf übergibt die Datei mit den Änderungen aus dem Werkzeug (Reihenfolge, Drehung, gelöschte Seiten); die Werkstatt zeigt das Dokument im bearbeiteten Zustand. Ein Zusatzsatz ist damit nicht nötig.
 
-## 10. Stufe 2, Schritt 2.1: Seitenzahlen in der Werkstatt (Entwurf zur Freigabe, Anhaltepunkt C)
+## 10. Stufe 2, Schritt 2.1: Seitenzahlen in der Werkstatt
 
-Stand: 27.09.2026. **Noch nicht freigegeben.** Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2“), `src/tools/pdf-seitenzahlen/embed.ts`, Befehlsnamen `src/core/workshop/commands.ts`.
+Stand: 27.09.2026. **Freigegeben von Leon am 27.09.2026**, einschließlich des Satzes für den Erklärtext (eingebaut). Fundorte: `src/tools/pdf-werkstatt/texts.ts` (Abschnitt „Stufe 2“), `src/tools/pdf-seitenzahlen/embed.ts`, Befehlsnamen `src/core/workshop/commands.ts`.
 
 **Wo es erscheint**
 
@@ -169,4 +169,4 @@ Stand: 27.09.2026. **Noch nicht freigegeben.** Fundorte: `src/tools/pdf-werkstat
 | Entfernt | „Seitenzahlen von Vertrag entfernt“ |
 | Verlauf | „Rückgängig: Seitenzahlen“ / „Rückgängig: Seitenzahlen entfernen“ (ebenso „Wiederholen: …“) |
 
-**Vorschlag, noch nicht eingebaut** (Erklärtext der Werkstatt ist freigegeben): ein Satz am Ende von „So funktioniert es“: „Über „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern gesetzt und passen zur dann gültigen Reihenfolge.“
+**Erklärtext der Werkstatt**, Satz am Ende von „So funktioniert es“ (freigegeben, eingebaut): „Über „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern gesetzt und passen zur dann gültigen Reihenfolge.“

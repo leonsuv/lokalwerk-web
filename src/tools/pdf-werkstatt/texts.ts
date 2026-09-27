@@ -1,7 +1,7 @@
 /**
  * Texte der PDF-Werkstatt an einer Stelle (AGENTS.md Abschnitt 7). Freigegeben am 27.09.2026
- * (docs/texte-pdf-werkstatt.md); die Texte der Stufe 2 unten sind Entwurf zur Freigabe bei
- * Anhaltepunkt C. Die Befehlsnamen stehen in src/core/workshop/commands.ts.
+ * (docs/texte-pdf-werkstatt.md), die der Stufe 2.1 unten ebenfalls (Abschnitt 10). Die
+ * Befehlsnamen stehen in src/core/workshop/commands.ts.
  */
 
 import { formatBytes } from '../../core/format/bytes.ts';
@@ -217,7 +217,7 @@ export const mobileStatus = (count: number): string =>
   count > 0 ? `${pages(count)} ausgewählt` : 'Tippe auf Seiten, um sie auszuwählen.';
 export const MOBILE_HINT = 'Tippen öffnet die Vorschau. Für mehrere Seiten auf „Auswählen“ tippen.';
 
-// Stufe 2: Werkzeuge in der Werkstatt (plan-phase3.md Abschnitt 7), Entwurf zur Freigabe
+// Stufe 2: Werkzeuge in der Werkstatt (plan-phase3.md Abschnitt 7)
 export const TOOLS_MENU = 'Werkzeuge';
 export const PAGE_NUMBERS_ITEM = 'Seitenzahlen …';
 export const PAGE_NUMBERS_TITLE = 'Seitenzahlen';

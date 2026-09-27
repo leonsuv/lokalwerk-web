@@ -17,13 +17,14 @@ function icon(id: string, size: number): string {
   return `<svg width="${size}" height="${size}" aria-hidden="true"><use href="#${e(id)}" /></svg>`;
 }
 
-function card(page: ToolPage, tag?: string): string {
+/** Karte eines Werkzeugs; hervorgehobene Werkzeuge (featured, W4) als breite Karte */
+function card(page: ToolPage, tag?: string, wide = false): string {
   const { tool } = page;
+  const text = `<h3>${e(tool.name)}</h3><p>${e(tool.short)}</p>`;
   return [
-    `<a class="tool-card ${tool.category}" href="${e(page.url)}">`,
+    `<a class="tool-card ${tool.category}${wide ? ' featured' : ''}" href="${e(page.url)}">`,
     `<span class="ic">${icon(tool.icon, 24)}</span>`,
-    `<h3>${e(tool.name)}</h3>`,
-    `<p>${e(tool.short)}</p>`,
+    wide ? `<div class="txt">${text}</div>` : text,
     `<div class="foot">${tag ? `<span class="tag">${e(tag)}</span>` : '<span></span>'}<span class="open">Öffnen</span></div>`,
     '</a>',
   ].join('');
@@ -35,17 +36,28 @@ export function toolSearchText(page: ToolPage): string {
   return searchText([page.tool.name, page.tool.short, ...page.tool.keywords, category]);
 }
 
+/** Hervorgehobene zuerst, sonst Reihenfolge des Registers */
+const featuredFirst = (pages: readonly ToolPage[]): ToolPage[] => [
+  ...pages.filter((p) => p.tool.featured),
+  ...pages.filter((p) => !p.tool.featured),
+];
+
 export function renderHomeTools(): string {
-  const cards = TOOL_PAGES.filter((p) => p.tool.home).map((p) => card(p, p.tool.home?.tag));
+  const cards = featuredFirst(TOOL_PAGES.filter((p) => p.tool.home)).map((p) =>
+    card(p, p.tool.home?.tag, p.tool.featured),
+  );
   return `<div class="tool-grid">${cards.join('')}</div>`;
 }
 
 export function renderToolOverview(): string {
   return CATEGORIES.map((category) => {
-    const tools = TOOL_PAGES.filter((p) => p.tool.category === category.id);
+    const tools = featuredFirst(TOOL_PAGES.filter((p) => p.tool.category === category.id));
     if (tools.length === 0) return '';
     const count = `${tools.length} ${tools.length === 1 ? 'Werkzeug' : 'Werkzeuge'}`;
-    const items = tools.map((p) => `<li data-search="${e(toolSearchText(p))}">${card(p)}</li>`);
+    const items = tools.map(
+      (p) =>
+        `<li${p.tool.featured ? ' class="featured"' : ''} data-search="${e(toolSearchText(p))}">${card(p, undefined, p.tool.featured)}</li>`,
+    );
     return [
       `<section class="tool-category" id="${e(category.anchor)}" aria-labelledby="kat-${e(category.anchor)}">`,
       `<div class="section-head"><h2 id="kat-${e(category.anchor)}">${e(category.name)}</h2><p>${count}</p></div>`,

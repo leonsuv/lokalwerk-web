@@ -8,12 +8,13 @@
  * (tests/tools/home-loaders.test.ts).
  */
 
-export interface ToolLoader {
-  markup: () => Promise<string>;
-  open: () => Promise<(files: File[]) => unknown>;
-}
+import type { ToolLoader } from '../../ui/tool-switch.ts';
 
 export const LOADERS: Record<string, ToolLoader> = {
+  'pdf-werkstatt': {
+    markup: async () => (await import('../pdf-werkstatt/main.html?raw')).default,
+    open: async () => (await import('../pdf-werkstatt/page.ts')).openFiles,
+  },
   'pdf-zusammenfuegen': {
     markup: async () => (await import('../pdf-zusammenfuegen/main.html?raw')).default,
     open: async () => (await import('../pdf-zusammenfuegen/page.ts')).addFiles,

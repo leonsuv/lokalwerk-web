@@ -16,7 +16,11 @@ import type { PDFDocumentProxy } from '../../ui/pdfjs/pdfjs.ts';
 import { RectEditor, type NormRect } from '../../ui/rect-editor.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient } from '../../ui/worker-protocol.ts';
+import { workshopLink } from '../../ui/workshop-link.ts';
 import type { RedactRequest } from './redact.worker.ts';
+
+// Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
+const toWorkshop = workshopLink();
 
 const MESSAGES: Record<string, string> = {
   empty: 'Die Datei ist leer.',
@@ -95,6 +99,7 @@ function fileRow(entry: Current): HTMLLIElement {
 }
 
 function render(): void {
+  toWorkshop(current?.state === 'ok' ? [current.file] : null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
   $('#red-empty').hidden = current !== null;
   const ok = current?.state === 'ok' ? current : null;

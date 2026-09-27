@@ -14,7 +14,11 @@ import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
+import { workshopLink } from '../../ui/workshop-link.ts';
 import type { PdfFacts, StampRequest } from './stamp.worker.ts';
+
+// Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
+const toWorkshop = workshopLink();
 
 const MESSAGES: Record<string, string> = {
   empty: 'Die Datei ist leer.',
@@ -115,6 +119,7 @@ function fileRow(entry: Current): HTMLLIElement {
 }
 
 function render(): void {
+  toWorkshop(current?.state === 'ok' ? [current.file] : null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
   $('#stamp-empty').hidden = current !== null;
   $('#stamp-signed').hidden = !(current?.state === 'ok' && current.facts.signed);

@@ -12,8 +12,12 @@ import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
+import { workshopLink } from '../../ui/workshop-link.ts';
 import type { ImagesProgress, ImagesRequest } from './images.worker.ts';
 import { inspectImage, prepareImage, type ImageQuality } from '../../ui/image-prepare.ts';
+
+// Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
+const toWorkshop = workshopLink();
 
 const MESSAGES: Record<string, string> = {
   decode:
@@ -117,6 +121,7 @@ function row(entry: Entry, index: number): HTMLLIElement {
 }
 
 function render(): void {
+  toWorkshop(validEntries().map((e) => e.file));
   list.replaceChildren(...entries.map(row));
   $('#i2p-empty').hidden = entries.length > 0;
   $('#i2p-count').textContent = String(validEntries().length);

@@ -76,4 +76,25 @@ describe('packagesByTool (Lizenzseite: welche Werkzeuge welche Pakete laden)', (
     expect([...result.keys()]).toEqual(['pdf-teilen']);
     expect([...(result.get('pdf-teilen') ?? [])].sort()).toEqual(['pako', 'pdf-lib', 'pdfjs-dist']);
   });
+
+  it('zählt ein nachgeladenes anderes Werkzeug nicht mit (Knopf zur PDF-Werkstatt)', () => {
+    const chunks = [
+      chunk('assets/pdf-zu-bildern/index.html-A.js', {
+        moduleIds: ['/p/src/tools/pdf-zu-bildern/page.ts', '/p/src/ui/workshop-link.ts'],
+        dynamicImports: ['assets/workshop-switch-S.js'],
+      }),
+      chunk('assets/workshop-switch-S.js', {
+        moduleIds: ['/p/src/ui/workshop-switch.ts'],
+        dynamicImports: ['assets/page-W.js'],
+      }),
+      chunk('assets/page-W.js', {
+        moduleIds: ['/p/src/tools/pdf-werkstatt/page.ts'],
+        code: 'new Worker(new URL("/assets/workshop.worker-X.js", import.meta.url))',
+      }),
+    ];
+    const files = new Map([['assets/workshop.worker-X.js', new Set(['pdf-lib'])]]);
+    const result = packagesByTool(chunks, files, new Set(['pdf-zu-bildern', 'pdf-werkstatt']));
+    expect([...(result.get('pdf-zu-bildern') ?? [])]).toEqual([]);
+    expect([...(result.get('pdf-werkstatt') ?? [])]).toEqual(['pdf-lib']);
+  });
 });

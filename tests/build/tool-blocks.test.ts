@@ -12,9 +12,20 @@ describe('Werkzeug-Blöcke aus dem Register', () => {
   it('zeigt auf der Startseite die Werkzeuge mit home-Angabe, mit Schlagwort', () => {
     const html = renderHomeTools();
     for (const p of TOOL_PAGES.filter((t) => t.tool.home)) {
-      expect(html).toContain(`<a class="tool-card ${p.tool.category}" href="${p.url}">`);
+      const cls = `tool-card ${p.tool.category}${p.tool.featured ? ' featured' : ''}`;
+      expect(html).toContain(`<a class="${cls}" href="${p.url}">`);
       if (p.tool.home?.tag) expect(html).toContain(`<span class="tag">${p.tool.home.tag}</span>`);
     }
+  });
+
+  it('stellt hervorgehobene Werkzeuge als breite Karte an den Anfang (W4)', () => {
+    const home = renderHomeTools();
+    expect(/<a class="[^"]*" href="([^"]+)"/.exec(home)?.[1]).toBe('/pdf-werkstatt/');
+    expect(home).toContain('<a class="tool-card pdf featured" href="/pdf-werkstatt/">');
+    const overview = renderToolOverview();
+    const pdf = overview.slice(overview.indexOf('id="pdf"'), overview.indexOf('</section>'));
+    expect(pdf.indexOf('<li class="featured"')).toBe(pdf.indexOf('<li'));
+    expect(pdf).toContain('href="/pdf-werkstatt/"');
   });
 
   it('listet auf /werkzeuge/ jedes Werkzeug genau einmal, mit Suchtext', () => {

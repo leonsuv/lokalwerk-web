@@ -83,7 +83,9 @@ const TOOL_PAGE = /[\\/]src[\\/]tools[\\/]([^\\/]+)[\\/]page\.ts$/;
  * Welche Werkzeuge welche Pakete laden: vom Seitencode (src/tools/<id>/page.ts) aus alle
  * statisch und dynamisch geladenen Teile, dazu die Worker, deren Dateinamen darin stehen.
  * `filePackages` ist die Zuordnung Datei → Pakete aus allen Builds (auch Worker). Nur ids aus
- * `toolIds` zählen; die Startseite lädt Werkzeuge nach und ist selbst keines.
+ * `toolIds` zählen; die Startseite lädt Werkzeuge nach und ist selbst keines. Lädt ein
+ * Werkzeug ein anderes nach (Knopf „In der PDF-Werkstatt weiterbearbeiten“), zählen dessen
+ * Pakete bei dem anderen Werkzeug: Der Weg endet am Seitencode eines anderen Werkzeugs.
  */
 export function packagesByTool(
   chunks: readonly BundleChunk[],
@@ -106,6 +108,10 @@ export function packagesByTool(
       seen.add(name);
       const c = byName.get(name);
       if (!c) continue;
+      const other = c.moduleIds
+        .map((id) => TOOL_PAGE.exec(id)?.[1])
+        .some((id) => id !== undefined && id !== tool && toolIds.has(id));
+      if (other) continue;
       for (const id of c.moduleIds) {
         const pkg = packageFromModuleId(id);
         if (pkg) packages.add(pkg);

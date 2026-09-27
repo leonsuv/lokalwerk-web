@@ -26,7 +26,11 @@ import {
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient } from '../../ui/worker-protocol.ts';
+import { workshopLink } from '../../ui/workshop-link.ts';
 import type { ScanMode, ScanRequest, Warped } from './scan.worker.ts';
+
+// Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
+const toWorkshop = workshopLink();
 
 const worker = new Worker(new URL('./scan.worker.ts', import.meta.url), { type: 'module' });
 const client = createWorkerClient<ScanRequest>(worker);
@@ -310,6 +314,9 @@ async function save(): Promise<void> {
     saveLabel.textContent = 'PDF wird erstellt …';
     const bytes = await client.request<Uint8Array>({ type: 'build', pages: images });
     saveBlob('scan.pdf', new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }));
+    toWorkshop([
+      new File([bytes as Uint8Array<ArrayBuffer>], 'scan.pdf', { type: 'application/pdf' }),
+    ]);
     showToast(
       pages.length === 1
         ? 'Fertig: Der Scan ist als PDF gespeichert.'

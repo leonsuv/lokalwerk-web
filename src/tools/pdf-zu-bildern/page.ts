@@ -15,7 +15,11 @@ import { LazyRenderer } from '../../ui/lazy-render.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import type { PDFDocumentProxy } from '../../ui/pdfjs/pdfjs.ts';
 import { showToast } from '../../ui/toast.ts';
+import { workshopLink } from '../../ui/workshop-link.ts';
 import { zipBlobs } from '../../ui/zip.ts';
+
+// Weiter in der PDF-Werkstatt (plan-phase3.md 5.2)
+const toWorkshop = workshopLink();
 
 const MESSAGES: Record<string, string> = {
   empty: 'Die Datei ist leer.',
@@ -114,6 +118,7 @@ function selection(): { pages: number[] } | { error: string } {
 }
 
 function render(): void {
+  toWorkshop(current?.state === 'ok' ? [current.file] : null);
   fileList.replaceChildren(...(current ? [fileRow(current)] : []));
   $('#img-empty').hidden = current !== null;
   const ok = current?.state === 'ok' ? current : null;

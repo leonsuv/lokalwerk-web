@@ -1,21 +1,18 @@
 /**
  * Startseite: Die große Ablagefläche öffnet ein Werkzeug mit der Datei (plan.md Schritt 9).
  * Passen mehrere Werkzeuge zur Dateiart, wählt man zuerst eines aus (plan-phase2.md
- * Abschnitt 3.4); passt genau eines, öffnet es sich sofort.
+ * Abschnitt 3.4); passt genau eines, öffnet es sich sofort. Bei PDFs steht die PDF-Werkstatt
+ * zuerst in der Auswahl (W4); PDFs und Bilder gemischt öffnen gleich die Werkstatt (W9).
  *
- * Eine Datei lässt sich nicht über einen Seitenwechsel mitnehmen, ohne sie im Browser zu
- * speichern (AGENTS.md Regel 5). Deshalb wechselt die Seite ohne Neuladen: Sie setzt den
- * Inhalt des Werkzeugs ein (dieselbe main.html wie die Werkzeugseite), ändert Titel und
- * Adresse und übergibt die Dateien im Arbeitsspeicher. Die Zurück-Taste lädt die Startseite
- * neu. Werkzeug und Bibliotheken werden erst beim Öffnen geladen (plan.md A5).
+ * Der Wechsel ohne Neuladen steht in src/ui/tool-switch.ts.
  */
 
-import { SITE_URL, TOOL_PAGES, toolById, type ToolPage } from '../../../build/pages.ts';
-import { renderRelated } from '../../../build/tool-blocks.ts';
-import { describeDrop, dropKind, toolsForDrop } from '../../core/files/classify.ts';
+import { TOOL_PAGES, toolById, type ToolPage } from '../../../build/pages.ts';
+import { describeDrop, dropKind, isImage, isPdf, toolsForDrop } from '../../core/files/classify.ts';
 import { $ } from '../../ui/dom.ts';
 import { preventAccidentalFileOpen, wireDropzone } from '../../ui/dropzone.ts';
 import { showToast } from '../../ui/toast.ts';
+import { switchToTool } from '../../ui/tool-switch.ts';
 import { LOADERS } from './loaders.ts';
 
 const drop = $('#home-drop');
@@ -26,37 +23,15 @@ const choiceList = $<HTMLUListElement>('#home-choice-list');
 /** Dateien, zu denen gerade die Auswahl angezeigt wird */
 let pending: File[] = [];
 
-function updateHead(page: ToolPage): void {
-  document.title = page.title;
-  document.querySelector('meta[name="description"]')?.setAttribute('content', page.description);
-  // Wie auf der Werkzeugseite selbst (build/html-partials.ts): immer die öffentliche Adresse.
-  document.querySelector('link[rel="canonical"]')?.setAttribute('href', SITE_URL + page.url);
-}
-
 async function openTool(id: string, files: File[]): Promise<void> {
   const page = toolById(id);
   const loader = LOADERS[id];
   if (!page || !loader) return;
-  let open: (files: File[]) => unknown;
-  try {
-    // Erst den Inhalt laden und einsetzen: Das Werkzeug sucht beim Laden seine Elemente.
-    const markup = await loader.markup();
-    // Festes Markup aus dem eigenen Build und dem Register, keine Nutzerdaten.
-    $('main').innerHTML = markup + renderRelated(page);
-    open = await loader.open();
-  } catch {
+  if (!(await switchToTool(page, loader, files))) {
     showToast(
       'Das Werkzeug konnte nicht geladen werden. Prüfe die Verbindung und lade die Seite neu.',
     );
-    return;
   }
-  history.pushState({ tool: id }, '', page.url);
-  updateHead(page);
-  window.scrollTo(0, 0);
-  const heading = $('main h1');
-  heading.tabIndex = -1;
-  heading.focus();
-  await open(files);
 }
 
 function choiceButton(page: ToolPage): HTMLLIElement {
@@ -101,10 +76,15 @@ choiceList.addEventListener('click', (event) => {
 });
 $('#home-choice-back').addEventListener('click', hideChoice);
 
-window.addEventListener('popstate', () => location.reload());
-
 preventAccidentalFileOpen();
 wireDropzone(drop, $<HTMLInputElement>('#home-input'), (files) => {
+  // PDFs und Bilder zusammen kann nur die PDF-Werkstatt (W9)
+  const mixed =
+    files.some(isPdf) && files.some(isImage) && files.every((f) => isPdf(f) || isImage(f));
+  if (mixed) {
+    void openTool('pdf-werkstatt', files);
+    return;
+  }
   const result = dropKind(files);
   if (!result.ok) {
     showToast('Bitte nur eine Dateiart auf einmal: PDFs, Fotos oder eine Excel-/CSV-Liste.');

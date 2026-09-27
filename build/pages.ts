@@ -57,6 +57,8 @@ export interface ToolInfo {
   accepts?: { kind: FileKind; multiple: boolean };
   /** Auf der Startseite zeigen, mit optionalem Schlagwort auf der Karte */
   home?: { tag?: string };
+  /** Hervorgehobene breite Karte: zuerst auf der Startseite und in ihrer Kategorie (W4) */
+  featured?: boolean;
 }
 
 export interface PageDef {
@@ -123,6 +125,10 @@ export const PAGES: readonly PageDef[] = [
         'leere seite',
       ],
       related: ['pdf-zusammenfuegen', 'pdf-seiten-bearbeiten', 'pdf-teilen'],
+      // Erste Option bei PDFs auf der Startseite (W4); gemischt mit Bildern: src/tools/home/page.ts
+      accepts: { kind: 'pdf', multiple: true },
+      home: {},
+      featured: true,
     },
   },
   {

@@ -6,6 +6,8 @@ Schätzungen sind grobe Richtwerte für eine Person ohne Unterbrechungen. „ext
 
 Erledigt am 26.09.2026: Texte aller Pakete freigegeben (außer dem Kasten zu Fristen im Arbeitstage-Rechner, siehe V2.4); Menüpunkt „Pro“ und Pro-Block der Startseite ausgeblendet, `/pro/` ist `noindex`, nicht in der Sitemap und nicht verlinkt (per Test abgesichert).
 
+Geändert am 31.10.2026 (Leon): Lokalwerk ist ein privates Hobbyprojekt. `/pro/` und die Impressum-Seite sind entfernt, der Datenschutzhinweis ist nach Vorgabe von azendix.de eingebaut (ohne Umami, Kontakt support@azendix.de; `tests/build/legal-texts.test.ts`). V1, V2.1, C1 und C2 sind damit in der beschriebenen Form überholt; der Datenschutzhinweis bleibt vorerst `noindex`.
+
 ---
 
 ## Teil 1: Vor dem Start

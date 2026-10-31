@@ -55,8 +55,6 @@ describe('Seitenregister', () => {
         '/pdf-werkstatt/',
         '/fotos-verkleinern/',
         '/sepa-sammelueberweisung/',
-        '/pro/',
-        '/impressum/',
         '/datenschutz/',
         '/lizenzen/',
         '/404.html',
@@ -69,7 +67,7 @@ describe('Seitenregister', () => {
   });
 
   it('setzt Rechtsseiten und 404 auf noindex', () => {
-    for (const url of ['/impressum/', '/datenschutz/', '/404.html'])
+    for (const url of ['/datenschutz/', '/lizenzen/', '/404.html'])
       expect(byUrl(url)?.index).toBe(false);
   });
 
@@ -82,9 +80,5 @@ describe('Seitenregister', () => {
 
   it('nennt bei SEPA die deutschen Banken (plan.md S10)', () => {
     expect(byUrl('/sepa-sammelueberweisung/')?.description).toContain('deutschen Banken');
-  });
-
-  it('setzt Pro bis zur Verfügbarkeit auf noindex (freigegeben 25.09.2026)', () => {
-    expect(byUrl('/pro/')?.index).toBe(false);
   });
 });

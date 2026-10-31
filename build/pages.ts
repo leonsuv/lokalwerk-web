@@ -2,8 +2,6 @@
  * Seitenregister: jede ausgelieferte HTML-Seite mit URL, Titel und Meta-Beschreibung.
  * Titel und Meta-Beschreibungen der Phase 1 von Leon freigegeben am 25.09.2026; neue und
  * geänderte Texte aus Phase 2 sind Entwürfe zur Freigabe (docs/texte-zur-freigabe.md).
- * /pro/ ist bis zur Verfügbarkeit von Pro noindex, nicht in der Sitemap und nirgends verlinkt
- * (Menüpunkt und Pro-Block der Startseite ausgeblendet, Leon 26.09.2026; tests/build/pro-hidden.test.ts).
  *
  * Werkzeugseiten tragen zusätzlich `tool` (plan-phase2.md Abschnitt 3.5). Daraus entstehen
  * beim Build die Übersicht /werkzeuge/, die Karten der Startseite, die Blöcke „Passt dazu“
@@ -19,7 +17,7 @@ export type { FileKind };
 /** Öffentliche Adresse; beim Build mit LOKALWERK_SITE_URL überschreibbar (build/site-url.ts). */
 export const SITE_URL = 'https://lokalwerk.eu';
 
-export type NavKey = 'werkzeuge' | 'pro';
+export type NavKey = 'werkzeuge';
 
 /** Kategorie-Klasse aus src/styles/tokens.css (setzt --c, --cs, --ci). */
 export type CategoryId = 'pdf' | 'img' | 'sepa' | 'tab' | 'util';
@@ -1074,27 +1072,10 @@ export const PAGES: readonly PageDef[] = [
     },
   },
   {
-    file: 'pro/index.html',
-    url: '/pro/',
-    title: 'Lokalwerk Pro',
-    description:
-      'Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen und PDFs. Läuft wie alle Werkzeuge vollständig lokal.',
-    index: false,
-    nav: null,
-  },
-  {
-    file: 'impressum/index.html',
-    url: '/impressum/',
-    title: 'Impressum – Lokalwerk',
-    description: 'Impressum von Lokalwerk.',
-    index: false,
-    nav: null,
-  },
-  {
     file: 'datenschutz/index.html',
     url: '/datenschutz/',
-    title: 'Datenschutzerklärung – Lokalwerk',
-    description: 'Datenschutzerklärung von Lokalwerk.',
+    title: 'Datenschutzhinweis – Lokalwerk',
+    description: 'Datenschutzhinweis von Lokalwerk.',
     index: false,
     nav: null,
   },

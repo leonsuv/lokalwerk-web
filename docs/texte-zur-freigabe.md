@@ -10,6 +10,7 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 |---|---|---|---|---|
 | **NEU, freigegeben von Leon am 25.09.2026** `/` | PDF, Fotos, Tabellen und SEPA kostenlos im Browser bearbeiten \| Lokalwerk | PDFs zusammenfügen und aufteilen, Fotos verkleinern, Excel und CSV umwandeln, SEPA-Dateien erstellen. Kostenlos im Browser, ohne Upload deiner Dateien. | 151 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/werkzeuge/` | Alle Werkzeuge – PDF, Fotos, Tabellen und SEPA ohne Upload \| Lokalwerk | Alle Werkzeuge von Lokalwerk auf einen Blick: PDF, Fotos, Tabellen und Zahlungsverkehr. Kostenlos, direkt im Browser, ohne Upload deiner Dateien. | 145 | ja |
+| **NEU, freigegeben von Leon am 25.09.2026** `/pdf-werkstatt/` | PDF-Werkstatt – mehrere PDFs bearbeiten und neu zusammenstellen \| Lokalwerk | PDFs und Bilder nebeneinander öffnen, Seiten zwischen Dokumenten verschieben, drehen und löschen. Kostenlos im Browser, ohne Upload deiner Dateien. | 147 | ja |
 | `/pdf-zusammenfuegen/` | PDF zusammenfügen – kostenlos und ohne Upload \| Lokalwerk | Mehrere PDF-Dateien kostenlos zu einer zusammenfügen, Reihenfolge frei wählbar. Läuft komplett in deinem Browser, ohne Upload und ohne Anmeldung. | 145 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/pdf-teilen/` | PDF teilen und Seiten extrahieren – kostenlos, ohne Upload \| Lokalwerk | Seiten aus einer PDF kostenlos herausholen oder die PDF in mehrere Dateien aufteilen. Direkt im Browser, ohne Upload und ohne Anmeldung. | 136 | ja |
 | **NEU, Paket 4, freigegeben von Leon am 26.09.2026** `/pdf-seiten-bearbeiten/` | PDF-Seiten drehen, sortieren und löschen – kostenlos, ohne Upload \| Lokalwerk | Seiten einer PDF kostenlos drehen, neu sortieren oder löschen, mit Vorschau jeder Seite. Direkt im Browser, ohne Upload und ohne Anmeldung. | 139 | ja |
@@ -42,11 +43,27 @@ Erzeugt mit `node scripts/texte-zur-freigabe.mjs` aus `build/pages.ts` und den W
 | **NEU, freigegeben von Leon am 25.09.2026** `/pruefsumme/` | Prüfsumme berechnen: SHA-256 einer Datei prüfen – ohne Upload \| Lokalwerk | SHA-256 und SHA-1 einer Datei kostenlos berechnen und mit der angegebenen Prüfsumme vergleichen, auch bei sehr großen Dateien. Direkt im Browser, ohne Upload. | 158 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/texte-vergleichen/` | Texte vergleichen: Unterschiede zwischen zwei Fassungen finden \| Lokalwerk | Zwei Texte kostenlos vergleichen, etwa Vertragsentwürfe oder Satzungen: geänderte Zeilen und Wörter werden markiert. Direkt im Browser, ohne Upload. | 148 | ja |
 | **NEU, freigegeben von Leon am 25.09.2026** `/kontrast-pruefen/` | Kontrast prüfen nach WCAG 2.2 – Kontrastrechner für Farben \| Lokalwerk | Kontrastverhältnis zweier Farben kostenlos nach WCAG 2.2 berechnen und die Stufen AA und AAA prüfen, für Text, großen Text und Bedienelemente. Im Browser. | 154 | ja |
-| `/pro/` | Lokalwerk Pro | Lokalwerk Pro für regelmäßige Arbeit mit Überweisungen und PDFs. Läuft wie alle Werkzeuge vollständig lokal. | 108 | noindex |
-| `/impressum/` | Impressum – Lokalwerk | Impressum von Lokalwerk. | 24 | noindex |
-| `/datenschutz/` | Datenschutzerklärung – Lokalwerk | Datenschutzerklärung von Lokalwerk. | 35 | noindex |
+| `/datenschutz/` | Datenschutzhinweis – Lokalwerk | Datenschutzhinweis von Lokalwerk. | 33 | noindex |
 | `/lizenzen/` | Lizenzen – Lokalwerk | Urheber und Lizenztexte der Bibliotheken und Schriften, die Lokalwerk verwendet. | 80 | noindex |
 | `/404.html` | Seite nicht gefunden – Lokalwerk | Diese Seite gibt es nicht. | 26 | noindex |
+
+## PDF-Werkstatt – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-werkstatt/main.html`)
+
+Karte: „PDF-Werkstatt“ – „Mehrere PDFs und Bilder nebeneinander bearbeiten und neu zusammenstellen.“
+
+**So funktioniert es**
+
+Die Werkstatt arbeitet wie ein Programm auf deinem Rechner: oben Menüs und Werkzeugleiste, links deine Dokumente und die Seiten des aktiven Dokuments, in der Mitte alle Seiten als Raster oder eine Seite groß, rechts die Eigenschaften der Auswahl und der Verlauf. Öffne eine oder mehrere PDFs oder Bilder; jede Datei wird ein eigenes Dokument. Seiten wählst du mit Klick, Umschalt, Strg oder einem aufgezogenen Rahmen aus und ziehst sie an eine andere Stelle, in ein anderes Dokument oder auf ein Dokument in der Liste. Zwischen zwei Seiten setzt du mit einem Klick eine Trennlinie; „An Trennlinien teilen“ macht daraus in einem Schritt mehrere Dokumente, die Schere teilt sofort. Ein Dokument, das du auf ein anderes ziehst, wird mit ihm zusammengeführt. Ein Rechtsklick zeigt überall, was an dieser Stelle möglich ist, und jede Aktion hat einen Menüeintrag und meist ein Tastenkürzel. Jeder Schritt lässt sich rückgängig machen, auch mehrere auf einmal über den Verlauf. Am Ende speicherst du ein Dokument, deine Auswahl oder alle Dokumente als ZIP. Deine Originaldateien bleiben unverändert. Über „Werkzeuge“ bekommt ein Dokument Seitenzahlen; sie werden beim Speichern gesetzt und passen zur dann gültigen Reihenfolge. Stempel und Unterschriften gehören zur Seite und wandern mit, wenn du sie verschiebst; gesetzt werden sie beim Speichern. Schwärzen und Formular ausfüllen erzeugen neue Seiten: Beim Schwärzen wird jede Seite des Dokuments zum Bild, sodass nichts vom Original übrig bleibt.
+
+**Gut zu wissen**
+
+Beim neuen Zusammensetzen werden nur die Seiten übernommen: Formularfelder, Lesezeichen und digitale Signaturen sind in neu zusammengesetzten Dateien nicht mehr enthalten, ebenso Angaben wie Autor oder Titel. Die Werkstatt zeigt vor dem Speichern, welche Datei das betrifft. Ein Dokument, an dem du nichts geändert hast, wird als Originaldatei gespeichert. Verschlüsselte PDFs lassen sich nicht öffnen.
+
+**Deine Dateien bleiben auf deinem Gerät**
+
+Die PDFs werden direkt in deinem Browser angezeigt und bearbeitet, nicht hochgeladen. Nach dem Laden der Seite funktioniert die Werkstatt auch ohne Internetverbindung.
+
+_(Erklärtext: 305 Wörter)_
 
 ## PDFs zusammenfügen (`src/tools/pdf-zusammenfuegen/main.html`)
 
@@ -56,7 +73,7 @@ Unterzeile im Kopf: „Wähle zwei oder mehr PDFs aus und bring sie in die richt
 
 **So funktioniert es**
 
-Wähle die PDFs aus oder zieh sie in die Fläche oben. Mit den Pfeilen legst du die Reihenfolge fest, das Kreuz entfernt eine Datei aus der Liste. „Zusammenfügen und speichern“ erzeugt eine neue PDF mit allen Seiten in genau dieser Reihenfolge. Deine Originale bleiben unverändert.
+Wähle die PDFs aus oder zieh sie in die Fläche oben. Mit den Pfeilen legst du die Reihenfolge fest, das Kreuz entfernt eine Datei aus der Liste. „Zusammenfügen und speichern“ erzeugt eine neue PDF mit allen Seiten in genau dieser Reihenfolge. Deine Originale bleiben unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Deine Dateien bleiben auf deinem Gerät**
 
@@ -66,7 +83,7 @@ Die PDFs werden direkt in deinem Browser verarbeitet und nicht hochgeladen. Nach
 
 Verschlüsselte PDFs lassen sich nicht zusammenfügen. Das gilt auch für Dateien, die sich ohne Passwort öffnen lassen, aber zum Beispiel das Kopieren verbieten. Wenn du das Passwort kennst, öffne die Datei damit und speichere sie ohne Schutz neu. Übernommen werden nur die Seiten: Formularfelder, Lesezeichen und digitale Signaturen der Originale sind in der neuen Datei nicht mehr enthalten.
 
-_(Erklärtext: 125 Wörter)_
+_(Erklärtext: 140 Wörter)_
 
 ## PDF teilen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-teilen/main.html`)
 
@@ -76,7 +93,7 @@ Unterzeile im Kopf: „Einzelne Seiten aus einer PDF herausholen oder sie in meh
 
 **So funktioniert es**
 
-Wähle eine PDF aus oder zieh sie in die Fläche oben. Unter „Seiten“ gibst du an, welche Seiten du brauchst, zum Beispiel 1-3, 5 für die Seiten 1, 2, 3 und 5. Die Seiten kommen in der Reihenfolge in die neue Datei, in der du sie angibst. Mit „Jede Seite als eigene PDF“ oder „In Teile mit gleich vielen Seiten“ entstehen mehrere Dateien; die speicherst du zusammen als ZIP-Datei. Deine Originaldatei bleibt unverändert.
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Unter „Seiten“ gibst du an, welche Seiten du brauchst, zum Beispiel 1-3, 5 für die Seiten 1, 2, 3 und 5. Die Seiten kommen in der Reihenfolge in die neue Datei, in der du sie angibst. Mit „Jede Seite als eigene PDF“ oder „In Teile mit gleich vielen Seiten“ entstehen mehrere Dateien; die speicherst du zusammen als ZIP-Datei. Deine Originaldatei bleibt unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Deine Dateien bleiben auf deinem Gerät**
 
@@ -86,7 +103,7 @@ Die PDF wird direkt in deinem Browser aufgeteilt und nicht hochgeladen. Nach dem
 
 Verschlüsselte PDFs lassen sich nicht aufteilen. Das gilt auch für Dateien, die sich ohne Passwort öffnen lassen, aber zum Beispiel das Kopieren verbieten. Übernommen werden nur die Seiten: Formularfelder, Lesezeichen und digitale Signaturen sind in den neuen Dateien nicht mehr enthalten.
 
-_(Erklärtext: 136 Wörter)_
+_(Erklärtext: 151 Wörter)_
 
 ## PDF-Seiten bearbeiten – NEU, Paket 4, freigegeben von Leon am 26.09.2026 (`src/tools/pdf-seiten-bearbeiten/main.html`)
 
@@ -96,7 +113,7 @@ Unterzeile im Kopf: „Seiten einer PDF mit Vorschau drehen, umsortieren oder l�
 
 **So funktioniert es**
 
-Wähle eine PDF aus oder zieh sie in die Fläche oben. Du siehst jede Seite als kleines Bild. Mit den Knöpfen unter einer Seite drehst du sie, schiebst sie nach vorn oder hinten oder löschst sie. „PDF speichern“ erzeugt eine neue Datei in der gezeigten Reihenfolge; deine Originaldatei bleibt unverändert. Mit „Änderungen zurücksetzen“ fängst du von vorn an.
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Du siehst jede Seite als kleines Bild. Mit den Knöpfen unter einer Seite drehst du sie, schiebst sie nach vorn oder hinten oder löschst sie. „PDF speichern“ erzeugt eine neue Datei in der gezeigten Reihenfolge; deine Originaldatei bleibt unverändert. Mit „Änderungen zurücksetzen“ fängst du von vorn an. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Gut zu wissen**
 
@@ -106,7 +123,7 @@ Wähle eine PDF aus oder zieh sie in die Fläche oben. Du siehst jede Seite als 
 
 Die PDF wird direkt in deinem Browser angezeigt und bearbeitet, nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 135 Wörter)_
+_(Erklärtext: 150 Wörter)_
 
 ## PDF zu Bildern – NEU, Paket 4, freigegeben von Leon am 26.09.2026 (`src/tools/pdf-zu-bildern/main.html`)
 
@@ -116,7 +133,7 @@ Unterzeile im Kopf: „Die Seiten einer PDF als JPEG- oder PNG-Bilder speichern,
 
 **So funktioniert es**
 
-Wähle eine PDF aus oder zieh sie in die Fläche oben. Stell rechts Format und Auflösung ein und gib bei Bedarf an, welche Seiten du brauchst. „Bilder speichern“ erzeugt ein Bild je Seite. Bei einer Seite bekommst du das Bild direkt, bei mehreren alle zusammen als ZIP-Datei. Deine Originaldatei bleibt unverändert.
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Stell rechts Format und Auflösung ein und gib bei Bedarf an, welche Seiten du brauchst. „Bilder speichern“ erzeugt ein Bild je Seite. Bei einer Seite bekommst du das Bild direkt, bei mehreren alle zusammen als ZIP-Datei. Deine Originaldatei bleibt unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Welche Auflösung passt?**
 
@@ -130,7 +147,7 @@ Die Bilder enthalten keinen durchsuchbaren Text und keine Angaben wie Autor oder
 
 Die PDF wird direkt in deinem Browser umgewandelt und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 159 Wörter)_
+_(Erklärtext: 174 Wörter)_
 
 ## PDF schwärzen – NEU, Paket 4, freigegeben von Leon am 26.09.2026 (`src/tools/pdf-schwaerzen/main.html`)
 
@@ -140,7 +157,7 @@ Unterzeile im Kopf: „Namen, Kontonummern und andere Stellen einer PDF so schw�
 
 **So funktioniert es**
 
-Wähle eine PDF aus oder zieh sie in die Fläche oben. Blättere zu der Seite mit der Stelle und zieh einen Bereich darüber. In der Vorschau bleibt der Bereich leicht durchsichtig, damit du ihn genau setzen kannst; in der neuen PDF ist er vollständig schwarz. „Geschwärzte PDF speichern“ erzeugt eine neue Datei, deine Originaldatei bleibt unverändert.
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Blättere zu der Seite mit der Stelle und zieh einen Bereich darüber. In der Vorschau bleibt der Bereich leicht durchsichtig, damit du ihn genau setzen kannst; in der neuen PDF ist er vollständig schwarz. „Geschwärzte PDF speichern“ erzeugt eine neue Datei, deine Originaldatei bleibt unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Warum die Seiten zu Bildern werden**
 
@@ -154,7 +171,7 @@ Die neue PDF ist nicht mehr durchsuchbar, meist größer als das Original und f�
 
 Die PDF wird direkt in deinem Browser geschwärzt und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 163 Wörter)_
+_(Erklärtext: 178 Wörter)_
 
 ## Unterschrift einfügen – NEU, Paket 4, freigegeben von Leon am 26.09.2026 (`src/tools/pdf-unterschreiben/main.html`)
 
@@ -164,7 +181,7 @@ Unterzeile im Kopf: „Eine gezeichnete oder fotografierte Unterschrift als Bild
 
 **So funktioniert es**
 
-Wähle eine PDF aus oder zieh sie in die Fläche oben. Zeichne rechts deine Unterschrift oder wähle ein Foto davon aus. Blättere zur richtigen Seite, setz die Unterschrift darauf und schieb sie an die Stelle, an der sie stehen soll. Du kannst sie auf mehrere Seiten setzen. „PDF mit Unterschrift speichern“ erzeugt eine neue Datei; deine Originaldatei bleibt unverändert.
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Zeichne rechts deine Unterschrift oder wähle ein Foto davon aus. Blättere zur richtigen Seite, setz die Unterschrift darauf und schieb sie an die Stelle, an der sie stehen soll. Du kannst sie auf mehrere Seiten setzen. „PDF mit Unterschrift speichern“ erzeugt eine neue Datei; deine Originaldatei bleibt unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Was bedeutet die eingefügte Unterschrift?**
 
@@ -174,7 +191,7 @@ Das Werkzeug setzt ein Bild deiner Unterschrift in die PDF, so als hättest du s
 
 Deine Unterschrift entsteht nur in deinem Browser und wird weder hochgeladen noch gespeichert. Lädst du die Seite neu, ist sie weg. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 186 Wörter)_
+_(Erklärtext: 201 Wörter)_
 
 ## PDF-Formular ausfüllen – NEU, Paket 4, freigegeben von Leon am 26.09.2026 (`src/tools/pdf-formular-ausfuellen/main.html`)
 
@@ -184,7 +201,7 @@ Unterzeile im Kopf: „Ausfüllbare PDF-Formulare im Browser ausfüllen und mit 
 
 **So funktioniert es**
 
-Wähle ein ausfüllbares PDF-Formular aus oder zieh es in die Fläche oben. Die Felder erscheinen untereinander in der Reihenfolge der Seiten; rechts siehst du, wo das Feld auf der Seite steht. „Ausgefülltes Formular speichern“ erzeugt eine neue Datei mit deinen Eingaben. Deine Originaldatei bleibt unverändert.
+Wähle ein ausfüllbares PDF-Formular aus oder zieh es in die Fläche oben. Die Felder erscheinen untereinander in der Reihenfolge der Seiten; rechts siehst du, wo das Feld auf der Seite steht. „Ausgefülltes Formular speichern“ erzeugt eine neue Datei mit deinen Eingaben. Deine Originaldatei bleibt unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Gut zu wissen**
 
@@ -194,7 +211,7 @@ Die Eingaben werden in der Schrift Helvetica gesetzt. Sie kennt die Zeichen west
 
 Das Formular wird direkt in deinem Browser ausgefüllt und nicht hochgeladen. Deine Eingaben landen nur in der neuen Datei und werden sonst nirgends gespeichert. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 145 Wörter)_
+_(Erklärtext: 160 Wörter)_
 
 ## Seitenzahlen einfügen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-seitenzahlen/main.html`)
 
@@ -204,7 +221,7 @@ Unterzeile im Kopf: „Seitenzahlen wie „Seite 3 von 12“ in die Kopf- oder F
 
 **So funktioniert es**
 
-Wähle eine PDF aus oder zieh sie in die Fläche oben. Stell rechts Form, Position und Größe ein. „Ab Seite“ bestimmt die erste Seite mit Zahl, „Erste Zahl“ die Zahl darauf. Die neue PDF enthält alle Seiten mit Seitenzahlen; deine Originaldatei bleibt unverändert.
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Stell rechts Form, Position und Größe ein. „Ab Seite“ bestimmt die erste Seite mit Zahl, „Erste Zahl“ die Zahl darauf. Die neue PDF enthält alle Seiten mit Seitenzahlen; deine Originaldatei bleibt unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Gut zu wissen**
 
@@ -214,7 +231,7 @@ Die Seitenzahl wird über den Inhalt gelegt. Steht an dieser Stelle schon Text, 
 
 Die PDF wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 117 Wörter)_
+_(Erklärtext: 132 Wörter)_
 
 ## Stempel und Wasserzeichen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-stempel/main.html`)
 
@@ -224,7 +241,7 @@ Unterzeile im Kopf: „Text wie „Entwurf“ oder „Kopie“ auf die Seiten ei
 
 **So funktioniert es**
 
-Wähle eine PDF aus oder zieh sie in die Fläche oben, gib den Text ein und stell Position, Farbe und Deckkraft ein. „Stempel setzen und speichern“ erzeugt eine neue PDF; deine Originaldatei bleibt unverändert. Lässt du „Seiten“ leer, bekommt jede Seite den Stempel.
+Wähle eine PDF aus oder zieh sie in die Fläche oben, gib den Text ein und stell Position, Farbe und Deckkraft ein. „Stempel setzen und speichern“ erzeugt eine neue PDF; deine Originaldatei bleibt unverändert. Lässt du „Seiten“ leer, bekommt jede Seite den Stempel. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Ein Wasserzeichen ist kein Schutz**
 
@@ -238,7 +255,7 @@ Die PDF-Schrift kennt die Zeichen westeuropäischer Sprachen, also auch Umlaute,
 
 Die PDF wird direkt in deinem Browser bearbeitet und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 160 Wörter)_
+_(Erklärtext: 175 Wörter)_
 
 ## PDF-Metadaten entfernen – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/pdf-metadaten-entfernen/main.html`)
 
@@ -248,7 +265,7 @@ Unterzeile im Kopf: „Sieh nach, was in einer PDF an versteckten Angaben steckt
 
 **So funktioniert es**
 
-Wähle eine PDF aus oder zieh sie in die Fläche oben. Du siehst sofort, welche Angaben darin stecken: etwa wer sie erstellt hat, mit welchem Programm und wann. „Bereinigte PDF speichern“ erzeugt eine neue Datei mit denselben Seiten, aber ohne diese Angaben. Die neue Datei wird vor dem Speichern noch einmal geprüft. Deine Originaldatei bleibt unverändert.
+Wähle eine PDF aus oder zieh sie in die Fläche oben. Du siehst sofort, welche Angaben darin stecken: etwa wer sie erstellt hat, mit welchem Programm und wann. „Bereinigte PDF speichern“ erzeugt eine neue Datei mit denselben Seiten, aber ohne diese Angaben. Die neue Datei wird vor dem Speichern noch einmal geprüft. Deine Originaldatei bleibt unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Was bleibt erhalten?**
 
@@ -258,7 +275,7 @@ Der sichtbare Inhalt der Seiten bleibt, auch Kommentare und Markierungen. Die k�
 
 Die PDF wird direkt in deinem Browser geprüft und bereinigt, nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung. Verschlüsselte PDFs lassen sich nicht bearbeiten.
 
-_(Erklärtext: 132 Wörter)_
+_(Erklärtext: 147 Wörter)_
 
 ## Bilder zu PDF – NEU, freigegeben von Leon am 25.09.2026 (`src/tools/bilder-zu-pdf/main.html`)
 
@@ -268,7 +285,7 @@ Unterzeile im Kopf: „Fotos und Scans als JPEG oder PNG zu einer PDF zusammenfa
 
 **So funktioniert es**
 
-Wähle Bilder aus oder zieh sie in die Fläche oben. Jedes Bild wird eine Seite, in der Reihenfolge der Liste; mit den Pfeilen änderst du sie. Das Bild wird so groß wie möglich auf die Seite gesetzt, ohne verzerrt zu werden. „PDF erstellen und speichern“ erzeugt die Datei. Deine Originale bleiben unverändert.
+Wähle Bilder aus oder zieh sie in die Fläche oben. Jedes Bild wird eine Seite, in der Reihenfolge der Liste; mit den Pfeilen änderst du sie. Das Bild wird so groß wie möglich auf die Seite gesetzt, ohne verzerrt zu werden. „PDF erstellen und speichern“ erzeugt die Datei. Deine Originale bleiben unverändert. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Metadaten werden entfernt**
 
@@ -282,7 +299,7 @@ iPhone-Fotos im HEIC-Format kann nicht jeder Browser öffnen. Dann erscheint ein
 
 Die Bilder werden direkt in deinem Browser verarbeitet und nicht hochgeladen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 142 Wörter)_
+_(Erklärtext: 157 Wörter)_
 
 ## Dokument scannen – NEU, Paket 6, freigegeben von Leon am 26.09.2026 (`src/tools/dokument-scannen/main.html`)
 
@@ -292,7 +309,7 @@ Unterzeile im Kopf: „Ein Blatt mit dem Handy fotografieren, die vier Ecken set
 
 **So funktioniert es**
 
-Tipp auf „Foto aufnehmen“: Auf dem Handy öffnet sich die Kamera-App, auf dem Computer die Dateiauswahl. Oder wähle vorhandene Fotos aus, eine Seite je Foto. Zieh dann die vier Ecken auf die Ecken des Blatts. Das Werkzeug richtet die Seite gerade aus, und „Scan als PDF speichern“ legt alle Seiten der Reihe nach in eine PDF.
+Tipp auf „Foto aufnehmen“: Auf dem Handy öffnet sich die Kamera-App, auf dem Computer die Dateiauswahl. Oder wähle vorhandene Fotos aus, eine Seite je Foto. Zieh dann die vier Ecken auf die Ecken des Blatts. Das Werkzeug richtet die Seite gerade aus, und „Scan als PDF speichern“ legt alle Seiten der Reihe nach in eine PDF. Mehrere Dateien auf einmal bearbeiten oder Seiten zwischen Dokumenten verschieben kannst du in der PDF-Werkstatt.
 
 **Gut zu wissen**
 
@@ -302,7 +319,7 @@ Am besten gelingt der Scan bei gleichmäßigem Licht, ohne Schatten auf dem Blat
 
 Die Kamera wird nur über die Dateiauswahl deines Geräts geöffnet; die Seite selbst greift nicht auf die Kamera zu. Die Fotos werden direkt in deinem Browser bearbeitet und nicht hochgeladen. Aufnahmeort und Kamera werden nicht übernommen. Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
 
-_(Erklärtext: 159 Wörter)_
+_(Erklärtext: 174 Wörter)_
 
 ## Fotos verkleinern (`src/tools/fotos-verkleinern/main.html`)
 
@@ -752,8 +769,6 @@ _(Erklärtext: 110 Wörter)_
 | **NEU, freigegeben von Leon am 25.09.2026** Startseite, Auswahl nach dem Ablegen | Überschrift „2 PDFs ausgewählt“ (Zahl und Art je nach Ablage), „Was möchtest du damit machen?“, Knopf „Andere Dateien wählen“ | `pages/index.html`, `src/tools/home/page.ts` |
 | **NEU, freigegeben von Leon am 25.09.2026** Startseite, Meldung | „Für 2 Tabellen auf einmal gibt es kein Werkzeug. Lege nur eine Datei ab.“ | `src/tools/home/page.ts` |
 | **NEU, freigegeben von Leon am 25.09.2026** Startseite, unter den Karten | Knopf „Alle Werkzeuge ansehen“ | `pages/index.html` |
-| **NEU, freigegeben von Leon am 25.09.2026** Startseite, Pro-Band | Punkt „Alle Fotos auf einmal als ZIP speichern“ gestrichen (E3) | `pages/index.html` |
-| **NEU, freigegeben von Leon am 25.09.2026** Pro-Seite | Punkt „ZIP-Export – Alle verkleinerten Fotos mit einem Klick speichern.“ gestrichen, Nummern angepasst (E3). Unterzeile jetzt „Für alle, die Überweisungen und PDFs regelmäßig bearbeiten.“ (Fotos gestrichen, Leon 25.09.2026, P1-3). Meta-Beschreibung ebenso ohne „Fotos“ (Leon 25.09.2026) | `pages/pro/index.html` |
 | **NEU, freigegeben von Leon am 25.09.2026** Fotos verkleinern | Knopf „Alle Fotos als ZIP speichern“ statt Hinweis „Alle Fotos als ZIP speichern: mit Lokalwerk Pro“; Meldungen „3 Fotos als ZIP gespeichert.“, „… 1 wird noch verkleinert und ist nicht enthalten.“, „Die ZIP-Datei wäre zu groß. Speichere die Fotos in kleineren Gruppen.“; im Erklärtext Ergänzung „… oder mit „Alle Fotos als ZIP speichern“ zusammen in einer Datei.“ | `src/tools/fotos-verkleinern/` |
 | **NEU, freigegeben von Leon am 25.09.2026** /werkzeuge/, Kopf | „Alle Werkzeuge“ – „Jedes Werkzeug läuft direkt in deinem Browser. Deine Dateien werden nicht hochgeladen.“ | `pages/werkzeuge/index.html` |
 | **NEU, freigegeben von Leon am 25.09.2026** /werkzeuge/, Suche | Beschriftung „Werkzeug suchen“, Platzhalter „zum Beispiel PDF, Foto oder CSV“, Meldungen „3 Werkzeuge gefunden.“ und „Kein Werkzeug gefunden. Versuch ein anderes Wort, zum Beispiel „PDF“, „Foto“ oder „Excel“.“ | `pages/werkzeuge/index.html`, `src/tools/werkzeuge/page.ts` |

@@ -71,7 +71,8 @@ describe('Werkzeug-Blöcke aus dem Register', () => {
   });
 
   it('gibt für Seiten ohne Werkzeug nichts aus', () => {
-    const pro = PAGES.find((p) => p.url === '/pro/');
-    expect(pro && renderRelated(pro)).toBe('');
+    const lizenzen = PAGES.find((p) => p.url === '/lizenzen/');
+    expect(lizenzen).toBeDefined();
+    expect(lizenzen && renderRelated(lizenzen)).toBe('');
   });
 });

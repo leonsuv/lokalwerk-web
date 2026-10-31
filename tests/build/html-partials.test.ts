@@ -13,7 +13,7 @@ const page = (over: Partial<PageDef> = {}): PageDef => ({
 });
 
 const includes: Record<string, string> = {
-  'partials/header.html': '<a data-nav="werkzeuge">W</a><a data-nav="pro">P</a>',
+  'partials/header.html': '<a data-nav="werkzeuge">W</a><a data-nav="andere">A</a>',
   'partials/outer.html': '<div><!-- @include partials/inner.html --></div>',
   'partials/inner.html': '<span>innen</span>',
   'partials/loop.html': '<!-- @include partials/loop.html -->',
@@ -63,11 +63,11 @@ describe('renderPage', () => {
   it('markiert den aktuellen Navigationspunkt', () => {
     const out = renderPage(
       '<!-- @head --><!-- @include partials/header.html -->',
-      page({ nav: 'pro' }),
+      page({ nav: 'werkzeuge' }),
       options,
     );
-    expect(out).toContain('<a data-nav="pro" aria-current="page">P</a>');
-    expect(out).toContain('<a data-nav="werkzeuge">W</a>');
+    expect(out).toContain('<a data-nav="werkzeuge" aria-current="page">W</a>');
+    expect(out).toContain('<a data-nav="andere">A</a>');
   });
 
   it('markiert keinen Navigationspunkt ohne nav', () => {

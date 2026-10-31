@@ -9,7 +9,7 @@
  * Einzelwerkzeugen. Werkzeug und Bibliotheken werden erst hier geladen (plan.md A5).
  */
 
-import { SITE_URL, type ToolPage } from '../../build/pages.ts';
+import type { ToolPage } from '../../build/pages.ts';
 import { renderRelated } from '../../build/tool-blocks.ts';
 import { $ } from './dom.ts';
 
@@ -21,8 +21,16 @@ export interface ToolLoader {
 function updateHead(page: ToolPage): void {
   document.title = page.title;
   document.querySelector('meta[name="description"]')?.setAttribute('content', page.description);
-  // Wie auf der Werkzeugseite selbst (build/html-partials.ts): immer die öffentliche Adresse.
-  document.querySelector('link[rel="canonical"]')?.setAttribute('href', SITE_URL + page.url);
+  // Wie auf der Werkzeugseite selbst (build/html-partials.ts): die beim Build gesetzte
+  // öffentliche Adresse, nur mit dem Pfad des Werkzeugs.
+  const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (canonical) canonical.href = new URL(page.url, canonical.href).href;
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', page.title);
+  document
+    .querySelector('meta[property="og:description"]')
+    ?.setAttribute('content', page.description);
+  if (canonical)
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical.href);
 }
 
 let listening = false;

@@ -2,13 +2,15 @@
  * Kleines Vite-Plugin: setzt gemeinsame HTML-Bausteine und die Kopfdaten jeder Seite ein.
  *
  * Platzhalter in den Seiten unter `pages/`:
- *   <!-- @head -->                         Titel, Meta-Beschreibung, Canonical, noindex
+ *   <!-- @head -->                         Titel, Meta-Beschreibung, Canonical und Open Graph
+ *                                          (indexierte Seiten) oder noindex
  *   <!-- @include partials/header.html --> Datei relativ zu `src/`, darf selbst wieder
  *                                          Platzhalter enthalten
  *   <!-- @block licenses -->               beim Build erzeugter Inhalt (RenderOptions.blocks),
  *                                          bekommt die aktuelle Seite übergeben
  *
- * Außerdem erzeugt das Plugin beim Build `sitemap.xml` aus dem Seitenregister.
+ * Außerdem erzeugt das Plugin beim Build `sitemap.xml` aus dem Seitenregister und `robots.txt`.
+ * Beide und alle Canonicals nutzen `siteUrl` (vite.config.ts, Umgebungsvariable LOKALWERK_SITE_URL).
  */
 
 import { readFileSync } from 'node:fs';
@@ -29,8 +31,18 @@ export function renderHead(page: PageDef, siteUrl: string): string {
     `<title>${escapeHtml(page.title)}</title>`,
     `<meta name="description" content="${escapeHtml(page.description)}">`,
   ];
-  if (page.index) lines.push(`<link rel="canonical" href="${escapeHtml(siteUrl + page.url)}">`);
-  else lines.push('<meta name="robots" content="noindex">');
+  if (page.index) {
+    const url = escapeHtml(siteUrl + page.url);
+    lines.push(
+      `<link rel="canonical" href="${url}">`,
+      '<meta property="og:type" content="website">',
+      '<meta property="og:site_name" content="Lokalwerk">',
+      '<meta property="og:locale" content="de_DE">',
+      `<meta property="og:title" content="${escapeHtml(page.title)}">`,
+      `<meta property="og:description" content="${escapeHtml(page.description)}">`,
+      `<meta property="og:url" content="${url}">`,
+    );
+  } else lines.push('<meta name="robots" content="noindex">');
   return lines.join('\n    ');
 }
 
@@ -79,6 +91,10 @@ export function renderSitemap(pages: readonly PageDef[], siteUrl: string): strin
     '</urlset>',
     '',
   ].join('\n');
+}
+
+export function renderRobots(siteUrl: string): string {
+  return ['User-agent: *', 'Allow: /', '', `Sitemap: ${siteUrl}/sitemap.xml`, ''].join('\n');
 }
 
 export interface HtmlPartialsOptions {
@@ -130,6 +146,11 @@ export function htmlPartials(options: HtmlPartialsOptions): Plugin {
         type: 'asset',
         fileName: 'sitemap.xml',
         source: renderSitemap(options.pages, options.siteUrl),
+      });
+      this.emitFile({
+        type: 'asset',
+        fileName: 'robots.txt',
+        source: renderRobots(options.siteUrl),
       });
     },
   };

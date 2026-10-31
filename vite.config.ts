@@ -13,6 +13,7 @@ import {
   USED_IN,
 } from './build/licenses.ts';
 import { PAGES, SITE_URL, TOOL_PAGES } from './build/pages.ts';
+import { resolveSiteUrl } from './build/site-url.ts';
 import { checkRegistry, iconIds } from './build/registry.ts';
 import {
   recordShippedPackages,
@@ -34,6 +35,7 @@ const pagesDir = path('./pages');
 const srcDir = path('./src');
 const securityHeaders = parseGlobalHeaders(readFileSync(path('./public/_headers'), 'utf8'));
 const licenses = () => collectLicenses(path('.'));
+const siteUrl = resolveSiteUrl(process.env.LOKALWERK_SITE_URL, SITE_URL);
 
 // Register vor jedem Start prüfen (plan-phase2.md Abschnitt 3.5).
 const registryProblems = checkRegistry(
@@ -53,7 +55,7 @@ export default defineConfig({
       pagesDir,
       srcDir,
       pages: PAGES,
-      siteUrl: SITE_URL,
+      siteUrl,
       blocks: {
         licenses: () => renderLicenses(licenses()),
         'home-tools': renderHomeTools,

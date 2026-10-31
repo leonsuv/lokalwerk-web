@@ -29,7 +29,8 @@ import { SHEETJS_URLS } from './allowed-urls-sheetjs.mjs';
 import { UQR_URLS } from './allowed-urls-uqr.mjs';
 import { SHIPPED_MANIFEST } from './shipped-manifest.mjs';
 
-export const SITE_ORIGIN = 'https://lokalwerk.eu';
+/** Wie build/site-url.ts: beim Build mit LOKALWERK_SITE_URL überschreibbar. */
+export const SITE_ORIGIN = process.env.LOKALWERK_SITE_URL?.trim() || 'https://lokalwerk.eu';
 
 /**
  * @typedef {{ url: string, reason: string, source: string }} AllowedUrl

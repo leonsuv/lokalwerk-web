@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { renderPage, renderSitemap } from '../../build/html-partials.ts';
+import { renderPage, renderRobots, renderSitemap } from '../../build/html-partials.ts';
 import type { PageDef } from '../../build/pages.ts';
 
 const page = (over: Partial<PageDef> = {}): PageDef => ({
@@ -38,10 +38,21 @@ describe('renderPage', () => {
     expect(out).not.toContain('noindex');
   });
 
+  it('setzt Open-Graph-Angaben aus Titel, Beschreibung und Canonical', () => {
+    const out = renderPage('<!-- @head -->', page(), options);
+    expect(out).toContain('<meta property="og:title" content="Test &amp; Titel – Lokalwerk">');
+    expect(out).toContain(
+      '<meta property="og:description" content="Beschreibung mit &quot;Anführungszeichen&quot; und &lt;Klammern&gt;.">',
+    );
+    expect(out).toContain('<meta property="og:url" content="https://lokalwerk.eu/test/">');
+    expect(out).toContain('<meta property="og:locale" content="de_DE">');
+  });
+
   it('setzt noindex statt Canonical für nicht indexierte Seiten', () => {
     const out = renderPage('<!-- @head -->', page({ index: false }), options);
     expect(out).toContain('<meta name="robots" content="noindex">');
     expect(out).not.toContain('canonical');
+    expect(out).not.toContain('og:');
   });
 
   it('setzt Bausteine ein, auch verschachtelt', () => {
@@ -99,5 +110,13 @@ describe('renderSitemap', () => {
     );
     expect(xml).toContain('<loc>https://lokalwerk.eu/test/</loc>');
     expect(xml).not.toContain('/geheim/');
+  });
+});
+
+describe('renderRobots', () => {
+  it('verweist auf die Sitemap der gebauten Adresse', () => {
+    expect(renderRobots('https://test1.azendix.de')).toBe(
+      'User-agent: *\nAllow: /\n\nSitemap: https://test1.azendix.de/sitemap.xml\n',
+    );
   });
 });

@@ -16,6 +16,7 @@ import type { FileKind } from '../src/core/files/classify.ts';
 
 export type { FileKind };
 
+/** Öffentliche Adresse; beim Build mit LOKALWERK_SITE_URL überschreibbar (build/site-url.ts). */
 export const SITE_URL = 'https://lokalwerk.eu';
 
 export type NavKey = 'werkzeuge' | 'pro';

@@ -160,6 +160,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-mehrere-seiten-pro-blatt',
     'pdf-broschuere',
     'pdf-vorder-rueckseiten-mischen',
+    'pdf-zuschneiden',
     'pdf-leere-seiten-entfernen',
   ],
   xlsx: [

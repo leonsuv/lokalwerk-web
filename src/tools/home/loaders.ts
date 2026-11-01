@@ -39,6 +39,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-leere-seiten-entfernen/main.html?raw')).default,
     open: async () => (await import('../pdf-leere-seiten-entfernen/page.ts')).openFiles,
   },
+  'pdf-zuschneiden': {
+    markup: async () => (await import('../pdf-zuschneiden/main.html?raw')).default,
+    open: async () => (await import('../pdf-zuschneiden/page.ts')).openFiles,
+  },
   'pdf-teilen': {
     markup: async () => (await import('../pdf-teilen/main.html?raw')).default,
     open: async () => (await import('../pdf-teilen/page.ts')).openFiles,

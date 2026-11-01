@@ -65,6 +65,7 @@ interface ScanPage {
 const canvas = $<HTMLCanvasElement>('#scan-canvas');
 const result = $<HTMLCanvasElement>('#scan-result');
 const modeButtons = $$<HTMLButtonElement>('button[data-mode]');
+const freshButtons = $$<HTMLButtonElement>('button[data-fresh]');
 const saveButton = $<HTMLButtonElement>('#scan-save');
 const saveLabel = $('#scan-save-label');
 const idleLabel = saveLabel.textContent ?? '';
@@ -72,6 +73,7 @@ const idleLabel = saveLabel.textContent ?? '';
 let pages: ScanPage[] = [];
 let active = 0;
 let mode: ScanMode = 'gray';
+let fresh = false;
 let busy = false;
 /** Bildpunkte der Vorschau der aktiven Seite, für die Ergebnis-Vorschau */
 let previewPixels: ImageData | null = null;
@@ -148,6 +150,7 @@ async function updatePreview(): Promise<void> {
       corners,
       out: fits(outputSize(corners), RESULT_SIDE),
       mode,
+      fresh,
     });
     if (run !== previewRun) return;
     result.width = warped.width;
@@ -186,6 +189,10 @@ function render(): void {
   $('#scan-editor').hidden = pages.length === 0;
   $('#scan-bad').hidden = convex;
   for (const b of modeButtons) b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
+  for (const b of freshButtons) {
+    b.setAttribute('aria-pressed', String((b.dataset.fresh === 'yes') === fresh));
+  }
+  $('#scan-fresh-field').hidden = mode !== 'color';
   $('#scan-count').textContent = pages.length ? String(pages.length) : '–';
   const reduced = $('#scan-reduced');
   reduced.hidden = !pages.some((p) => canvasScale(p.width, p.height) < 1);
@@ -275,6 +282,7 @@ async function renderPage(page: ScanPage): Promise<PageImage> {
         height: Math.max(1, Math.round(size.height * shrink)),
       },
       mode,
+      fresh,
     });
     out.width = warped.width;
     out.height = warped.height;
@@ -349,6 +357,13 @@ $('#scan-pages').addEventListener('click', (e) => {
 for (const b of modeButtons) {
   b.addEventListener('click', () => {
     mode = (b.dataset.mode as ScanMode | undefined) ?? 'gray';
+    schedulePreview();
+    render();
+  });
+}
+for (const b of freshButtons) {
+  b.addEventListener('click', () => {
+    fresh = b.dataset.fresh === 'yes';
     schedulePreview();
     render();
   });

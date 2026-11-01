@@ -4,7 +4,7 @@
  * Start (plan.md N4).
  */
 
-import { blackAndWhite, grayscale } from '../../core/images/enhance.ts';
+import { blackAndWhite, grayscale, stretchColor } from '../../core/images/enhance.ts';
 import { warp, type Point } from '../../core/images/perspective.ts';
 import { imagesToPdf, type PageImage, type PageLayout } from '../../core/pdf/from-images.ts';
 import { serveRequests } from '../../ui/worker-protocol.ts';
@@ -21,6 +21,8 @@ export type ScanRequest =
       corners: Point[];
       out: { width: number; height: number };
       mode: ScanMode;
+      /** Farbe: Kontrast auffrischen */
+      fresh: boolean;
     }
   | { type: 'build'; pages: PageImage[]; layout: PageLayout };
 
@@ -36,8 +38,9 @@ serveRequests<ScanRequest>(async (request) => {
     const result = await imagesToPdf(request.pages, request.layout, 0);
     return { result, transfer: [result.buffer as ArrayBuffer] };
   }
-  const { rgba, width, height, corners, out, mode } = request;
+  const { rgba, width, height, corners, out, mode, fresh } = request;
   const pixels = warp(rgba, width, height, corners, out);
+  if (mode === 'color' && fresh) stretchColor(pixels);
   if (mode === 'gray') grayscale(pixels);
   if (mode === 'bw') blackAndWhite(pixels, out.width, out.height);
   const result: Warped = { rgba: pixels, width: out.width, height: out.height };

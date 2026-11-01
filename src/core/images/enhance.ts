@@ -28,6 +28,32 @@ export function grayscale(rgba: Uint8ClampedArray): void {
   }
 }
 
+/**
+ * Farbe auffrischen: Die Helligkeit wird so gespreizt, dass die dunkelsten 1 % schwarz und die
+ * hellsten 1 % weiß sind. Alle drei Kanäle bekommen denselben Abzug und Faktor, damit sich die
+ * Farbtöne nicht verschieben. Bei schon vollem Kontrast bleibt das Bild unverändert.
+ */
+export function stretchColor(rgba: Uint8ClampedArray): void {
+  const hist = new Array<number>(256).fill(0);
+  const n = rgba.length / 4;
+  for (let i = 0; i < rgba.length; i += 4) {
+    const l = Math.round(luma(rgba[i] ?? 0, rgba[i + 1] ?? 0, rgba[i + 2] ?? 0));
+    hist[l] = (hist[l] ?? 0) + 1;
+  }
+  const cut = n * 0.01;
+  let lo = 0;
+  for (let acc = 0; lo < 255 && (acc += hist[lo] ?? 0) <= cut; lo++);
+  let hi = 255;
+  for (let acc = 0; hi > 0 && (acc += hist[hi] ?? 0) <= cut; hi--);
+  if (hi - lo < 16 || (lo === 0 && hi === 255)) return;
+  const factor = 255 / (hi - lo);
+  for (let i = 0; i < rgba.length; i += 4) {
+    for (let c = 0; c < 3; c++) {
+      rgba[i + c] = Math.min(255, Math.max(0, ((rgba[i + c] ?? 0) - lo) * factor));
+    }
+  }
+}
+
 /** Fenster für die örtliche Schwelle: ein Sechzehntel der längeren Bildseite */
 const WINDOW_SHARE = 1 / 16;
 /** Ein Punkt wird schwarz, wenn er mindestens 15 % dunkler ist als seine Umgebung */

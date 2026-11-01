@@ -171,8 +171,8 @@ Das Design des Prototyps ist abgenommen. Keine neuen Farben, Schriften oder Komp
 ## 11. Arbeitsweise
 
 - **Kleine, abgeschlossene Schritte.** Ein Werkzeug oder eine Funktion pro Änderung.
-- **Vor größeren Änderungen einen kurzen Plan zeigen** und auf Freigabe warten: neue Abhängigkeit, neue Seitenstruktur, Änderungen am Designsystem, alles mit Netzwerkzugriff.
-- **Nicht raten, fragen.** Lieber eine Rückfrage als eine erfundene Annahme über ein Bankformat.
+- **Keine Rückfragen (Leon, 01.11.2026).** Der Agent arbeitet `docs/STATUS.md` von oben nach unten durch und hält nicht an. Für jede Entscheidung gilt `docs/entscheidungen.md`. Was dort nicht steht, entscheidet der Agent nach dem einfacheren, testbaren Weg und trägt es dort im Protokoll ein. Die Regeln 1 bis 8 in Abschnitt 2 bleiben unverändert: Ein Werkzeug, das sie verletzen würde, wird übersprungen und mit Grund in `docs/STATUS.md` vermerkt, nicht erfragt. Neue Abhängigkeiten gelten nach den Bedingungen in E6 als freigegeben.
+- **Format oder Quelle unklar:** nicht raten, Werkzeug überspringen und vermerken.
 - **Keine Nebenbei-Refactorings** außerhalb der Aufgabe.
 - **Browser-Prüfung vor jedem Commit eines Werkzeugs**, nicht erst am Ende eines Pakets: Konsole, Netzwerk-Tab und CSP-Meldungen. Kein Commit mit bekannten Konsolenfehlern.
 - **Am Ende jeder Aufgabe kurz berichten:** was geändert wurde, welche Tests laufen, was offen ist und ob Datenschutzerklärung oder AGB betroffen sind.

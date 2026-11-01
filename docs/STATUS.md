@@ -1,0 +1,77 @@
+# Warteschlange
+
+Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `docs/entscheidungen.md`). Erledigt: `[x]`. Übersprungen oder zurückgestellt: `[-]` mit Grund. Notbremse für den Stop-Hook: Datei `docs/STOP` anlegen.
+
+## Phase 0: Prüfung
+- [ ] Alle „Prüfen“-Punkte aus `plan-kukanilea-abgleich.md` Abschnitt 5 im Code prüfen und das Ergebnis in den Plan eintragen
+- [ ] Neue Werkzeuge zählen (Querverweise bereinigen) und Zahl in den Plan eintragen
+- [ ] Arbeitsbranch `ausbau-werkzeuge` anlegen, Plan, Entscheidungen und diese Liste committen
+
+## Phase 1: Übergreifendes
+- [ ] Strg+V (Dateien/Text) und „Beispiel“-Knopf nur, wo es die Bedienung nicht verschlechtert
+- [ ] Je Werkzeug Abschnitt „Grenzen“ und Quellen
+- [ ] Übersichtsseite: neue Werkzeuge im bestehenden Muster aufnehmen
+
+## Phase 2: Vorhandene Werkzeuge fachlich verbessern
+- [ ] CSV reparieren / Excel-CSV: Zeichensatz-Erkennung anzeigen, UTF-8 mit BOM, Formelschutz
+- [ ] SEPA-Sammelüberweisung: Einfügen aus Excel, TARGET2-Geschäftstag, XML-Vorschau, Kontrollsumme, Adresse nach Spezifikation
+- [ ] IBAN prüfen: Mehrfachprüfung mit Ergebnistabelle
+- [ ] Foto-Metadaten: Liste der Funde, verlustfreies Entfernen
+- [ ] PDF schwärzen: Suche nach Begriffen
+- [ ] PDF-Formular ausfüllen: XFA-Erkennung
+- [ ] PDF unterschreiben: PNG-Ausgabe
+- [ ] Texte vergleichen: Modi, Unified Diff, Limits
+- [ ] Arbeitstage: AT und CH
+- [ ] QR-Code: weitere Typen, SVG, Scanner
+- [ ] Passwort: Prüfer, UUID
+- [ ] Fotos verkleinern / Bildformat: Vorher/Nachher, Stapel als ZIP
+- [ ] ZIP: eigene Werkzeugseite, Pfade bereinigen
+
+## Phase 3: Dokument scannen
+- [ ] tesseract.js installieren (Eintrag in `docs/abhaengigkeiten.md`), OCR in Scanner und „Texterkennung“
+- [ ] Filter, Voreinstellungen, Größen, Seitenformate, Erfassungsprotokoll
+
+## Phase 4: Fehlende PDF-Werkzeuge
+- [ ] Broschüre, Mehrere Seiten pro Blatt, Seiten halbieren, Vorder-/Rückseiten mischen, Leere Seiten entfernen
+- [ ] PDF zuschneiden, Seitengröße ändern, Graustufen, Komprimieren, Reparieren
+- [ ] Lesezeichen, Anhänge, Briefpapier, Kopf- und Fußzeile, Kommentare entfernen
+- [ ] Bilder aus PDF holen, PDF in Text, Text in PDF, PDF in Excel, PDF in Word
+- [ ] PDF vergleichen, PDF prüfen, Formular fixieren, PDF-Formular erstellen
+
+## Phase 5: Tabellen und Kontakte
+- [ ] CSV: Trennzeichen, Zeichensatz, Dezimaltrennzeichen, aufteilen, zusammenführen, vergleichen, Spalten zuordnen
+- [ ] Excel: Blätter aufteilen, Blätter zusammenführen, Dateien zusammenführen
+- [ ] JSON und CSV, Pivot-Tabelle
+- [ ] vCard: zu CSV, aus CSV, zusammenführen, Dubletten, Viewer
+
+## Phase 6: Zahlungsverkehr
+- [ ] Quellen und Beispieldateien nach `tests/fixtures/` laden
+- [ ] SEPA-Lastschrift (pain.008), CAMT.053-Viewer, MT940, Schweizer QR-Rechnung
+
+## Phase 7: Text, E-Mail, Kalender, einfache Rechner
+- [ ] Textzähler, Text-Bereiniger, Groß-/Kleinschreibung, Abwesenheitsnotiz
+- [ ] EML-Viewer, EML-Anhänge, MBOX-Viewer, MBOX zu EML, MSG-Viewer, E-Mail-Header, EML zu PDF
+- [ ] ICS: Viewer, zu CSV, zusammenführen, Dubletten, Generator
+- [ ] Kalenderwoche, Alter, Tage, Datum & Zeit, Wach-Timer
+- [ ] Einheiten, Prozent, Taschenrechner, Tilgungsplan, Zins, Stundenrechner, Teilzeit, Pausen, Ruhezeiten, Preisvergleich, Nachkalkulation, Kfz-Leasing, Kraftstoffkosten, Aufmaß, Baustoff, Systemcheck
+- [ ] Markdown-Editor, Diagramm aus Text, Entwickler-Helfer
+
+## Phase 8: Bilder und Codes
+- [ ] Filter, Collage, Wasserzeichen, Barcodes, Farben, Audio-Recorder, Screenshot-Editor, Hintergrund entfernen, Ausmalbilder
+
+## Phase 9: Verschlüsseln
+- [ ] Datei-Verschlüsselung, ZIP entpacken, PDF-Passwort setzen und entfernen
+
+## Phase 10: Datenhaltende Werkzeuge (Export/Import-Datei als Normalfall)
+- [ ] Kassenbuch, Fahrtenbuch, Stundenzettel, Dienstplan, Urlaubsplaner, Aufgaben, Kontakte, Textbausteine, Rechnungen ohne E-Rechnung
+
+## Phase 11: Steuer, Lohn, Sozial (nur mit Quelle laut E3)
+- [ ] Je Werkzeug Quelle suchen und eintragen, danach bauen oder mit Grund überspringen
+
+## Phase 12: Große Editoren
+- [ ] Tabellenkalkulation, Tabellen-Editor, Präsentationen, Whiteboard, Vektor-Editor, Raumplaner, Grundriss, Dokument-Editor, Bilder-Editor, Design erstellen
+
+## Übersprungen (mit Grund)
+- [-] E-Rechnungspflicht-Check, E-Rechnung im Konverter: Regel 7
+- [-] Bildschirm-Support, Online-Senden, Handy-Brücke, Rechtschreibung per Server: Regel 1
+- [-] Impressum & Rechtstexte, Vertragsvorlagen, Kündigungsschreiben, Patientenverfügung, Arbeitszeugnis: Abschnitt 9

@@ -63,7 +63,9 @@ type Current =
 
 export interface PdfTool {
   /** Nach einer Änderung der Einstellungen aufrufen, damit der Knopf folgt */
-  render(): void;
+  render: () => void;
+  /** Dateien übernehmen, zum Beispiel von der Startseite (src/tools/home/loaders.ts) */
+  openFiles: (files: File[]) => void;
 }
 
 export function mountPdfTool<O>(config: PdfToolConfig<O>): PdfTool {
@@ -185,5 +187,5 @@ export function mountPdfTool<O>(config: PdfToolConfig<O>): PdfTool {
   preventAccidentalFileOpen();
   wireDropzone($(`#${p}-drop`), $<HTMLInputElement>(`#${p}-input`), openFiles);
   render();
-  return { render };
+  return { render, openFiles };
 }

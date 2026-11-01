@@ -4,7 +4,7 @@
 
 import { mountPdfTool } from '../../ui/pdf-tool.ts';
 
-mountPdfTool<Record<string, never>>({
+const tool = mountPdfTool<Record<string, never>>({
   prefix: 'brs',
   worker: new Worker(new URL('./booklet.worker.ts', import.meta.url), { type: 'module' }),
   busyLabel: 'Broschüre wird erstellt …',
@@ -13,3 +13,5 @@ mountPdfTool<Record<string, never>>({
   done: () =>
     'Fertig: Die Broschüre ist gespeichert. Druck sie beidseitig, Wenden an der langen Kante.',
 });
+
+export const { openFiles } = tool;

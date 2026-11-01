@@ -33,3 +33,5 @@ for (const b of borderButtons) {
   });
 }
 render();
+
+export const { openFiles } = tool;

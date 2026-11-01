@@ -31,3 +31,5 @@ for (const b of buttons) {
   });
 }
 render();
+
+export const { openFiles } = tool;

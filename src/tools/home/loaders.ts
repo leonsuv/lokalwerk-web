@@ -19,6 +19,18 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-zusammenfuegen/main.html?raw')).default,
     open: async () => (await import('../pdf-zusammenfuegen/page.ts')).addFiles,
   },
+  'pdf-seiten-halbieren': {
+    markup: async () => (await import('../pdf-seiten-halbieren/main.html?raw')).default,
+    open: async () => (await import('../pdf-seiten-halbieren/page.ts')).openFiles,
+  },
+  'pdf-mehrere-seiten-pro-blatt': {
+    markup: async () => (await import('../pdf-mehrere-seiten-pro-blatt/main.html?raw')).default,
+    open: async () => (await import('../pdf-mehrere-seiten-pro-blatt/page.ts')).openFiles,
+  },
+  'pdf-broschuere': {
+    markup: async () => (await import('../pdf-broschuere/main.html?raw')).default,
+    open: async () => (await import('../pdf-broschuere/page.ts')).openFiles,
+  },
   'pdf-teilen': {
     markup: async () => (await import('../pdf-teilen/main.html?raw')).default,
     open: async () => (await import('../pdf-teilen/page.ts')).openFiles,

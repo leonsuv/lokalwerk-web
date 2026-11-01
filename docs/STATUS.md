@@ -14,8 +14,8 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 
 ## Phase 2: Vorhandene Werkzeuge fachlich verbessern
 - [x] CSV reparieren: Formelschutz, abschaltbar, mit Anzahl in der Meldung (`core/csv/formula-guard.ts`)
-- [ ] Excel-CSV umwandeln: Formelschutz wie in CSV reparieren
-- [ ] CSV reparieren: erkannten Zeichensatz anzeigen
+- [x] Excel-CSV umwandeln: Formelschutz wie in CSV reparieren
+- [x] CSV reparieren: erkannter Zeichensatz wird schon als Chip „Kodierung“ angezeigt (nichts zu tun)
 - [ ] PDF schwärzen: Suche nach Begriffen (IBAN, E-Mail, frei)
 - [ ] PDF-Formular ausfüllen: XFA-Erkennung mit Meldung
 - [ ] PDF unterschreiben: Unterschrift als transparentes PNG speichern

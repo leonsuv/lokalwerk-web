@@ -8,6 +8,7 @@ import { decodeText } from '../../core/csv/decode.ts';
 import { detectDelimiter } from '../../core/csv/delimiter.ts';
 import { encodeText } from '../../core/csv/encode.ts';
 import { CsvError, parseCsv, stripSepHint } from '../../core/csv/parse.ts';
+import { guardFormulas } from '../../core/csv/formula-guard.ts';
 import { toCsv } from '../../core/csv/write.ts';
 import { isCsv, isWorkbook } from '../../core/files/classify.ts';
 import { convertColumns, formatValue, type SheetValue } from '../../core/sheet/values.ts';
@@ -80,13 +81,14 @@ serveRequests<ConvertRequest>(async (request) => {
   if (request.type === 'to-csv') {
     const sheet = source?.kind === 'workbook' ? source.sheets[request.sheet] : undefined;
     if (!sheet) throw Object.assign(new Error('keine Tabelle'), { code: 'no-source' });
-    const text = toCsv(
-      sheet.rows.map((row) => row.map((v) => formatValue(v, request.decimal))),
-      request.delimiter,
-    );
+    const formatted = sheet.rows.map((row) => row.map((v) => formatValue(v, request.decimal)));
+    const guarded = request.guardFormulas
+      ? guardFormulas(formatted)
+      : { rows: formatted, count: 0 };
+    const text = toCsv(guarded.rows, request.delimiter);
     const encoded = encodeText(`${text}\r\n`, request.encoding);
     const result: CsvOutcome = encoded.ok
-      ? { ok: true, bytes: encoded.bytes, rows: sheet.rows.length }
+      ? { ok: true, bytes: encoded.bytes, rows: sheet.rows.length, guarded: guarded.count }
       : encoded;
     return { result, transfer: encoded.ok ? [encoded.bytes.buffer as ArrayBuffer] : [] };
   }

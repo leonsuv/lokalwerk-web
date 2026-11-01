@@ -16,6 +16,7 @@ export type ConvertRequest =
       delimiter: Delimiter;
       decimal: DecimalMark;
       encoding: OutputEncoding;
+      guardFormulas: boolean;
     }
   | { type: 'to-xlsx'; detect: boolean; decimal: DecimalMark };
 
@@ -42,7 +43,7 @@ export type ReadOutcome =
     };
 
 export type CsvOutcome =
-  | { ok: true; bytes: Uint8Array; rows: number }
+  | { ok: true; bytes: Uint8Array; rows: number; guarded: number }
   | { ok: false; code: 'unsupported'; chars: string[]; line: number };
 
 export interface XlsxOutcome {

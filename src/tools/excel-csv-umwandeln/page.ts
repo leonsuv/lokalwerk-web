@@ -69,6 +69,7 @@ const decimalSelect = $<HTMLSelectElement>('#conv-decimal');
 const encodingSelect = $<HTMLSelectElement>('#conv-encoding');
 const inDecimalSelect = $<HTMLSelectElement>('#conv-in-decimal');
 const detectButtons = $$<HTMLButtonElement>('button[data-detect]');
+const guardButtons = $$<HTMLButtonElement>('button[data-guard]');
 const saveButton = $<HTMLButtonElement>('#conv-save');
 const saveLabel = $('#conv-save-label');
 const clearButton = $<HTMLButtonElement>('#conv-clear');
@@ -79,6 +80,7 @@ type Loaded =
 let loaded: Loaded | null = null;
 let busy = false;
 let detect = true;
+let guard = true;
 
 const baseName = (name: string) => name.replace(/\.[^./\\]+$/, '').trim() || 'tabelle';
 const safePart = (text: string) => text.replace(/[\\/:*?"<>|]+/g, '_').trim();
@@ -149,6 +151,9 @@ function render(): void {
   }
   saveButton.disabled = busy || loaded === null;
   clearButton.disabled = busy || loaded === null;
+  for (const b of guardButtons) {
+    b.setAttribute('aria-pressed', String((b.dataset.guard === 'yes') === guard));
+  }
   for (const b of detectButtons) {
     b.setAttribute('aria-pressed', String((b.dataset.detect === 'yes') === detect));
   }
@@ -216,6 +221,7 @@ async function save(): Promise<void> {
         delimiter: csvDelimiter(),
         decimal: csvDecimal(),
         encoding: encodingSelect.value as OutputEncoding,
+        guardFormulas: guard,
       });
       if (!outcome.ok) {
         const chars = outcome.chars.map((c) => `„${c}“`).join(', ');
@@ -231,7 +237,13 @@ async function save(): Promise<void> {
         new Blob([outcome.bytes as Uint8Array<ArrayBuffer>], { type: 'text/csv' }),
       );
       countLocalBytes(current.file.size);
-      showToast(`Fertig: ${outcome.rows} ${outcome.rows === 1 ? 'Zeile' : 'Zeilen'} als CSV.`);
+      const guardedNote =
+        outcome.guarded > 0
+          ? `, ${outcome.guarded} ${outcome.guarded === 1 ? 'Zelle' : 'Zellen'} mit Apostroph gesichert`
+          : '';
+      showToast(
+        `Fertig: ${outcome.rows} ${outcome.rows === 1 ? 'Zeile' : 'Zeilen'} als CSV${guardedNote}.`,
+      );
     } else {
       const outcome = await client.request<XlsxOutcome>({
         type: 'to-xlsx',
@@ -271,6 +283,12 @@ clearButton.addEventListener('click', () => {
 });
 for (const select of [sheetSelect, delimiterSelect, decimalSelect]) {
   select.addEventListener('change', render);
+}
+for (const button of guardButtons) {
+  button.addEventListener('click', () => {
+    guard = button.dataset.guard === 'yes';
+    render();
+  });
 }
 for (const button of detectButtons) {
   button.addEventListener('click', () => {

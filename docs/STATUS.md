@@ -40,8 +40,8 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 ## Phase 4: Fehlende PDF-Werkzeuge
 Gemeinsamer Baustein: `src/ui/pdf-tool.ts` und `src/ui/pdf-worker.ts`.
 - [x] PDF-Seiten halbieren (`/pdf-seiten-halbieren/`)
-- [ ] Mehrere Seiten pro Blatt
-- [ ] Broschüre
+- [x] Mehrere Seiten pro Blatt (`/pdf-mehrere-seiten-pro-blatt/`)
+- [x] Broschüre (`/pdf-broschuere/`)
 - [ ] Vorder- und Rückseiten mischen
 - [ ] Leere Seiten entfernen
 - [ ] PDF zuschneiden

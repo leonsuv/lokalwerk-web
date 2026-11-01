@@ -8,9 +8,9 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [x] Arbeitsbranch `ausbau-werkzeuge` anlegen, Plan, Entscheidungen und diese Liste committen
 
 ## Phase 1: Übergreifendes
-- [ ] Strg+V (Dateien/Text) und „Beispiel“-Knopf nur, wo es die Bedienung nicht verschlechtert
-- [ ] Je Werkzeug Abschnitt „Grenzen“ und Quellen
-- [ ] Übersichtsseite: neue Werkzeuge im bestehenden Muster aufnehmen
+- [x] Strg+V für Dateien auf allen Ablageflächen (nicht in Eingabefeldern; `ui/paste.ts`). „Beispiel“-Knopf bewusst nicht: Lokalwerk-Bedienung bleibt, SEPA hat schon Beispieldaten
+- [-] Je Werkzeug Abschnitt „Grenzen“ und Quellen: besteht schon als „Gut zu wissen“ auf jeder Seite; neue Seiten bekommen ihn mit
+- [x] Übersichtsseite: neue Werkzeuge erscheinen automatisch über `build/pages.ts`
 
 ## Phase 2: Vorhandene Werkzeuge fachlich verbessern
 - [x] CSV reparieren: Formelschutz, abschaltbar, mit Anzahl in der Meldung (`core/csv/formula-guard.ts`)

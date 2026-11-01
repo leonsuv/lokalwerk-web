@@ -3,6 +3,8 @@
  * Der sichtbare Tastaturfokus kommt aus components.css (:has(input:focus-visible)).
  */
 
+import { pastedFiles } from './paste.ts';
+
 export function wireDropzone(
   zone: HTMLElement,
   input: HTMLInputElement,
@@ -36,6 +38,15 @@ export function wireDropzone(
     zone.classList.remove('over');
     const files = [...(event.dataTransfer?.files ?? [])];
     if (files.length > 0) onFiles(files);
+  });
+
+  // Strg+V: Dateien aus der Zwischenablage, solange die Fläche sichtbar ist
+  document.addEventListener('paste', (event) => {
+    if (zone.closest('[hidden]') || zone.getClientRects().length === 0) return;
+    const files = pastedFiles(event);
+    if (files.length === 0) return;
+    event.preventDefault();
+    onFiles(files);
   });
 }
 

@@ -1058,6 +1058,37 @@ export const PAGES: readonly PageDef[] = [
     },
   },
   {
+    file: 'pdf-vorder-rueckseiten-mischen/index.html',
+    url: '/pdf-vorder-rueckseiten-mischen/',
+    title: 'Vorder- und Rückseiten mischen: Scan-Stapel zusammenführen – im Browser | Lokalwerk',
+    description:
+      'Zwei Scan-PDFs kostenlos mischen: Vorderseiten und Rückseiten abwechselnd, Rückseiten bei Bedarf umgekehrt. Direkt im Browser, ohne Upload.',
+    index: true,
+    nav: 'werkzeuge',
+    tool: {
+      id: 'pdf-vorder-rueckseiten-mischen',
+      name: 'Vorder- und Rückseiten mischen',
+      short:
+        'Zwei Scan-PDFs, Vorderseiten und Rückseiten, abwechselnd zu einem Dokument verbinden.',
+      category: 'pdf',
+      icon: 'i-pages',
+      keywords: [
+        'vorderseiten',
+        'rückseiten',
+        'duplex',
+        'mischen',
+        'einzugscanner',
+        'adf',
+        'beidseitig',
+        'scan',
+        'zusammenführen',
+        'umkehren',
+      ],
+      related: ['pdf-zusammenfuegen', 'pdf-seiten-bearbeiten'],
+      accepts: { kind: 'pdf', multiple: true },
+    },
+  },
+  {
     file: 'arbeitstage/index.html',
     url: '/arbeitstage/',
     title: 'Arbeitstage berechnen: mit Feiertagen aller Bundesländer – kostenlos | Lokalwerk',

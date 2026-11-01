@@ -156,6 +156,10 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'ausweiskopie',
     'dokument-scannen',
     'etiketten',
+    'pdf-seiten-halbieren',
+    'pdf-mehrere-seiten-pro-blatt',
+    'pdf-broschuere',
+    'pdf-vorder-rueckseiten-mischen',
   ],
   xlsx: [
     'sepa-sammelueberweisung',

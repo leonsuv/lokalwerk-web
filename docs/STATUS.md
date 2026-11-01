@@ -42,7 +42,7 @@ Gemeinsamer Baustein: `src/ui/pdf-tool.ts` und `src/ui/pdf-worker.ts`.
 - [x] PDF-Seiten halbieren (`/pdf-seiten-halbieren/`)
 - [x] Mehrere Seiten pro Blatt (`/pdf-mehrere-seiten-pro-blatt/`)
 - [x] Broschüre (`/pdf-broschuere/`)
-- [ ] Vorder- und Rückseiten mischen
+- [x] Vorder- und Rückseiten mischen (`/pdf-vorder-rueckseiten-mischen/`, zwei Fächer; Rückseiten umkehrbar; Erklärtext Entwurf)
 - [ ] Leere Seiten entfernen
 - [ ] PDF zuschneiden
 - [ ] Seitengröße ändern

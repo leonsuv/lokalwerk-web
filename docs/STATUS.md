@@ -32,7 +32,7 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [-] SEPA TARGET-Geschäftstag: bewusst nicht, Quelle erlaubt Verschiebung durch die Bank (Plan Abschnitt 10)
 
 ## Phase 3: Dokument scannen
-- [ ] tesseract.js installieren (Eintrag in `docs/abhaengigkeiten.md`), OCR in Scanner und „Texterkennung“
+- [-] OCR mit tesseract.js (Scanner, „Texterkennung“, durchsuchbare PDF, automatisches Schwärzen im Scanner): übersprungen. Es braucht WebAssembly (`'wasm-unsafe-eval'` in der CSP) und Nachladen der Sprachdaten (`connect-src`). Das weicht die Richtlinie `connect-src 'none'` auf, auf der das Produktversprechen beruht, und WebAssembly hat Leon in plan-phase2.md E4 abgelehnt. Wenn Leon beides freigibt, ist OCR ein eigener Auftrag.
 - [ ] Filter, Voreinstellungen, Größen, Seitenformate, Erfassungsprotokoll
 
 ## Phase 4: Fehlende PDF-Werkzeuge

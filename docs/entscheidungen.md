@@ -31,3 +31,5 @@ Gültig ab 01.11.2026 (Leon: „du arbeitest durch, ohne einmal zu fragen“). D
 | 01.11.2026 | (Umgebung) | Node 24 liegt unter `~/.local/node` (Prüfsumme gegen SHASUMS256 geprüft). Aufruf mit `PATH=$HOME/.local/node/bin:$PATH`. | Auf der Maschine war kein Node vorhanden |
 | 01.11.2026 | Arbeitstage Schweiz | übersprungen | SECO-Tabelle nicht abrufbar, nur Sonntags-gleichgestellte Feiertage, teils nach Bezirk/Gemeinde; Regel 8 |
 | 01.11.2026 | Texte vergleichen | Modi Zeile/Wort/Zeichen nicht nachgebaut | Lokalwerk markiert Wörter schon in der Zeile; Bedienung bleibt (E8) |
+| 01.11.2026 | OCR (tesseract.js) | übersprungen, nichts installiert | Braucht `'wasm-unsafe-eval'` und `connect-src`; widerspricht plan-phase2.md E4 (kein WebAssembly) und weicht die CSP auf, die das Produktversprechen trägt. Regel: bei Widerspruch gewinnt die bestehende Entscheidung |
+

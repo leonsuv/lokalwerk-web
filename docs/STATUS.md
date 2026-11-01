@@ -27,8 +27,8 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [ ] QR-Code: Scanner per Foto (braucht Decoder-Bibliothek nach E6, in Phase 8 zusammen mit anderen Bildwerkzeugen)
 - [x] Passwort prüfen: neue Seite `/passwort-pruefen/` (BSI-Beispiele, häufige Passwörter, Reihen, Tastaturmuster; keine Knackzeiten, weil ohne Quelle). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [-] Passwort: UUID und Hash für Text gehören in den Entwickler-Helfer (Phase 7), nicht hierher
-- [ ] Fotos verkleinern: Vorher/Nachher-Vergleich
-- [ ] ZIP: eigene Werkzeugseite, Pfade bereinigen
+- [-] Fotos verkleinern: Vorher/Nachher-Regler nicht nötig, Ersparnis je Foto und gesamt steht schon da (Lokalwerk-Bedienung bleibt)
+- [x] ZIP erstellen: neue Seite `/zip-erstellen/` mit Ordnerstruktur und bereinigten Pfaden (`core/zip/paths.ts`). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [-] SEPA TARGET-Geschäftstag: bewusst nicht, Quelle erlaubt Verschiebung durch die Bank (Plan Abschnitt 10)
 
 ## Phase 3: Dokument scannen

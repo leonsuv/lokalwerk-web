@@ -957,6 +957,24 @@ export const PAGES: readonly PageDef[] = [
     },
   },
   {
+    file: 'zip-erstellen/index.html',
+    url: '/zip-erstellen/',
+    title: 'ZIP-Archiv erstellen: Dateien und Ordner bündeln – im Browser | Lokalwerk',
+    description:
+      'Mehrere Dateien oder ganze Ordner kostenlos zu einer ZIP-Datei bündeln, mit Ordnerstruktur. Direkt im Browser, nichts wird hochgeladen.',
+    index: true,
+    nav: 'werkzeuge',
+    tool: {
+      id: 'zip-erstellen',
+      name: 'ZIP-Archiv erstellen',
+      short: 'Dateien und Ordner zu einer ZIP-Datei bündeln, ohne Upload.',
+      category: 'util',
+      icon: 'i-pages',
+      keywords: ['zip', 'archiv', 'packen', 'komprimieren', 'ordner', 'dateien', 'bündeln'],
+      related: ['pdf-zusammenfuegen', 'fotos-verkleinern'],
+    },
+  },
+  {
     file: 'arbeitstage/index.html',
     url: '/arbeitstage/',
     title: 'Arbeitstage berechnen: mit Feiertagen aller Bundesländer – kostenlos | Lokalwerk',

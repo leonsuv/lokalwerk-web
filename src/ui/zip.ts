@@ -4,6 +4,7 @@
  * ist ein Blob aus Verwaltungsdaten und den ursprünglichen Blobs.
  */
 
+import { uniquePaths } from '../core/zip/paths.ts';
 import { crc32, uniqueNames, zipLayout } from '../core/zip/write.ts';
 
 export interface ZipInput {
@@ -22,8 +23,12 @@ async function blobCrc32(blob: Blob): Promise<number> {
 }
 
 /** Wirft ZipError (zu groß, zu viele Dateien, leer). */
-export async function zipBlobs(files: readonly ZipInput[]): Promise<Blob> {
-  const names = uniqueNames(files.map((f) => f.name));
+export async function zipBlobs(
+  files: readonly ZipInput[],
+  { keepFolders = false }: { keepFolders?: boolean } = {},
+): Promise<Blob> {
+  const raw = files.map((f) => f.name);
+  const names = keepFolders ? uniquePaths(raw) : uniqueNames(raw);
   const modified = new Date();
   const entries = [];
   for (const [i, file] of files.entries()) {

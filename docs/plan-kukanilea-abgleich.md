@@ -315,3 +315,35 @@ Aufwand: Bei 223 Einträgen, von denen Lokalwerk nur einen Bruchteil hat, sind e
 - **Datenschutzerklärung:** Sobald ein Werkzeug Daten auf dem Gerät speichert (Phase 10, Merkliste, „Auftraggeber merken“), muss die Erklärung angepasst werden (AGENTS.md Abschnitt 9). Ich weise dann vorher darauf hin.
 - **Startseite und Werkzeugübersicht:** Bei über 100 Werkzeugen reicht die jetzige Übersicht nicht. Kategorien, Suche und Filter kommen in Phase 1, das Aussehen bleibt im bestehenden Designsystem. Neue Kategorien bekommen eine Akzentfarbe erst nach Rücksprache (AGENTS.md Abschnitt 6).
 - **Sitemap, Build und `scripts/check-dist.mjs`:** müssen mit jeder neuen Seite mitwachsen.
+
+## 10. Ergebnis Phase 0 (01.11.2026, Code geprüft)
+
+Testlauf vor allen Änderungen: 92 Testdateien bestanden, 1 übersprungen; 1252 Tests bestanden, 13 übersprungen.
+
+**Schon vorhanden (aus Abschnitt 5 gestrichen):**
+- UTF-8 mit und ohne BOM in der CSV-Ausgabe (`core/csv/encode.ts`).
+- Mehrfach-Prüfung in `iban-pruefen`: Tabelle mit Spaltenwahl, Filter „Nur Auffälligkeiten“ und „Alle Zeilen“.
+- Foto-Metadaten: Fundliste (GPS, XMP, IPTC und mehr) und „Alle ohne Metadaten speichern“.
+- Fotos verkleinern und Bildformat: Stapel mit ZIP-Download.
+- QR-Code: WLAN, Kontakt, Text, Link, Export als SVG.
+- Übersichtsseite `/werkzeuge/` mit lokaler Suche.
+- Formular ausfüllen: Meldung bei PDFs ohne Felder.
+- SEPA: Kontrollsumme (`CtrlSum`, `NbOfTxs`) und XML-Ausgabe mit Kopieren.
+- Duplikate finden: Spaltenauswahl (besser als KUKANILEA, das keine Spaltenwahl hat).
+
+**Bewusst anders (nicht ändern):**
+- Ausführungsdatum bei SEPA: keine Prüfung auf Bankfeiertage, weil Anlage 3 Kap. 26.11, S. 102 der Bank die Verschiebung auf den nächsten TARGET-Geschäftstag erlaubt (`core/sepa/dates.ts`). Die Quelle entscheidet, nicht KUKANILEA.
+
+**Fehlt (bleibt in der Warteschlange):**
+- CSV-Formelschutz (kein Treffer im Code).
+- PDF schwärzen: nur Rechtecke von Hand, keine Suche nach Begriffen.
+- XFA-Erkennung nur in der Werkstatt, nicht im Werkzeug „Formular ausfüllen“.
+- Texte vergleichen: zeilenweise mit wortweisem Feinvergleich, aber keine wählbaren Modi, kein Unified-Diff-Export.
+- Arbeitstage: nur deutsche Bundesländer.
+- Passwort: nur Generator, kein Prüfer, kein UUID, kein Text-Hash.
+- Dokument scannen: nur Graustufen und Schwarzweiß, Ecken von Hand, keine OCR, keine Voreinstellungen.
+- QR-Code: kein Scanner, kein Logo, kein E-Mail-Typ.
+- Fotos verkleinern: kein Vorher/Nachher-Vergleich.
+- ZIP: keine eigene Werkzeugseite.
+
+Offen und im Code nicht eindeutig geklärt: Einfügen aus der Zwischenablage (Strg+V), „Beispiel“-Knopf, Strg+K auf der Übersichtsseite. Diese Punkte folgen in Phase 1 mit eigener Prüfung je Werkzeug.

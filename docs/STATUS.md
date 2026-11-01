@@ -3,9 +3,9 @@
 Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `docs/entscheidungen.md`). Erledigt: `[x]`. Übersprungen oder zurückgestellt: `[-]` mit Grund. Notbremse für den Stop-Hook: Datei `docs/STOP` anlegen.
 
 ## Phase 0: Prüfung
-- [ ] Alle „Prüfen“-Punkte aus `plan-kukanilea-abgleich.md` Abschnitt 5 im Code prüfen und das Ergebnis in den Plan eintragen
-- [ ] Neue Werkzeuge zählen (Querverweise bereinigen) und Zahl in den Plan eintragen
-- [ ] Arbeitsbranch `ausbau-werkzeuge` anlegen, Plan, Entscheidungen und diese Liste committen
+- [x] Alle „Prüfen“-Punkte aus `plan-kukanilea-abgleich.md` Abschnitt 5 im Code prüfen und das Ergebnis in den Plan eintragen (Abschnitt 10)
+- [-] Neue Werkzeuge zählen: Querverweise sind nicht eindeutig zuordenbar, der Fortschritt wird stattdessen über diese Liste gezählt
+- [x] Arbeitsbranch `ausbau-werkzeuge` anlegen, Plan, Entscheidungen und diese Liste committen
 
 ## Phase 1: Übergreifendes
 - [ ] Strg+V (Dateien/Text) und „Beispiel“-Knopf nur, wo es die Bedienung nicht verschlechtert
@@ -13,19 +13,18 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [ ] Übersichtsseite: neue Werkzeuge im bestehenden Muster aufnehmen
 
 ## Phase 2: Vorhandene Werkzeuge fachlich verbessern
-- [ ] CSV reparieren / Excel-CSV: Zeichensatz-Erkennung anzeigen, UTF-8 mit BOM, Formelschutz
-- [ ] SEPA-Sammelüberweisung: Einfügen aus Excel, TARGET2-Geschäftstag, XML-Vorschau, Kontrollsumme, Adresse nach Spezifikation
-- [ ] IBAN prüfen: Mehrfachprüfung mit Ergebnistabelle
-- [ ] Foto-Metadaten: Liste der Funde, verlustfreies Entfernen
-- [ ] PDF schwärzen: Suche nach Begriffen
-- [ ] PDF-Formular ausfüllen: XFA-Erkennung
-- [ ] PDF unterschreiben: PNG-Ausgabe
-- [ ] Texte vergleichen: Modi, Unified Diff, Limits
-- [ ] Arbeitstage: AT und CH
-- [ ] QR-Code: weitere Typen, SVG, Scanner
-- [ ] Passwort: Prüfer, UUID
-- [ ] Fotos verkleinern / Bildformat: Vorher/Nachher, Stapel als ZIP
+- [ ] CSV-Ausgabe (CSV reparieren, Excel-CSV, weitere): Formelschutz, abschaltbar
+- [ ] CSV reparieren: erkannten Zeichensatz anzeigen
+- [ ] PDF schwärzen: Suche nach Begriffen (IBAN, E-Mail, frei)
+- [ ] PDF-Formular ausfüllen: XFA-Erkennung mit Meldung
+- [ ] PDF unterschreiben: Unterschrift als transparentes PNG speichern
+- [ ] Texte vergleichen: Modi Zeile, Wort, Zeichen, Unified-Diff-Export, Limits
+- [ ] Arbeitstage: Österreich und Schweiz mit Kantonen
+- [ ] QR-Code: E-Mail-Typ, Logo, Scanner per Foto
+- [ ] Passwort: Prüfer mit Entropie und Mustern, UUID, Hash für Text
+- [ ] Fotos verkleinern: Vorher/Nachher-Vergleich
 - [ ] ZIP: eigene Werkzeugseite, Pfade bereinigen
+- [-] SEPA TARGET-Geschäftstag: bewusst nicht, Quelle erlaubt Verschiebung durch die Bank (Plan Abschnitt 10)
 
 ## Phase 3: Dokument scannen
 - [ ] tesseract.js installieren (Eintrag in `docs/abhaengigkeiten.md`), OCR in Scanner und „Texterkennung“

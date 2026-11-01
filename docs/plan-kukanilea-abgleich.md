@@ -337,7 +337,7 @@ Testlauf vor allen Änderungen: 92 Testdateien bestanden, 1 übersprungen; 1252 
 **Fehlt (bleibt in der Warteschlange):**
 - CSV-Formelschutz (kein Treffer im Code).
 - PDF schwärzen: nur Rechtecke von Hand, keine Suche nach Begriffen.
-- XFA-Erkennung nur in der Werkstatt, nicht im Werkzeug „Formular ausfüllen“.
+- (Korrigiert bei der Umsetzung: „Formular ausfüllen“ erkennt XFA bereits, `core/pdf/form.ts`, mit eigener Meldung. Nichts zu tun.)
 - Texte vergleichen: zeilenweise mit wortweisem Feinvergleich, aber keine wählbaren Modi, kein Unified-Diff-Export.
 - Arbeitstage: nur deutsche Bundesländer.
 - Passwort: nur Generator, kein Prüfer, kein UUID, kein Text-Hash.

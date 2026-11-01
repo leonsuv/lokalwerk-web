@@ -17,8 +17,8 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [x] Excel-CSV umwandeln: Formelschutz wie in CSV reparieren
 - [x] CSV reparieren: erkannter Zeichensatz wird schon als Chip „Kodierung“ angezeigt (nichts zu tun)
 - [x] PDF schwärzen: Suche nach Begriffen (frei, IBAN, E-Mail) im Werkzeug; in der Werkstatt-Einbettung noch nicht (`core/pdf/text-match.ts`)
-- [ ] PDF-Formular ausfüllen: XFA-Erkennung mit Meldung
-- [ ] PDF unterschreiben: Unterschrift als transparentes PNG speichern
+- [x] PDF-Formular ausfüllen: XFA-Erkennung ist schon vorhanden (nichts zu tun)
+- [x] PDF unterschreiben: Unterschrift als transparentes PNG speichern
 - [ ] Texte vergleichen: Modi Zeile, Wort, Zeichen, Unified-Diff-Export, Limits
 - [ ] Arbeitstage: Österreich und Schweiz mit Kantonen
 - [ ] QR-Code: E-Mail-Typ, Logo, Scanner per Foto

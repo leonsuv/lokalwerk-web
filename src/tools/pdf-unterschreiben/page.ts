@@ -184,6 +184,7 @@ function render(): void {
   $<HTMLButtonElement>('#sig-prev').disabled = busy || page <= 1;
   $<HTMLButtonElement>('#sig-next').disabled = busy || !ok || page >= ok.facts.pages;
   $<HTMLButtonElement>('#sig-place').disabled = busy || !ok || !signature;
+  $<HTMLButtonElement>('#sig-png').disabled = busy || !signature;
   saveButton.disabled = busy || !ok || !signature || count === 0;
   $<HTMLButtonElement>('#sig-clear').disabled = busy || current === null;
 }
@@ -284,6 +285,14 @@ async function save(): Promise<void> {
   }
 }
 
+$('#sig-png').addEventListener('click', () => {
+  if (!signature) return;
+  saveBlob(
+    'unterschrift.png',
+    new Blob([signature.png as Uint8Array<ArrayBuffer>], { type: 'image/png' }),
+  );
+  showToast('Fertig: Die Unterschrift ist als PNG mit durchsichtigem Hintergrund gespeichert.');
+});
 $('#sig-prev').addEventListener('click', () => void showPage(page - 1));
 $('#sig-next').addEventListener('click', () => void showPage(page + 1));
 $('#sig-place').addEventListener('click', () => {

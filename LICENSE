@@ -16,7 +16,7 @@ from third parties carry their own license terms, in particular:
 - build/third-party/APAFML.txt: Adobe notice for the font metrics shipped by pdf-lib
 - tests/fixtures/: sources and terms are listed in tests/fixtures/SOURCES.md
 
-Contact: kontakt@lokalwerk.eu
+Contact: support@azendix.de
 
 ---
 
@@ -38,4 +38,4 @@ Repository tragen ihre eigenen Lizenzbedingungen, insbesondere:
 - build/third-party/APAFML.txt: Hinweis von Adobe zu den Schriftmetriken in pdf-lib
 - tests/fixtures/: Quellen und Bedingungen stehen in tests/fixtures/SOURCES.md
 
-Kontakt: kontakt@lokalwerk.eu
+Kontakt: support@azendix.de

@@ -1,0 +1,78 @@
+<div class="wrap util">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-key" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>Passwort prüfen</h1>
+      <p>
+        Ein Passwort mit den Beispielen des BSI vergleichen und auf typische Schwächen testen. Es
+        bleibt in deinem Browser.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <div class="field">
+        <label class="lbl" for="pwc-input">Passwort</label>
+        <input
+          type="password"
+          id="pwc-input"
+          autocomplete="off"
+          spellcheck="false"
+          autocapitalize="off"
+          aria-describedby="pwc-summary"
+        />
+      </div>
+      <div class="field">
+        <span class="lbl" id="pwc-show-label">Anzeige</span>
+        <div class="seg" role="group" aria-labelledby="pwc-show-label">
+          <button type="button" data-show="no" aria-pressed="true">Verborgen</button>
+          <button type="button" data-show="yes" aria-pressed="false">Sichtbar</button>
+        </div>
+      </div>
+      <div class="summary mt-m" id="pwc-summary" aria-live="polite"></div>
+      <div id="pwc-findings" class="mt-m"></div>
+      <p class="hint" id="pwc-empty">Gib ein Passwort ein, dann erscheint hier die Einordnung.</p>
+    </div>
+    <div class="card side">
+      <h2>So wird bewertet</h2>
+      <div class="stat-row"><span>Länge</span><b id="pwc-length">–</b></div>
+      <div class="stat-row"><span>Zeichenarten</span><b id="pwc-kinds">–</b></div>
+      <div class="stat-row"><span>BSI-Beispiel</span><b id="pwc-bsi">–</b></div>
+      <div class="note mt-m">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-info" /></svg>
+        <span
+          >Das Ergebnis sagt nichts darüber, ob ein Passwort schon einmal gestohlen wurde. Nutze für
+          jeden Dienst ein eigenes Passwort.</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf, noch nicht von Leon freigegeben (docs/texte-zur-freigabe.md). -->
+  <section class="explain" aria-labelledby="pwc-explain">
+    <h2 id="pwc-explain">So funktioniert es</h2>
+    <p>
+      Das Werkzeug zählt Länge und Zeichenarten (Groß- und Kleinbuchstaben, Ziffern, Sonderzeichen)
+      und vergleicht sie mit den Beispielen des Bundesamts für Sicherheit in der Informationstechnik
+      (BSI) für sichere Passwörter. Außerdem prüft es, ob das Passwort in einer kleinen Liste sehr
+      häufiger Passwörter steht, ob es Reihen wie 1234 oder abcd, Tastaturreihen wie qwertz,
+      wiederholte Zeichen oder einen wiederholten Block enthält.
+    </p>
+    <h2>Gut zu wissen</h2>
+    <p>
+      Die Liste häufiger Passwörter ist klein und von Hand zusammengestellt. Ein Passwort, das nicht
+      darin steht, ist deshalb nicht automatisch sicher. Eine Angabe, wie lange das Knacken dauert,
+      gibt es bewusst nicht: Sie hängt vom Verfahren ab, mit dem der Dienst Passwörter speichert,
+      und lässt sich hier nicht belastbar nennen. Die Beispiele des BSI nennen Mindestwerte; wie
+      sicher ein Passwort ist, hängt auch davon ab, dass es nirgends sonst benutzt wird.
+    </p>
+    <h2>Dein Passwort bleibt auf deinem Gerät</h2>
+    <p>
+      Die Prüfung läuft direkt in deinem Browser. Das Passwort wird weder gesendet noch gespeichert.
+      Nach dem Laden der Seite funktioniert das Werkzeug auch ohne Internetverbindung.
+    </p>
+  </section>
+</div>

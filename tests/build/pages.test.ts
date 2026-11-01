@@ -28,6 +28,7 @@ describe('Seitenregister', () => {
         '/bildformat-umwandeln/',
         '/excel-csv-umwandeln/',
         '/passwort-generator/',
+        '/passwort-pruefen/',
         '/arbeitstage/',
         '/pruefsumme/',
         '/texte-vergleichen/',

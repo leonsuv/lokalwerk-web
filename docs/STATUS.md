@@ -25,7 +25,8 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [x] QR-Code: E-Mail-Typ (mailto nach RFC 6068)
 - [-] QR-Code: Logo im Code: bewusst nicht, es verdeckt Moduleflächen und kann Codes unlesbar machen
 - [ ] QR-Code: Scanner per Foto (braucht Decoder-Bibliothek nach E6, in Phase 8 zusammen mit anderen Bildwerkzeugen)
-- [ ] Passwort: Prüfer mit Entropie und Mustern, UUID, Hash für Text
+- [x] Passwort prüfen: neue Seite `/passwort-pruefen/` (BSI-Beispiele, häufige Passwörter, Reihen, Tastaturmuster; keine Knackzeiten, weil ohne Quelle). Erklärtext ist Entwurf und nicht von Leon freigegeben
+- [-] Passwort: UUID und Hash für Text gehören in den Entwickler-Helfer (Phase 7), nicht hierher
 - [ ] Fotos verkleinern: Vorher/Nachher-Vergleich
 - [ ] ZIP: eigene Werkzeugseite, Pfade bereinigen
 - [-] SEPA TARGET-Geschäftstag: bewusst nicht, Quelle erlaubt Verschiebung durch die Bank (Plan Abschnitt 10)

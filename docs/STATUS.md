@@ -38,11 +38,31 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [-] Scanner: Voreinstellungen, Dateigrößen-Stufen und Erfassungsprotokoll nicht nachgebaut: Die Lokalwerk-Bedienung bleibt; ein Protokoll mit Prüfsummen nähert sich Aussagen zur Revisionssicherheit, für die es hier keine Quelle gibt (Regel 8)
 
 ## Phase 4: Fehlende PDF-Werkzeuge
-- [ ] Broschüre, Mehrere Seiten pro Blatt, Seiten halbieren, Vorder-/Rückseiten mischen, Leere Seiten entfernen
-- [ ] PDF zuschneiden, Seitengröße ändern, Graustufen, Komprimieren, Reparieren
-- [ ] Lesezeichen, Anhänge, Briefpapier, Kopf- und Fußzeile, Kommentare entfernen
-- [ ] Bilder aus PDF holen, PDF in Text, Text in PDF, PDF in Excel, PDF in Word
-- [ ] PDF vergleichen, PDF prüfen, Formular fixieren, PDF-Formular erstellen
+Gemeinsamer Baustein: `src/ui/pdf-tool.ts` und `src/ui/pdf-worker.ts`.
+- [x] PDF-Seiten halbieren (`/pdf-seiten-halbieren/`)
+- [ ] Mehrere Seiten pro Blatt
+- [ ] Broschüre
+- [ ] Vorder- und Rückseiten mischen
+- [ ] Leere Seiten entfernen
+- [ ] PDF zuschneiden
+- [ ] Seitengröße ändern
+- [ ] PDF in Graustufen
+- [ ] PDF komprimieren
+- [ ] PDF reparieren
+- [ ] PDF-Lesezeichen bearbeiten
+- [ ] Anhänge verwalten
+- [ ] Briefpapier überlagern
+- [ ] Kopf- und Fußzeile
+- [ ] PDF-Kommentare entfernen
+- [ ] Bilder aus PDF holen
+- [ ] PDF in Text
+- [ ] Text in PDF
+- [ ] PDF in Excel
+- [ ] PDF in Word
+- [ ] PDF vergleichen
+- [ ] PDF prüfen
+- [ ] Formular fixieren
+- [ ] PDF-Formular erstellen
 
 ## Phase 5: Tabellen und Kontakte
 - [ ] CSV: Trennzeichen, Zeichensatz, Dezimaltrennzeichen, aufteilen, zusammenführen, vergleichen, Spalten zuordnen

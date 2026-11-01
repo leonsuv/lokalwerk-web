@@ -975,6 +975,33 @@ export const PAGES: readonly PageDef[] = [
     },
   },
   {
+    file: 'pdf-seiten-halbieren/index.html',
+    url: '/pdf-seiten-halbieren/',
+    title: 'PDF-Seiten halbieren: Doppelseiten teilen – im Browser | Lokalwerk',
+    description:
+      'Doppelseiten einer PDF kostenlos in der Mitte teilen, senkrecht oder waagerecht, auch bei gedrehten Seiten. Direkt im Browser, ohne Upload.',
+    index: true,
+    nav: 'werkzeuge',
+    tool: {
+      id: 'pdf-seiten-halbieren',
+      name: 'PDF-Seiten halbieren',
+      short: 'Doppelseiten in der Mitte teilen, sodass jede Hälfte eine eigene Seite wird.',
+      category: 'pdf',
+      icon: 'i-scissors',
+      keywords: [
+        'halbieren',
+        'teilen',
+        'doppelseiten',
+        'buchscan',
+        'mitte',
+        'scan',
+        'seiten trennen',
+      ],
+      related: ['pdf-teilen', 'pdf-seiten-bearbeiten'],
+      accepts: { kind: 'pdf', multiple: false },
+    },
+  },
+  {
     file: 'arbeitstage/index.html',
     url: '/arbeitstage/',
     title: 'Arbeitstage berechnen: mit Feiertagen aller Bundesländer – kostenlos | Lokalwerk',

@@ -33,6 +33,7 @@ const FAILED =
   'Die Datei konnte nicht verarbeitet werden. Lade die Seite neu und versuch es noch einmal.';
 
 const repairButtons = $$<HTMLButtonElement>('button[data-repair]');
+const guardButtons = $$<HTMLButtonElement>('button[data-guard]');
 const saveButton = $<HTMLButtonElement>('#rep-save');
 const saveLabel = $('#rep-save-label');
 const clearButton = $<HTMLButtonElement>('#rep-clear');
@@ -40,6 +41,7 @@ const idleLabel = saveLabel.textContent ?? '';
 
 let loaded: { file: File; summary: Extract<ReadSummary, { ok: true }> } | null = null;
 let repair = true;
+let guard = true;
 let busy = false;
 
 function chip(text: string): HTMLSpanElement {
@@ -68,6 +70,8 @@ function render(): void {
   $('#rep-repair-field').hidden = !s || s.changeCount === 0;
   for (const b of repairButtons)
     b.setAttribute('aria-pressed', String((b.dataset.repair === 'yes') === repair));
+  for (const b of guardButtons)
+    b.setAttribute('aria-pressed', String((b.dataset.guard === 'yes') === guard));
   saveButton.disabled = busy || !s;
   clearButton.disabled = busy || !s;
   if (!s || !loaded) return;
@@ -167,6 +171,7 @@ async function save(): Promise<void> {
     const result = await client.request<SaveResult>({
       type: 'save',
       repair,
+      guardFormulas: guard,
       delimiter,
       encoding: $<HTMLSelectElement>('#rep-encoding').value as OutputEncoding,
     });
@@ -183,9 +188,17 @@ async function save(): Promise<void> {
       new Blob([result.bytes as Uint8Array<ArrayBuffer>], { type: 'text/csv' }),
     );
     countLocalBytes(file.size);
-    showToast(
+    const parts = [
       result.repaired > 0
-        ? `Fertig: CSV gespeichert, ${result.repaired} ${result.repaired === 1 ? 'Zelle' : 'Zellen'} repariert.`
+        ? `${result.repaired} ${result.repaired === 1 ? 'Zelle' : 'Zellen'} repariert`
+        : '',
+      result.guarded > 0
+        ? `${result.guarded} ${result.guarded === 1 ? 'Zelle' : 'Zellen'} mit Apostroph gesichert`
+        : '',
+    ].filter(Boolean);
+    showToast(
+      parts.length > 0
+        ? `Fertig: CSV gespeichert, ${parts.join(', ')}.`
         : 'Fertig: CSV gespeichert.',
     );
   } catch {
@@ -200,6 +213,12 @@ async function save(): Promise<void> {
 for (const b of repairButtons) {
   b.addEventListener('click', () => {
     repair = b.dataset.repair === 'yes';
+    render();
+  });
+}
+for (const b of guardButtons) {
+  b.addEventListener('click', () => {
+    guard = b.dataset.guard === 'yes';
     render();
   });
 }

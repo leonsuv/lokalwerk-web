@@ -11,7 +11,13 @@ export const MAX_LISTED = 200;
 
 export type RepairRequest =
   | { type: 'read'; file: File }
-  | { type: 'save'; repair: boolean; delimiter: Delimiter; encoding: OutputEncoding };
+  | {
+      type: 'save';
+      repair: boolean;
+      guardFormulas: boolean;
+      delimiter: Delimiter;
+      encoding: OutputEncoding;
+    };
 
 export type ReadSummary =
   | {
@@ -33,5 +39,5 @@ export type ReadSummary =
   | { ok: false; code: 'empty' | 'unreadable' | 'unterminated-quote'; line?: number };
 
 export type SaveResult =
-  | { ok: true; bytes: Uint8Array; repaired: number }
+  | { ok: true; bytes: Uint8Array; repaired: number; guarded: number }
   | { ok: false; code: 'unsupported'; chars: string[]; line: number };

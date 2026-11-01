@@ -10,6 +10,7 @@ import {
   irregularRows,
   type CellChange,
 } from '../../core/csv/repair.ts';
+import { guardFormulas } from '../../core/csv/formula-guard.ts';
 import { toCsv } from '../../core/csv/write.ts';
 import { serveRequests } from '../../ui/worker-protocol.ts';
 import {
@@ -70,10 +71,16 @@ async function read(file: File): Promise<ReadSummary> {
 
 serveRequests<RepairRequest>(async (request) => {
   if (request.type === 'read') return { result: await read(request.file) };
-  const out = request.repair ? applyRepairs(rows, changes) : rows;
-  const encoded = encodeText(`${toCsv(out, request.delimiter)}\r\n`, request.encoding);
+  const repaired = request.repair ? applyRepairs(rows, changes) : rows;
+  const guarded = request.guardFormulas ? guardFormulas(repaired) : { rows: repaired, count: 0 };
+  const encoded = encodeText(`${toCsv(guarded.rows, request.delimiter)}\r\n`, request.encoding);
   const result: SaveResult = encoded.ok
-    ? { ok: true, bytes: encoded.bytes, repaired: request.repair ? changes.length : 0 }
+    ? {
+        ok: true,
+        bytes: encoded.bytes,
+        repaired: request.repair ? changes.length : 0,
+        guarded: guarded.count,
+      }
     : encoded;
   return { result, transfer: encoded.ok ? [encoded.bytes.buffer as ArrayBuffer] : [] };
 });

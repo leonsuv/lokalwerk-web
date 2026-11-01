@@ -73,6 +73,17 @@
         </div>
       </div>
       <div class="field">
+        <span class="lbl" id="rep-guard-label">Zellen, die mit = + - @ beginnen</span>
+        <div class="seg" role="group" aria-labelledby="rep-guard-label">
+          <button type="button" data-guard="yes" aria-pressed="true">Als Text sichern</button>
+          <button type="button" data-guard="no" aria-pressed="false">So lassen</button>
+        </div>
+        <p class="hint">
+          Excel führt solche Zellen als Formel aus. Gesichert bekommen sie ein Apostroph davor.
+          Negative Zahlen bleiben unverändert.
+        </p>
+      </div>
+      <div class="field">
         <label class="lbl" for="rep-delimiter">Trennzeichen</label>
         <select id="rep-delimiter">
           <option value=";" selected>Semikolon (Excel in Deutschland)</option>

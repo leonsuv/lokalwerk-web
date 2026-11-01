@@ -33,7 +33,9 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 
 ## Phase 3: Dokument scannen
 - [-] OCR mit tesseract.js (Scanner, „Texterkennung“, durchsuchbare PDF, automatisches Schwärzen im Scanner): übersprungen. Es braucht WebAssembly (`'wasm-unsafe-eval'` in der CSP) und Nachladen der Sprachdaten (`connect-src`). Das weicht die Richtlinie `connect-src 'none'` auf, auf der das Produktversprechen beruht, und WebAssembly hat Leon in plan-phase2.md E4 abgelehnt. Wenn Leon beides freigibt, ist OCR ein eigener Auftrag.
-- [ ] Filter, Voreinstellungen, Größen, Seitenformate, Erfassungsprotokoll
+- [x] Scanner: Seitengröße DIN A4, A5, US Letter oder „Wie das Blatt“
+- [ ] Scanner: „Verblasst auffrischen“ (Kontrastdehnung)
+- [-] Scanner: Voreinstellungen, Dateigrößen-Stufen und Erfassungsprotokoll nicht nachgebaut: Die Lokalwerk-Bedienung bleibt; ein Protokoll mit Prüfsummen nähert sich Aussagen zur Revisionssicherheit, für die es hier keine Quelle gibt (Regel 8)
 
 ## Phase 4: Fehlende PDF-Werkzeuge
 - [ ] Broschüre, Mehrere Seiten pro Blatt, Seiten halbieren, Vorder-/Rückseiten mischen, Leere Seiten entfernen

@@ -11,7 +11,7 @@ import {
   turnCorners,
   type Point,
 } from '../../core/images/perspective.ts';
-import type { PageImage } from '../../core/pdf/from-images.ts';
+import type { PageImage, PageLayout } from '../../core/pdf/from-images.ts';
 import { $, $$ } from '../../ui/dom.ts';
 import { CornerEditor } from '../../ui/corner-editor.ts';
 import { saveBlob } from '../../ui/download.ts';
@@ -312,7 +312,11 @@ async function save(): Promise<void> {
       images.push(await renderPage(page));
     }
     saveLabel.textContent = 'PDF wird erstellt …';
-    const bytes = await client.request<Uint8Array>({ type: 'build', pages: images });
+    const bytes = await client.request<Uint8Array>({
+      type: 'build',
+      pages: images,
+      layout: $<HTMLSelectElement>('#scan-size').value as PageLayout,
+    });
     saveBlob('scan.pdf', new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }));
     toWorkshop([
       new File([bytes as Uint8Array<ArrayBuffer>], 'scan.pdf', { type: 'application/pdf' }),

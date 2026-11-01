@@ -91,7 +91,15 @@
         <p class="hint">Gilt für alle Seiten. Schwarzweiß eignet sich für reinen Text.</p>
       </div>
       <div class="stat-row mt-m"><span>Seiten</span><b id="scan-count">–</b></div>
-      <div class="stat-row"><span>Seitengröße</span><b>DIN A4</b></div>
+      <div class="field mt-m">
+        <label class="lbl" for="scan-size">Seitengröße in der PDF</label>
+        <select id="scan-size">
+          <option value="a4-auto" selected>DIN A4</option>
+          <option value="a5-auto">DIN A5</option>
+          <option value="letter-auto">US Letter</option>
+          <option value="sheet">Wie das Blatt (für Belege und Quittungen)</option>
+        </select>
+      </div>
       <div class="stat-row"><span>Metadaten</span><b>werden entfernt</b></div>
       <p class="hint" id="scan-reduced" hidden></p>
       <button class="btn wide mt-m" id="scan-save" type="button" disabled>

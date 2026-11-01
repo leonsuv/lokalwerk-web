@@ -8,7 +8,7 @@ import { PDFDocument } from 'pdf-lib';
 import { placeImage, type PageImage, type PageLayout } from './image-layout.ts';
 import { toPdfError } from './merge.ts';
 
-export { A4, MM, placeImage } from './image-layout.ts';
+export { A4, A5, LETTER, MM, placeImage } from './image-layout.ts';
 export type { PageImage, PageLayout, Placement } from './image-layout.ts';
 
 export async function imagesToPdf(

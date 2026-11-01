@@ -1,6 +1,6 @@
 import { PDFDocument } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
-import { A4, imagesToPdf, MM, placeImage } from '../../../src/core/pdf/from-images.ts';
+import { A4, A5, imagesToPdf, LETTER, MM, placeImage } from '../../../src/core/pdf/from-images.ts';
 
 describe('A4 in Punkt', () => {
   it('entspricht 210 × 297 mm bei 72 pt je Zoll', () => {
@@ -60,5 +60,38 @@ describe('imagesToPdf', () => {
         0,
       ),
     ).rejects.toMatchObject({ name: 'PdfError' });
+  });
+});
+
+describe('weitere Seitengrößen', () => {
+  it('A5 (148 × 210 mm) hoch und quer nach dem Bild', () => {
+    const portrait = placeImage(3000, 4000, 'a5-auto', 0);
+    expect(portrait.pageWidth).toBeCloseTo(148 * MM, 5);
+    expect(portrait.pageHeight).toBeCloseTo(210 * MM, 5);
+    expect(placeImage(4000, 3000, 'a5-auto', 0).pageWidth).toBeCloseTo(A5.height, 5);
+  });
+
+  it('US Letter (612 × 792 pt) hoch und quer nach dem Bild', () => {
+    const portrait = placeImage(3000, 4000, 'letter-auto', 0);
+    expect(portrait.pageWidth).toBeCloseTo(612, 5);
+    expect(portrait.pageHeight).toBeCloseTo(792, 5);
+    expect(placeImage(4000, 3000, 'letter-auto', 0).pageWidth).toBeCloseTo(LETTER.height, 5);
+  });
+
+  it('„Wie das Blatt“: Seite hat das Seitenverhältnis des Bildes, lange Seite wie bei A4', () => {
+    const tall = placeImage(800, 2400, 'sheet', 0);
+    expect(tall.pageHeight).toBeCloseTo(A4.height, 5);
+    expect(tall.pageWidth / tall.pageHeight).toBeCloseTo(800 / 2400, 8);
+    expect(tall).toMatchObject({ x: 0, y: 0 });
+    expect(tall.width).toBeCloseTo(tall.pageWidth, 8);
+    const wide = placeImage(2400, 800, 'sheet', 0);
+    expect(wide.pageWidth).toBeCloseTo(A4.height, 5);
+    expect(wide.pageHeight).toBeCloseTo(A4.height / 3, 5);
+  });
+
+  it('Rand legt sich um das Bild, die Seite wächst mit', () => {
+    const p = placeImage(1000, 2000, 'sheet', 5);
+    expect(p.pageWidth).toBeCloseTo(p.width + 10 * MM, 8);
+    expect(p.x).toBeCloseTo(5 * MM, 8);
   });
 });

@@ -6,7 +6,7 @@
 
 import { blackAndWhite, grayscale } from '../../core/images/enhance.ts';
 import { warp, type Point } from '../../core/images/perspective.ts';
-import { imagesToPdf, type PageImage } from '../../core/pdf/from-images.ts';
+import { imagesToPdf, type PageImage, type PageLayout } from '../../core/pdf/from-images.ts';
 import { serveRequests } from '../../ui/worker-protocol.ts';
 
 export type ScanMode = 'color' | 'gray' | 'bw';
@@ -22,7 +22,7 @@ export type ScanRequest =
       out: { width: number; height: number };
       mode: ScanMode;
     }
-  | { type: 'build'; pages: PageImage[] };
+  | { type: 'build'; pages: PageImage[]; layout: PageLayout };
 
 export interface Warped {
   rgba: Uint8ClampedArray;
@@ -32,8 +32,8 @@ export interface Warped {
 
 serveRequests<ScanRequest>(async (request) => {
   if (request.type === 'build') {
-    // Jede Seite auf DIN A4, hoch oder quer nach dem Bild, ohne Rand wie bei einem Scanner
-    const result = await imagesToPdf(request.pages, 'a4-auto', 0);
+    // Jede Seite hoch oder quer nach dem Bild, ohne Rand wie bei einem Scanner
+    const result = await imagesToPdf(request.pages, request.layout, 0);
     return { result, transfer: [result.buffer as ArrayBuffer] };
   }
   const { rgba, width, height, corners, out, mode } = request;

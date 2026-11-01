@@ -5,7 +5,9 @@
 
 import { decodeText } from '../../core/csv/decode.ts';
 import type { CompareResult, Row } from '../../core/text/compare.ts';
+import { toUnifiedDiff } from '../../core/text/unified-diff.ts';
 import { $, $$ } from '../../ui/dom.ts';
+import { saveBlob } from '../../ui/download.ts';
 import { countLocalBytes } from '../../ui/local-counter.ts';
 import { showToast } from '../../ui/toast.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';
@@ -94,6 +96,7 @@ function renderResult(): void {
     return chip;
   });
   $('#cmp-summary').replaceChildren(...chips);
+  $<HTMLButtonElement>('#cmp-diff-save').disabled = deleted + inserted === 0;
   for (const b of viewButtons) {
     b.setAttribute('aria-pressed', String((b.dataset.view === 'changes') === onlyChanges));
   }
@@ -215,3 +218,11 @@ for (const b of viewButtons) {
 
 renderOptions();
 renderResult();
+
+$('#cmp-diff-save').addEventListener('click', () => {
+  if (!result) return;
+  const text = toUnifiedDiff(result.rows);
+  if (text === '') return;
+  saveBlob('unterschiede.diff', new Blob([text], { type: 'text/plain' }));
+  showToast('Fertig: Die Unterschiede sind als Unified Diff gespeichert.');
+});

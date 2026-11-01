@@ -19,7 +19,7 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [x] PDF schwärzen: Suche nach Begriffen (frei, IBAN, E-Mail) im Werkzeug; in der Werkstatt-Einbettung noch nicht (`core/pdf/text-match.ts`)
 - [x] PDF-Formular ausfüllen: XFA-Erkennung ist schon vorhanden (nichts zu tun)
 - [x] PDF unterschreiben: Unterschrift als transparentes PNG speichern
-- [ ] Texte vergleichen: Modi Zeile, Wort, Zeichen, Unified-Diff-Export, Limits
+- [x] Texte vergleichen: Unified-Diff-Export (gegen `patch` mit 197 Zufallsfällen geprüft). Wählbare Modi bewusst nicht: Lokalwerk markiert Wörter schon in der Zeile; Limit besteht (Meldung „zu viele Änderungen“)
 - [ ] Arbeitstage: Österreich und Schweiz mit Kantonen
 - [ ] QR-Code: E-Mail-Typ, Logo, Scanner per Foto
 - [ ] Passwort: Prüfer mit Entropie und Mustern, UUID, Hash für Text

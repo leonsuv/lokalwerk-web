@@ -29,3 +29,5 @@ Gültig ab 01.11.2026 (Leon: „du arbeitest durch, ohne einmal zu fragen“). D
 | Datum | Werkzeug | Entscheidung | Grund |
 |---|---|---|---|
 | 01.11.2026 | (Umgebung) | Node 24 liegt unter `~/.local/node` (Prüfsumme gegen SHASUMS256 geprüft). Aufruf mit `PATH=$HOME/.local/node/bin:$PATH`. | Auf der Maschine war kein Node vorhanden |
+| 01.11.2026 | Arbeitstage Schweiz | übersprungen | SECO-Tabelle nicht abrufbar, nur Sonntags-gleichgestellte Feiertage, teils nach Bezirk/Gemeinde; Regel 8 |
+| 01.11.2026 | Texte vergleichen | Modi Zeile/Wort/Zeichen nicht nachgebaut | Lokalwerk markiert Wörter schon in der Zeile; Bedienung bleibt (E8) |

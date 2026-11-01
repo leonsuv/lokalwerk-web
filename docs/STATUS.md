@@ -21,7 +21,7 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [x] PDF unterschreiben: Unterschrift als transparentes PNG speichern
 - [x] Texte vergleichen: Unified-Diff-Export (gegen `patch` mit 197 Zufallsfällen geprüft). Wählbare Modi bewusst nicht: Lokalwerk markiert Wörter schon in der Zeile; Limit besteht (Meldung „zu viele Änderungen“)
 - [x] Arbeitstage: Österreich (ARG § 7 Abs. 2, Quelle in `docs/feiertage-recht.md`)
-- [ ] Arbeitstage: Schweiz mit Kantonen (nur, wenn eine amtliche Tabelle sicher auswertbar ist)
+- [-] Arbeitstage Schweiz: übersprungen. Die SECO-Tabelle „Anhang Feiertage Schweiz“ (Stand 12.12.2024) war nicht abrufbar (404), und sie führt nur mit Sonntagen gleichgestellte Feiertage, teils nach Bezirk oder Gemeinde. Ohne gesicherte Tabelle wird nicht geraten (Regel 8, E3).
 - [ ] QR-Code: E-Mail-Typ, Logo, Scanner per Foto
 - [ ] Passwort: Prüfer mit Entropie und Mustern, UUID, Hash für Text
 - [ ] Fotos verkleinern: Vorher/Nachher-Vergleich

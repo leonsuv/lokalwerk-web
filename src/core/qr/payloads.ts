@@ -6,6 +6,8 @@
  *   aus dem ZXing-Projekt (plan-phase2.md Werkzeug 28). Sonderzeichen \ ; , : " werden mit
  *   Backslash geschützt. Die Wi-Fi Alliance beschreibt ein ähnliches Format; dessen Wortlaut lag
  *   nicht vor, deshalb stützen wir uns nicht darauf.
+ * - E-Mail: mailto-Adresse nach RFC 6068 mit Betreff und Text als Abfrageteil, Prozent-kodiert
+ *   (Zeilenumbrüche als %0D%0A, RFC 6068 5).
  * - Kontakt: vCard 3.0 nach RFC 2426 (von älteren Telefonen am breitesten gelesen), Zeilen mit
  *   CRLF, Textwerte mit Backslash-Schutz für \ ; , und Zeilenumbrüche (RFC 2426, 4).
  */
@@ -73,4 +75,33 @@ export function contactPayload(c: ContactInput): string {
   if (c.url.trim()) lines.push(`URL:${vcardEscape(c.url)}`);
   lines.push('END:VCARD');
   return lines.join('\r\n');
+}
+
+export interface MailInput {
+  address: string;
+  subject: string;
+  body: string;
+}
+
+export type MailResult = { ok: true; text: string } | { ok: false };
+
+/** Eine Adresse; Domain mit Umlauten wird in die ASCII-Form (Punycode) umgesetzt */
+export function mailPayload({ address, subject, body }: MailInput): MailResult {
+  const at = address.trim().lastIndexOf('@');
+  const local = address.trim().slice(0, at);
+  const rawDomain = address.trim().slice(at + 1);
+  if (at < 1 || /[\s,;?&<>"()[\]\\@]/.test(local) || /\s/.test(rawDomain)) return { ok: false };
+  let domain: string;
+  try {
+    domain = new URL(`http://${rawDomain}`).hostname;
+  } catch {
+    return { ok: false };
+  }
+  if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) return { ok: false };
+  const fields: string[] = [];
+  const crlf = (text: string) => text.replace(/\r?\n/g, '\r\n');
+  if (subject.trim() !== '') fields.push(`subject=${encodeURIComponent(crlf(subject.trim()))}`);
+  if (body.trim() !== '') fields.push(`body=${encodeURIComponent(crlf(body))}`);
+  const query = fields.length > 0 ? `?${fields.join('&')}` : '';
+  return { ok: true, text: `mailto:${encodeURIComponent(local)}@${domain}${query}` };
 }

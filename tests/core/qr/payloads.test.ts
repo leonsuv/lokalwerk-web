@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { contactPayload, urlPayload, wifiPayload } from '../../../src/core/qr/payloads.ts';
+import {
+  contactPayload,
+  mailPayload,
+  urlPayload,
+  wifiPayload,
+} from '../../../src/core/qr/payloads.ts';
 import { QUIET_ZONE, qrMatrix, qrSvg, utf8 } from '../../../src/core/qr/encode.ts';
 
 describe('urlPayload', () => {
@@ -68,4 +73,42 @@ describe('qrSvg und qrMatrix', () => {
     // Suchmuster oben links: 7 × 7, außen dunkel
     expect(matrix.modules[0]?.slice(0, 7)).toEqual(Array(7).fill(true));
   });
+});
+
+describe('mailPayload (mailto, RFC 6068)', () => {
+  it('nur Adresse', () => {
+    expect(mailPayload({ address: ' max@example.de ', subject: '', body: '' })).toEqual({
+      ok: true,
+      text: 'mailto:max@example.de',
+    });
+  });
+
+  it('Betreff und Text prozent-kodiert, Zeilenumbruch als %0D%0A', () => {
+    expect(
+      mailPayload({ address: 'a@b.de', subject: 'Frage & Antwort', body: 'Hallo\nWelt äöü?' }),
+    ).toEqual({
+      ok: true,
+      text: 'mailto:a@b.de?subject=Frage%20%26%20Antwort&body=Hallo%0D%0AWelt%20%C3%A4%C3%B6%C3%BC%3F',
+    });
+  });
+
+  it('kodiert Sonderzeichen vor dem @ und setzt Umlaut-Domains in Punycode um', () => {
+    expect(mailPayload({ address: 'a+b%c@müller.de', subject: '', body: '' })).toEqual({
+      ok: true,
+      text: 'mailto:a%2Bb%25c@xn--mller-kva.de',
+    });
+  });
+
+  it.each([
+    '',
+    'ohne-at',
+    '@example.de',
+    'a b@example.de',
+    'a@example',
+    'a@@b.de',
+    'a,b@example.de',
+    'a@.de',
+  ])('lehnt %j ab', (address) =>
+    expect(mailPayload({ address, subject: '', body: '' })).toEqual({ ok: false }),
+  );
 });

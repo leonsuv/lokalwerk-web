@@ -4,12 +4,12 @@
  */
 
 import { QrTooLongError, qrMatrix, qrSvg, utf8, type Ecc } from '../../core/qr/encode.ts';
-import { contactPayload, urlPayload, wifiPayload } from '../../core/qr/payloads.ts';
+import { contactPayload, mailPayload, urlPayload, wifiPayload } from '../../core/qr/payloads.ts';
 import { $, $$ } from '../../ui/dom.ts';
 import { drawQr, savePng, saveSvg } from '../../ui/qr-output.ts';
 import { showToast } from '../../ui/toast.ts';
 
-type Kind = 'url' | 'wifi' | 'contact' | 'text';
+type Kind = 'url' | 'wifi' | 'contact' | 'mail' | 'text';
 
 const canvas = $<HTMLCanvasElement>('#qr-canvas');
 const kindButtons = $$<HTMLButtonElement>('button[data-kind]');
@@ -57,6 +57,21 @@ function payload(): { text: string; name: string } | { error: string } | null {
     };
     if (!c.firstName.trim() && !c.lastName.trim() && !c.organization.trim()) return null;
     return { text: contactPayload(c), name: 'qr-code-kontakt' };
+  }
+  if (kind === 'mail') {
+    const address = value('#qr-mail-to');
+    if (address.trim() === '') return null;
+    const result = mailPayload({
+      address,
+      subject: value('#qr-mail-subject'),
+      body: value('#qr-mail-body'),
+    });
+    return result.ok
+      ? { text: result.text, name: 'qr-code-email' }
+      : {
+          error:
+            'Das ist keine gültige E-Mail-Adresse. Schreib sie zum Beispiel so: name@beispiel.de',
+        };
   }
   const text = value('#qr-text');
   return text.trim() === '' ? null : { text, name: 'qr-code-text' };

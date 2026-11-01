@@ -19,6 +19,7 @@
           <button type="button" data-kind="url" aria-pressed="true">Link</button>
           <button type="button" data-kind="wifi" aria-pressed="false">WLAN</button>
           <button type="button" data-kind="contact" aria-pressed="false">Kontakt</button>
+          <button type="button" data-kind="mail" aria-pressed="false">E-Mail</button>
           <button type="button" data-kind="text" aria-pressed="false">Text</button>
         </div>
       </div>
@@ -100,6 +101,26 @@
         <div class="field">
           <label class="lbl" for="qr-web">Website</label>
           <input type="text" id="qr-web" inputmode="url" autocomplete="off" spellcheck="false" />
+        </div>
+      </div>
+      <div class="qr-panel mt-m" data-panel="mail" hidden>
+        <div class="field">
+          <label class="lbl" for="qr-mail-to">E-Mail-Adresse</label>
+          <input
+            type="text"
+            id="qr-mail-to"
+            inputmode="email"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <div class="field">
+          <label class="lbl" for="qr-mail-subject">Betreff (optional)</label>
+          <input type="text" id="qr-mail-subject" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label class="lbl" for="qr-mail-body">Text (optional)</label>
+          <textarea id="qr-mail-body"></textarea>
         </div>
       </div>
       <div class="qr-panel mt-m" data-panel="text" hidden>

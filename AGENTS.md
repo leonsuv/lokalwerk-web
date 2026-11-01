@@ -7,10 +7,10 @@ Diese Datei ist verbindlich für jeden KI-Agenten, der an diesem Projekt arbeite
 Lokalwerk ist eine Website mit Werkzeugen für Dateien: PDFs, Fotos, Überweisungslisten und Vereins-/Finanzkram. **Alles läuft ausschließlich im Browser des Nutzers.** Dateien verlassen nie das Gerät. Das ist nicht ein Feature unter vielen, sondern das Produkt selbst und das zentrale Verkaufsargument.
 
 - **Zielgruppe:** Kleine Firmen, Selbstständige, Vereine, Verwaltungen und Kanzleien im DACH-Raum, die sensible Dateien nicht auf Online-Konverter hochladen wollen oder dürfen.
-- **Geschäftsmodell:** Grundwerkzeuge kostenlos (für Suchmaschinen-Traffic), zahlende Nutzer über „Lokalwerk Pro“ (Abo). **Keine Werbung, kein Tracking.**
-- **Betreiber:** Einzelunternehmer, Kleinunternehmer nach § 19 UStG.
+- **Geschäftsmodell:** Keines. Lokalwerk ist ein privates Hobbyprojekt, alle Werkzeuge sind kostenlos, es gibt kein Bezahlangebot (Leon, 31.10.2026). **Keine Werbung, kein Tracking.**
+- **Betreiber:** Leon Suvorkov, privat und nicht gewerblich.
 - **Sprache der Oberfläche:** Deutsch, du-Form.
-- **Domain:** lokalwerk.eu. Kontaktadresse: kontakt@lokalwerk.eu.
+- **Domain:** lokalwerk.eu. Kontaktadresse: support@azendix.de.
 
 ### Prototyp als Referenz
 
@@ -22,7 +22,7 @@ Er ist **keine Code-Vorlage zum Übernehmen**. Er verstößt bewusst gegen Regel
 
 Verstöße gegen diese Regeln sind Fehler, auch wenn der Code funktioniert.
 
-1. **Keine Netzwerkanfragen zur Laufzeit.** Kein `fetch`, kein XHR, kein WebSocket, keine Beacons, keine Bilder oder Skripte von fremden Domains. Nach dem Laden der Seite muss jedes Werkzeug offline funktionieren. Einzige Ausnahme: der Zahlungs- und Lizenzablauf von Pro, und nur nach ausdrücklicher Freigabe.
+1. **Keine Netzwerkanfragen zur Laufzeit.** Kein `fetch`, kein XHR, kein WebSocket, keine Beacons, keine Bilder oder Skripte von fremden Domains. Nach dem Laden der Seite muss jedes Werkzeug offline funktionieren.
 2. **Keine CDNs, keine externen Schriftarten.** Alle Bibliotheken und Fonts werden gebündelt und von der eigenen Domain ausgeliefert. Niemals Google Fonts, cdnjs, jsDelivr, unpkg o. Ä. einbinden. (Hintergrund: Übertragung von IP-Adressen an Dritte ist in Deutschland abmahnrelevant und widerspricht dem Produktversprechen.)
 3. **Kein Tracking, keine Analyse, keine Cookies.** Auch kein „anonymes“ Analytics-Skript, keine Fehler-Reporting-Dienste wie Sentry, keine Social-Media-Einbindungen.
 4. **Keine KI- oder Server-APIs mit Nutzerdaten.** KI-Funktionen laufen nur mit Modellen im Browser (WebAssembly/WebGPU). Eine Server-KI darf nie eingebaut werden, ohne dass das ausdrücklich beauftragt ist.
@@ -76,7 +76,7 @@ Bereits freigegeben:
 | pdf.js (pdfjs-dist) | PDFs darstellen und rendern | Apache-2.0 | Worker lokal ausliefern; Legacy-Build mit core-js (MIT), siehe unten |
 | SheetJS Community Edition | Excel/CSV lesen | Apache-2.0 | Aktuelle Version direkt von SheetJS beziehen, nicht die veraltete npm-Version |
 | exifr | Metadaten lesen | MIT | |
-| tesseract.js | Texterkennung (Pro) | Apache-2.0 | Sprachdaten lokal ausliefern, nicht vom CDN |
+| tesseract.js | Texterkennung | Apache-2.0 | Sprachdaten lokal ausliefern, nicht vom CDN |
 
 **pdf.js-Updates:** Ausgeliefert wird der Legacy-Build von pdfjs-dist (freigegeben am 27.09.2026, `docs/pdfjs-kompatibilitaet.md`). Bei jedem Update von pdfjs-dist `npm run compat:pdfjs` laufen lassen und das Ergebnis im Bericht nennen. Ändert sich die mitgelieferte core-js-Version, bricht der Build ab, bis Lizenztext und Version in `build/licenses.ts` angepasst sind.
 
@@ -159,16 +159,14 @@ Das Design des Prototyps ist abgenommen. Keine neuen Farben, Schriften oder Komp
 
 ## 9. Rechtliches
 
-- Impressum, Datenschutzerklärung und AGB liegen als eigene Seiten vor. **Jede Änderung, die Daten, Dienste oder Zahlungen betrifft, erfordert eine Anpassung der Datenschutzerklärung.** Weise den Betreiber in diesem Fall ausdrücklich darauf hin, statt es stillschweigend zu übergehen.
+- Der Datenschutzhinweis liegt als eigene Seite vor (`/datenschutz/`). Ein Impressum gibt es nicht, weil Lokalwerk ein privates Hobbyprojekt ist; AGB gibt es nicht, weil nichts verkauft wird (Leon, 31.10.2026). **Jede Änderung, die Daten, Dienste oder Zahlungen betrifft, erfordert eine Anpassung der Datenschutzerklärung.** Weise den Betreiber in diesem Fall ausdrücklich darauf hin, statt es stillschweigend zu übergehen.
 - Rechtstexte werden nicht vom Agenten verfasst oder umgeschrieben, sondern nur auf Anweisung eingebaut.
 - Werkzeuge mit rechtlicher Wirkung (Zahlungsdateien, Zuwendungsbestätigungen) zeigen einen Hinweis, dass der Nutzer das Ergebnis selbst prüfen muss.
 
-## 10. Lokalwerk Pro
+## 10. Kein Bezahlangebot
 
-- Pro-Funktionen werden über einen Lizenzschlüssel freigeschaltet, der lokal geprüft wird (signierter Schlüssel). Kein Nutzerkonto, kein Login.
-- Kein aufwendiger Kopierschutz. Zielgruppe sind Firmen und Vereine, die ehrlich zahlen. Einfach und robust schlägt schwer zu knacken.
-- Kostenlose Funktionen werden nicht nachträglich hinter Pro versteckt.
-- Zahlungsanbieter: [OFFEN: Paddle oder Lemon Squeezy, vom Betreiber festzulegen. Für Phase 1 (kostenlose Werkzeuge) nicht relevant, Pro wird dort nicht gebaut.]
+- „Lokalwerk Pro“ ist entfallen (Leon, 31.10.2026). Keine Bezahlfunktionen, Lizenzschlüssel, Abos oder Hinweise auf ein kostenpflichtiges Angebot einbauen, solange das nicht ausdrücklich beauftragt ist.
+- Ändert sich das, müssen vorher Impressum, AGB und Datenschutzhinweis geklärt werden (Entwurf in `docs/agb-entwurf.md`).
 
 ## 11. Arbeitsweise
 

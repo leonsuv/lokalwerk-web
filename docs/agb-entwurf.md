@@ -2,6 +2,8 @@
 
 Wörtlich aus `prototype/lokalwerk-prototyp.html` übernommen (plan.md A7). Die AGB-Seite wird in Phase 1 nicht gebaut. Stellen in `==…==` sind Platzhalter aus dem Prototyp (dort gelb markiert). Rechtstexte werden nicht vom Agenten verfasst oder umgeschrieben (AGENTS.md Abschnitt 9).
 
+**Ruht seit 31.10.2026 (Leon):** Lokalwerk Pro ist entfallen, Lokalwerk ist ein privates Hobbyprojekt ohne Bezahlangebot. Der Entwurf bleibt nur als Grundlage, falls je wieder etwas verkauft wird.
+
 ---
 
 # Allgemeine Geschäftsbedingungen

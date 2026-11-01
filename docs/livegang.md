@@ -23,7 +23,7 @@ Geändert am 31.10.2026 (Leon): Lokalwerk ist ein privates Hobbyprojekt. `/pro/`
 | V1.3 | Datenschutz: Hoster-Abschnitt mit Cloudflare (Anbieter, Anschrift, Drittland-Absatz) nach Prüfung des Cloudflare-Vertrags (Auftragsverarbeitung, Datenübermittlung) | 1 h |
 | V1.4 | Datenschutz: zuständige Aufsichtsbehörde nach deinem Sitz (Entwurf nennt Nordrhein-Westfalen) | 10 min |
 | V1.5 | Datenschutz: Abschnitte „Nur falls genutzt:“, „Nur falls angeboten:“ und den Zahlungsanbieter für den Start streichen (Pro ist ausgeblendet) | 15 min |
-| V1.6 | Postfach kontakt@lokalwerk.eu einrichten und testen (steht im Impressum); ob der Mail-Anbieter in die Datenschutzerklärung gehört, in V2 klären | 30 min bis 1 h |
+| V1.6 | Entfallen (Leon, 31.10.2026): kein Impressum, Kontakt ist support@azendix.de | – |
 
 **V2 Rechtsprüfung.** Gesammelt an eine Stelle geben; zu jedem Punkt liegt eine Datei mit Wortlaut in `docs/`.
 
@@ -164,7 +164,7 @@ Befunde bitte mit Gerät, Browser-Version und Schritt melden, gern mit Bildschir
 
 ## Nicht Teil des Livegangs
 
-- **Lokalwerk Pro:** Zahlungsanbieter (Paddle oder Lemon Squeezy), Lizenzschlüssel, AGB (Entwurf in `docs/agb-entwurf.md`), Gewerbeanmeldung vor der ersten Zahlung (plan.md Abschnitt 9), Datenschutzerklärung zum Zahlungsablauf; danach Menüpunkt und Pro-Block wieder einblenden (Anleitung in `src/partials/pro-band.html`).
+- **Lokalwerk Pro:** entfallen (Leon, 31.10.2026). Pro-Seite, Pro-Block und AGB werden nicht gebaut; der AGB-Entwurf ruht in `docs/agb-entwurf.md`.
 - **camt.053 zu Excel/CSV und SEPA-Lastschrift (pain.008):** warten auf die Unterlagen der Deutschen Kreditwirtschaft in `.local-specs/dk/` (E17).
 - **Bankleitzahlen in der IBAN-Liste:** wartet auf die Antwort der Bundesbank (E9).
 - **Länge ausländischer IBANs außerhalb des EWR:** wartet auf die SWIFT IBAN Registry in `.local-specs/swift/` (plan.md O4).

@@ -34,7 +34,7 @@ Diese Funktionen fügen eigene Skripte in die ausgelieferten Seiten ein oder sen
 | Funktion | Warum aus | Wo (ungefähr) |
 |---|---|---|
 | Web Analytics / Browser Insights | Tracking-Skript (AGENTS.md Regel 3) | Pages-Projekt → Metriken bzw. Analytics & Logs → Web Analytics |
-| E-Mail-Adressen-Verschleierung (Email Address Obfuscation) | Fügt `email-decode.min.js` ein, sobald eine E-Mail-Adresse im HTML steht (Impressum, Datenschutz) | Zone → Scrape Shield |
+| E-Mail-Adressen-Verschleierung (Email Address Obfuscation) | Fügt `email-decode.min.js` ein, sobald eine E-Mail-Adresse im HTML steht (Datenschutzhinweis) | Zone → Scrape Shield |
 | Rocket Loader | Schreibt Skript-Tags um und lädt eigenen Code | Zone → Speed → Optimierung |
 | Zaraz | Tag-Manager für Drittanbieter-Skripte | Zone → Zaraz |
 | Bot Fight Mode / JavaScript-Erkennung | Kann Challenge-Skripte in Seiten einfügen | Zone → Security → Bots |
@@ -54,7 +54,7 @@ Diese Funktionen fügen eigene Skripte in die ausgelieferten Seiten ein oder sen
 
 ## Vor dem Livegang (Leon, plan.md Abschnitt 9)
 
-- Platzhalter in Impressum und Datenschutz ausfüllen, Hoster-Abschnitt der Datenschutzerklärung mit Cloudflare.
+- Datenschutzhinweis prüfen (Text nach Vorgabe von azendix.de, Leon 31.10.2026), Hoster-Abschnitt an den tatsächlichen Hoster anpassen. Ein Impressum entfällt (privates Hobbyprojekt).
 - Rechtstexte prüfen lassen, dabei die Randnotizen aus plan.md Abschnitt 9 (APAFML) vorlegen.
 - Erklärtexte und Meta-Beschreibungen freigeben (`docs/texte-zur-freigabe.md`).
 - Domain lokalwerk.eu mit dem Pages-Projekt verbinden, HTTPS erzwingen.

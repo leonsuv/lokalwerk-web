@@ -52,6 +52,7 @@ describe('Feiertage je Land (Wortlaut in docs/feiertage-recht.md)', () => {
       ST: 11,
       SH: 10,
       TH: 11,
+      AT: 13,
     };
     for (const { code } of LAENDER) expect(dates(2026, code), code).toHaveLength(expected[code]);
   });
@@ -130,6 +131,46 @@ describe('Feiertage je Land (Wortlaut in docs/feiertage-recht.md)', () => {
     expect(has(2026, 'SL', '2026-08-15')).toBe(true);
     // Ein Zusatz aus einem anderen Land wirkt nicht
     expect(has(2026, 'NI', '2026-08-15', ['mariae-himmelfahrt'])).toBe(false);
+  });
+});
+
+describe('Österreich (ARG § 7 Abs. 2)', () => {
+  it('13 Feiertage 2026 mit den beweglichen nach Ostern (5. April)', () => {
+    expect(dates(2026, 'AT')).toEqual([
+      '2026-01-01',
+      '2026-01-06',
+      '2026-04-06',
+      '2026-05-01',
+      '2026-05-14',
+      '2026-05-25',
+      '2026-06-04',
+      '2026-08-15',
+      '2026-10-26',
+      '2026-11-01',
+      '2026-12-08',
+      '2026-12-25',
+      '2026-12-26',
+    ]);
+  });
+
+  it('kein Karfreitag, kein 3. Oktober, kein Reformationstag', () => {
+    expect(has(2026, 'AT', '2026-04-03')).toBe(false);
+    expect(has(2026, 'AT', '2026-10-03')).toBe(false);
+    expect(has(2026, 'AT', '2026-10-31')).toBe(false);
+  });
+
+  it('seit 2018 dieselben 13 Tage, auch in einem Schaltjahr', () => {
+    for (const year of [2018, 2020, 2024, 2035]) expect(dates(year, 'AT')).toHaveLength(13);
+  });
+
+  it('zählt Arbeitstage ohne diese Feiertage (Oktober 2026)', () => {
+    const r = countWorkdays('2026-10-01', '2026-10-31', {
+      land: 'AT',
+      saturday: false,
+      regional: new Set(),
+    });
+    // 22 Werktage Mo–Fr, minus 26.10. (Montag); 1.11. liegt im November
+    expect(r).toMatchObject({ ok: true, workdays: 21 });
   });
 });
 

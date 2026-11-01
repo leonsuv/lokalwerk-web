@@ -31,7 +31,7 @@ let saturday = false;
 const regional = new Set<string>();
 
 landSelect.replaceChildren(
-  new Option('Bundesland wählen', ''),
+  new Option('Bundesland oder Österreich wählen', ''),
   ...LAENDER.map((l) => new Option(l.name, l.code)),
 );
 // Vorgabe: das laufende Kalenderjahr
@@ -72,6 +72,7 @@ function cell(text: string): HTMLTableCellElement {
 
 function render(): void {
   const land = (landSelect.value || null) as Land | null;
+  $('#wd-at-note').hidden = land !== 'AT';
   for (const b of weekButtons)
     b.setAttribute('aria-pressed', String((b.dataset.saturday === 'true') === saturday));
   $('#wd-rest-label').textContent = saturday ? 'Sonntage' : 'Samstage und Sonntage';

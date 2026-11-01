@@ -484,3 +484,16 @@ Fassung vom 27.05.2016 bis 26.03.2019:
 > der zweite Weihnachtsfeiertag.
 
 Folgerung: Weltkindertag ab 27.03.2019, erstmals am 20. September 2019.
+
+## Österreich: Arbeitsruhegesetz
+
+Abgerufen am 01.11.2026 aus dem Rechtsinformationssystem des Bundes (RIS), Bundesrecht konsolidiert, Arbeitsruhegesetz, Fassung vom 01.11.2026 (https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10008541). Der Text wurde automatisch aus der Seite gelesen und hier unverändert zitiert.
+
+§ 7 (2):
+
+> Feiertage im Sinne dieses Bundesgesetzes sind: 1. Jänner (Neujahr), 6. Jänner (Heilige Drei Könige), Ostermontag, 1. Mai (Staatsfeiertag), Christi Himmelfahrt, Pfingstmontag, Fronleichnam, 15. August (Mariä Himmelfahrt), 26. Oktober (Nationalfeiertag), 1. November (Allerheiligen), 8. Dezember (Mariä Empfängnis), 25. Dezember (Weihnachten), 26. Dezember (Stephanstag).
+
+Am Text steht ein Änderungsvermerk nur zu Absatz 3 („aufgehoben durch Art. 1 Z 2, BGBl. I Nr. 22/2019“). Zur Liste in Absatz 2 steht keiner; der Rechner nimmt sie deshalb für den ganzen Zeitraum ab 2018 als unverändert an.
+
+Folgerung: 13 Feiertage, bundesweit gleich, keine regionalen Zusätze. Karfreitag, 3. Oktober und Reformationstag sind nicht darunter. Die beweglichen Feiertage (Ostermontag, Christi Himmelfahrt, Pfingstmontag, Fronleichnam) folgen aus dem Ostersonntag nach der Formel der PTB (siehe oben). Nicht erfasst: Regelungen in Kollektivverträgen oder Betrieben.
+

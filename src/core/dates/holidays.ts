@@ -32,7 +32,9 @@ export type Land =
   | 'SN'
   | 'ST'
   | 'SH'
-  | 'TH';
+  | 'TH'
+  /** Österreich: bundesweit einheitlich (ARG § 7 Abs. 2), keine Länderunterschiede */
+  | 'AT';
 
 export const LAENDER: readonly { code: Land; name: string }[] = [
   { code: 'BW', name: 'Baden-Württemberg' },
@@ -51,6 +53,7 @@ export const LAENDER: readonly { code: Land; name: string }[] = [
   { code: 'ST', name: 'Sachsen-Anhalt' },
   { code: 'SH', name: 'Schleswig-Holstein' },
   { code: 'TH', name: 'Thüringen' },
+  { code: 'AT', name: 'Österreich (bundesweit)' },
 ];
 
 type Rule =
@@ -72,6 +75,27 @@ interface HolidayDef {
 
 const fixed = (month: number, day: number): Rule => ({ kind: 'fixed', month, day });
 const easter = (offset: number): Rule => ({ kind: 'easter', offset });
+
+/**
+ * Österreich: Feiertage im Sinne des Arbeitsruhegesetzes, § 7 Abs. 2 (RIS, Fassung vom 01.11.2026;
+ * Wortlaut in docs/feiertage-recht.md). Die Liste ist seit 2018 unverändert; geändert wurde nur
+ * Abs. 3 (BGBl. I Nr. 22/2019). Der Karfreitag steht nicht darin.
+ */
+const HOLIDAYS_AT: readonly HolidayDef[] = [
+  { id: 'neujahr', name: 'Neujahr', rule: fixed(1, 1), lands: 'all' },
+  { id: 'heilige-drei-koenige', name: 'Heilige Drei Könige', rule: fixed(1, 6), lands: 'all' },
+  { id: 'ostermontag', name: 'Ostermontag', rule: easter(1), lands: 'all' },
+  { id: 'staatsfeiertag', name: 'Staatsfeiertag (1. Mai)', rule: fixed(5, 1), lands: 'all' },
+  { id: 'himmelfahrt', name: 'Christi Himmelfahrt', rule: easter(39), lands: 'all' },
+  { id: 'pfingstmontag', name: 'Pfingstmontag', rule: easter(50), lands: 'all' },
+  { id: 'fronleichnam', name: 'Fronleichnam', rule: easter(60), lands: 'all' },
+  { id: 'mariae-himmelfahrt', name: 'Mariä Himmelfahrt', rule: fixed(8, 15), lands: 'all' },
+  { id: 'nationalfeiertag', name: 'Nationalfeiertag', rule: fixed(10, 26), lands: 'all' },
+  { id: 'allerheiligen', name: 'Allerheiligen', rule: fixed(11, 1), lands: 'all' },
+  { id: 'mariae-empfaengnis', name: 'Mariä Empfängnis', rule: fixed(12, 8), lands: 'all' },
+  { id: 'weihnachten', name: 'Weihnachten', rule: fixed(12, 25), lands: 'all' },
+  { id: 'stephanstag', name: 'Stephanstag', rule: fixed(12, 26), lands: 'all' },
+];
 
 /** Reihenfolge = Reihenfolge im Kalender */
 const HOLIDAYS: readonly HolidayDef[] = [
@@ -265,7 +289,7 @@ export function holidaysInYear(
   regional: ReadonlySet<string> = new Set(),
 ): Holiday[] {
   const result: Holiday[] = [];
-  for (const def of HOLIDAYS) {
+  for (const def of land === 'AT' ? HOLIDAYS_AT : HOLIDAYS) {
     if (def.lands !== 'all' && !def.lands.includes(land)) continue;
     if (def.regional && !regional.has(def.id)) continue;
     const day = dateOf(def.rule, year);

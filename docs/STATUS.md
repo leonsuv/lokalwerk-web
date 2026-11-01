@@ -20,7 +20,8 @@ Der Agent arbeitet diese Liste von oben nach unten ab, ohne zu fragen (siehe `do
 - [x] PDF-Formular ausfüllen: XFA-Erkennung ist schon vorhanden (nichts zu tun)
 - [x] PDF unterschreiben: Unterschrift als transparentes PNG speichern
 - [x] Texte vergleichen: Unified-Diff-Export (gegen `patch` mit 197 Zufallsfällen geprüft). Wählbare Modi bewusst nicht: Lokalwerk markiert Wörter schon in der Zeile; Limit besteht (Meldung „zu viele Änderungen“)
-- [ ] Arbeitstage: Österreich und Schweiz mit Kantonen
+- [x] Arbeitstage: Österreich (ARG § 7 Abs. 2, Quelle in `docs/feiertage-recht.md`)
+- [ ] Arbeitstage: Schweiz mit Kantonen (nur, wenn eine amtliche Tabelle sicher auswertbar ist)
 - [ ] QR-Code: E-Mail-Typ, Logo, Scanner per Foto
 - [ ] Passwort: Prüfer mit Entropie und Mustern, UUID, Hash für Text
 - [ ] Fotos verkleinern: Vorher/Nachher-Vergleich

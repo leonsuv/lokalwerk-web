@@ -43,7 +43,7 @@ Gemeinsamer Baustein: `src/ui/pdf-tool.ts` und `src/ui/pdf-worker.ts`.
 - [x] Mehrere Seiten pro Blatt (`/pdf-mehrere-seiten-pro-blatt/`)
 - [x] Broschüre (`/pdf-broschuere/`)
 - [x] Vorder- und Rückseiten mischen (`/pdf-vorder-rueckseiten-mischen/`, zwei Fächer; Rückseiten umkehrbar; Erklärtext Entwurf)
-- [ ] Leere Seiten entfernen
+- [x] Leere Seiten entfernen (`/pdf-leere-seiten-entfernen/`, drei Stufen, Kontrolle je Seite; Erklärtext Entwurf)
 - [ ] PDF zuschneiden
 - [ ] Seitengröße ändern
 - [ ] PDF in Graustufen

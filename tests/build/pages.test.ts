@@ -30,6 +30,7 @@ describe('Seitenregister', () => {
         '/passwort-generator/',
         '/passwort-pruefen/',
         '/zip-erstellen/',
+        '/pdf-leere-seiten-entfernen/',
         '/pdf-vorder-rueckseiten-mischen/',
         '/pdf-broschuere/',
         '/pdf-mehrere-seiten-pro-blatt/',

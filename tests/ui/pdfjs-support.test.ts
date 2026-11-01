@@ -92,6 +92,7 @@ describe('Werkzeuge mit pdf.js', () => {
     const users = sources.filter((s) => /\bloadPdfjs\(/.test(s.text));
     expect(users.map((s) => s.file.split('/')[0]).sort()).toEqual([
       'pdf-formular-ausfuellen',
+      'pdf-leere-seiten-entfernen',
       'pdf-schwaerzen',
       'pdf-seiten-bearbeiten',
       'pdf-unterschreiben',
@@ -107,7 +108,12 @@ describe('Werkzeuge mit pdf.js', () => {
   });
 
   it('Werkzeuge, die pdf.js für das Ergebnis brauchen, melden „zu alt“ statt „beschädigt“', () => {
-    for (const tool of ['pdf-schwaerzen', 'pdf-zu-bildern', 'pdf-unterschreiben']) {
+    for (const tool of [
+      'pdf-schwaerzen',
+      'pdf-zu-bildern',
+      'pdf-unterschreiben',
+      'pdf-leere-seiten-entfernen',
+    ]) {
       const text = sources.find((s) => s.file === `${tool}/page.ts`)?.text ?? '';
       expect(text, tool).toContain('unsupported: UNSUPPORTED_TOOL');
       expect(text, tool).toContain("unsupportedNote('tool')");

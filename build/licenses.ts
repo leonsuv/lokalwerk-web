@@ -160,6 +160,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-mehrere-seiten-pro-blatt',
     'pdf-broschuere',
     'pdf-vorder-rueckseiten-mischen',
+    'pdf-leere-seiten-entfernen',
   ],
   xlsx: [
     'sepa-sammelueberweisung',
@@ -177,6 +178,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-schwaerzen',
     'pdf-unterschreiben',
     'pdf-formular-ausfuellen',
+    'pdf-leere-seiten-entfernen',
   ],
 };
 

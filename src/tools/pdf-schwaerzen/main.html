@@ -26,6 +26,21 @@
         <strong>Noch keine PDF</strong>Füge die PDF hinzu, in der du Stellen schwärzen möchtest.
       </div>
       <div id="red-editor" hidden>
+        <div class="field" id="red-find">
+          <label class="lbl" for="red-term">Stellen suchen und markieren</label>
+          <input type="text" id="red-term" autocomplete="off" spellcheck="false" />
+          <fieldset class="check-list mt-s">
+            <legend class="lbl">Zusätzlich markieren</legend>
+            <div>
+              <label><input type="checkbox" id="red-find-iban" /> IBANs</label>
+              <label><input type="checkbox" id="red-find-email" /> E-Mail-Adressen</label>
+            </div>
+          </fieldset>
+          <button type="button" class="btn ghost sm mt-s" id="red-find-go">
+            Im ganzen Dokument suchen
+          </button>
+          <p class="hint" id="red-find-result" role="status"></p>
+        </div>
         <div class="page-nav">
           <button type="button" class="btn icon" id="red-prev" aria-label="Vorherige Seite">
             <svg width="18" height="18" aria-hidden="true"><use href="#i-left" /></svg>

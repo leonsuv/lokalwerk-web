@@ -24,6 +24,7 @@ import {
   VerbosityLevel,
   type PDFDocumentProxy,
 } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { multiply, type PageText } from '../../core/pdf/text-match.ts';
 import { LocalBinaryDataFactory } from './binary-data.ts';
 import { FALLBACK_DIR } from './fallbacks.ts';
 import { missingPdfjsApis } from './support.ts';
@@ -90,6 +91,27 @@ export async function pageSize(
   const page = await doc.getPage(pageNumber);
   const viewport = page.getViewport({ scale: 1, rotation: (page.rotate + extraRotation) % 360 });
   return { width: viewport.width, height: viewport.height };
+}
+
+/**
+ * Textstücke einer Seite mit ihrer Lage im Seitenbild bei 72 dpi (Drehung der Seite angewandt,
+ * Ursprung oben links). Seiten ohne Text, etwa Scans, liefern eine leere Liste.
+ */
+export async function pageText(doc: PDFDocumentProxy, pageNumber: number): Promise<PageText> {
+  const page = await doc.getPage(pageNumber);
+  const viewport = page.getViewport({ scale: 1, rotation: page.rotate % 360 });
+  const content = await page.getTextContent();
+  const items: PageText['items'][number][] = [];
+  for (const item of content.items) {
+    if (!('str' in item) || item.str === '') continue;
+    items.push({
+      str: item.str,
+      tx: multiply(viewport.transform, item.transform),
+      width: item.width * viewport.scale,
+    });
+  }
+  page.cleanup();
+  return { width: viewport.width, height: viewport.height, items };
 }
 
 export interface RenderOptions {

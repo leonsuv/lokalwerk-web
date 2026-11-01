@@ -7,6 +7,7 @@
 import { isPdf } from '../../core/files/classify.ts';
 import { formatBytes } from '../../core/format/bytes.ts';
 import { rasterSize } from '../../core/pdf/raster.ts';
+import { EMAIL_PATTERN, findRects, IBAN_PATTERN, termPattern } from '../../core/pdf/text-match.ts';
 import type { RasterPage } from '../../core/pdf/redact.ts';
 import { $ } from '../../ui/dom.ts';
 import { saveBlob } from '../../ui/download.ts';
@@ -132,6 +133,7 @@ function render(): void {
   $<HTMLButtonElement>('#red-clear-page').disabled = busy || (rects.get(page) ?? []).length === 0;
   $<HTMLButtonElement>('#red-clear').disabled = busy || current === null;
   $<HTMLButtonElement>('#red-add').disabled = busy || !ok;
+  $<HTMLButtonElement>('#red-find-go').disabled = busy || !ok;
 }
 
 async function showPage(n: number): Promise<void> {
@@ -265,6 +267,68 @@ async function save(): Promise<void> {
   }
 }
 
+function sameRect(a: NormRect, b: NormRect): boolean {
+  return (
+    Math.abs(a.x - b.x) < 0.004 &&
+    Math.abs(a.y - b.y) < 0.004 &&
+    Math.abs(a.w - b.w) < 0.004 &&
+    Math.abs(a.h - b.h) < 0.004
+  );
+}
+
+/** Sucht in allen Seiten und legt die Treffer als Bereiche an; schon vorhandene bleiben */
+async function findAreas(): Promise<void> {
+  if (current?.state !== 'ok') return;
+  const patterns: RegExp[] = [];
+  const typed = termPattern($<HTMLInputElement>('#red-term').value);
+  if (typed) patterns.push(typed);
+  if ($<HTMLInputElement>('#red-find-iban').checked) patterns.push(IBAN_PATTERN);
+  if ($<HTMLInputElement>('#red-find-email').checked) patterns.push(EMAIL_PATTERN);
+  const result = $('#red-find-result');
+  if (patterns.length === 0) {
+    result.textContent = 'Gib einen Suchbegriff ein oder wähle IBANs oder E-Mail-Adressen.';
+    return;
+  }
+  const { doc, pages: total } = current;
+  const { pageText } = await pdfjs;
+  busy = true;
+  render();
+  let added = 0;
+  let pagesHit = 0;
+  let textPages = 0;
+  try {
+    for (let n = 1; n <= total; n++) {
+      result.textContent = `Seite ${n} von ${total} wird durchsucht …`;
+      const text = await pageText(doc, n);
+      if (text.items.length > 0) textPages++;
+      const known = [...(rects.get(n) ?? [])];
+      const fresh = findRects(text, patterns).filter((r) => !known.some((k) => sameRect(k, r)));
+      if (fresh.length === 0) continue;
+      added += fresh.length;
+      pagesHit++;
+      rects.set(n, [...known, ...fresh]);
+    }
+    editor.set(rects.get(page) ?? []);
+    result.textContent =
+      added > 0
+        ? `${added} ${added === 1 ? 'Stelle' : 'Stellen'} auf ${pagesHit} ${pagesHit === 1 ? 'Seite' : 'Seiten'} markiert. Prüf jede Markierung und zieh sie bei Bedarf zurecht: Der Text ist nur ungefähr verortet.`
+        : textPages === 0
+          ? 'Keine Treffer: Diese PDF enthält keinen durchsuchbaren Text, zum Beispiel weil sie ein Scan ist. Markiere die Stellen von Hand.'
+          : 'Keine neuen Treffer.';
+  } catch {
+    result.textContent = 'Die Suche ist fehlgeschlagen. Markiere die Stellen von Hand.';
+  } finally {
+    busy = false;
+    render();
+  }
+}
+
+$('#red-find-go').addEventListener('click', () => void findAreas());
+$('#red-term').addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  void findAreas();
+});
 $('#red-prev').addEventListener('click', () => void showPage(page - 1));
 $('#red-next').addEventListener('click', () => void showPage(page + 1));
 $('#red-add').addEventListener('click', () => {

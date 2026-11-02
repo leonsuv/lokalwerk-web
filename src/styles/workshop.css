@@ -1966,3 +1966,13 @@ body:has(.ws-app) header.top .wrap {
     display: none;
   }
 }
+/* „Menü“ bleibt beschriftet, solange überhaupt Texte stehen */
+@media (min-width: 1181px) {
+  #ws-app .ws-menu-btn .ws-tb-text {
+    display: inline;
+  }
+}
+/* Mit Auswahlleiste kein Zoom daneben, sonst überdecken sie sich */
+#ws-app:has(.ws-selbar:not([hidden])) .ws-statusbar {
+  display: none;
+}

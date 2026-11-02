@@ -279,7 +279,8 @@ const LIGHT = /** @type {const} */ (['hell']);
 function shots(/** @type {InputFiles} */ files) {
   return [
     {
-      name: 'pdf-werkstatt',
+      // Neuer Dateiname bei sichtbaren Änderungen, damit GitHub das Bild nicht aus dem Cache zeigt
+      name: 'pdf-werkstatt-editor',
       url: '/pdf-werkstatt/',
       view: { ...DESKTOP, height: 900 },
       themes: BOTH,
@@ -308,7 +309,7 @@ function shots(/** @type {InputFiles} */ files) {
       },
     },
     {
-      name: 'startseite',
+      name: 'startseite-register',
       url: '/',
       view: DESKTOP,
       themes: BOTH,
@@ -459,7 +460,9 @@ try {
   mkdirSync(outDir, { recursive: true });
   /** @type {string[]} */
   const written = [];
-  for (const shot of shots(files)) {
+  // SHOT=name erzeugt nur diese Aufnahme neu (z. B. SHOT=pdf-werkstatt-editor)
+  const only = process.env['SHOT'];
+  for (const shot of shots(files).filter((s) => !only || s.name === only)) {
     for (const theme of shot.themes) {
       const { width, height, mobile } = shot.view;
       await send('Emulation.setDeviceMetricsOverride', {

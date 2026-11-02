@@ -92,7 +92,8 @@ function details(
 ): HTMLDetailsElement {
   const d = el('details', 'ws-prop');
   d.dataset.section = id;
-  d.open = open.get(id) ?? true;
+  // Speichern-Optionen und Seitendetails erst auf Wunsch; Speichern steht oben in der Leiste
+  d.open = open.get(id) ?? !['save', 'page'].includes(id);
   const s = el('summary');
   s.append(el('span', 'ws-prop-title', title));
   if (meta) s.append(el('span', 'ws-prop-meta', meta));
@@ -259,8 +260,6 @@ export class Panels {
         iconButton('open-single', t.C.openSingle, 'i-single'),
         cut,
         iconButton('split-here', t.C.splitHere, 'i-scissors', pageIndex === 0),
-        iconButton('stamp', t.STAMP_ITEM, 'i-stamp'),
-        iconButton('signature', t.SIGN_ITEM, 'i-sign'),
       );
       page.append(row);
       parts.push(page);
@@ -280,10 +279,7 @@ export class Panels {
       if (cuts > 0) rows.push([t.P.cuts, t.partsLabel(cuts + 1)]);
       d.append(facts(rows));
       const grid = el('div', 'ws-prop-buttons');
-      grid.append(
-        cmdButton('page-numbers', t.PAGE_NUMBERS_ITEM, null, 'btn ghost sm'),
-        cmdButton('rename', t.C.rename, null, 'btn ghost sm'),
-      );
+      grid.append(cmdButton('rename', t.C.rename, null, 'btn ghost sm'));
       if (cuts > 0) {
         const split = cmdButton(
           'split-cuts',
@@ -333,34 +329,6 @@ export class Panels {
       if (kept.length > 0) s.append(note(t.metadataKeptNote(kept.map((x) => x.name))));
       if (loss.length > 0) s.append(note(t.lossNote(loss)));
       parts.push(s);
-    }
-
-    // Werkzeug
-    if (hasDocs) {
-      const w = details(
-        'tool',
-        t.P.tool,
-        this.open,
-        p.tool === 'scissors' ? t.C.toolScissors : t.C.toolSelect,
-      );
-      const tools = el('div', 'seg');
-      tools.setAttribute('role', 'group');
-      tools.setAttribute('aria-label', t.P.tool);
-      for (const [cmd, text] of [
-        ['tool-select', t.C.toolSelect],
-        ['tool-scissors', t.C.toolScissors],
-      ] as const) {
-        const b = el('button', '', text);
-        b.type = 'button';
-        b.dataset.cmd = cmd;
-        b.setAttribute('aria-pressed', String(cmd === `tool-${p.tool}`));
-        tools.append(b);
-      }
-      w.append(
-        tools,
-        el('p', 'ws-prop-hint', p.tool === 'scissors' ? t.P.scissorsHint : t.P.selectHint),
-      );
-      parts.push(w);
     }
 
     this.props.replaceChildren(...parts);

@@ -986,13 +986,13 @@ export function emptyMenu(ctx: MenuContext): MenuEntry[] {
   ];
 }
 
-/** Gruppen der Werkzeugleiste */
+/** Gruppen der Werkzeugleiste: Datei, Rückgängig, Aufgaben für ganze Dokumente, Ansicht.
+ *  Aktionen für ausgewählte Seiten stehen in der Auswahlleiste (#ws-selbar), die erst mit
+ *  einer Auswahl erscheint, sowie im Kontextmenü und im Menü „Seite“. */
 export const TOOLBAR: readonly (readonly string[])[] = [
   ['open', 'save-doc'],
   ['undo', 'redo'],
-  ['tool-select', 'tool-scissors'],
-  ['rotate-left', 'rotate-right', 'duplicate', 'blank', 'delete'],
-  ['cut-toggle', 'split-cuts', 'merge'],
+  ['merge', 'tool-scissors'],
   ['page-numbers', 'stamp', 'signature', 'redact', 'form'],
   ['view-grid', 'view-single'],
   ['panel-left', 'panel-right'],
@@ -1003,6 +1003,8 @@ export const TOOLBAR: readonly (readonly string[])[] = [
 export const TOOLBAR_TEXT: Readonly<Record<string, string>> = {
   open: 'Öffnen',
   'save-doc': 'Speichern',
+  merge: 'Zusammenführen',
+  'tool-scissors': 'Schere',
   'page-numbers': 'Seitenzahlen',
   stamp: 'Stempel',
   signature: 'Unterschrift',

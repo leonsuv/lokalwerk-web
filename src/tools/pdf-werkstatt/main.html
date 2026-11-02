@@ -136,6 +136,53 @@
     </div>
   </div>
 
+  <div class="ws-selbar" id="ws-selbar" role="group" aria-label="Aktionen für die Auswahl" hidden>
+    <span class="ws-selbar-count" id="ws-selbar-count"></span>
+    <button type="button" class="ws-tb labeled ws-selbar-end" data-cmd="tool-select">
+      Schere beenden
+    </button>
+    <button
+      type="button"
+      class="ws-tb"
+      data-cmd="rotate-left"
+      aria-label="Links drehen"
+      data-tip="Links drehen"
+    >
+      <svg width="18" height="18" aria-hidden="true"><use href="#i-rotate-left" /></svg>
+    </button>
+    <button
+      type="button"
+      class="ws-tb"
+      data-cmd="rotate-right"
+      aria-label="Rechts drehen"
+      data-tip="Rechts drehen"
+    >
+      <svg width="18" height="18" aria-hidden="true"><use href="#i-rotate-right" /></svg>
+    </button>
+    <button type="button" class="ws-tb labeled" data-cmd="duplicate">
+      <svg width="18" height="18" aria-hidden="true"><use href="#i-copy" /></svg>Duplizieren
+    </button>
+    <button type="button" class="ws-tb labeled" data-cmd="extract">
+      <svg width="18" height="18" aria-hidden="true"><use href="#i-pdf" /></svg>In neues Dokument
+    </button>
+    <button type="button" class="ws-tb labeled" data-cmd="save-selection">
+      <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>Als neue PDF
+      speichern
+    </button>
+    <button type="button" class="ws-tb labeled danger" data-cmd="delete">
+      <svg width="18" height="18" aria-hidden="true"><use href="#i-x" /></svg>Löschen
+    </button>
+    <button
+      type="button"
+      class="ws-tb"
+      data-cmd="select-none"
+      aria-label="Auswahl aufheben"
+      data-tip="Auswahl aufheben"
+    >
+      <svg width="18" height="18" aria-hidden="true"><use href="#i-x" /></svg>
+    </button>
+  </div>
+
   <div class="ws-actions" id="ws-actions" role="group" aria-label="Aktionen für die Auswahl" hidden>
     <button type="button" data-m="rotate">
       <svg width="20" height="20" aria-hidden="true"><use href="#i-rotate-right" /></svg>Drehen

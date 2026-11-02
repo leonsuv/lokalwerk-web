@@ -139,7 +139,8 @@ const view = {
   tool: 'select' as ToolMode,
   collapsed: new Set<DocId>(),
   left: true,
-  right: true,
+  // Rechts nur auf Wunsch; ein laufendes Werkzeug öffnet die Spalte selbst (workshop.css)
+  right: false,
   active: null as DocId | null,
   lastFocus: null as PageKey | null,
 };
@@ -524,16 +525,35 @@ function toolButton(id: string): HTMLButtonElement {
   return b;
 }
 
+// Ein Knopf „Menü“ ersetzt die Menüleiste: alle Befehle als Untermenüs (Datei, Bearbeiten, …)
+const menuButton = document.createElement('button');
+menuButton.type = 'button';
+menuButton.className = 'ws-tb labeled ws-menu-btn';
+menuButton.dataset.menu = 'all';
+menuButton.tabIndex = 0;
+menuButton.setAttribute('aria-haspopup', 'menu');
+menuButton.setAttribute('aria-expanded', 'false');
+menuButton.innerHTML =
+  '<svg width="18" height="18" aria-hidden="true"><use href="#i-dots" /></svg><span class="ws-tb-text">Menü</span>';
+menuButton.setAttribute('aria-label', 'Menü');
+const menuGroup = document.createElement('div');
+menuGroup.className = 'ws-tb-group';
+menuGroup.append(menuButton);
+menuButton.addEventListener('click', () =>
+  openMenuAt(
+    menuButton,
+    menubar(menuCtx).map((m) => ({ kind: 'submenu' as const, label: m.label, items: m.items })),
+    'Menü',
+  ),
+);
+
 toolbar.replaceChildren(
-  ...TOOLBAR.flatMap((group, i) => {
+  menuGroup,
+  ...TOOLBAR.flatMap((group) => {
     const g = document.createElement('div');
     g.className = 'ws-tb-group';
     g.setAttribute('role', 'group');
     g.append(...group.map(toolButton));
-    if (i === 0) {
-      const first = g.querySelector('button');
-      if (first) first.tabIndex = 0;
-    }
     return [g];
   }),
 );
@@ -552,8 +572,33 @@ toolbar.addEventListener('click', (event) => {
     );
     return;
   }
+  // Die Schere schaltet um: noch einmal klicken kehrt zur Auswahl zurück
+  if (button.dataset.cmd === 'tool-scissors' && view.tool === 'scissors') {
+    run('tool-select');
+    return;
+  }
   run(button.dataset.cmd ?? '');
 });
+
+// Auswahlleiste: erscheint mit einer Auswahl unter der Arbeitsfläche (nur breite Ansicht)
+const selbar = $('#ws-selbar');
+selbar.addEventListener('click', (event) => {
+  const button = (event.target as Element).closest<HTMLButtonElement>('button[data-cmd]');
+  if (button && !button.disabled) run(button.dataset.cmd ?? '');
+});
+function renderSelbar(): void {
+  const { pages, docs } = selectionSummary(store.state, store.selection);
+  // Mit der Schere zeigt die Leiste, was ein Klick bewirkt, und wie man sie beendet
+  const scissors = view.tool === 'scissors' && view.mode === 'grid' && store.state.docs.length > 0;
+  selbar.classList.toggle('hint', scissors);
+  selbar.hidden = !scissors && (pages === 0 || view.mode !== 'grid');
+  if (selbar.hidden) return;
+  $('#ws-selbar-count').textContent = scissors ? t.P.scissorsHint : t.selected(pages, docs);
+  for (const button of selbar.querySelectorAll<HTMLButtonElement>('button[data-cmd]')) {
+    const cmd = cmds.get(button.dataset.cmd ?? '');
+    button.disabled = !cmd || (cmd.enabled ? !cmd.enabled() : false);
+  }
+}
 // Werkzeugleiste: ein Tabstopp, Pfeiltasten wechseln (WAI-ARIA Toolbar)
 toolbar.addEventListener('keydown', (event) => {
   if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
@@ -718,6 +763,7 @@ function draw(change?: Change): void {
     dirty: store.dirty,
   });
   renderUnredacted();
+  renderSelbar();
   mobile.render();
   toolPanel.refresh();
 }

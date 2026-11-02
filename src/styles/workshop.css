@@ -1723,15 +1723,6 @@ body:has(.ws-app) header.top .wrap {
 .ws-app.empty .ws-statusbar {
   display: none;
 }
-.ws-app.empty .ws-body {
-  grid-template-columns: 0 minmax(0, 1fr) 0;
-}
-.ws-app.empty .ws-left,
-.ws-app.empty .ws-right {
-  visibility: hidden;
-  overflow: hidden;
-  border: 0;
-}
 .ws-app.empty .ws-drop {
   flex-direction: column;
   justify-content: center;
@@ -1754,12 +1745,125 @@ body:has(.ws-app) header.top .wrap {
 
 /* In der Rasteransicht stehen die Seiten schon in der Mitte; links reichen die Dokumente.
    Die Seitenleiste bleibt für die Einzelseite. */
-.ws-app.mode-grid {
-  --ws-left: 12.5rem;
+/* Spalten: links nur in der Einzelseite (im Raster stehen die Dokumente als Abschnitte in der
+   Mitte), rechts nur auf Wunsch oder wenn ein Werkzeug bzw. eine Warnung dort steht */
+.ws-app {
+  position: relative;
+  --col-l: var(--ws-left);
+  --col-r: var(--ws-right);
 }
-.ws-app.mode-grid .ws-left > .ws-panel-head:has(#ws-rail-title),
-.ws-app.mode-grid .ws-rail {
+.ws-app.no-left,
+.ws-app.mode-grid {
+  --col-l: 0px;
+}
+.ws-app.no-right {
+  --col-r: 0px;
+}
+.ws-app.no-right:has(#ws-tool:not([hidden]), #ws-unredacted:not([hidden])) {
+  --col-r: var(--ws-right);
+}
+.ws-app.empty {
+  --col-l: 0px;
+  --col-r: 0px;
+}
+#ws-app .ws-body {
+  grid-template-columns: var(--col-l) minmax(0, 1fr) var(--col-r);
+}
+#ws-app.mode-grid .ws-left,
+#ws-app.empty .ws-left,
+#ws-app.empty .ws-right {
+  visibility: hidden;
+  overflow: hidden;
+  border: 0;
+}
+#ws-app.no-right:not(.empty):has(#ws-tool:not([hidden]), #ws-unredacted:not([hidden])) .ws-right {
+  visibility: visible;
+  border-left: 1px solid var(--line);
+}
+/* Von selbst geöffnet (Werkzeug, Warnung): nur das, ohne Verlauf */
+#ws-app.no-right .ws-history {
   display: none;
+}
+.ws-app.mode-grid .ws-tb[data-cmd='panel-left'] {
+  display: none;
+}
+
+/* Auswahlleiste: erscheint mit einer Auswahl über der Arbeitsfläche, unten mittig */
+.ws-selbar {
+  position: absolute;
+  left: calc(var(--col-l) + (100% - var(--col-l) - var(--col-r)) / 2);
+  bottom: 3.4rem;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  max-width: calc(100% - var(--col-l) - var(--col-r) - 2rem);
+  overflow-x: auto;
+  padding: 0.35rem 0.4rem 0.35rem 0.95rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px rgba(14, 21, 48, 0.1),
+    0 12px 32px -12px rgba(14, 21, 48, 0.35);
+  white-space: nowrap;
+}
+.ws-selbar[hidden] {
+  display: none;
+}
+.ws-selbar-count {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-right: 0.45rem;
+  padding-right: 0.8rem;
+  border-right: 1px solid var(--line);
+}
+.ws-selbar .ws-tb {
+  height: 2.25rem;
+  min-width: 2.25rem;
+}
+.ws-selbar .ws-tb.labeled {
+  gap: 0.4rem;
+  padding: 0 0.65rem 0 0.5rem;
+  font-weight: 600;
+}
+.ws-selbar .ws-tb.danger {
+  color: var(--err-ink);
+}
+.ws-selbar .ws-selbar-end,
+.ws-selbar.hint .ws-tb {
+  display: none;
+}
+.ws-selbar.hint .ws-selbar-end {
+  display: inline-flex;
+  flex: none;
+}
+.ws-selbar.hint {
+  white-space: normal;
+  width: min(40rem, calc(100% - var(--col-l) - var(--col-r) - 2rem));
+}
+.ws-selbar.hint .ws-selbar-count {
+  flex: 1;
+  font-weight: 500;
+  border-right: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ws-selbar:not([hidden]) {
+    animation: ws-selbar-in 0.16s ease-out;
+  }
+}
+@keyframes ws-selbar-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+@media (max-width: 900px) {
+  /* Schmal gibt es die eigene untere Aktionsleiste (mobile.ts) */
+  .ws-selbar {
+    display: none !important;
+  }
 }
 
 /* Beschriftete Knöpfe: Dateiaktionen und Werkzeuge sind ohne Tooltip erkennbar */
@@ -1799,6 +1903,67 @@ body:has(.ws-app) header.top .wrap {
 @media (max-width: 900px) {
   .ws-app.empty .ws-left,
   .ws-app.empty .ws-right {
+    display: none;
+  }
+}
+
+/* Eine Leiste statt drei (Überarbeitung 02.11.2026, nur breit; schmal bleibt die Menüleiste):
+   Titel- und Menüzeile und Statusleiste entfallen optisch, das Menü steckt im Knopf „Menü“,
+   der Zoom bleibt als kleine Schwebeleiste */
+@media (min-width: 901px) {
+  #ws-app .ws-titlebar {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  #ws-app .ws-menubar,
+  #ws-app .ws-all {
+    display: none;
+  }
+
+  #ws-app .ws-titlebar {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  #ws-app .ws-statusbar > :not(.ws-zoom) {
+    display: none;
+  }
+  #ws-app .ws-statusbar {
+    position: absolute;
+    right: calc(var(--col-r) + 0.75rem);
+    bottom: 0.75rem;
+    z-index: 5;
+    padding: 0.2rem 0.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+  }
+  #ws-app .ws-selbar {
+    bottom: 1rem;
+  }
+  /* „Nicht gespeichert“ als Punkt am Speichern-Knopf */
+  #ws-app:has(.ws-st-saved.dirty) .ws-tb[data-cmd='save-doc'] {
+    position: relative;
+  }
+  #ws-app:has(.ws-st-saved.dirty) .ws-tb[data-cmd='save-doc']::after {
+    content: '';
+    position: absolute;
+    top: 0.3rem;
+    right: 0.25rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--err);
+  }
+}
+@media (max-width: 900px) {
+  .ws-menu-btn {
     display: none;
   }
 }

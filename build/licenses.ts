@@ -164,6 +164,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-leere-seiten-entfernen',
     'pdf-seitengroesse-aendern',
     'pdf-graustufen',
+    'pdf-reparieren',
   ],
   xlsx: [
     'sepa-sammelueberweisung',

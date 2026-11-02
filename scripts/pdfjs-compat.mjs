@@ -225,6 +225,7 @@ const TOOLS = [
   ['/pdf-werkstatt/', '#ws-input', 'preview'],
   ['/pdf-schwaerzen/', '#red-input', 'tool'],
   ['/pdf-zu-bildern/', '#img-input', 'tool'],
+  ['/pdf-graustufen/', '#gry-input', 'tool'],
   ['/pdf-unterschreiben/', '#sig-input', 'tool'],
 ];
 const TOO_OLD = /Dein Browser ist zu alt für (die Vorschau|dieses Werkzeug)\./;

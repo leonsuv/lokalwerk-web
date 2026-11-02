@@ -29,8 +29,8 @@ describe('Übergabe an die Werkstatt: versteckte Angaben', () => {
         return false;
       }
     });
-    // Alle 12 Werkzeuge mit Knopf „In der PDF-Werkstatt weiterbearbeiten“
-    expect(callers).toHaveLength(12);
+    // Alle 13 Werkzeuge mit Knopf „In der PDF-Werkstatt weiterbearbeiten“
+    expect(callers).toHaveLength(13);
     const stripping = callers.filter((t) =>
       /stripMetadata:\s*true/.test(read(`tools/${t}/page.ts`)),
     );

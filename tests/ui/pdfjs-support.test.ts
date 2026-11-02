@@ -92,6 +92,7 @@ describe('Werkzeuge mit pdf.js', () => {
     const users = sources.filter((s) => /\bloadPdfjs\(/.test(s.text));
     expect(users.map((s) => s.file.split('/')[0]).sort()).toEqual([
       'pdf-formular-ausfuellen',
+      'pdf-graustufen',
       'pdf-leere-seiten-entfernen',
       'pdf-schwaerzen',
       'pdf-seiten-bearbeiten',
@@ -109,6 +110,7 @@ describe('Werkzeuge mit pdf.js', () => {
 
   it('Werkzeuge, die pdf.js für das Ergebnis brauchen, melden „zu alt“ statt „beschädigt“', () => {
     for (const tool of [
+      'pdf-graustufen',
       'pdf-schwaerzen',
       'pdf-zu-bildern',
       'pdf-unterschreiben',

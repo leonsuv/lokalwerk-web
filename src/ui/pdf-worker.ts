@@ -20,19 +20,23 @@ export async function readFile(file: File): Promise<Uint8Array> {
 }
 
 /**
- * `run` bekommt die Bytes und die Einstellungen und liefert die Dateien; ein leerer Name heißt
- * „Name der Quelle plus Zusatz“. Fehler mit Code `code` zeigt die Seite in ihrer Meldungstabelle.
+ * `run` bekommt die Bytes und die Einstellungen und liefert die Dateien (oder die Dateien mit
+ * Zahlen für die Meldung); ein leerer Name heißt „Name der Quelle plus Zusatz“. Fehler mit Code
+ * `code` zeigt die Seite in ihrer Meldungstabelle. `inspect` liefert die Seitenzahl für die
+ * Anzeige; null heißt „nicht lesbar“, die Datei bleibt dann trotzdem wählbar.
  */
 export function servePdfTool<O>(
-  run: (bytes: Uint8Array, options: O) => Promise<PdfToolOutput['files']>,
+  run: (bytes: Uint8Array, options: O) => Promise<PdfToolOutput['files'] | PdfToolOutput>,
+  inspect: (bytes: Uint8Array) => Promise<number | null> = countPages,
 ): void {
   serveRequests<PdfToolRequest<O>>(async (request) => {
     const bytes = await readFile(request.file);
-    if (request.type === 'inspect') return { result: await countPages(bytes) };
-    const files = await run(bytes, request.options);
+    if (request.type === 'inspect') return { result: await inspect(bytes) };
+    const raw = await run(bytes, request.options);
+    const output: PdfToolOutput = Array.isArray(raw) ? { files: raw } : raw;
     return {
-      result: { files } satisfies PdfToolOutput,
-      transfer: files.map((f) => f.bytes.buffer as ArrayBuffer),
+      result: output,
+      transfer: output.files.map((f) => f.bytes.buffer as ArrayBuffer),
     };
   });
 }

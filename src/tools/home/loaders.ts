@@ -63,6 +63,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-graustufen/main.html?raw')).default,
     open: async () => (await import('../pdf-graustufen/page.ts')).openFiles,
   },
+  'pdf-reparieren': {
+    markup: async () => (await import('../pdf-reparieren/main.html?raw')).default,
+    open: async () => (await import('../pdf-reparieren/page.ts')).openFiles,
+  },
   'pdf-schwaerzen': {
     markup: async () => (await import('../pdf-schwaerzen/main.html?raw')).default,
     open: async () => (await import('../pdf-schwaerzen/page.ts')).openFiles,

@@ -36,9 +36,15 @@ const FALLBACK =
 export type PdfToolRequest<O> =
   { type: 'inspect'; file: File } | { type: 'run'; file: File; options: O };
 
-/** Ergebnis von `run`: eine oder mehrere Dateien */
+/**
+ * Ergebnis von `run`: eine oder mehrere Dateien. Optional Zahlen für die Meldung, etwa bei
+ * „PDF reparieren“: Seiten im Ergebnis, Positionen nicht übernommener Seiten, fehlende Seiten.
+ */
 export interface PdfToolOutput {
   files: { name: string; bytes: Uint8Array }[];
+  pages?: number;
+  lost?: number[];
+  missing?: number;
 }
 
 export interface PdfToolConfig<O> {
@@ -58,7 +64,7 @@ export interface PdfToolConfig<O> {
 
 type Current =
   | { state: 'checking'; file: File }
-  | { state: 'ok'; file: File; pages: number }
+  | { state: 'ok'; file: File; pages: number | null }
   | { state: 'error'; file: File; error: string };
 
 export interface PdfTool {
@@ -99,7 +105,11 @@ export function mountPdfTool<O>(config: PdfToolConfig<O>): PdfTool {
     const size = formatBytes(entry.file.size);
     if (entry.state === 'checking') info.textContent = `${size}, wird geprüft …`;
     if (entry.state === 'ok') {
-      info.textContent = `${entry.pages} ${entry.pages === 1 ? 'Seite' : 'Seiten'}, ${size}`;
+      const count =
+        entry.pages === null
+          ? 'Seitenzahl nicht lesbar'
+          : `${entry.pages} ${entry.pages === 1 ? 'Seite' : 'Seiten'}`;
+      info.textContent = `${count}, ${size}`;
     }
     if (entry.state === 'error') {
       const error = document.createElement('span');
@@ -127,7 +137,7 @@ export function mountPdfTool<O>(config: PdfToolConfig<O>): PdfTool {
     config.onFile?.(null);
     render();
     try {
-      const pages = await client.request<number>({ type: 'inspect', file });
+      const pages = await client.request<number | null>({ type: 'inspect', file });
       if (current?.file !== file) return;
       current = { state: 'ok', file, pages };
       config.onFile?.(pages);

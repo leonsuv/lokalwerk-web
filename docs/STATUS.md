@@ -48,9 +48,9 @@ Gemeinsamer Baustein: `src/ui/pdf-tool.ts` und `src/ui/pdf-worker.ts`.
 - [x] Seitengröße ändern (`/pdf-seitengroesse-aendern/`, DIN A4, A5, US Letter oder „Wie das Blatt“; einpassen mit Rand oder Originalgröße mittig). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [x] PDF in Graustufen (`/pdf-graustufen/`, Seiten als Bild, 150 oder 300 dpi; Text wird nicht mehr durchsuchbar, Links und Lesezeichen gehen verloren). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [-] PDF komprimieren: übersprungen. Verlustfrei (Objektströme) spart je nach Erzeuger sehr unterschiedlich viel (-6 % bei einer CoreGraphics-Fixture, -43 % bei einer pdf-lib-Datei), ein Versprechen wäre nicht belegbar. Verlustbehaftet müsste man Bilder über pdf.js extrahieren (CMYK, SMask, JPX), das ist hier nicht verlässlich zu prüfen. Hinweis für Leon: rein verlustfrei wäre machbar, zeigt aber oft wenig; dann neu aufsetzen mit einer Sammlung echter PDFs
-- [ ] PDF reparieren
+- [x] PDF reparieren (`/pdf-reparieren/`, kaputte Xref, fehlender Trailer, abgeschnittenes Ende; verschlüsselte PDFs bleiben unsupported). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [ ] PDF-Lesezeichen bearbeiten
-- [ ] Anhänge verwalten
+- [x] Anhänge verwalten (`/pdf-anhaenge/`, Anhänge listen, entfernen, hinzufügen). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [ ] Briefpapier überlagern
 - [ ] Kopf- und Fußzeile
 - [ ] PDF-Kommentare entfernen

@@ -43,6 +43,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-zuschneiden/main.html?raw')).default,
     open: async () => (await import('../pdf-zuschneiden/page.ts')).openFiles,
   },
+  'pdf-kopf-fusszeile': {
+    markup: async () => (await import('../pdf-kopf-fusszeile/main.html?raw')).default,
+    open: async () => (await import('../pdf-kopf-fusszeile/page.ts')).openFiles,
+  },
   'pdf-seitengroesse-aendern': {
     markup: async () => (await import('../pdf-seitengroesse-aendern/main.html?raw')).default,
     open: async () => (await import('../pdf-seitengroesse-aendern/page.ts')).openFiles,

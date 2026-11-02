@@ -33,6 +33,7 @@ describe('Seitenregister', () => {
         '/pdf-zuschneiden/',
         '/pdf-seitengroesse-aendern/',
         '/pdf-graustufen/',
+        '/pdf-kopf-fusszeile/',
         '/pdf-anhaenge/',
         '/pdf-reparieren/',
         '/pdf-lesezeichen/',

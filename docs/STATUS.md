@@ -51,7 +51,7 @@ Gemeinsamer Baustein: `src/ui/pdf-tool.ts` und `src/ui/pdf-worker.ts`.
 - [x] PDF reparieren (`/pdf-reparieren/`, kaputte Xref, fehlender Trailer, abgeschnittenes Ende; verschlüsselte PDFs bleiben unsupported). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [x] PDF-Lesezeichen bearbeiten (`/pdf-lesezeichen/`, umbenennen, löschen, anlegen, Ebenen). Ziele vorhandener Einträge bleiben unverändert. Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [x] Anhänge verwalten (`/pdf-anhaenge/`, Anhänge listen, entfernen, hinzufügen). Erklärtext ist Entwurf und nicht von Leon freigegeben
-- [ ] Briefpapier überlagern
+- [x] Briefpapier überlagern (`/pdf-briefpapier/`, Brief auf Briefpapier, erste Seite oder gleiche Nummer, optional Anpassen an Größe). Links, Anmerkungen und Formularfelder des Briefs gehen verloren. Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [ ] Kopf- und Fußzeile
 - [ ] PDF-Kommentare entfernen
 - [ ] Bilder aus PDF holen

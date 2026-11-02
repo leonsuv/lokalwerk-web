@@ -8,7 +8,8 @@ import { countPages } from '../core/pdf/merge.ts';
 import type { PdfToolOutput, PdfToolRequest } from './pdf-tool.ts';
 import { serveRequests, WorkerError } from './worker-protocol.ts';
 
-async function readFile(file: File): Promise<Uint8Array> {
+/** Liest eine Datei in den Speicher des Workers; Speichermangel meldet den Code `out-of-memory`. */
+export async function readFile(file: File): Promise<Uint8Array> {
   try {
     return new Uint8Array(await file.arrayBuffer());
   } catch (error) {

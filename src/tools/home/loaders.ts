@@ -87,6 +87,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-metadaten-entfernen/main.html?raw')).default,
     open: async () => (await import('../pdf-metadaten-entfernen/page.ts')).openFiles,
   },
+  'pdf-anhaenge': {
+    markup: async () => (await import('../pdf-anhaenge/main.html?raw')).default,
+    open: async () => (await import('../pdf-anhaenge/page.ts')).openFiles,
+  },
   'foto-metadaten': {
     markup: async () => (await import('../foto-metadaten/main.html?raw')).default,
     open: async () => (await import('../foto-metadaten/page.ts')).addFiles,

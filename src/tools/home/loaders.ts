@@ -67,6 +67,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-reparieren/main.html?raw')).default,
     open: async () => (await import('../pdf-reparieren/page.ts')).openFiles,
   },
+  'pdf-lesezeichen': {
+    markup: async () => (await import('../pdf-lesezeichen/main.html?raw')).default,
+    open: async () => (await import('../pdf-lesezeichen/page.ts')).openFiles,
+  },
   'pdf-schwaerzen': {
     markup: async () => (await import('../pdf-schwaerzen/main.html?raw')).default,
     open: async () => (await import('../pdf-schwaerzen/page.ts')).openFiles,

@@ -35,6 +35,7 @@ describe('Seitenregister', () => {
         '/pdf-graustufen/',
         '/pdf-anhaenge/',
         '/pdf-reparieren/',
+        '/pdf-lesezeichen/',
         '/pdf-leere-seiten-entfernen/',
         '/pdf-vorder-rueckseiten-mischen/',
         '/pdf-broschuere/',

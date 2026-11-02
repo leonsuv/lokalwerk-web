@@ -153,6 +153,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-stempel',
     'pdf-metadaten-entfernen',
     'pdf-anhaenge',
+    'pdf-lesezeichen',
     'bilder-zu-pdf',
     'ausweiskopie',
     'dokument-scannen',

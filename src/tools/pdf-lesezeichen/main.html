@@ -1,0 +1,109 @@
+<div class="wrap pdf">
+  <div class="tool-top">
+    <span class="ic"
+      ><svg width="26" height="26" aria-hidden="true"><use href="#i-pages" /></svg
+    ></span>
+    <div>
+      <a class="back" href="/werkzeuge/">Alle Werkzeuge</a>
+      <h1>PDF-Lesezeichen bearbeiten</h1>
+      <p>
+        Benenne Lesezeichen um, lösche sie, lege neue an und ordne sie in Ebenen. Die Änderungen
+        speicherst du als neue PDF.
+      </p>
+    </div>
+  </div>
+  <div class="workspace">
+    <div class="card">
+      <label class="drop" id="bm-drop">
+        <input type="file" class="visually-hidden" id="bm-input" accept="application/pdf,.pdf" />
+        <span class="ic"
+          ><svg width="22" height="22" aria-hidden="true"><use href="#i-pdf" /></svg
+        ></span>
+        <div><strong>PDF hinzufügen</strong><span>Auswählen oder hierher ziehen</span></div>
+      </label>
+      <ul class="file-list" id="bm-file" aria-label="Ausgewählte PDF"></ul>
+      <div class="empty-state" id="bm-empty">
+        <strong>Noch keine PDF</strong>Die Lesezeichen erscheinen hier, sobald du eine PDF
+        hinzufügst.
+      </div>
+      <div class="mt-l" id="bm-panel" hidden>
+        <h2 id="bm-heading" tabindex="-1">Lesezeichen</h2>
+        <p class="hint" id="bm-none" hidden>
+          Diese PDF hat noch keine Lesezeichen. Lege unten das erste an.
+        </p>
+        <p class="hint err" id="bm-unresolved" hidden>
+          Einige Lesezeichen zeigen auf kein Ziel, das dieses Werkzeug findet. Sie bleiben beim
+          Speichern erhalten. Du kannst ihren Titel ändern, das Ziel nicht.
+        </p>
+        <ol class="bm-list" id="bm-list" aria-label="Lesezeichen"></ol>
+
+        <form class="bm-add" id="bm-add" novalidate>
+          <h3 id="bm-add-heading">Neues Lesezeichen</h3>
+          <p class="hint" id="bm-insert-hint">Es kommt ans Ende der Liste.</p>
+          <div class="bm-add-fields">
+            <div class="field">
+              <label class="lbl" for="bm-new-title">Titel</label>
+              <input type="text" id="bm-new-title" maxlength="255" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label class="lbl" for="bm-new-page">Seite</label>
+              <input type="number" id="bm-new-page" min="1" step="1" value="1" />
+            </div>
+          </div>
+          <div class="bm-add-actions">
+            <button class="btn ghost" type="button" id="bm-insert-end" hidden>
+              Ans Ende der Liste
+            </button>
+            <button class="btn" type="submit" id="bm-add-submit" disabled>
+              Lesezeichen hinzufügen
+            </button>
+          </div>
+        </form>
+        <p class="hint err" id="bm-msg" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+    <div class="card side">
+      <h2>Ergebnis</h2>
+      <p class="hint" id="bm-summary">Lade eine PDF, dann siehst du hier die Anzahl.</p>
+      <p class="hint">
+        Die neue PDF enthält dieselben Seiten und Inhalte. Nur die Lesezeichen ändern sich. Prüfe
+        sie in deinem PDF-Programm, bevor du sie weitergibst.
+      </p>
+      <button class="btn wide mt-m" id="bm-save" disabled>
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-save" /></svg>
+        <span id="bm-save-label">Bearbeitete PDF speichern</span>
+      </button>
+      <button class="btn ghost wide mt-s" id="bm-clear" disabled>Andere PDF wählen</button>
+    </div>
+  </div>
+
+  <!-- Erklärtext: Entwurf, nicht von Leon freigegeben. -->
+  <section class="explain" aria-labelledby="bm-explain">
+    <h2 id="bm-explain">So funktioniert es</h2>
+    <p>
+      Wähle eine PDF aus oder zieh sie in die Fläche oben. Die Lesezeichen erscheinen in der
+      Reihenfolge, in der sie in der Datei stehen, mit ihrer Ebene und ihrer Seite. Du kannst den
+      Titel ändern, einen Eintrag löschen, eine Ebene tiefer oder höher setzen und neue Einträge
+      anlegen. „Bearbeitete PDF speichern“ erzeugt eine neue Datei mit denselben Seiten. Deine
+      Originaldatei bleibt unverändert.
+    </p>
+    <h2>Was passiert beim Löschen?</h2>
+    <p>
+      Ein gelöschtes Lesezeichen verschwindet samt seinem Titel aus der neuen Datei. Seine
+      Unterpunkte bleiben erhalten und rücken eine Ebene nach oben. Lesezeichen ohne gefundenes Ziel
+      bleiben unverändert erhalten.
+    </p>
+    <h2>Was passiert mit den Zielen?</h2>
+    <p>
+      Das Ziel eines vorhandenen Lesezeichens bleibt, wie es war. Ein neu angelegtes Lesezeichen
+      zeigt auf seine Seite, die im Fenster ganz eingepasst wird. Lesezeichen, die auf Web-Adressen
+      zeigen, zeigen auch danach auf dieselbe Adresse.
+    </p>
+    <h2>Deine Dateien bleiben auf deinem Gerät</h2>
+    <p>
+      Die PDF wird direkt in deinem Browser bearbeitet, nicht hochgeladen. Nach dem Laden der Seite
+      funktioniert das Werkzeug auch ohne Internetverbindung. Verschlüsselte PDFs lassen sich nicht
+      bearbeiten.
+    </p>
+  </section>
+</div>

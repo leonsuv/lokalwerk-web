@@ -34,6 +34,7 @@ describe('Seitenregister', () => {
         '/pdf-seitengroesse-aendern/',
         '/pdf-graustufen/',
         '/pdf-briefpapier/',
+        '/pdf-kopf-fusszeile/',
         '/pdf-anhaenge/',
         '/pdf-reparieren/',
         '/pdf-lesezeichen/',

@@ -168,6 +168,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-graustufen',
     'pdf-reparieren',
     'pdf-briefpapier',
+    'pdf-kopf-fusszeile',
   ],
   xlsx: [
     'sepa-sammelueberweisung',

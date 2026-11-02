@@ -95,6 +95,10 @@ export const LOADERS: Record<string, ToolLoader> = {
     markup: async () => (await import('../pdf-metadaten-entfernen/main.html?raw')).default,
     open: async () => (await import('../pdf-metadaten-entfernen/page.ts')).openFiles,
   },
+  'pdf-kommentare-entfernen': {
+    markup: async () => (await import('../pdf-kommentare-entfernen/main.html?raw')).default,
+    open: async () => (await import('../pdf-kommentare-entfernen/page.ts')).openFiles,
+  },
   'pdf-anhaenge': {
     markup: async () => (await import('../pdf-anhaenge/main.html?raw')).default,
     open: async () => (await import('../pdf-anhaenge/page.ts')).openFiles,

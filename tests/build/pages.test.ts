@@ -25,6 +25,7 @@ describe('Seitenregister', () => {
         '/pdf-teilen/',
         '/bilder-zu-pdf/',
         '/pdf-metadaten-entfernen/',
+        '/pdf-kommentare-entfernen/',
         '/bildformat-umwandeln/',
         '/excel-csv-umwandeln/',
         '/passwort-generator/',

@@ -152,6 +152,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-seitenzahlen',
     'pdf-stempel',
     'pdf-metadaten-entfernen',
+    'pdf-kommentare-entfernen',
     'pdf-anhaenge',
     'pdf-lesezeichen',
     'bilder-zu-pdf',

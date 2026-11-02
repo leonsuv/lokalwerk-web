@@ -10,7 +10,7 @@ import {
   summarizeTypes,
   type AnnotationListing,
   type AnnotationType,
-} from '../../core/pdf/annotations.ts';
+} from '../../core/pdf/annotation-model.ts';
 import { $ } from '../../ui/dom.ts';
 import { PDF_MESSAGES, mountPdfTool } from '../../ui/pdf-tool.ts';
 import { createWorkerClient, WorkerError } from '../../ui/worker-protocol.ts';

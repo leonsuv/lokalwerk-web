@@ -53,7 +53,7 @@ Gemeinsamer Baustein: `src/ui/pdf-tool.ts` und `src/ui/pdf-worker.ts`.
 - [x] Anhänge verwalten (`/pdf-anhaenge/`, Anhänge listen, entfernen, hinzufügen). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [x] Briefpapier überlagern (`/pdf-briefpapier/`, Brief auf Briefpapier, erste Seite oder gleiche Nummer, optional Anpassen an Größe). Links, Anmerkungen und Formularfelder des Briefs gehen verloren. Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [x] Kopf- und Fußzeile (`/pdf-kopf-fusszeile/`, Text links/Mitte/rechts, Seitenzahl „Seite {n} von {N}“, Seitenauswahl). Nicht darstellbare Zeichen blockieren das Speichern. Erklärtext ist Entwurf und nicht von Leon freigegeben
-- [ ] PDF-Kommentare entfernen
+- [x] PDF-Kommentare entfernen (`/pdf-kommentare-entfernen/`, Notizen, Markierungen, Formen und andere wählbar; Formularfelder bleiben). Erklärtext ist Entwurf und nicht von Leon freigegeben
 - [ ] Bilder aus PDF holen
 - [ ] PDF in Text
 - [ ] Text in PDF

@@ -162,6 +162,7 @@ export const USED_IN: Readonly<Record<string, readonly string[]>> = {
     'pdf-vorder-rueckseiten-mischen',
     'pdf-zuschneiden',
     'pdf-leere-seiten-entfernen',
+    'pdf-seitengroesse-aendern',
   ],
   xlsx: [
     'sepa-sammelueberweisung',

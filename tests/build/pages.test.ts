@@ -32,6 +32,7 @@ describe('Seitenregister', () => {
         '/zip-erstellen/',
         '/pdf-zuschneiden/',
         '/pdf-seitengroesse-aendern/',
+        '/pdf-graustufen/',
         '/pdf-leere-seiten-entfernen/',
         '/pdf-vorder-rueckseiten-mischen/',
         '/pdf-broschuere/',

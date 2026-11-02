@@ -45,9 +45,9 @@ Gemeinsamer Baustein: `src/ui/pdf-tool.ts` und `src/ui/pdf-worker.ts`.
 - [x] Vorder- und Rückseiten mischen (`/pdf-vorder-rueckseiten-mischen/`, zwei Fächer; Rückseiten umkehrbar; Erklärtext Entwurf)
 - [x] Leere Seiten entfernen (`/pdf-leere-seiten-entfernen/`, drei Stufen, Kontrolle je Seite; Erklärtext Entwurf)
 - [x] PDF zuschneiden (`/pdf-zuschneiden/`, Ränder in mm, Seitenauswahl, CropBox; Erklärtext Entwurf)
-- [ ] Seitengröße ändern
-- [ ] PDF in Graustufen
-- [ ] PDF komprimieren
+- [x] Seitengröße ändern (`/pdf-seitengroesse-aendern/`, DIN A4, A5, US Letter oder „Wie das Blatt“; einpassen mit Rand oder Originalgröße mittig). Erklärtext ist Entwurf und nicht von Leon freigegeben
+- [x] PDF in Graustufen (`/pdf-graustufen/`, Seiten als Bild, 150 oder 300 dpi; Text wird nicht mehr durchsuchbar, Links und Lesezeichen gehen verloren). Erklärtext ist Entwurf und nicht von Leon freigegeben
+- [-] PDF komprimieren: übersprungen. Verlustfrei (Objektströme) spart je nach Erzeuger sehr unterschiedlich viel (-6 % bei einer CoreGraphics-Fixture, -43 % bei einer pdf-lib-Datei), ein Versprechen wäre nicht belegbar. Verlustbehaftet müsste man Bilder über pdf.js extrahieren (CMYK, SMask, JPX), das ist hier nicht verlässlich zu prüfen. Hinweis für Leon: rein verlustfrei wäre machbar, zeigt aber oft wenig; dann neu aufsetzen mit einer Sammlung echter PDFs
 - [ ] PDF reparieren
 - [ ] PDF-Lesezeichen bearbeiten
 - [ ] Anhänge verwalten

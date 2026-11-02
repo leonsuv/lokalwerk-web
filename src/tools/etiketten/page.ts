@@ -387,6 +387,8 @@ $('#lab-lines').addEventListener('change', (e) => {
 presetSelect.addEventListener('change', () => {
   const preset = PRESETS.find((p) => p.id === presetSelect.value);
   if (preset) fillSheet(presetSheet(preset));
+  // „Eigene Maße“ braucht die Felder: aufklappen
+  else $<HTMLDetailsElement>('#lab-sheet-more').open = true;
   schedule();
 });
 for (const [, id] of SHEET_FIELDS) {

@@ -998,6 +998,18 @@ export const TOOLBAR: readonly (readonly string[])[] = [
   ['panel-left', 'panel-right'],
 ];
 
+/** Sichtbare Kurztexte in der Werkzeugleiste: Dateiaktionen und die Werkzeuge, die ein
+ *  Dokument verändern. Die übrigen Knöpfe bleiben Icons mit Tooltip. */
+export const TOOLBAR_TEXT: Readonly<Record<string, string>> = {
+  open: 'Öffnen',
+  'save-doc': 'Speichern',
+  'page-numbers': 'Seitenzahlen',
+  stamp: 'Stempel',
+  signature: 'Unterschrift',
+  redact: 'Schwärzen',
+  form: 'Formular',
+};
+
 /** Gruppen der Tastenkürzel-Übersicht */
 export const SHORTCUT_GROUPS: readonly { id: string; label: string }[] = [
   { id: 'file', label: t.M.file },

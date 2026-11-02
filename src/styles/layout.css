@@ -60,10 +60,11 @@ nav.main a[aria-current='page'] {
   gap: 0.5rem;
   padding: 0.4rem 0.8rem 0.4rem 0.55rem;
   border-radius: 999px;
-  background: var(--ok-soft);
+  background: color-mix(in srgb, var(--ok-soft) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ok) 28%, transparent);
   color: var(--ok-ink);
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 .local-pill svg {
@@ -96,12 +97,28 @@ footer a:hover {
 }
 
 /* Startseite */
+/* Feines Punktraster hinter dem Kopf der Startseite, zum Rand hin ausgeblendet */
 .hero {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   gap: 3rem;
   align-items: center;
   padding: 4.5rem 0 3.5rem;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--muted) 38%, transparent) 1px,
+    transparent 1.2px
+  );
+  background-size: 22px 22px;
+  mask-image: radial-gradient(70% 75% at 70% 45%, #000 20%, transparent 75%);
+  pointer-events: none;
 }
 .hero h1 {
   font-size: clamp(2.5rem, 5.6vw, 4.3rem);
@@ -109,6 +126,10 @@ footer a:hover {
   letter-spacing: -0.045em;
   font-weight: 800;
   margin: 0 0 1.25rem;
+  text-wrap: balance;
+}
+.hero h1 .soft {
+  color: var(--muted);
 }
 .hero .lead {
   font-size: 1.2rem;
@@ -174,7 +195,9 @@ footer a:hover {
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: var(--cs);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
   color: var(--c);
 }
 .tool-top a.back,

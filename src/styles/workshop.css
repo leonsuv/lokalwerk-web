@@ -632,36 +632,43 @@
 .ws-num {
   font-weight: 600;
 }
+/* Herkunft einer Seite (A·1 = Datei A, Seite 1): neutral, die Datei zeigt ein Farbpunkt */
 .ws-src {
-  font-weight: 700;
-  font-size: 0.66rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  font-size: 0.72rem;
   border-radius: 5px;
-  padding: 0 0.35rem;
+  padding: 0 0.3rem;
   white-space: nowrap;
-}
-.ws-src.c0 {
-  background: var(--pdf-soft);
-  color: var(--pdf-ink);
-}
-.ws-src.c1 {
-  background: var(--sepa-soft);
-  color: var(--sepa-ink);
-}
-.ws-src.c2 {
-  background: var(--img-soft);
-  color: var(--img-ink);
-}
-.ws-src.c3 {
-  background: var(--util-soft);
-  color: var(--util-ink);
-}
-.ws-src.c4 {
-  background: var(--tab-soft);
-  color: var(--tab-ink);
-}
-.ws-src.blank {
   background: var(--surface2);
   color: var(--muted);
+}
+.ws-src::before {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--src);
+}
+.ws-src.c0 {
+  --src: var(--pdf);
+}
+.ws-src.c1 {
+  --src: var(--sepa);
+}
+.ws-src.c2 {
+  --src: var(--img);
+}
+.ws-src.c3 {
+  --src: var(--util);
+}
+.ws-src.c4 {
+  --src: var(--tab);
+}
+.ws-src.blank::before {
+  content: none;
 }
 .ws-ops {
   display: inline-flex;
@@ -1700,4 +1707,98 @@ html.ws-banding * {
   font-size: 0.82rem;
   color: var(--ink);
   letter-spacing: 0;
+}
+
+/* Aufgeräumte Werkstatt (Überarbeitung 02.11.2026, docs/entscheidungen.md) */
+
+/* Kopfzeile der Website über die volle Breite, bündig mit Titel- und Werkzeugleiste */
+body:has(.ws-app) header.top .wrap {
+  max-width: none;
+  padding-inline: 0.75rem;
+}
+
+/* Ohne Dokument gibt es nichts zu bearbeiten: keine Werkzeugleiste, keine leeren Panels, nur
+   die Ablagefläche in der Mitte */
+.ws-app.empty .ws-toolbar,
+.ws-app.empty .ws-statusbar {
+  display: none;
+}
+.ws-app.empty .ws-body {
+  grid-template-columns: 0 minmax(0, 1fr) 0;
+}
+.ws-app.empty .ws-left,
+.ws-app.empty .ws-right {
+  visibility: hidden;
+  overflow: hidden;
+  border: 0;
+}
+.ws-app.empty .ws-drop {
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  gap: 0.9rem;
+  max-width: 40rem;
+  min-height: 20rem;
+  margin-top: 8vh;
+  padding: 2.5rem 2rem;
+}
+.ws-app.empty .ws-drop .ic {
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 16px;
+}
+.ws-app.empty .ws-drop strong {
+  font-size: 1.25rem;
+  margin-bottom: 0.2rem;
+}
+
+/* In der Rasteransicht stehen die Seiten schon in der Mitte; links reichen die Dokumente.
+   Die Seitenleiste bleibt für die Einzelseite. */
+.ws-app.mode-grid {
+  --ws-left: 12.5rem;
+}
+.ws-app.mode-grid .ws-left > .ws-panel-head:has(#ws-rail-title),
+.ws-app.mode-grid .ws-rail {
+  display: none;
+}
+
+/* Beschriftete Knöpfe: Dateiaktionen und Werkzeuge sind ohne Tooltip erkennbar */
+.ws-tb.labeled {
+  padding: 0 0.6rem 0 0.45rem;
+}
+.ws-tb-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+@media (max-width: 1360px) {
+  .ws-tb-group:first-child .ws-tb-text {
+    display: none;
+  }
+  .ws-tb-group:first-child .ws-tb.labeled {
+    padding: 0 0.4rem;
+  }
+}
+@media (max-width: 1180px) {
+  .ws-tb-text {
+    display: none;
+  }
+  .ws-tb.labeled {
+    padding: 0 0.4rem;
+  }
+}
+.ws-drop-more {
+  display: block;
+  max-width: 28rem;
+  margin: 0.6rem auto 0;
+  font-size: 0.85rem;
+}
+.ws-app:not(.empty) .ws-drop-more {
+  display: none;
+}
+/* Schmal stehen die Panels untereinander statt in Spalten: ohne Dokument ganz ausblenden */
+@media (max-width: 900px) {
+  .ws-app.empty .ws-left,
+  .ws-app.empty .ws-right {
+    display: none;
+  }
 }

@@ -85,6 +85,7 @@ import {
   pageMenu,
   SHORTCUT_GROUPS,
   TOOLBAR,
+  TOOLBAR_TEXT,
   type App,
   type MenuContext,
   type ToolMode,
@@ -510,6 +511,16 @@ function toolButton(id: string): HTMLButtonElement {
   if (cmd.keys) b.setAttribute('aria-keyshortcuts', ariaShortcut(cmd.keys));
   // Festes Markup ohne Nutzerdaten; der HTML-Parser setzt den SVG-Namensraum selbst.
   b.innerHTML = `<svg width="18" height="18" aria-hidden="true"><use href="#${cmd.icon ?? 'i-tools'}" /></svg>`;
+  const text = TOOLBAR_TEXT[id];
+  if (text) {
+    // Sichtbarer Kurztext; der Name für Screenreader bleibt aria-label
+    const span = document.createElement('span');
+    span.className = 'ws-tb-text';
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = text;
+    b.append(span);
+    b.classList.add('labeled');
+  }
   return b;
 }
 
@@ -637,6 +648,7 @@ function draw(change?: Change): void {
   app$.classList.toggle('no-left', !view.left);
   app$.classList.toggle('no-right', !view.right);
   app$.classList.toggle('mode-single', view.mode === 'single');
+  app$.classList.toggle('mode-grid', view.mode !== 'single');
   app$.classList.toggle('tool-scissors', view.tool === 'scissors');
   $('#ws-drop').hidden = hasDocs;
   showUnsupported({ unsupported, fileLoaded: hasDocs });

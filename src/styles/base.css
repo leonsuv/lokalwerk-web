@@ -14,7 +14,8 @@
 
 html {
   height: 100%;
-  scroll-padding-top: env(safe-area-inset-top, 0px);
+  /* Fokussierte Elemente beim Zurücktabben nicht unter der festen Kopfzeile (4rem, WCAG 2.4.11) */
+  scroll-padding-top: calc(4.5rem + env(safe-area-inset-top, 0px));
 }
 
 body {

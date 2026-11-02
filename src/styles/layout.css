@@ -76,16 +76,19 @@ nav.main a[aria-current='page'] {
 /* Fuß */
 footer {
   border-top: 1px solid var(--line);
-  padding: 1.6rem 0 2.6rem;
+  padding: 1rem 0 2rem;
   color: var(--muted);
   font-size: 0.9rem;
 }
 footer .wrap {
   display: flex;
-  gap: 1.4rem;
+  align-items: center;
+  gap: 0 1.4rem;
   flex-wrap: wrap;
 }
+/* Höhere Trefferfläche für Finger, der Fuß bleibt optisch gleich hoch (padding oben/unten) */
 footer a {
+  padding: 0.6rem 0;
   text-decoration: none;
 }
 footer a:hover {
@@ -141,9 +144,10 @@ footer a:hover {
 }
 .section-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: end;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.25rem 1rem;
   margin-bottom: 1.4rem;
 }
 .section-head h2 {
@@ -180,7 +184,9 @@ footer a:hover {
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
-  margin-bottom: 0.25rem;
+  /* Trefferfläche über 24 px (WCAG 2.5.8), Abstand zum Titel bleibt gleich */
+  padding: 0.25rem 0;
+  margin: -0.25rem 0 0;
 }
 .tool-top a.back:hover,
 .back:hover {

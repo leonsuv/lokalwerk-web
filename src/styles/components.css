@@ -85,6 +85,7 @@ label.lbl,
   font-weight: 500;
 }
 input[type='text'],
+input[type='password'],
 input[type='search'],
 input[type='number'],
 input[type='date'],
@@ -98,6 +99,7 @@ select {
   color: var(--ink);
 }
 input[type='text']:focus,
+input[type='password']:focus,
 input[type='search']:focus,
 input[type='number']:focus,
 input[type='date']:focus,
@@ -111,6 +113,8 @@ select:focus {
 }
 input[type='range'] {
   width: 100%;
+  /* Trefferfläche über 24 px (WCAG 2.5.8); der Regler selbst bleibt gleich groß */
+  height: 1.5rem;
   /* Akzentfarbe der Kategorie (Fotos: türkis, wie bisher) */
   accent-color: var(--c, var(--primary));
 }
@@ -747,7 +751,8 @@ ul.tool-grid > li > .tool-card {
   gap: 0.5rem;
 }
 .jump-links a {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
   background: var(--cs);
@@ -1439,5 +1444,14 @@ select[multiple] {
 @media (max-width: 480px) {
   .bm-add-fields {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Finger statt Maus: kleine Knöpfe, Segmente und Sprungmarken auf 44 px Höhe (WCAG 2.5.5) */
+@media (pointer: coarse) {
+  .btn.sm,
+  .seg button,
+  .jump-links a {
+    min-height: 2.75rem;
   }
 }
